@@ -1,3 +1,3 @@
-pisoTurbineFoam.C
+pisoTurbinesFoam.C
 
-EXE = $(FOAM_APPBIN)/pisoTurbineFoam
+EXE = $(FOAM_APPBIN)/pisoTurbinesFoam
