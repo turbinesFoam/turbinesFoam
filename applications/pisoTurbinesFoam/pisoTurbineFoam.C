@@ -22,10 +22,10 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Application
-    turbinePisoFoam
+    pisoTurbineFoam
 
 Description
-    Transient solver for incompressible flow.
+    Transient solver for incompressible flow with turbine forcing.
 
     Turbulence modelling is generic, i.e. laminar, RAS or LES may be selected.
 
