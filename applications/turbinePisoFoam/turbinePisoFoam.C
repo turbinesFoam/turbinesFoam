@@ -22,7 +22,7 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Application
-    OffWindSolver
+    turbinePisoFoam
 
 Description
     Transient solver for incompressible flow.
@@ -60,14 +60,12 @@ int main(int argc, char *argv[])
 
         // Pressure-velocity PISO corrector
         {
-       // Update the turbine state and forces based on previous time step wind.
+        // Update the turbine state and forces based on previous time step wind.
         if(turbineArrayOn)
         {
         Info<< "Updating the output and other informatiom" << endl;
             turbines.update();
         }
-
-
 
             // Perform the Momentum predictor
 
@@ -79,10 +77,10 @@ int main(int argc, char *argv[])
             );
 
            if (turbineArrayOn)
-        {
-        Info<< "Adding the source term" << endl;
-            UEqn -= turbines.force();
-        }
+		   {
+		   Info<< "Adding the source term" << endl;
+		       UEqn -= turbines.force();
+		   }
 
             UEqn.relax();
 
