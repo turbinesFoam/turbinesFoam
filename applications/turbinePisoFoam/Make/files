@@ -1,0 +1,3 @@
+turbinePisoFoam.C
+
+EXE = $(FOAM_APPBIN)/turbinePisoFoam
