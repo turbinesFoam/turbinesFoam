@@ -9,6 +9,7 @@ To-do
 -----
   - [ ] Use fvOptions for turbine models, so solvers do not need to be modified?
   - [ ] Write cross-flow turbine actuator line model
+  - [ ] Use turbines as sources in turbulence model equations?
 
 
 Compiling
