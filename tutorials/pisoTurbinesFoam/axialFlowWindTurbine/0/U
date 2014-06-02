@@ -15,7 +15,7 @@ FoamFile
 
 dimensions      [0 1 -1 0 0 0 0];
 
-internalField   uniform ( 7.304 8.226 0 );
+internalField   uniform (7.304 8.226 0);
 
 boundaryField
 {
@@ -28,10 +28,10 @@ boundaryField
         type            atmBoundaryLayerInletVelocity;
         Uref            11;
         Href            520;
-        n               ( 0.664 0.7478 0 );
-        z               ( 0 0 1 );
+        n               (0.664 0.7478 0);
+        z               (0 0 1);
         z0              0.014;
-        value           uniform ( 0.000 0.000 0 );
+        value           uniform (0.000 0.000 0);
         zGround         uniform 0;
     }
     east
@@ -52,10 +52,10 @@ boundaryField
         type            atmBoundaryLayerInletVelocity;
         Uref            11;
         Href            520;
-        n               ( 0.664 0.7478 0 );
-        z               ( 0 0 1 );
+        n               (0.664 0.7478 0);
+        z               (0 0 1);
         z0              0.014;
-        value           uniform ( 0.000 0.000 0 );
+        value           uniform (0.000 0.000 0);
         zGround         uniform 0;
     }
 }
