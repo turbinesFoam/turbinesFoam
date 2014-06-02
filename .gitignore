@@ -8,4 +8,4 @@ tutorials/pisoTurbinesFoam/axialFlowWindArray/constant/polyMesh/faces
 tutorials/pisoTurbinesFoam/axialFlowWindArray/constant/polyMesh/neighbour
 tutorials/pisoTurbinesFoam/axialFlowWindArray/constant/polyMesh/owner
 tutorials/pisoTurbinesFoam/axialFlowWindArray/constant/polyMesh/points
-#tutorials/pisoTurbinesFoam/axialFlowWindArray/turbineOutput
+tutorials/pisoTurbinesFoam/axialFlowWindArray/turbineOutput/

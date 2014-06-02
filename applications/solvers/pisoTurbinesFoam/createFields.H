@@ -1,4 +1,4 @@
-    Info << "Reading field, p..." << endl;
+    Info<< "Reading field p\n" << endl;
     volScalarField p
     (
         IOobject
@@ -12,7 +12,7 @@
         mesh
     );
 
-    Info << "Reading field, U..." << endl;
+    Info<< "Reading field U\n" << endl;
     volVectorField U
     (
         IOobject
@@ -26,38 +26,32 @@
         mesh
     );
 
-    Info << "Creating vorticity field, omega..." << endl;
-    volVectorField omega
+//Read the turbine Options
+    Info << "Reading Turbine Options On or Off..." << endl;
+    IOdictionary TurbineOption
     (
         IOobject
         (
-            "omega",
-            runTime.timeName(),
-            mesh,
-            IOobject::READ_IF_PRESENT,
-            IOobject::AUTO_WRITE
-        ),
-        mesh,
-        dimensionedVector("omega",dimensionSet(0, 0, -1, 0, 0, 0, 0),vector::zero)
+            "TurbineOption",
+            runTime.time().constant(),
+            runTime,
+            IOobject::MUST_READ,
+            IOobject::NO_WRITE
+        )
     );
 
-    Info << "Creating second-invariant of strain-rate tensor field, Q..." << endl;
-    volScalarField Q
-    (
-        IOobject
-        (
-            "Q",
-            runTime.timeName(),
-            mesh,
-            IOobject::READ_IF_PRESENT,
-            IOobject::AUTO_WRITE
-        ),
-        mesh,
-        dimensionedScalar("Q",dimensionSet(0, 0, -2, 0, 0, 0, 0),0.0)
-    );
+    // Are turbines to be activated?
+    bool turbineArrayOn(TurbineOption.lookupOrDefault<bool>("turbineArrayOn", false));
+   if(turbineArrayOn==1) Info <<"All The Turbine are Switch On    "<<turbineArrayOn<<endl;
+   if(turbineArrayOn==0) Info <<"All The Turbine are Switch Off   "<<turbineArrayOn<<endl;
+
+  
+   // Create an object of the horizontalWindTurbineArray class if there  is to be a turbine array
+    turbineModels::horizontalAxisWindTurbinesALM turbines(U);
 
 
 #   include "createPhi.H"
+
 
     label pRefCell = 0;
     scalar pRefValue = 0.0;
@@ -70,5 +64,3 @@
     (
         incompressible::turbulenceModel::New(U, phi, laminarTransport)
     );
-
-    turbineModels::horizontalAxisWindTurbinesALM turbines(U);

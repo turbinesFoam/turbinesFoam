@@ -22,11 +22,10 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Application
-    pisoFoamTurbine
+    pisoTurbinesFoam
 
 Description
-    Transient solver for incompressible flow with actuator line turbine model
-    and additions to compute mean and turbulent statistics.
+    Transient solver for incompressible flow.
 
     Turbulence modelling is generic, i.e. laminar, RAS or LES may be selected.
 
@@ -46,32 +45,37 @@ int main(int argc, char *argv[])
     #include "createTime.H"
     #include "createMesh.H"
     #include "createFields.H"
-    #include "createMeanFields.H"
-    #include "createDivSchemeBlendingField.H"
+    #include "initContinuityErrs.H"
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-    // Enter the time loop
-    Info << "\nStarting time loop\n" << endl;
+    Info<< "\nStarting time loop\n" << endl;
 
     while (runTime.loop())
     {
-        Info << "Time = " << runTime.timeName() << nl << endl;
+        Info<< "Time = " << runTime.timeName() << nl << endl;
 
         #include "readPISOControls.H"
         #include "CourantNo.H"
 
-        // PISO algorithm
+        // Pressure-velocity PISO corrector
         {
-            // Momentum predictor
+        // Update the turbine state and forces based on previous time step wind.
+
+            Info<< "Updating turbine states..." << endl;
+            turbines.update();
+
+            // Perform the Momentum predictor
 
             fvVectorMatrix UEqn
             (
                 fvm::ddt(U)
               + fvm::div(phi, U)
               + turbulence->divDevReff(U)
-              - turbines.force()
             );
+
+            Info<< "Adding momentum source from turbines..." << endl;
+            UEqn -= turbines.force();
 
             UEqn.relax();
 
@@ -80,22 +84,17 @@ int main(int argc, char *argv[])
                 solve(UEqn == -fvc::grad(p));
             }
 
-            // Pressure/velocity corrector loop
+            // --- PISO loop
 
             for (int corr=0; corr<nCorr; corr++)
             {
                 volScalarField rAU(1.0/UEqn.A());
 
-                volVectorField HbyA("HbyA", U);
-                HbyA = rAU*UEqn.H();
-                surfaceScalarField phiHbyA
-                (
-                    "phiHbyA",
-                    (fvc::interpolate(HbyA) & mesh.Sf())
-                  + fvc::interpolate(rAU)*fvc::ddtCorr(U, phi)
-                );
+                U = rAU*UEqn.H();
+                phi = (fvc::interpolate(U) & mesh.Sf())
+                    + fvc::ddtPhiCorr(rAU, U, phi);
 
-                adjustPhi(phiHbyA, U, p);
+                adjustPhi(phi, U, p);
 
                 // Non-orthogonal pressure corrector loop
                 for (int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
@@ -128,29 +127,15 @@ int main(int argc, char *argv[])
                     }
                 }
 
-                // Velocity corrector
+                #include "continuityErrs.H"
+
                 U -= rAU*fvc::grad(p);
                 U.correctBoundaryConditions();
             }
         }
 
-        // Calculate the divergence of velocity flux and display.
-        #include "computeDivergence.H"
-
-        // Compute the turbulence model variables.
         turbulence->correct();
 
-        // Update the turbine.
-        turbines.update();
-
-        // Compute the mean fields.
-        #include "computeMeanFields.H"
-
-        // Compute vorticity and second-invariant of velocity gradient tensor.
-        omega = fvc::curl(U);
-        Q = 0.5*(sqr(tr(fvc::grad(U))) - tr(((fvc::grad(U))&(fvc::grad(U)))));
-
-        // Update the solution field if necessary.
         runTime.write();
 
         Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
