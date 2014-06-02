@@ -26,25 +26,6 @@
         mesh
     );
 
-//Read the turbine Options
-    Info << "Reading Turbine Options On or Off..." << endl;
-    IOdictionary TurbineOption
-    (
-        IOobject
-        (
-            "TurbineOption",
-            runTime.time().constant(),
-            runTime,
-            IOobject::MUST_READ,
-            IOobject::NO_WRITE
-        )
-    );
-
-    // Are turbines to be activated?
-    bool turbineArrayOn(TurbineOption.lookupOrDefault<bool>("turbineArrayOn", false));
-   if(turbineArrayOn==1) Info <<"All The Turbine are Switch On    "<<turbineArrayOn<<endl;
-   if(turbineArrayOn==0) Info <<"All The Turbine are Switch Off   "<<turbineArrayOn<<endl;
-
   
    // Create an object of the horizontalWindTurbineArray class if there  is to be a turbine array
     turbineModels::horizontalAxisWindTurbinesALM turbines(U);
