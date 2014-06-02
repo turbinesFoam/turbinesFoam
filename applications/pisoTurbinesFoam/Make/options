@@ -3,10 +3,11 @@ EXE_INC = \
     -I$(LIB_SRC)/transportModels \
     -I$(LIB_SRC)/transportModels/incompressible/singlePhaseTransportModel \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
-    -I$(LIB_SRC)/src/turbineModels/lnInclude
+    -I$(WM_PROJECT_USER_DIR)/turbinesFoam/src/turbineModels/lnInclude
 
 
 EXE_LIBS = \
+    -L$(FOAM_USER_LIBBIN) \
     -lincompressibleTurbulenceModel \
     -lincompressibleRASModels \
     -lincompressibleLESModels \
