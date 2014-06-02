@@ -21,6 +21,10 @@ startFrom       latestTime;
 
 startTime       10;
 
+startTimeMean	10; // No idea what this means...
+
+startTimeCorr   10; // Also here...
+
 stopAt          endTime;
 
 endTime         200;

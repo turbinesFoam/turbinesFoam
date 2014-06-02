@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.0.x                                 |
+|  \\    /   O peration     | Version:  2.3.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -14,47 +14,56 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-NumBl                   3;
-TipRad                 63.0;
-HubRad                  1.5;
-UndSling                0.0;
-OverHang               -5.01910;
-TowerHt                87.6;
-Twr2Shft                1.96256;
-ShftTilt               -5.0;
-PreCone               (-2.5 -2.5 -2.5);
-GBRatio                97.0;
-GenIner               534.116;
-HubIner               115.926E3;
-BladeIner             11.776047E6;
-TorqueControllerType   "fiveRegion";
-YawControllerType      "none";
-PitchControllerType    "none";
+NumBl            	       	3;
+TipRad           	      	63.0;
+HubRad           	       	1.5;
+UndSling            	    	0.0;
+OverHang            	   	-5.01910;
+TowerHt                		87.6;
+Twr2Shft                	1.96256;
+ShftTilt               		-5.0;
+PreCone               		(-2.5 -2.5 -2.5);
+GBRatio                		97.0;
+GenIner               		534.116;
+HubIner               		115.926E3;
+BladeIner             		11.776047E6;
+GenTorqueControllerType   	"fiveRegion";
+GenTorqueRateLimiter		true;
+NacYawControllerType      	"none";
+BladePitchControllerType    	"none";
+RatedRotSpeed			200;
+RotSpeedLimiter			true;
+NacYawRateLimiter		true;
+BladePitchRateLimiter		true;
+SpeedFilterCornerFrequency	10; // Hz
 
-
-TorqueControllerParams
+GenTorqueControllerParams
 {
-    CutInGenSpeed           670.0;
-    RatedGenSpeed          1173.7;
-    Region2StartGenSpeed    871.0;
-    Region2EndGenSpeed     1161.963;
-    CutInGenTorque            0.0;
-    RatedGenTorque           43.09355E3;
-    RateLimitGenTorque       15.0E3;
-    KGen                      2.55764E-2;
-    TorqueControllerRelax     1.0;
+    CutInGenSpeed           	670.0;
+    RatedGenSpeed          	1173.7;
+    Region2StartGenSpeed    	871.0;
+    Region2EndGenSpeed     	1161.963;
+    CutInGenTorque            	0.0;
+    RatedGenTorque           	43.09355E3;
+    RateLimitGenTorque       	15.0E3;
+    KGen                      	2.55764E-2;
+    TorqueControllerRelax     	1.0;
 }
 
 
-PitchControllerParams
+BladePitchControllerParams
 {
     PitchControlStartPitch    0.0;
     PitchControlEndPitch      7.6;
     PitchControlStartSpeed    15.77;
     PitchControlEndSpeed      16.0;
-    RateLimitPitch             4.5;
+    RateLimitBladePitch       4.5;
 }
 
+NacYawControllerParams
+{
+    RateLimitNacYaw		20; 
+}
 
 
 Airfoils

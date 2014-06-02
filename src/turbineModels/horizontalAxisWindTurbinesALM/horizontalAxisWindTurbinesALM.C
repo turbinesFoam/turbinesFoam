@@ -156,14 +156,14 @@ horizontalAxisWindTurbinesALM::horizontalAxisWindTurbinesALM
         epsilon.append(scalar(readScalar(turbineArrayProperties.subDict(turbineName[i]).lookup("epsilon"))));
         tipRootLossCorrType.append(word(turbineArrayProperties.subDict(turbineName[i]).lookup("tipRootLossCorrType")));
         rotationDir.append(word(turbineArrayProperties.subDict(turbineName[i]).lookup("rotationDir")));
-        rotSpeed.append(scalar(readScalar(turbineArrayProperties.subDict(turbineName[i]).lookup("RotSpeed"))));
+        rotSpeed.append(scalar(readScalar(turbineArrayProperties.subDict(turbineName[i]).lookup("rotSpeed"))));
         rotSpeedF.append(rotSpeed[i]);
         speedError.append(0.0);
         intSpeedError.append(0.0);
-        azimuth.append(scalar(readScalar(turbineArrayProperties.subDict(turbineName[i]).lookup("Azimuth"))));
-        torqueGen.append(scalar(readScalar(turbineArrayProperties.subDict(turbineName[i]).lookup("TorqueGen"))));
-        pitch.append(scalar(readScalar(turbineArrayProperties.subDict(turbineName[i]).lookup("Pitch"))));
-        nacYaw.append(scalar(readScalar(turbineArrayProperties.subDict(turbineName[i]).lookup("NacYaw"))));
+        azimuth.append(scalar(readScalar(turbineArrayProperties.subDict(turbineName[i]).lookup("azimuth"))));
+        torqueGen.append(scalar(readScalar(turbineArrayProperties.subDict(turbineName[i]).lookup("torqueGen"))));
+        pitch.append(scalar(readScalar(turbineArrayProperties.subDict(turbineName[i]).lookup("pitch"))));
+        nacYaw.append(scalar(readScalar(turbineArrayProperties.subDict(turbineName[i]).lookup("nacYaw"))));
         fluidDensity.append(scalar(readScalar(turbineArrayProperties.subDict(turbineName[i]).lookup("fluidDensity")))); 
     }
 
