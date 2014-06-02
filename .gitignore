@@ -3,3 +3,8 @@
 *linux64GccDPOpt
 *.dep
 *lnInclude
+tutorials/pisoTurbinesFoam/axialFlowWindArray/constant/polyMesh/boundary
+tutorials/pisoTurbinesFoam/axialFlowWindArray/constant/polyMesh/faces
+tutorials/pisoTurbinesFoam/axialFlowWindArray/constant/polyMesh/neighbour
+tutorials/pisoTurbinesFoam/axialFlowWindArray/constant/polyMesh/owner
+tutorials/pisoTurbinesFoam/axialFlowWindArray/constant/polyMesh/points
