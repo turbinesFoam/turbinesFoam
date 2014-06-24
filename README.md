@@ -12,6 +12,12 @@ To-do
   - [ ] Use turbines as sources in turbulence model equations?
 
 
+Features
+--------
+`fvOptions` classes for adding turbine effects to any solver or turbulence model
+that accepts these (e.g. `simpleFoam`, `pimpleFoam`). 
+
+
 Compiling
 ---------
 
