@@ -1,9 +1,9 @@
 turbinesFoam
 ============
 
-A library for actuator line turbine simulations in OpenFOAM.
-Some components were taken from SOWFA and Offwind.
-
+A library for wind and marine hydrokinetic turbine parameterized simulations 
+in OpenFOAM. Some components for solvers and turbine models were taken from 
+SOWFA and Offwind.
 
 To-do
 -----
@@ -21,7 +21,6 @@ git clone https://github.com/petebachant/turbinesFoam.git
 cd turbinesFoam
 ./Allwmake
 ```
-
 
 Usage
 -----
