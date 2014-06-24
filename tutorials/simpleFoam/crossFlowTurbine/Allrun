@@ -4,37 +4,22 @@ cd ${0%/*} || exit 1    # run from this directory
 # Source tutorial run functions
 . $WM_PROJECT_DIR/bin/tools/RunFunctions
 
-# Get the number of processors to run on from system/decomposeParDict
-nProc=$(getNumberOfProcessors)
-echo $nProc
-
 # Copy initial conditions
 cp -rf 0.org 0
 
 runApplication blockMesh
-#cp system/decomposeParDict.hierarchical system/decomposeParDict
 runApplication decomposePar
 
-#cp system/decomposeParDict.ptscotch system/decomposeParDict
-runParallel snappyHexMesh $nProc -overwrite
+runApplication snappyHexMesh -overwrite
 
-find . -type f -iname "*level*" -exec rm {} \;
+runApplication topoSet
+runApplication `getApplication`
 
-ls -d processor* | xargs -i cp -r 0.org ./{}/0 $1
+#topoSet
+#runApplication vorticity
+#runApplication R
 
-runParallel topoSet $nProc
-runParallel `getApplication` $nProc
-
-runApplication reconstructParMesh -constant
-runApplication reconstructPar
-
-rm -rf processor*
-
-topoSet
-runApplication vorticity
-runApplication R
-
-./gensampledict
-sample -latestTime
+#./gensampledict
+#sample -latestTime
 
 # ----------------------------------------------------------------- end-of-file
