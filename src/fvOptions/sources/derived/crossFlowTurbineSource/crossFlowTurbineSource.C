@@ -98,7 +98,7 @@ Foam::fv::crossFlowTurbineSource::crossFlowTurbineSource
     coeffs_.lookup("fieldNames") >> fieldNames_;
     applied_.setSize(fieldNames_.size(), false);
 
-    Info<< "    - creating actuation disk zone: "
+    Info<< "    - creating cross-flow turbine: "
         << this->name() << endl;
 
     upstreamCellId_ = mesh.findCell(upstreamPoint_);

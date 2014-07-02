@@ -59,6 +59,7 @@ void Foam::fv::crossFlowTurbineSource::addActuationDiskAxialInertialResistance
 
     forAll(cells, i)
     {
+        Info<< "Cells [i]: " << cells[i] << endl;
         Usource[cells[i]] += ((Vcells[cells[i]]/V())*T*E) & upU;
     }
 }
