@@ -8,8 +8,6 @@ cd ${0%/*} || exit 1    # run from this directory
 cp -rf 0.org 0
 
 runApplication blockMesh
-runApplication decomposePar
-
 runApplication snappyHexMesh -overwrite
 
 runApplication topoSet
