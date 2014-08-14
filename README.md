@@ -11,15 +11,15 @@ and turbine models have been taken from NREL's SOWFA and Offwind.
 To-do
 -----
   - [ ] Write axial-flow turbine actuator line model as `fvOption`, so custom
-        solvers are unnecessary. 
-  - [ ] Write cross-flow turbine actuator line model as `fvOption`
+        solvers are not necessary.
+  - [ ] Write cross-flow turbine actuator line model as `fvOption`.
   - [ ] Write cross-flow turbine actuator surface model as `fvOption`.
 
 
 Features
 --------
 `fvOptions` classes for adding turbine effects to any solver or turbulence model
-that accepts these (e.g. `simpleFoam`, `pimpleFoam`). 
+that accepts these (e.g. `simpleFoam`, `pimpleFoam`, `interFoam`). 
 
 
 Compiling
