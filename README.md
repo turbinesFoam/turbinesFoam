@@ -1,8 +1,8 @@
 turbinesFoam
 ============
 
-Right now, this library is just a dream! Don't expect anything to work and please
-consider helping with the project. 
+Right now, this library is just a dream. Don't expect anything to work and please
+consider helping with the project as I am a total beginner with C++! 
 
 Someday, this will hopefully be a library for parameterizing wind and marine 
 hydrokinetic turbines in OpenFOAM. So far, some components for solvers 
