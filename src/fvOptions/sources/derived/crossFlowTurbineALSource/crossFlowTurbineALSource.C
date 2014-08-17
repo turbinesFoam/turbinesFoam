@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "rotorDiskSource.H"
+#include "crossFlowTurbineALSource.H"
 #include "addToRunTimeSelectionTable.H"
 #include "trimModel.H"
 #include "fvMatrices.H"
@@ -38,21 +38,21 @@ namespace Foam
 {
     namespace fv
     {
-        defineTypeNameAndDebug(rotorDiskSource, 0);
-        addToRunTimeSelectionTable(option, rotorDiskSource, dictionary);
+        defineTypeNameAndDebug(crossFlowTurbineALSource, 0);
+        addToRunTimeSelectionTable(option, crossFlowTurbineALSource, dictionary);
     }
 
-    template<> const char* NamedEnum<fv::rotorDiskSource::geometryModeType, 2>::
+    template<> const char* NamedEnum<fv::crossFlowTurbineALSource::geometryModeType, 2>::
         names[] =
     {
         "auto",
         "specified"
     };
 
-    const NamedEnum<fv::rotorDiskSource::geometryModeType, 2>
-        fv::rotorDiskSource::geometryModeTypeNames_;
+    const NamedEnum<fv::crossFlowTurbineALSource::geometryModeType, 2>
+        fv::crossFlowTurbineALSource::geometryModeTypeNames_;
 
-    template<> const char* NamedEnum<fv::rotorDiskSource::inletFlowType, 3>::
+    template<> const char* NamedEnum<fv::crossFlowTurbineALSource::inletFlowType, 3>::
         names[] =
     {
         "fixed",
@@ -60,14 +60,14 @@ namespace Foam
         "local"
     };
 
-    const NamedEnum<fv::rotorDiskSource::inletFlowType, 3>
-        fv::rotorDiskSource::inletFlowTypeNames_;
+    const NamedEnum<fv::crossFlowTurbineALSource::inletFlowType, 3>
+        fv::crossFlowTurbineALSource::inletFlowTypeNames_;
 }
 
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
-void Foam::fv::rotorDiskSource::checkData()
+void Foam::fv::crossFlowTurbineALSource::checkData()
 {
     // set inflow type
     switch (selectionMode())
@@ -101,7 +101,7 @@ void Foam::fv::rotorDiskSource::checkData()
                 }
                 default:
                 {
-                    FatalErrorIn("void rotorDiskSource::checkData()")
+                    FatalErrorIn("void crossFlowTurbineALSource::checkData()")
                         << "Unknown inlet velocity type" << abort(FatalError);
                 }
             }
@@ -111,7 +111,7 @@ void Foam::fv::rotorDiskSource::checkData()
         }
         default:
         {
-            FatalErrorIn("void rotorDiskSource::checkData()")
+            FatalErrorIn("void crossFlowTurbineALSource::checkData()")
                 << "Source cannot be used with '"
                 << selectionModeTypeNames_[selectionMode()]
                 << "' mode.  Please use one of: " << nl
@@ -124,7 +124,7 @@ void Foam::fv::rotorDiskSource::checkData()
 }
 
 
-void Foam::fv::rotorDiskSource::setFaceArea(vector& axis, const bool correct)
+void Foam::fv::crossFlowTurbineALSource::setFaceArea(vector& axis, const bool correct)
 {
     area_ = 0.0;
 
@@ -260,7 +260,7 @@ void Foam::fv::rotorDiskSource::setFaceArea(vector& axis, const bool correct)
 }
 
 
-void Foam::fv::rotorDiskSource::createCoordinateSystem()
+void Foam::fv::crossFlowTurbineALSource::createCoordinateSystem()
 {
     // construct the local rotor co-prdinate system
     vector origin(vector::zero);
@@ -374,7 +374,7 @@ void Foam::fv::rotorDiskSource::createCoordinateSystem()
         }
         default:
         {
-            FatalErrorIn("rotorDiskSource::createCoordinateSystem()")
+            FatalErrorIn("crossFlowTurbineALSource::createCoordinateSystem()")
                 << "Unknown geometryMode " << geometryModeTypeNames_[gm]
                 << ". Available geometry modes include "
                 << geometryModeTypeNames_ << exit(FatalError);
@@ -395,7 +395,7 @@ void Foam::fv::rotorDiskSource::createCoordinateSystem()
 }
 
 
-void Foam::fv::rotorDiskSource::constructGeometry()
+void Foam::fv::crossFlowTurbineALSource::constructGeometry()
 {
     const vectorField& C = mesh_.C();
 
@@ -429,7 +429,7 @@ void Foam::fv::rotorDiskSource::constructGeometry()
 }
 
 
-Foam::tmp<Foam::vectorField> Foam::fv::rotorDiskSource::inflowVelocity
+Foam::tmp<Foam::vectorField> Foam::fv::crossFlowTurbineALSource::inflowVelocity
 (
     const volVectorField& U
 ) const
@@ -457,7 +457,7 @@ Foam::tmp<Foam::vectorField> Foam::fv::rotorDiskSource::inflowVelocity
             FatalErrorIn
             (
                 "Foam::tmp<Foam::vectorField> "
-                "Foam::fv::rotorDiskSource::inflowVelocity"
+                "Foam::fv::crossFlowTurbineALSource::inflowVelocity"
                 "(const volVectorField&) const"
             )   << "Unknown inlet flow specification" << abort(FatalError);
         }
@@ -469,7 +469,7 @@ Foam::tmp<Foam::vectorField> Foam::fv::rotorDiskSource::inflowVelocity
 
 // * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
-Foam::fv::rotorDiskSource::rotorDiskSource
+Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
 (
     const word& name,
     const word& modelType,
@@ -503,14 +503,14 @@ Foam::fv::rotorDiskSource::rotorDiskSource
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::fv::rotorDiskSource::~rotorDiskSource()
+Foam::fv::crossFlowTurbineALSource::~crossFlowTurbineALSource()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template<class RhoFieldType>
-void Foam::fv::rotorDiskSource::calculate
+void Foam::fv::crossFlowTurbineALSource::calculate
 (
     const RhoFieldType& rho,
     const vectorField& U,
@@ -635,7 +635,7 @@ void Foam::fv::rotorDiskSource::calculate
 }
 
 
-void Foam::fv::rotorDiskSource::addSup
+void Foam::fv::crossFlowTurbineALSource::addSup
 (
     fvMatrix<vector>& eqn,
     const label fieldI
@@ -675,7 +675,7 @@ void Foam::fv::rotorDiskSource::addSup
 }
 
 
-void Foam::fv::rotorDiskSource::addSup
+void Foam::fv::crossFlowTurbineALSource::addSup
 (
     const volScalarField& rho,
     fvMatrix<vector>& eqn,
@@ -713,14 +713,14 @@ void Foam::fv::rotorDiskSource::addSup
 }
 
 
-void Foam::fv::rotorDiskSource::writeData(Ostream& os) const
+void Foam::fv::crossFlowTurbineALSource::writeData(Ostream& os) const
 {
     os  << indent << name_ << endl;
     dict_.write(os);
 }
 
 
-bool Foam::fv::rotorDiskSource::read(const dictionary& dict)
+bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
 {
     if (option::read(dict))
     {

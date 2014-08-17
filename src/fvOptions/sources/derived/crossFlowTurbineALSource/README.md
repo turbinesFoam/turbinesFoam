@@ -1,5 +1,5 @@
-crossFlowTurbineActuatorLineSource
-==================================
+crossFlowTurbineALSource
+========================
 
 Modified `rotorDiskSource` to represent cross-flow turbines. 
 
@@ -32,7 +32,7 @@ Design
 * Sample input dict:
 
 ```
-crossFlowTurbineActuatorLineCoeffs
+crossFlowTurbineALCoeffs
 {
     fieldNames	    (U);
     nBlades	        3;
