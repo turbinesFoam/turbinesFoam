@@ -22,10 +22,10 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::fv::rotorDiskSource
+    Foam::fv::crossFlowTurbineALSource
 
 Description
-    Cell based momemtum source
+    Cell based momentum source
 
     Source approximates the mean effects of rotor forces on a cylindrical
     region within the domain
@@ -34,7 +34,7 @@ Description
 
     Example usage:
     \verbatim
-    rotorDiskSourceCoeffs
+    crossFlowTurbineALSourceCoeffs
     {
         fieldNames      (U);    // names of fields on which to apply source
         nBlades         3;      // number of blades
@@ -80,13 +80,13 @@ Description
 
 
 SourceFiles
-    rotorDiskSource.C
-    rotorDiskSourceTemplates.C
+    crossFlowTurbineALSource.C
+    crossFlowTurbineALSourceTemplates.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef rotorDiskSource_H
-#define rotorDiskSource_H
+#ifndef crossFlowTurbineALSource_H
+#define crossFlowTurbineALSource_H
 
 #include "fvOption.H"
 #include "cylindricalCS.H"
@@ -108,10 +108,10 @@ namespace fv
 {
 
 /*---------------------------------------------------------------------------*\
-                      Class rotorDiskSource Declaration
+                      Class crossFlowTurbineALSource Declaration
 \*---------------------------------------------------------------------------*/
 
-class rotorDiskSource
+class crossFlowTurbineALSource
 :
     public option
 {
@@ -233,14 +233,14 @@ protected:
 public:
 
     //- Runtime type information
-    TypeName("rotorDisk");
+    TypeName("crossFlowTurbine");
 
 
     // Constructors
 
 
         //- Construct from components
-        rotorDiskSource
+        crossFlowTurbineALSource
         (
             const word& name,
             const word& modelType,
@@ -250,7 +250,7 @@ public:
 
 
     //- Destructor
-    virtual ~rotorDiskSource();
+    virtual ~crossFlowTurbineALSource();
 
 
     // Member Functions
@@ -322,12 +322,12 @@ public:
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#include "rotorDiskSourceI.H"
+#include "crossFlowTurbineALSourceI.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-    #include "rotorDiskSourceTemplates.C"
+    #include "crossFlowTurbineALSourceTemplates.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
