@@ -23,29 +23,29 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "rotorDiskSource.H"
+#include "crossFlowTurbineALSource.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-Foam::scalar Foam::fv::rotorDiskSource::rhoRef() const
+Foam::scalar Foam::fv::crossFlowTurbineALSource::rhoRef() const
 {
     return rhoRef_;
 }
 
 
-Foam::scalar Foam::fv::rotorDiskSource::omega() const
+Foam::scalar Foam::fv::crossFlowTurbineALSource::omega() const
 {
     return omega_;
 }
 
 
-const Foam::List<Foam::point>& Foam::fv::rotorDiskSource::x() const
+const Foam::List<Foam::point>& Foam::fv::crossFlowTurbineALSource::x() const
 {
     return x_;
 }
 
 
-const Foam::cylindricalCS& Foam::fv::rotorDiskSource::coordSys() const
+const Foam::cylindricalCS& Foam::fv::crossFlowTurbineALSource::coordSys() const
 {
     return coordSys_;
 }
