@@ -200,119 +200,22 @@ void Foam::fv::crossFlowTurbineALSource::createCoordinateSystem()
     vector axis(vector::zero);
     vector refDir(vector::zero);
 
-    geometryModeType gm =
-        geometryModeTypeNames_.read(coeffs_.lookup("geometryMode"));
+    coeffs_.lookup("origin") >> origin;
+    coeffs_.lookup("axis") >> axis;
+    coeffs_.lookup("refDirection") >> refDir;
 
-    switch (gm)
-    {
-        case gmAuto:
-        {
-            // determine rotation origin (cell volume weighted)
-            scalar sumV = 0.0;
-            const scalarField& V = mesh_.V();
-            const vectorField& C = mesh_.C();
-            forAll(cells_, i)
-            {
-                const label cellI = cells_[i];
-                sumV += V[cellI];
-                origin += V[cellI]*C[cellI];
-            }
-            reduce(origin, sumOp<vector>());
-            reduce(sumV, sumOp<scalar>());
-            origin /= sumV;
+    localAxesRotation_.reset
+    (
+        new localAxesRotation
+        (
+            mesh_,
+            axis,
+            origin,
+            cells_
+        )
+    );
 
-            // determine first radial vector
-            vector dx1(vector::zero);
-            scalar magR = -GREAT;
-            forAll(cells_, i)
-            {
-                const label cellI = cells_[i];
-                vector test = C[cellI] - origin;
-                if (mag(test) > magR)
-                {
-                    dx1 = test;
-                    magR = mag(test);
-                }
-            }
-            reduce(dx1, maxMagSqrOp<vector>());
-            magR = mag(dx1);
-
-            // determine second radial vector and cross to determine axis
-            forAll(cells_, i)
-            {
-                const label cellI = cells_[i];
-                vector dx2 = C[cellI] - origin;
-                if (mag(dx2) > 0.5*magR)
-                {
-                    axis = dx1 ^ dx2;
-                    if (mag(axis) > SMALL)
-                    {
-                        break;
-                    }
-                }
-            }
-            reduce(axis, maxMagSqrOp<vector>());
-            axis /= mag(axis);
-
-            // correct the axis direction using a point above the rotor
-            {
-                vector pointAbove(coeffs_.lookup("pointAbove"));
-                vector dir = pointAbove - origin;
-                dir /= mag(dir);
-                if ((dir & axis) < 0)
-                {
-                    axis *= -1.0;
-                }
-            }
-
-            coeffs_.lookup("refDirection") >> refDir;
-
-            localAxesRotation_.reset
-            (
-                new localAxesRotation
-                (
-                    mesh_,
-                    axis,
-                    origin,
-                    cells_
-                )
-            );
-
-            // set the face areas and apply correction to calculated axis
-            // e.g. if cellZone is more than a single layer in thickness
-            setFaceArea(axis, true);
-
-            break;
-        }
-        case gmSpecified:
-        {
-            coeffs_.lookup("origin") >> origin;
-            coeffs_.lookup("axis") >> axis;
-            coeffs_.lookup("refDirection") >> refDir;
-
-            localAxesRotation_.reset
-            (
-                new localAxesRotation
-                (
-                    mesh_,
-                    axis,
-                    origin,
-                    cells_
-                )
-            );
-
-            setFaceArea(axis, false);
-
-            break;
-        }
-        default:
-        {
-            FatalErrorIn("crossFlowTurbineALSource::createCoordinateSystem()")
-                << "Unknown geometryMode " << geometryModeTypeNames_[gm]
-                << ". Available geometry modes include "
-                << geometryModeTypeNames_ << exit(FatalError);
-        }
-    }
+    setFaceArea(axis, false);
 
     coordSys_ = cylindricalCS("rotorCoordSys", origin, axis, refDir, false);
 
