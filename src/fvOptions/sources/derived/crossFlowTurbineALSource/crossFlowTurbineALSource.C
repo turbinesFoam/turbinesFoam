@@ -36,32 +36,16 @@ using namespace Foam::constant;
 
 namespace Foam
 {
-    namespace fv
-    {
-        defineTypeNameAndDebug(crossFlowTurbineALSource, 0);
-        addToRunTimeSelectionTable(option, crossFlowTurbineALSource, dictionary);
-    }
-
-    template<> const char* NamedEnum<fv::crossFlowTurbineALSource::geometryModeType, 2>::
-        names[] =
-    {
-        "auto",
-        "specified"
-    };
-
-    const NamedEnum<fv::crossFlowTurbineALSource::geometryModeType, 2>
-        fv::crossFlowTurbineALSource::geometryModeTypeNames_;
-
-    template<> const char* NamedEnum<fv::crossFlowTurbineALSource::inletFlowType, 3>::
-        names[] =
-    {
-        "fixed",
-        "surfaceNormal",
-        "local"
-    };
-
-    const NamedEnum<fv::crossFlowTurbineALSource::inletFlowType, 3>
-        fv::crossFlowTurbineALSource::inletFlowTypeNames_;
+namespace fv
+{
+    defineTypeNameAndDebug(crossFlowTurbineALSource, 0);
+    addToRunTimeSelectionTable
+    (
+        option,
+        crossFlowTurbineALSource,
+        dictionary
+    );
+}
 }
 
 
