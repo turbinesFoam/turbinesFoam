@@ -1,4 +1,4 @@
-crossFlowTurbineActuatorLineSource.C
+crossFlowTurbineALSource.C
 bladeModel/bladeModel.C
 profileModel/profileModel.C
 profileModel/profileModelList.C
