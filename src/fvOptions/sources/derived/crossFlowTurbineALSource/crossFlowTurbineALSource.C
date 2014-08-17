@@ -53,58 +53,7 @@ namespace fv
 
 void Foam::fv::crossFlowTurbineALSource::checkData()
 {
-    // set inflow type
-    switch (selectionMode())
-    {
-        case smCellSet:
-        case smCellZone:
-        case smAll:
-        {
-            // set the profile ID for each blade section
-            profiles_.connectBlades(blade_.profileName(), blade_.profileID());
-            switch (inletFlow_)
-            {
-                case ifFixed:
-                {
-                    coeffs_.lookup("inletVelocity") >> inletVelocity_;
-                    break;
-                }
-                case ifSurfaceNormal:
-                {
-                    scalar UIn
-                    (
-                        readScalar(coeffs_.lookup("inletNormalVelocity"))
-                    );
-                    inletVelocity_ = -coordSys_.R().e3()*UIn;
-                    break;
-                }
-                case ifLocal:
-                {
-                    // do nothing
-                    break;
-                }
-                default:
-                {
-                    FatalErrorIn("void crossFlowTurbineALSource::checkData()")
-                        << "Unknown inlet velocity type" << abort(FatalError);
-                }
-            }
-
-
-            break;
-        }
-        default:
-        {
-            FatalErrorIn("void crossFlowTurbineALSource::checkData()")
-                << "Source cannot be used with '"
-                << selectionModeTypeNames_[selectionMode()]
-                << "' mode.  Please use one of: " << nl
-                << selectionModeTypeNames_[smCellSet] << nl
-                << selectionModeTypeNames_[smCellZone] << nl
-                << selectionModeTypeNames_[smAll]
-                << exit(FatalError);
-        }
-    }
+    Info<< "Data is not being checked..." << endl;
 }
 
 
