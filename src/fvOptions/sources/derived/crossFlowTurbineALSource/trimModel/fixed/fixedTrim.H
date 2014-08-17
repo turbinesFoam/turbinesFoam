@@ -65,7 +65,7 @@ public:
     TypeName("fixedTrim");
 
     //- Constructor
-    fixedTrim(const fv::rotorDiskSource& rotor, const dictionary& dict);
+    fixedTrim(const fv::crossFlowTurbineALSource& rotor, const dictionary& dict);
 
     //- Destructor
     virtual ~fixedTrim();

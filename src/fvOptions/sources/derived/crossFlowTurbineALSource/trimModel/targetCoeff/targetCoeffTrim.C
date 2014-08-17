@@ -192,7 +192,7 @@ void Foam::targetCoeffTrim::correctTrim
 
 Foam::targetCoeffTrim::targetCoeffTrim
 (
-    const fv::rotorDiskSource& rotor,
+    const fv::crossFlowTurbineALSource& rotor,
     const dictionary& dict
 )
 :

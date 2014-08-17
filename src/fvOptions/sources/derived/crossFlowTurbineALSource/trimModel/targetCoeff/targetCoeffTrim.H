@@ -150,7 +150,7 @@ public:
     TypeName("targetCoeffTrim");
 
     //- Constructor
-    targetCoeffTrim(const fv::rotorDiskSource& rotor, const dictionary& dict);
+    targetCoeffTrim(const fv::crossFlowTurbineALSource& rotor, const dictionary& dict);
 
     //- Destructor
     virtual ~targetCoeffTrim();

@@ -44,7 +44,7 @@ namespace Foam
 
 Foam::fixedTrim::fixedTrim
 (
-    const fv::rotorDiskSource& rotor,
+    const fv::crossFlowTurbineALSource& rotor,
     const dictionary& dict
 )
 :
