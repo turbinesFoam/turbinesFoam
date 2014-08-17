@@ -270,36 +270,7 @@ Foam::tmp<Foam::vectorField> Foam::fv::crossFlowTurbineALSource::inflowVelocity
     const volVectorField& U
 ) const
 {
-    switch (inletFlow_)
-    {
-        case ifFixed:
-        case ifSurfaceNormal:
-        {
-            return tmp<vectorField>
-            (
-                new vectorField(mesh_.nCells(), inletVelocity_)
-            );
-
-            break;
-        }
-        case ifLocal:
-        {
-            return U.internalField();
-
-            break;
-        }
-        default:
-        {
-            FatalErrorIn
-            (
-                "Foam::tmp<Foam::vectorField> "
-                "Foam::fv::crossFlowTurbineALSource::inflowVelocity"
-                "(const volVectorField&) const"
-            )   << "Unknown inlet flow specification" << abort(FatalError);
-        }
-    }
-
-    return tmp<vectorField>(new vectorField(mesh_.nCells(), vector::zero));
+    return U.internalField();
 }
 
 
