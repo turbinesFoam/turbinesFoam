@@ -117,21 +117,6 @@ class crossFlowTurbineALSource
 {
 public:
 
-    enum geometryModeType
-    {
-        gmAuto,
-        gmSpecified
-    };
-    static const NamedEnum<geometryModeType, 2> geometryModeTypeNames_;
-
-    enum inletFlowType
-    {
-        ifFixed,
-        ifSurfaceNormal,
-        ifLocal
-    };
-    static const NamedEnum<inletFlowType, 3> inletFlowTypeNames_;
-
 
 protected:
 
