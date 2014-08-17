@@ -35,7 +35,7 @@ SourceFiles
 #ifndef trimModel_H
 #define trimModel_H
 
-#include "rotorDiskSource.H"
+#include "crossFlowTurbineALSource.H"
 #include "dictionary.H"
 #include "runTimeSelectionTables.H"
 
@@ -56,7 +56,7 @@ protected:
     // Protected data
 
         //- Reference to the rotor source model
-        const fv::rotorDiskSource& rotor_;
+        const fv::crossFlowTurbineALSource& rotor_;
 
         //- Name of model
         const word name_;
@@ -79,7 +79,7 @@ public:
             trimModel,
             dictionary,
             (
-                const fv::rotorDiskSource& rotor,
+                const fv::crossFlowTurbineALSource& rotor,
                 const dictionary& dict
             ),
             (rotor, dict)
@@ -91,7 +91,7 @@ public:
         //- Construct from components
         trimModel
         (
-            const fv::rotorDiskSource& rotor,
+            const fv::crossFlowTurbineALSource& rotor,
             const dictionary& dict,
             const word& name
         );
@@ -102,7 +102,7 @@ public:
         //- Return a reference to the selected trim model
         static autoPtr<trimModel> New
         (
-            const fv::rotorDiskSource& rotor,
+            const fv::crossFlowTurbineALSource& rotor,
             const dictionary& dict
         );
 

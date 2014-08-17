@@ -29,7 +29,7 @@ License
 
 Foam::autoPtr<Foam::trimModel> Foam::trimModel::New
 (
-    const fv::rotorDiskSource& rotor,
+    const fv::crossFlowTurbineALSource& rotor,
     const dictionary& dict
 )
 {
@@ -44,7 +44,7 @@ Foam::autoPtr<Foam::trimModel> Foam::trimModel::New
     {
         FatalErrorIn
         (
-            "trimModel::New(const rotorDiskSource&, const dictionary&)"
+            "trimModel::New(const crossFlowTurbineALSource&, const dictionary&)"
         )   << "Unknown " << typeName << " type "
             << modelType << nl << nl
             << "Valid " << typeName << " types are:" << nl

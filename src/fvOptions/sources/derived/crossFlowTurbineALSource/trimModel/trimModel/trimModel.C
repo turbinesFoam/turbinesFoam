@@ -38,7 +38,7 @@ namespace Foam
 
 Foam::trimModel::trimModel
 (
-    const fv::rotorDiskSource& rotor,
+    const fv::crossFlowTurbineALSource& rotor,
     const dictionary& dict,
     const word& name
 )
