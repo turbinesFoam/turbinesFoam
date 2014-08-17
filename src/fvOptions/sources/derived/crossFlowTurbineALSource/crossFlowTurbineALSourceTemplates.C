@@ -23,13 +23,13 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "rotorDiskSource.H"
+#include "crossFlowTurbineALSource.H"
 #include "volFields.H"
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
 template<class Type>
-void Foam::fv::rotorDiskSource::writeField
+void Foam::fv::crossFlowTurbineALSource::writeField
 (
     const word& name,
     const List<Type>& values,
