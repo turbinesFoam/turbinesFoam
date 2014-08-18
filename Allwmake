@@ -1,7 +1,13 @@
-cd $WM_PROJECT_USER_DIR/turbinesFoam/src/turbineModels
+# cd $WM_PROJECT_USER_DIR/turbinesFoam/src/turbineModels
+
+# wmake libso
+
+# cd $WM_PROJECT_USER_DIR/turbinesFoam/applications/solvers/pisoTurbinesFoam
+
+# wmake
+
+cd $WM_PROJECT_USER_DIR/turbinesFoam/src/fvOptions/sources/derived/crossFlowTurbineALSource
 
 wmake libso
 
-cd $WM_PROJECT_USER_DIR/turbinesFoam/applications/solvers/pisoTurbinesFoam
-
-wmake
+cd $WM_PROJECT_USER_DIR/turbinesFoam
