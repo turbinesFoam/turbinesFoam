@@ -20,7 +20,7 @@ turbine0
 {
     type            crossFlowTurbineALSource;
     active          on;         // on/off switch
-    selectionMode   cellSet;   // cellSet // points //cellZone
+    selectionMode   cellSet;    // cellSet // points //cellZone
     cellSet         turbine0;   // probably won't use this, but we'll see
 
     crossFlowTurbineALSourceCoeffs
