@@ -145,6 +145,9 @@ protected:
 
         //- Inlet velocity for specified inflow
         vector freeStreamVelocity_;
+        
+        //- Rotor tip speed ratio
+        scalar tipSpeedRatio_;
 
         //- Tip effect [0-1]
         //  Ratio of blade radius beyond which lift=0

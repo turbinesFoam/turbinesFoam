@@ -534,8 +534,10 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
         applied_.setSize(fieldNames_.size(), false);
 
         // read co-ordinate system/geometry invariant properties
-        scalar rpm(readScalar(coeffs_.lookup("rpm")));
-        omega_ = rpm/60.0*mathematical::twoPi;
+        coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
+        coeffs_.lookup("tipSpeedRatio") >> tipSpeedRatio_;
+        scalar radius(readScalar(coeffs_.lookup("radius")));
+        omega_ = tipSpeedRatio_*mag(freeStreamVelocity_)/radius;
 
         coeffs_.lookup("nBlades") >> nBlades_;
 
