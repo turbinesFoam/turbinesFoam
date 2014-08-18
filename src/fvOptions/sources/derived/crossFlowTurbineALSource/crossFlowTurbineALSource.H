@@ -146,7 +146,7 @@ protected:
         //- Inlet flow type
         inletFlowType inletFlow_;
 
-        //- Inlet velocity for specified iinflow
+        //- Inlet velocity for specified inflow
         vector inletVelocity_;
 
         //- Tip effect [0-1]
