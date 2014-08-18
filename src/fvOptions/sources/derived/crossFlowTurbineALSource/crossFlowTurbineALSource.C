@@ -220,14 +220,14 @@ void Foam::fv::crossFlowTurbineALSource::createCoordinateSystem()
     coordSys_ = cylindricalCS("rotorCoordSys", origin, axis, refDir, false);
 
     const scalar sumArea = gSum(area_);
-    const scalar diameter = Foam::sqrt(4.0*sumArea/mathematical::pi);
+    const scalar diameter = rotorRadius_*2;
     Info<< "    Rotor gometry:" << nl
-        << "    - disk diameter = " << diameter << nl
-        << "    - disk area     = " << sumArea << nl
-        << "    - origin        = " << coordSys_.origin() << nl
-        << "    - r-axis        = " << coordSys_.R().e1() << nl
-        << "    - psi-axis      = " << coordSys_.R().e2() << nl
-        << "    - z-axis        = " << coordSys_.R().e3() << endl;
+        << "    - rotor diameter = " << diameter << nl
+        << "    - frontal area   = " << sumArea << nl
+        << "    - origin         = " << coordSys_.origin() << nl
+        << "    - r-axis         = " << coordSys_.R().e1() << nl
+        << "    - psi-axis       = " << coordSys_.R().e2() << nl
+        << "    - z-axis         = " << coordSys_.R().e3() << endl;
 }
 
 
@@ -542,7 +542,8 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
         coeffs_.lookup("nBlades") >> nBlades_;
 
         coeffs_.lookup("tipEffect") >> tipEffect_;
-
+        
+        // read flap data
         const dictionary& flapCoeffs(coeffs_.subDict("flapCoeffs"));
         flapCoeffs.lookup("beta0") >> flap_.beta0;
         flapCoeffs.lookup("beta1c") >> flap_.beta1c;

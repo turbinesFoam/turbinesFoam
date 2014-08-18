@@ -221,7 +221,7 @@ protected:
 public:
 
     //- Runtime type information
-    TypeName("crossFlowTurbine");
+    TypeName("crossFlowTurbineALSource");
 
 
     // Constructors
