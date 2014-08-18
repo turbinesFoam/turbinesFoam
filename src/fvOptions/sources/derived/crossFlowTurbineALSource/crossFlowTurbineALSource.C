@@ -290,7 +290,7 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     coordSys_(false),
     localAxesRotation_(),
     rMax_(0.0),
-    blade_(coeffs_.subDict("blade")),
+    blade_(coeffs_.subDict("blades")),
     profiles_(coeffs_.subDict("profiles"))
 {
     read(dict);
