@@ -148,6 +148,9 @@ protected:
         
         //- Rotor tip speed ratio
         scalar tipSpeedRatio_;
+        
+        //- Rotor radius, for reference calculations of TSR,
+        scalar rotorRadius_;
 
         //- Tip effect [0-1]
         //  Ratio of blade radius beyond which lift=0
