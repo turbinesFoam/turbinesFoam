@@ -25,18 +25,16 @@ turbine0
 
     crossFlowTurbineALCoeffs
     {
-        fieldNames	    (U);
+        fieldNames      (U);
         nBlades	        3;
-        tipEffect	    1.0; 
+        tipEffect       0.95; 
 
-        inletFlowType   local;  // inlet flow type specification
-        inletVelocity   (0 1 0);
-        upstreamPoint   (-1.0, 0, 0); // Absolute or relative?
+        freeStreamVelocity (1 0 0);
+        upstreamPoint   (-1.0, 0, 0); // probably don't need this
         tipSpeedRatio   1.9;
 
-        geometryMode    specified;   // geometry specification (???)
         origin          (0 0 0);
-        axis            (0 0 1);
+        axis            (0 0 1); // negative for opposite rotation
 
         blades
         {
