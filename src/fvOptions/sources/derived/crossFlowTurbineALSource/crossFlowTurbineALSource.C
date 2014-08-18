@@ -25,7 +25,6 @@ License
 
 #include "crossFlowTurbineALSource.H"
 #include "addToRunTimeSelectionTable.H"
-#include "trimModel.H"
 #include "fvMatrices.H"
 #include "geometricOneField.H"
 #include "syncTools.H"
@@ -250,15 +249,8 @@ void Foam::fv::crossFlowTurbineALSource::constructGeometry()
             // swept angle relative to rDir axis [radians] in range 0 -> 2*pi
             scalar psi = x_[i].y();
 
-            // blade flap angle [radians]
-            scalar beta =
-                flap_.beta0 - flap_.beta1c*cos(psi) - flap_.beta2s*sin(psi);
-
-            // determine rotation tensor to convert from planar system into the
-            // rotor cone system
-            scalar c = cos(beta);
-            scalar s = sin(beta);
-            R_[i] = tensor(c, 0, -s, 0, 1, 0, s, 0, c);
+            // Wrong rotation tensor
+            R_[i] = tensor(0, 0, 0, 0, 1, 0, 0, 0, 0);
             invR_[i] = R_[i].T();
         }
     }
@@ -291,7 +283,6 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     nBlades_(0),
     freeStreamVelocity_(vector::zero),
     tipEffect_(1.0),
-    flap_(),
     x_(cells_.size(), vector::zero),
     R_(cells_.size(), I),
     invR_(cells_.size(), I),
@@ -299,7 +290,6 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     coordSys_(false),
     localAxesRotation_(),
     rMax_(0.0),
-    trim_(trimModel::New(*this, coeffs_)),
     blade_(coeffs_.subDict("blade")),
     profiles_(coeffs_.subDict("profiles"))
 {
@@ -320,7 +310,6 @@ void Foam::fv::crossFlowTurbineALSource::calculate
 (
     const RhoFieldType& rho,
     const vectorField& U,
-    const scalarField& thetag,
     vectorField& force,
     const bool divideVolume,
     const bool output
@@ -364,7 +353,7 @@ void Foam::fv::crossFlowTurbineALSource::calculate
             blade_.interpolate(radius, twist, chord, i1, i2, invDr);
 
             // flip geometric angle if blade is spinning in reverse (clockwise)
-            scalar alphaGeom = thetag[i] + twist;
+            scalar alphaGeom = twist;
             if (omega_ < 0)
             {
                 alphaGeom = mathematical::pi - alphaGeom;
@@ -468,8 +457,7 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     coeffs_.lookup("rhoRef") >> rhoRef_;
 
     const vectorField Uin(inflowVelocity(eqn.psi()));
-    trim_->correct(Uin, force);
-    calculate(geometricOneField(), Uin, trim_->thetag(), force);
+    calculate(geometricOneField(), Uin, force);
 
     // Add source to rhs of eqn
     eqn -= force;
@@ -506,8 +494,7 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     );
 
     const vectorField Uin(inflowVelocity(eqn.psi()));
-    trim_->correct(rho, Uin, force);
-    calculate(rho, Uin, trim_->thetag(), force);
+    calculate(rho, Uin, force);
 
     // Add source to rhs of eqn
     eqn -= force;
@@ -542,16 +529,6 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
         coeffs_.lookup("nBlades") >> nBlades_;
 
         coeffs_.lookup("tipEffect") >> tipEffect_;
-        
-        // read flap data
-        const dictionary& flapCoeffs(coeffs_.subDict("flapCoeffs"));
-        flapCoeffs.lookup("beta0") >> flap_.beta0;
-        flapCoeffs.lookup("beta1c") >> flap_.beta1c;
-        flapCoeffs.lookup("beta2s") >> flap_.beta2s;
-        flap_.beta0 = degToRad(flap_.beta0);
-        flap_.beta1c = degToRad(flap_.beta1c);
-        flap_.beta2s = degToRad(flap_.beta2s);
-
 
         // create co-ordinate system
         createCoordinateSystem();
@@ -561,12 +538,9 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
 
         constructGeometry();
 
-        trim_->read(coeffs_);
-
         if (debug)
         {
-            writeField("thetag", trim_->thetag()(), true);
-            writeField("faceArea", area_, true);
+            Info<< "Debugging on" << endl;
         }
 
         return true;

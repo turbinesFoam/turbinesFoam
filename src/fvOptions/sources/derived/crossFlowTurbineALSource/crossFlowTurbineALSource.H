@@ -120,17 +120,6 @@ public:
 
 protected:
 
-    // Helper structures to encapsulate flap and trim data
-    // Note: all input in degrees (converted to radians internally)
-
-        struct flapData
-        {
-            scalar beta0;   // coning angle
-            scalar beta1c;  // lateral flapping coeff (cos coeff)
-            scalar beta2s;  // longitudinal flapping coeff (sin coeff)
-        };
-
-
     // Protected data
 
         //- Reference density for incompressible case
@@ -156,9 +145,6 @@ protected:
         //  Ratio of blade radius beyond which lift=0
         scalar tipEffect_;
 
-        //- Blade flap coefficients [rad/s]
-        flapData flap_;
-
         //- Cell centre positions in local rotor frame
         //  (Cylindrical r, theta, z)
         List<point> x_;
@@ -180,9 +166,6 @@ protected:
 
         //- Maximum radius
         scalar rMax_;
-
-        //- Trim model
-        autoPtr<trimModel> trim_;
 
         //- Blade data
         bladeModel blade_;
@@ -268,7 +251,6 @@ public:
             (
                 const RhoFieldType& rho,
                 const vectorField& U,
-                const scalarField& thetag,
                 vectorField& force,
                 const bool divideVolume = true,
                 const bool output = true
