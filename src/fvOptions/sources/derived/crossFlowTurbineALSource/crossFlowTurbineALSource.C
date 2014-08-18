@@ -289,8 +289,7 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     rhoRef_(1.0),
     omega_(0.0),
     nBlades_(0),
-    inletFlow_(ifLocal),
-    inletVelocity_(vector::zero),
+    freeStreamVelocity_(vector::zero),
     tipEffect_(1.0),
     flap_(),
     x_(cells_.size(), vector::zero),
@@ -539,8 +538,6 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
         omega_ = rpm/60.0*mathematical::twoPi;
 
         coeffs_.lookup("nBlades") >> nBlades_;
-
-        inletFlow_ = inletFlowTypeNames_.read(coeffs_.lookup("inletFlowType"));
 
         coeffs_.lookup("tipEffect") >> tipEffect_;
 

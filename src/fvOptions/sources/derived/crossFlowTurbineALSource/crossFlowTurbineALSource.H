@@ -143,11 +143,8 @@ protected:
         //- Number of blades
         label nBlades_;
 
-        //- Inlet flow type
-        inletFlowType inletFlow_;
-
         //- Inlet velocity for specified inflow
-        vector inletVelocity_;
+        vector freeStreamVelocity_;
 
         //- Tip effect [0-1]
         //  Ratio of blade radius beyond which lift=0
