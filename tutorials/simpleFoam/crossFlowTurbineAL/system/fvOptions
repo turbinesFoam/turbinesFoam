@@ -18,12 +18,12 @@ FoamFile
 
 turbine0
 {
-    type            crossFlowTurbineAL;
-    active          on;            //on/off switch
-    selectionMode   cellSet;       //cellSet // points //cellZone
-    cellSet         turbine0;      //cellSet name when selectionMode = cellSet
+    type            crossFlowTurbineALSource;
+    active          on;         // on/off switch
+    selectionMode   cellSet;   // cellSet // points //cellZone
+    cellSet         turbine0;   // probably won't use this, but we'll see
 
-    crossFlowTurbineALCoeffs
+    crossFlowTurbineALSourceCoeffs
     {
         fieldNames      (U);
         nBlades	        3;

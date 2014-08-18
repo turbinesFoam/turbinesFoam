@@ -17,21 +17,8 @@ FoamFile
 
 actions
 (
-    // actuatorDisk
-/*
     {
-        name 	actuatorDisk;
-        type	cellSet;
-        action	new;
-        source	boxToCell;
-        sourceInfo
-        {
-            box (-0.5 -0.5 -0.5) (0.5 0.5 0.5)
-        }
-    }
-*/
-    {
-        name 	actuatorDisk;
+        name 	turbine0;
         type	cellSet;
         action	new;
         source	cylinderToCell;
@@ -45,59 +32,15 @@ actions
     }
 
     {
-        name    actuatorDisk;
+        name    turbine0;
         type    cellZoneSet;
         action  new;
         source  setToCellZone;
         sourceInfo
         {
-            set actuatorDisk;
+            set turbine0;
         }
     }
-/*
-    // actuationDisk1
-    {
-        name    actuationDisk1;
-        type    cellSet;
-        action  new;
-        source  boxToCell;
-        sourceInfo
-        {
-            box (581850.5 4785805 1061) (581850.8 4785815 1071);
-        }
-    }
-    {
-        name    actuationDisk1;
-        type    cellZoneSet;
-        action  new;
-        source  setToCellZone;
-        sourceInfo
-        {
-            set actuationDisk1;
-        }
-    }
-    // actuationDisk2
-    {
-        name    actuationDisk2;
-        type    cellSet;
-        action  new;
-        source  boxToCell;
-        sourceInfo
-        {
-            box (581754 4785658 1065) (581754.4 4785668 1075);
-        }
-    }
-    {
-        name    actuationDisk2;
-        type    cellZoneSet;
-        action  new;
-        source  setToCellZone;
-        sourceInfo
-        {
-            set actuationDisk2;
-        }
-    }
-*/
 );
 
 // ************************************************************************* //

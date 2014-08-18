@@ -21,34 +21,34 @@ FoamFile
     {
         type            patch;
         nFaces          768;
-        startFace       84032;
+        startFace       71168;
     }
     outlet
     {
         type            patch;
         nFaces          768;
-        startFace       84800;
+        startFace       71936;
     }
     walls
     {
         type            wall;
         inGroups        1(wall);
         nFaces          1536;
-        startFace       85568;
+        startFace       72704;
     }
     top
     {
         type            wall;
         inGroups        1(wall);
         nFaces          1024;
-        startFace       87104;
+        startFace       74240;
     }
     bottom
     {
         type            wall;
         inGroups        1(wall);
         nFaces          1024;
-        startFace       88128;
+        startFace       75264;
     }
 )
 

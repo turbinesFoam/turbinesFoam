@@ -38,7 +38,7 @@ geometry
     }
 */
 
-    turbine
+    turbine0
     {
         type searchableCylinder;
         point1 (0 0 -0.5);
