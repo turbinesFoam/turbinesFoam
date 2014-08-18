@@ -149,7 +149,7 @@ protected:
         //- Rotor tip speed ratio
         scalar tipSpeedRatio_;
         
-        //- Rotor radius, for reference calculations of TSR,
+        //- Rotor radius
         scalar rotorRadius_;
 
         //- Tip effect [0-1]
