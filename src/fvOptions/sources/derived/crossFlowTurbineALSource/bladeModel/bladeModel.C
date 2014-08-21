@@ -86,7 +86,7 @@ Foam::bladeModel::bladeModel(const dictionary& dict)
     profileName_(),
     profileID_(),
     radius_(),
-    twist_(),
+    pitch_(),
     chord_(),
     fName_(fileName::null)
 {
@@ -107,7 +107,7 @@ Foam::bladeModel::bladeModel(const dictionary& dict)
         profileName_.setSize(data.size());
         profileID_.setSize(data.size());
         radius_.setSize(data.size());
-        twist_.setSize(data.size());
+        pitch_.setSize(data.size());
         chord_.setSize(data.size());
 
         forAll(data, i)
@@ -115,7 +115,7 @@ Foam::bladeModel::bladeModel(const dictionary& dict)
             profileName_[i] = data[i].first();
             profileID_[i] = -1;
             radius_[i] = data[i].second()[0];
-            twist_[i] = degToRad(data[i].second()[1]);
+            pitch_[i] = degToRad(data[i].second()[1]);
             chord_[i] = data[i].second()[2];
         }
     }
@@ -152,9 +152,9 @@ const Foam::List<Foam::scalar>& Foam::bladeModel::radius() const
 }
 
 
-const Foam::List<Foam::scalar>& Foam::bladeModel::twist() const
+const Foam::List<Foam::scalar>& Foam::bladeModel::pitch() const
 {
-    return twist_;
+    return pitch_;
 }
 
 
@@ -173,7 +173,7 @@ Foam::List<Foam::label>& Foam::bladeModel::profileID()
 void Foam::bladeModel::interpolate
 (
     const scalar radius,
-    scalar& twist,
+    scalar& pitch,
     scalar& chord,
     label& i1,
     label& i2,
@@ -182,7 +182,7 @@ void Foam::bladeModel::interpolate
 {
     interpolateWeights(radius, radius_, i1, i2, invDr);
 
-    twist = invDr*(twist_[i2] - twist_[i1]) + twist_[i1];
+    pitch = invDr*(pitch_[i2] - pitch_[i1]) + pitch_[i1];
     chord = invDr*(chord_[i2] - chord_[i1]) + chord_[i1];
 }
 

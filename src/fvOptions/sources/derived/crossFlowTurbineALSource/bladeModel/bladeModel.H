@@ -60,13 +60,22 @@ protected:
         //- Corresponding profile ID per section
         List<label> profileID_;
 
-        //- Radius [m]
+        //- List of blade element axial distance from origin
+        List<scalar> axialDistance_;
+        
+        //- List of blade element radii in meters
         List<scalar> radius_;
 
-        //- Twist [deg] on input, converted to [rad]
-        List<scalar> twist_;
+        //- List of blade element initial azimuthal positions in degrees
+        List<scalar> initialAzimuth_;
 
-        //- Chord [m]
+        //- Chord mounting location relative to radius, as a fraction of chord
+        List<scalar> chordMount_;
+
+        //- Preset blade pitch in degrees, eventually converted to radians
+        List<scalar> pitch_;
+
+        //- Chord in meters
         List<scalar> chord_;
 
         //- File name (optional)
@@ -112,11 +121,17 @@ public:
             //- Return const access to the radius list
             const List<scalar>& radius() const;
 
-            //- Return const access to the twist list
-            const List<scalar>& twist() const;
+            //- Return const access to the pitch list
+            const List<scalar>& pitch() const;
+            
+            //- Return const access to the initialAzimuth list
+            const List<scalar>& initialAzimuth() const;
 
             //- Return const access to the chord list
             const List<scalar>& chord() const;
+            
+            //- Return const access to the chordMount list
+            const List<scalar>& chordMount() const;
 
 
         // Edit
