@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+startDir=$PWD
+
+cd tutorials/simpleFoam/crossFlowTurbineAL
+
+cp -rf 0.org 0
+blockMesh
+snappyHexMesh -overwrite
+topoSet
+simpleFoam
+
+./Allclean
+
+cd $startDir
