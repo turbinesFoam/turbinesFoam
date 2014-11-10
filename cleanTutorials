@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+./tutorials/pisoTurbinesFoam/axialFlowWindTurbine/Allclean
+./tutorials/simpleFoam/crossFlowTurbineAL/Allclean
+./tutorials/simpleFoam/crossFlowTurbineAS/Allclean
+
