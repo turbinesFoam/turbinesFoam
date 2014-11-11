@@ -278,6 +278,7 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
 )
 :
     option(name, modelType, dict, mesh),
+    time_(mesh.time()),
     rhoRef_(1.0),
     omega_(0.0),
     nBlades_(0),

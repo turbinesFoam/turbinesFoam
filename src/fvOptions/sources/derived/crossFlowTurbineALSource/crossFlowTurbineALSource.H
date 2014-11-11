@@ -121,12 +121,15 @@ public:
 protected:
 
     // Protected data
+    
+        //- Runtime pointer
+        const Time& time_;
 
         //- Reference density for incompressible case
         scalar rhoRef_;
 
         //- Rotational speed [rad/s]
-        //  Positive anti-clockwise when looking along -ve lift direction
+        //  Positive anti-clockwise when looking along axis direction
         scalar omega_;
 
         //- Number of blades
@@ -227,6 +230,9 @@ public:
     // Member Functions
 
         // Access
+        
+            //- Return const access to runTime
+            inline const Time& time() const;
 
             //- Return the reference density for incompressible case
             inline scalar rhoRef() const;

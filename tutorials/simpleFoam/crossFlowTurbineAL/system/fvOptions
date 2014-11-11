@@ -35,7 +35,7 @@ turbine0
 
         origin          (0 0 0);
         axis            (0 0 1); // negative for opposite rotation
-        rotorRadius     0.5;
+        rotorRadius     0.5; // for tip speed ratio calculation
 
         blades
         {
