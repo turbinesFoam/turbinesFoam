@@ -225,7 +225,7 @@ void Foam::fv::crossFlowTurbineALSource::createCoordinateSystem()
         << "    - frontal area   = " << sumArea << nl
         << "    - origin         = " << coordSys_.origin() << nl
         << "    - r-axis         = " << coordSys_.R().e1() << nl
-        << "    - psi-axis       = " << coordSys_.R().e2() << nl
+        << "    - theta-axis     = " << coordSys_.R().e2() << nl
         << "    - z-axis         = " << coordSys_.R().e3() << endl;
 }
 
