@@ -4,4 +4,4 @@ actuatorLineElement/actuatorLineElementList.C
 actuatorLineElement/lookup/lookupActuatorLineElement.C
 actuatorLineElement/series/seriesActuatorLineElement.C
 
-LIB = $(FOAM_USER_LIBBIN)/libmyFvOptions
+LIB = $(FOAM_USER_LIBBIN)/libturbinesFoam

@@ -1,3 +1,3 @@
 crossFlowTurbineALSource.C
 
-LIB = $(FOAM_USER_LIBBIN)/libmyFvOptions
+LIB = $(FOAM_USER_LIBBIN)/libturbinesFoam
