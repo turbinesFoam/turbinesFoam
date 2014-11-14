@@ -23,21 +23,21 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "profileModel.H"
+#include "actuatorLineElement.H"
 #include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-    defineTypeNameAndDebug(profileModel, 0);
-    defineRunTimeSelectionTable(profileModel, dictionary);
+    defineTypeNameAndDebug(actuatorLineElement, 0);
+    defineRunTimeSelectionTable(actuatorLineElement, dictionary);
 }
 
 
 // * * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * //
 
-bool Foam::profileModel::readFromFile() const
+bool Foam::actuatorLineElement::readFromFile() const
 {
     return fName_ != fileName::null;
 }
@@ -45,7 +45,7 @@ bool Foam::profileModel::readFromFile() const
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::profileModel::profileModel(const dictionary& dict, const word& name)
+Foam::actuatorLineElement::actuatorLineElement(const dictionary& dict, const word& name)
 :
     dict_(dict),
     name_(name),
@@ -56,19 +56,19 @@ Foam::profileModel::profileModel(const dictionary& dict, const word& name)
 
 // * * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * //
 
-Foam::profileModel::~profileModel()
+Foam::actuatorLineElement::~actuatorLineElement()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-const Foam::word& Foam::profileModel::name() const
+const Foam::word& Foam::actuatorLineElement::name() const
 {
     return name_;
 }
 
 
-Foam::autoPtr<Foam::profileModel> Foam::profileModel::New
+Foam::autoPtr<Foam::actuatorLineElement> Foam::actuatorLineElement::New
 (
     const dictionary& dict
 )
@@ -84,7 +84,7 @@ Foam::autoPtr<Foam::profileModel> Foam::profileModel::New
 
     if (cstrIter == dictionaryConstructorTablePtr_->end())
     {
-        FatalErrorIn("profileModel::New(const dictionary&)")
+        FatalErrorIn("actuatorLineElement::New(const dictionary&)")
             << "Unknown profile model type " << modelType
             << nl << nl
             << "Valid model types are :" << nl
@@ -92,7 +92,7 @@ Foam::autoPtr<Foam::profileModel> Foam::profileModel::New
             << exit(FatalError);
     }
 
-    return autoPtr<profileModel>(cstrIter()(dict, modelName));
+    return autoPtr<actuatorLineElement>(cstrIter()(dict, modelName));
 }
 
 

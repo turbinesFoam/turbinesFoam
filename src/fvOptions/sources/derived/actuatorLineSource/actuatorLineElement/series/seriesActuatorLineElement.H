@@ -22,22 +22,35 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::profileModel
+    Foam::seriesActuatorLineElement
 
 Description
-    Base class for profile models
+    Series-up based profile data - drag and lift coefficients computed as
+    sum of cosine series
+
+        Cd = sum_i(CdCoeff)*cos(i*AOA)
+        Cl = sum_i(ClCoeff)*sin(i*AOA)
+
+    where:
+        AOA = angle of attack [deg] converted to [rad] internally
+        Cd = drag coefficent
+        Cl = lift coefficent
+
+    Input in two (arbitrary length) lists:
+
+        CdCoeffs (coeff1 coeff2 ... coeffN);
+        ClCoeffs (coeff1 coeff2 ... coeffN);
 
 SourceFiles
-    profileModel.C
+    seriesActuatorLineElement.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef profileModel_H
-#define profileModel_H
+#ifndef seriesActuatorLineElement_H
+#define seriesActuatorLineElement_H
 
-#include "autoPtr.H"
-#include "runTimeSelectionTables.H"
-#include "dictionary.H"
+#include "actuatorLineElement.H"
+#include "List.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -45,83 +58,59 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                        Class profileModel Declaration
+                        Class seriesActuatorLineElement Declaration
 \*---------------------------------------------------------------------------*/
 
-class profileModel
+class seriesActuatorLineElement
+:
+    public actuatorLineElement
 {
 
 protected:
 
     // Protected data
 
-        //- Coefficients dictionary
-        const dictionary dict_;
+        //- List of drag coefficient values
+        List<scalar> CdCoeffs_;
 
-        //- Name of profile model
-        const word name_;
-
-        //- File name (optional)
-        fileName fName_;
+        //- List of lift coefficient values
+        List<scalar> ClCoeffs_;
 
 
     // Protected Member Functions
 
-        //- Return ture if file name is set
-        bool readFromFile() const;
+        // Evaluate
+
+            //- Drag
+            scalar evaluateDrag
+            (
+                const scalar& xIn,
+                const List<scalar>& values
+            ) const;
+
+            //- Lift
+            scalar evaluateLift
+            (
+                const scalar& xIn,
+                const List<scalar>& values
+            ) const;
 
 
 public:
 
     //- Runtime type information
-    TypeName("profileModel");
-
-
-        // Declare run-time constructor selection table
-        declareRunTimeSelectionTable
-        (
-            autoPtr,
-            profileModel,
-            dictionary,
-            (
-                const dictionary& dict,
-                const word& modelName
-            ),
-            (dict, modelName)
-        );
-
-
-    // Selectors
-
-        //- Return a reference to the selected fvOption model
-        static autoPtr<profileModel> New(const dictionary& dict);
-
+    TypeName("series");
 
     //- Constructor
-    profileModel(const dictionary& dict, const word& modelName);
-
-
-    //- Destructor
-    virtual ~profileModel();
+    seriesActuatorLineElement(const dictionary& dict, const word& modelName);
 
 
     // Member functions
 
-        // Access
-
-            //- Return const access to the source name
-            const word& name() const;
-
-
         // Evaluation
 
             //- Return the Cd and Cl for a given angle-of-attack
-            virtual void Cdl
-            (
-                const scalar alpha,
-                scalar& Cd,
-                scalar& Cl
-            ) const = 0;
+            virtual void Cdl(const scalar alpha, scalar& Cd, scalar& Cl) const;
 };
 
 

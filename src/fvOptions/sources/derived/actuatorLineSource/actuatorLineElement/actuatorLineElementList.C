@@ -23,17 +23,17 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "profileModelList.H"
+#include "actuatorLineElementList.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::profileModelList::profileModelList
+Foam::actuatorLineElementList::actuatorLineElementList
 (
     const dictionary& dict,
     const bool readFields
 )
 :
-    PtrList<profileModel>(),
+    PtrList<actuatorLineElement>(),
     dict_(dict)
 {
     if (readFields)
@@ -53,7 +53,7 @@ Foam::profileModelList::profileModelList
                 this->set
                 (
                     i,
-                    profileModel::New(dict.subDict(modelName))
+                    actuatorLineElement::New(dict.subDict(modelName))
                 );
             }
         }
@@ -67,13 +67,13 @@ Foam::profileModelList::profileModelList
 
 // * * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * //
 
-Foam::profileModelList::~profileModelList()
+Foam::actuatorLineElementList::~actuatorLineElementList()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void Foam::profileModelList::connectBlades
+void Foam::actuatorLineElementList::connectBlades
 (
     const List<word>& names,
     List<label>& addr
@@ -87,7 +87,7 @@ void Foam::profileModelList::connectBlades
 
         forAll(*this, pI)
         {
-            const profileModel& pm = this->operator[](pI);
+            const actuatorLineElement& pm = this->operator[](pI);
 
             if (pm.name() == profileName)
             {
@@ -101,7 +101,7 @@ void Foam::profileModelList::connectBlades
             List<word> profileNames(size());
             forAll(*this, i)
             {
-                const profileModel& pm = this->operator[](i);
+                const actuatorLineElement& pm = this->operator[](i);
                 profileNames[i] = pm.name();
             }
 

@@ -22,21 +22,22 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::profileModelList
+    Foam::actuatorLineElement
 
 Description
     Base class for profile models
 
 SourceFiles
-    profileModelList.C
+    actuatorLineElement.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef profileModelList_H
-#define profileModelList_H
+#ifndef actuatorLineElement_H
+#define actuatorLineElement_H
 
-#include "PtrList.H"
-#include "profileModel.H"
+#include "autoPtr.H"
+#include "runTimeSelectionTables.H"
+#include "dictionary.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -44,39 +45,83 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                    Class profileModelList Declaration
+                        Class actuatorLineElement Declaration
 \*---------------------------------------------------------------------------*/
 
-class profileModelList
-:
-    public PtrList<profileModel>
+class actuatorLineElement
 {
 
 protected:
 
     // Protected data
 
-        //- Dictionary
+        //- Coefficients dictionary
         const dictionary dict_;
+
+        //- Name of profile model
+        const word name_;
+
+        //- File name (optional)
+        fileName fName_;
+
+
+    // Protected Member Functions
+
+        //- Return ture if file name is set
+        bool readFromFile() const;
 
 
 public:
 
+    //- Runtime type information
+    TypeName("actuatorLineElement");
+
+
+        // Declare run-time constructor selection table
+        declareRunTimeSelectionTable
+        (
+            autoPtr,
+            actuatorLineElement,
+            dictionary,
+            (
+                const dictionary& dict,
+                const word& modelName
+            ),
+            (dict, modelName)
+        );
+
+
+    // Selectors
+
+        //- Return a reference to the selected fvOption model
+        static autoPtr<actuatorLineElement> New(const dictionary& dict);
+
+
     //- Constructor
-    profileModelList(const dictionary& dict, const bool readFields = true);
+    actuatorLineElement(const dictionary& dict, const word& modelName);
+
 
     //- Destructor
-    ~profileModelList();
+    virtual ~actuatorLineElement();
 
 
-    // Member Functions
+    // Member functions
 
-        //- Set blade->profile addressing
-        void connectBlades
-        (
-            const List<word>& names,
-            List<label>& addr
-        ) const;
+        // Access
+
+            //- Return const access to the source name
+            const word& name() const;
+
+
+        // Evaluation
+
+            //- Return the Cd and Cl for a given angle-of-attack
+            virtual void Cdl
+            (
+                const scalar alpha,
+                scalar& Cd,
+                scalar& Cl
+            ) const = 0;
 };
 
 

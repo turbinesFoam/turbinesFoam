@@ -22,18 +22,18 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::bladeModel
+    Foam::actuatorLineSource
 
 Description
-    Blade model class
+    Actuator line class
 
 SourceFiles
-    bladeModel.C
+    actuatorLineSource.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef bladeModel_H
-#define bladeModel_H
+#ifndef actuatorLineSource_H
+#define actuatorLineSource_H
 
 #include "List.H"
 #include "dictionary.H"
@@ -44,10 +44,10 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                         Class bladeModel Declaration
+                         Class actuatorLineSource Declaration
 \*---------------------------------------------------------------------------*/
 
-class bladeModel
+class actuatorLineSource
 {
 
 protected:
@@ -101,11 +101,11 @@ protected:
 public:
 
     //- Constructor
-    bladeModel(const dictionary& dict);
+    actuatorLineSource(const dictionary& dict);
 
 
     //- Destructor
-    virtual ~bladeModel();
+    virtual ~actuatorLineSource();
 
 
     // Member functions

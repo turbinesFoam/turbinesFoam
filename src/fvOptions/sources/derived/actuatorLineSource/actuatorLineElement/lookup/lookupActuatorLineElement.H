@@ -22,34 +22,36 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::seriesProfile
+    Foam::lookupActuatorLineElement
 
 Description
-    Series-up based profile data - drag and lift coefficients computed as
-    sum of cosine series
+    Look-up based profile data - drag and lift coefficients are linearly
+    interpolated based on the supplied angle of attack
 
-        Cd = sum_i(CdCoeff)*cos(i*AOA)
-        Cl = sum_i(ClCoeff)*sin(i*AOA)
+    Input in list format:
+
+        data
+        (
+            (AOA1 Cd1 Cl2)
+            (AOA2 Cd2 Cl2)
+            ...
+            (AOAN CdN CdN)
+        );
 
     where:
         AOA = angle of attack [deg] converted to [rad] internally
-        Cd = drag coefficent
-        Cl = lift coefficent
-
-    Input in two (arbitrary length) lists:
-
-        CdCoeffs (coeff1 coeff2 ... coeffN);
-        ClCoeffs (coeff1 coeff2 ... coeffN);
+        Cd  = drag coefficient
+        Cl  = lift coefficient
 
 SourceFiles
-    seriesProfile.C
+    lookupActuatorLineElement.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef seriesProfile_H
-#define seriesProfile_H
+#ifndef lookupActuatorLineElement_H
+#define lookupActuatorLineElement_H
 
-#include "profileModel.H"
+#include "actuatorLineElement.H"
 #include "List.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -58,51 +60,48 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                        Class seriesProfile Declaration
+                        Class lookupActuatorLineElement Declaration
 \*---------------------------------------------------------------------------*/
 
-class seriesProfile
+class lookupActuatorLineElement
 :
-    public profileModel
+    public actuatorLineElement
 {
 
 protected:
 
     // Protected data
 
+        //- List of angle-of-attack values [deg] on input, converted to [rad]
+        List<scalar> AOA_;
+
         //- List of drag coefficient values
-        List<scalar> CdCoeffs_;
+        List<scalar> Cd_;
 
         //- List of lift coefficient values
-        List<scalar> ClCoeffs_;
+        List<scalar> Cl_;
 
 
     // Protected Member Functions
 
-        // Evaluate
-
-            //- Drag
-            scalar evaluateDrag
-            (
-                const scalar& xIn,
-                const List<scalar>& values
-            ) const;
-
-            //- Lift
-            scalar evaluateLift
-            (
-                const scalar& xIn,
-                const List<scalar>& values
-            ) const;
+        //- Return the interpolation indices and gradient
+        void interpolateWeights
+        (
+            const scalar& xIn,
+            const List<scalar>& values,
+            label& i1,
+            label& i2,
+            scalar& ddx
+        ) const;
 
 
 public:
 
     //- Runtime type information
-    TypeName("series");
+    TypeName("lookup");
 
     //- Constructor
-    seriesProfile(const dictionary& dict, const word& modelName);
+    lookupActuatorLineElement(const dictionary& dict, const word& modelName);
 
 
     // Member functions

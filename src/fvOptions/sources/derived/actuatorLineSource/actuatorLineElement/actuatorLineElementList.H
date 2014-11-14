@@ -22,37 +22,21 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::lookupProfile
+    Foam::actuatorLineElementList
 
 Description
-    Look-up based profile data - drag and lift coefficients are linearly
-    interpolated based on the supplied angle of attack
-
-    Input in list format:
-
-        data
-        (
-            (AOA1 Cd1 Cl2)
-            (AOA2 Cd2 Cl2)
-            ...
-            (AOAN CdN CdN)
-        );
-
-    where:
-        AOA = angle of attack [deg] converted to [rad] internally
-        Cd  = drag coefficient
-        Cl  = lift coefficient
+    Base class for profile models
 
 SourceFiles
-    lookupProfile.C
+    actuatorLineElementList.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef lookupProfile_H
-#define lookupProfile_H
+#ifndef actuatorLineElementList_H
+#define actuatorLineElementList_H
 
-#include "profileModel.H"
-#include "List.H"
+#include "PtrList.H"
+#include "actuatorLineElement.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -60,56 +44,39 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                        Class lookupProfile Declaration
+                    Class actuatorLineElementList Declaration
 \*---------------------------------------------------------------------------*/
 
-class lookupProfile
+class actuatorLineElementList
 :
-    public profileModel
+    public PtrList<actuatorLineElement>
 {
 
 protected:
 
     // Protected data
 
-        //- List of angle-of-attack values [deg] on input, converted to [rad]
-        List<scalar> AOA_;
-
-        //- List of drag coefficient values
-        List<scalar> Cd_;
-
-        //- List of lift coefficient values
-        List<scalar> Cl_;
-
-
-    // Protected Member Functions
-
-        //- Return the interpolation indices and gradient
-        void interpolateWeights
-        (
-            const scalar& xIn,
-            const List<scalar>& values,
-            label& i1,
-            label& i2,
-            scalar& ddx
-        ) const;
+        //- Dictionary
+        const dictionary dict_;
 
 
 public:
 
-    //- Runtime type information
-    TypeName("lookup");
-
     //- Constructor
-    lookupProfile(const dictionary& dict, const word& modelName);
+    actuatorLineElementList(const dictionary& dict, const bool readFields = true);
+
+    //- Destructor
+    ~actuatorLineElementList();
 
 
-    // Member functions
+    // Member Functions
 
-        // Evaluation
-
-            //- Return the Cd and Cl for a given angle-of-attack
-            virtual void Cdl(const scalar alpha, scalar& Cd, scalar& Cl) const;
+        //- Set blade->profile addressing
+        void connectBlades
+        (
+            const List<word>& names,
+            List<label>& addr
+        ) const;
 };
 
 

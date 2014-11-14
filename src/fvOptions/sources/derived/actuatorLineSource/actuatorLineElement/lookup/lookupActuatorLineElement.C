@@ -23,112 +23,126 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "seriesProfile.H"
+#include "lookupActuatorLineElement.H"
 #include "addToRunTimeSelectionTable.H"
+#include "vector.H"
+#include "unitConversion.H"
 #include "IFstream.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-    defineTypeNameAndDebug(seriesProfile, 0);
-    addToRunTimeSelectionTable(profileModel, seriesProfile, dictionary);
+    defineTypeNameAndDebug(lookupActuatorLineElement, 0);
+    addToRunTimeSelectionTable(actuatorLineElement, lookupActuatorLineElement, dictionary);
 }
 
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
-Foam::scalar Foam::seriesProfile::evaluateDrag
+void Foam::lookupActuatorLineElement::interpolateWeights
 (
     const scalar& xIn,
-    const List<scalar>& values
+    const List<scalar>& values,
+    label& i1,
+    label& i2,
+    scalar& ddx
 ) const
 {
-    scalar result = 0.0;
+    i2 = 0;
+    label nElem = values.size();
 
-    forAll(values, i)
+    if (nElem == 1)
     {
-        result += values[i]*cos(i*xIn);
+        i1 = i2;
+        ddx = 0.0;
+        return;
     }
-
-    return result;
-}
-
-
-Foam::scalar Foam::seriesProfile::evaluateLift
-(
-    const scalar& xIn,
-    const List<scalar>& values
-) const
-{
-    scalar result = 0.0;
-
-    forAll(values, i)
+    else
     {
-        // note: first contribution always zero since sin(0) = 0, but
-        // keep zero base to be consitent with drag coeffs
-        result += values[i]*sin(i*xIn);
-    }
+        while ((values[i2] < xIn) && (i2 < nElem))
+        {
+            i2++;
+        }
 
-    return result;
+        if (i2 == nElem)
+        {
+            i2 = nElem - 1;
+            i1 = i2;
+            ddx = 0.0;
+            return;
+        }
+        else
+        {
+            i1 = i2 - 1;
+            ddx = (xIn - values[i1])/(values[i2] - values[i1]);
+        }
+    }
 }
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::seriesProfile::seriesProfile
+Foam::lookupActuatorLineElement::lookupActuatorLineElement
 (
     const dictionary& dict,
     const word& modelName
 )
 :
-    profileModel(dict, modelName),
-    CdCoeffs_(),
-    ClCoeffs_()
+    actuatorLineElement(dict, modelName),
+    AOA_(),
+    Cd_(),
+    Cl_()
 {
+    List<vector> data;
     if (readFromFile())
     {
         IFstream is(fName_);
-        is  >> CdCoeffs_ >> ClCoeffs_;
+        is  >> data;
     }
     else
     {
-        dict.lookup("CdCoeffs") >> CdCoeffs_;
-        dict.lookup("ClCoeffs") >> ClCoeffs_;
+        dict.lookup("data") >> data;
     }
 
+    if (data.size() > 0)
+    {
+        AOA_.setSize(data.size());
+        Cd_.setSize(data.size());
+        Cl_.setSize(data.size());
 
-    if (CdCoeffs_.empty())
+        forAll(data, i)
+        {
+            AOA_[i] = degToRad(data[i][0]);
+            Cd_[i] = data[i][1];
+            Cl_[i] = data[i][2];
+        }
+    }
+    else
     {
         FatalErrorIn
         (
-            "Foam::seriesProfile::seriesProfile"
+            "Foam::lookupActuatorLineElement::lookupActuatorLineElement"
             "("
                 "const dictionary&, "
                 "const word&"
             ")"
-        )   << "CdCoeffs must be specified" << exit(FatalError);
-    }
-    if (ClCoeffs_.empty())
-    {
-        FatalErrorIn
-        (
-            "Foam::seriesProfile::seriesProfile"
-            "("
-                "const dictionary&, "
-                "const word&"
-            ")"
-        )   << "ClCoeffs must be specified" << exit(FatalError);
+        )   << "No profile data specified" << exit(FatalError);
     }
 }
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void Foam::seriesProfile::Cdl(const scalar alpha, scalar& Cd, scalar& Cl) const
+void Foam::lookupActuatorLineElement::Cdl(const scalar alpha, scalar& Cd, scalar& Cl) const
 {
-    Cd = evaluateDrag(alpha, CdCoeffs_);
-    Cl = evaluateLift(alpha, ClCoeffs_);
+    label i1 = -1;
+    label i2 = -1;
+    scalar invAlpha = -1.0;
+    interpolateWeights(alpha, AOA_, i1, i2, invAlpha);
+
+    Cd = invAlpha*(Cd_[i2] - Cd_[i1]) + Cd_[i1];
+    Cl = invAlpha*(Cl_[i2] - Cl_[i1]) + Cl_[i1];
 }
 
 

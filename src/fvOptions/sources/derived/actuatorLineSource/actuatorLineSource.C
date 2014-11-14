@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "bladeModel.H"
+#include "actuatorLineSource.H"
 #include "unitConversion.H"
 #include "Tuple2.H"
 #include "vector.H"
@@ -32,13 +32,13 @@ License
 
 // * * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * //
 
-bool Foam::bladeModel::readFromFile() const
+bool Foam::actuatorLineSource::readFromFile() const
 {
     return fName_ != fileName::null;
 }
 
 
-void Foam::bladeModel::interpolateWeights
+void Foam::actuatorLineSource::interpolateWeights
 (
     const scalar& xIn,
     const List<scalar>& values,
@@ -81,7 +81,7 @@ void Foam::bladeModel::interpolateWeights
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::bladeModel::bladeModel(const dictionary& dict)
+Foam::actuatorLineSource::actuatorLineSource(const dictionary& dict)
 :
     profileName_(),
     profileID_(),
@@ -121,56 +121,56 @@ Foam::bladeModel::bladeModel(const dictionary& dict)
     }
     else
     {
-        FatalErrorIn("Foam::bladeModel::bladeModel(const dictionary&)")
+        FatalErrorIn("Foam::actuatorLineSource::actuatorLineSource(const dictionary&)")
             << "No blade data specified" << exit(FatalError);
     }
 }
 
 // * * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * //
 
-Foam::bladeModel::~bladeModel()
+Foam::actuatorLineSource::~actuatorLineSource()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-const Foam::List<Foam::word>& Foam::bladeModel::profileName() const
+const Foam::List<Foam::word>& Foam::actuatorLineSource::profileName() const
 {
     return profileName_;
 }
 
 
-const Foam::List<Foam::label>& Foam::bladeModel::profileID() const
+const Foam::List<Foam::label>& Foam::actuatorLineSource::profileID() const
 {
     return profileID_;
 }
 
 
-const Foam::List<Foam::scalar>& Foam::bladeModel::radius() const
+const Foam::List<Foam::scalar>& Foam::actuatorLineSource::radius() const
 {
     return radius_;
 }
 
 
-const Foam::List<Foam::scalar>& Foam::bladeModel::pitch() const
+const Foam::List<Foam::scalar>& Foam::actuatorLineSource::pitch() const
 {
     return pitch_;
 }
 
 
-const Foam::List<Foam::scalar>& Foam::bladeModel::chord() const
+const Foam::List<Foam::scalar>& Foam::actuatorLineSource::chord() const
 {
     return chord_;
 }
 
 
-Foam::List<Foam::label>& Foam::bladeModel::profileID()
+Foam::List<Foam::label>& Foam::actuatorLineSource::profileID()
 {
     return profileID_;
 }
 
 
-void Foam::bladeModel::interpolate
+void Foam::actuatorLineSource::interpolate
 (
     const scalar radius,
     scalar& pitch,
