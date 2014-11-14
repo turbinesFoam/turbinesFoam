@@ -92,8 +92,8 @@ SourceFiles
 #include "cylindricalCS.H"
 #include "localAxesRotation.H"
 #include "NamedEnum.H"
-#include "bladeModel.H"
-#include "profileModelList.H"
+#include "actuatorLineSource.H"
+#include "actuatorLineElementList.H"
 #include "volFieldsFwd.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -171,10 +171,10 @@ protected:
         scalar rMax_;
 
         //- Blade data
-        bladeModel blade_;
+        actuatorLineSource blade_;
 
         //- Profile data
-        profileModelList profiles_;
+        actuatorLineElementList profiles_;
 
 
     // Protected Member Functions

@@ -1,8 +1,3 @@
 crossFlowTurbineALSource.C
-bladeModel/bladeModel.C
-profileModel/profileModel.C
-profileModel/profileModelList.C
-profileModel/lookup/lookupProfile.C
-profileModel/series/seriesProfile.C
 
 LIB = $(FOAM_USER_LIBBIN)/libmyFvOptions
