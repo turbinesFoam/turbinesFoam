@@ -202,6 +202,9 @@ protected:
             const List<Type>& values,
             const bool writeNow = false
         ) const;
+        
+        //- Rotate the turbine
+        void rotate();
 
 
 public:
