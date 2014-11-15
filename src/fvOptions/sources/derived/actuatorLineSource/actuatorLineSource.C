@@ -32,13 +32,13 @@ License
 
 // * * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * //
 
-bool Foam::actuatorLineSource::readFromFile() const
+bool Foam::fv::actuatorLineSource::readFromFile() const
 {
     return fName_ != fileName::null;
 }
 
 
-void Foam::actuatorLineSource::interpolateWeights
+void Foam::fv::actuatorLineSource::interpolateWeights
 (
     const scalar& xIn,
     const List<scalar>& values,
@@ -81,7 +81,7 @@ void Foam::actuatorLineSource::interpolateWeights
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::actuatorLineSource::actuatorLineSource(const dictionary& dict)
+Foam::fv::actuatorLineSource::actuatorLineSource(const dictionary& dict)
 :
     profileName_(),
     profileID_(),
@@ -121,56 +121,56 @@ Foam::actuatorLineSource::actuatorLineSource(const dictionary& dict)
     }
     else
     {
-        FatalErrorIn("Foam::actuatorLineSource::actuatorLineSource(const dictionary&)")
+        FatalErrorIn("Foam::fv::actuatorLineSource::actuatorLineSource(const dictionary&)")
             << "No blade data specified" << exit(FatalError);
     }
 }
 
 // * * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * //
 
-Foam::actuatorLineSource::~actuatorLineSource()
+Foam::fv::actuatorLineSource::~actuatorLineSource()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-const Foam::List<Foam::word>& Foam::actuatorLineSource::profileName() const
+const Foam::List<Foam::word>& Foam::fv::actuatorLineSource::profileName() const
 {
     return profileName_;
 }
 
 
-const Foam::List<Foam::label>& Foam::actuatorLineSource::profileID() const
+const Foam::List<Foam::label>& Foam::fv::actuatorLineSource::profileID() const
 {
     return profileID_;
 }
 
 
-const Foam::List<Foam::scalar>& Foam::actuatorLineSource::radius() const
+const Foam::List<Foam::scalar>& Foam::fv::actuatorLineSource::radius() const
 {
     return radius_;
 }
 
 
-const Foam::List<Foam::scalar>& Foam::actuatorLineSource::pitch() const
+const Foam::List<Foam::scalar>& Foam::fv::actuatorLineSource::pitch() const
 {
     return pitch_;
 }
 
 
-const Foam::List<Foam::scalar>& Foam::actuatorLineSource::chord() const
+const Foam::List<Foam::scalar>& Foam::fv::actuatorLineSource::chord() const
 {
     return chord_;
 }
 
 
-Foam::List<Foam::label>& Foam::actuatorLineSource::profileID()
+Foam::List<Foam::label>& Foam::fv::actuatorLineSource::profileID()
 {
     return profileID_;
 }
 
 
-void Foam::actuatorLineSource::interpolate
+void Foam::fv::actuatorLineSource::interpolate
 (
     const scalar radius,
     scalar& pitch,

@@ -42,6 +42,9 @@ SourceFiles
 
 namespace Foam
 {
+	
+namespace fv
+{
 
 /*---------------------------------------------------------------------------*\
                          Class actuatorLineSource Declaration
@@ -156,6 +159,8 @@ public:
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+} // End namespace fv
 
 } // End namespace Foam
 
