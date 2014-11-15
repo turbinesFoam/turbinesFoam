@@ -38,6 +38,7 @@ SourceFiles
 #include "autoPtr.H"
 #include "runTimeSelectionTables.H"
 #include "dictionary.H"
+#include "vector.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -63,6 +64,9 @@ protected:
 
         //- File name (optional)
         fileName fName_;
+        
+        //- Location of point (half chord)
+        vector location_;
 
 
     // Protected Member Functions
@@ -109,9 +113,19 @@ public:
 
         // Access
 
-            //- Return const access to the source name
+            //- Return const access to the element name
             const word& name() const;
-
+            
+            //- Return const access to the element location
+            const vector& location() const;
+            
+        // Manipulation
+        
+            //- Translate the element's location
+            void translate(vector translationVector);
+            
+            //- Rotate the element about some axis
+            void rotate(vector axis, scalar radians);
 
         // Evaluation
 
