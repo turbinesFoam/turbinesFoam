@@ -76,6 +76,9 @@ protected:
         //- Chord length
         scalar chordLength_;
         
+        //- Element span, for calculating force
+        scalar span_;
+        
         //- Location of element's half chord
         vector position_;
         
