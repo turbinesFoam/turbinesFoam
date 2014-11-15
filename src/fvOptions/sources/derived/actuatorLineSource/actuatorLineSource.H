@@ -37,6 +37,8 @@ SourceFiles
 
 #include "List.H"
 #include "dictionary.H"
+#include "vector.H"
+#include "actuatorLineElement.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -82,6 +84,9 @@ protected:
 
         //- File name (optional)
         fileName fName_;
+        
+        //- List of actuator line elements
+        List<actuatorLineElement> actuatorLineElements_;
 
 
     // Protected Member Functions
@@ -140,6 +145,12 @@ public:
 
             //- Return non-const access to the profile ID list
             List<label>& profileID();
+            
+            //- Translate the actuator line
+            void translate(vector translation);
+            
+            //- Rotate the actuator line about a specified axis
+            void rotate(vector axis, scalar radians);
 
 
         // Evaluation
