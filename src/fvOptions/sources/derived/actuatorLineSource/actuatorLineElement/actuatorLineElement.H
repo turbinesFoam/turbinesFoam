@@ -41,6 +41,8 @@ SourceFiles
 #include "dictionary.H"
 #include "vector.H"
 #include "fvOption.H"
+#include "localAxesRotation.H"
+#include "volFieldsFwd.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -91,6 +93,15 @@ protected:
         
         //- Fluid force on element
         vector force_;
+        
+        //- Fluid velocity field
+        //volVectorField fluidVelocityField_;
+        
+        //- Force field to impart on flow
+        //volVectorField forceField_;
+        
+        //- Reference density for incompressible case
+        scalar rhoRef_;
 
 
     // Protected Member Functions
@@ -175,6 +186,24 @@ public:
             
             //- Calculate forces
             void calculate();
+            
+        // Source term addition
+
+            //- Source term to momentum equation
+            virtual void addSup
+            (
+                fvMatrix<vector>& eqn,
+                const label fieldI
+            );
+
+            //- Source term to compressible momentum equation
+            virtual void addSup
+            (
+                const volScalarField& rho,
+                fvMatrix<vector>& eqn,
+                const label fieldI
+            );
+            
 };
 
 
