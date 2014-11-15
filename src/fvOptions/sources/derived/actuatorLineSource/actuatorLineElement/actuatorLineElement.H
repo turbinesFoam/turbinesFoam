@@ -65,8 +65,14 @@ protected:
         //- File name (optional)
         fileName fName_;
         
-        //- Location of point (half chord)
+        //- Location of element's half chord
         vector location_;
+        
+        //- Velocity of the element
+        vector velocity_;
+        
+        //- Fluid velocity near the element
+        vector fluidVelocity_;
 
 
     // Protected Member Functions
