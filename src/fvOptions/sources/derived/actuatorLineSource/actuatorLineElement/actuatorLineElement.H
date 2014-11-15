@@ -45,7 +45,6 @@ SourceFiles
 
 namespace Foam
 {
-
 namespace fv
 {
 
@@ -172,7 +171,6 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace fv
-
 } // End namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
