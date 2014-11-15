@@ -30,14 +30,17 @@ License
 
 namespace Foam
 {
+namespace fv
+{
     defineTypeNameAndDebug(actuatorLineElement, 0);
     defineRunTimeSelectionTable(actuatorLineElement, dictionary);
+}
 }
 
 
 // * * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * //
 
-bool Foam::actuatorLineElement::readFromFile() const
+bool Foam::fv::actuatorLineElement::readFromFile() const
 {
     return fName_ != fileName::null;
 }
@@ -45,8 +48,15 @@ bool Foam::actuatorLineElement::readFromFile() const
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::actuatorLineElement::actuatorLineElement(const dictionary& dict, const word& name)
+Foam::fv::actuatorLineElement::actuatorLineElement
+(
+    const word& name,
+    const word& modelType,
+    const dictionary& dict,
+    const fvMesh& mesh
+)
 :
+    option(name, modelType, dict, mesh),
     dict_(dict),
     name_(name),
     fName_(fileName::null)
@@ -56,19 +66,19 @@ Foam::actuatorLineElement::actuatorLineElement(const dictionary& dict, const wor
 
 // * * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * //
 
-Foam::actuatorLineElement::~actuatorLineElement()
+Foam::fv::actuatorLineElement::~actuatorLineElement()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-const Foam::word& Foam::actuatorLineElement::name() const
+const Foam::word& Foam::fv::actuatorLineElement::name() const
 {
     return name_;
 }
 
 
-Foam::autoPtr<Foam::actuatorLineElement> Foam::actuatorLineElement::New
+Foam::autoPtr<Foam::fv::actuatorLineElement> Foam::fv::actuatorLineElement::New
 (
     const dictionary& dict
 )

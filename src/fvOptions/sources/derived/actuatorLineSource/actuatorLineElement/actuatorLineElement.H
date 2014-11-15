@@ -39,10 +39,14 @@ SourceFiles
 #include "runTimeSelectionTables.H"
 #include "dictionary.H"
 #include "vector.H"
+#include "fvOption.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
+{
+
+namespace fv
 {
 
 /*---------------------------------------------------------------------------*\
@@ -50,6 +54,8 @@ namespace Foam
 \*---------------------------------------------------------------------------*/
 
 class actuatorLineElement
+:
+    public option
 {
 
 protected:
@@ -117,7 +123,13 @@ public:
 
 
     //- Constructor
-    actuatorLineElement(const dictionary& dict, const word& modelName);
+    actuatorLineElement
+	(
+		const word& name,
+		const word& modelType,
+		const dictionary& dict,
+		const fvMesh& mesh
+	);
 
 
     //- Destructor
@@ -158,6 +170,8 @@ public:
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+} // End namespace fv
 
 } // End namespace Foam
 
