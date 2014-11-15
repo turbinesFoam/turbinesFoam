@@ -65,14 +65,23 @@ protected:
         //- File name (optional)
         fileName fName_;
         
+        //- Chord direction
+        vector chord_;
+        
+        //- Chord length
+        scalar chordLength_;
+        
         //- Location of element's half chord
-        vector location_;
+        vector position_;
         
         //- Velocity of the element
         vector velocity_;
         
         //- Fluid velocity near the element
         vector fluidVelocity_;
+        
+        //- Fluid force on element
+        vector force_;
 
 
     // Protected Member Functions
@@ -123,7 +132,7 @@ public:
             const word& name() const;
             
             //- Return const access to the element location
-            const vector& location() const;
+            const vector& position() const;
             
         // Manipulation
         
@@ -132,6 +141,9 @@ public:
             
             //- Rotate the element about some axis
             void rotate(vector axis, scalar radians);
+            
+            //- Pitch the element about its half chord
+            void pitch(scalar radians);
 
         // Evaluation
 
