@@ -71,7 +71,7 @@ protected:
 
     // Protected Member Functions
 
-        //- Return ture if file name is set
+        //- Return true if file name is set
         bool readFromFile() const;
 
 
