@@ -86,6 +86,7 @@ void Foam::fv::actuatorLineElement::calculate()
 	// Calculate angle of attack
 	// Lookup lift and drag coefficients
 	// Calculate force
+	// Calculate force field 
 }
 
 

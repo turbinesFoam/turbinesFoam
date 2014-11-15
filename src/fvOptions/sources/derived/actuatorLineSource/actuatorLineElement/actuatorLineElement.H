@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2014 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,10 +22,11 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::actuatorLineElement
+    Foam::fv::actuatorLineElement
 
 Description
-    Base class for profile models
+    An object, e.g. an airfoil, that imparts a force on the flow field 
+    calculated via lift and drag coefficients
 
 SourceFiles
     actuatorLineElement.C
