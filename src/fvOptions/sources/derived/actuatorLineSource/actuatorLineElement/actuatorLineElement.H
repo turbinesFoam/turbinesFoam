@@ -148,6 +148,9 @@ public:
             //- Return const access to the element location
             const vector& position() const;
             
+            //- Return force vector from element
+            vector& force();
+            
         // Manipulation
         
             //- Translate the element's location
@@ -168,6 +171,9 @@ public:
                 scalar& Cd,
                 scalar& Cl
             ) const = 0;
+            
+            //- Calculate forces
+            void calculate();
 };
 
 

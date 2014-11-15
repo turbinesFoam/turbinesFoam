@@ -78,6 +78,24 @@ const Foam::word& Foam::fv::actuatorLineElement::name() const
 }
 
 
+void Foam::fv::actuatorLineElement::calculate()
+{
+	Info<< "Calculating force contribution from actuator line element" << endl;
+	// Calculate local wind velocity
+	// Calculate relative velocity
+	// Calculate angle of attack
+	// Lookup lift and drag coefficients
+	// Calculate force
+}
+
+
+Foam::vector& Foam::fv::actuatorLineElement::force()
+{
+    calculate();
+    return force_;
+}
+
+
 Foam::autoPtr<Foam::fv::actuatorLineElement> Foam::fv::actuatorLineElement::New
 (
     const dictionary& dict
