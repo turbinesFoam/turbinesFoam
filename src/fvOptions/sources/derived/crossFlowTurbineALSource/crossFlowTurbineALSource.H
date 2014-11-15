@@ -101,9 +101,6 @@ SourceFiles
 namespace Foam
 {
 
-// Forward declaration of classes
-class trimModel;
-
 namespace fv
 {
 

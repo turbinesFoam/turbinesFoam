@@ -274,7 +274,6 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     const word& modelType,
     const dictionary& dict,
     const fvMesh& mesh
-
 )
 :
     option(name, modelType, dict, mesh),
