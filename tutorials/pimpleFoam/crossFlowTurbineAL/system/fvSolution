@@ -58,16 +58,10 @@ solvers
     }
 }
 
-SIMPLE
+PIMPLE
 {
     nNonOrthogonalCorrectors 0;
-
-    residualControl
-    {
-        p               1e-3;
-        U               1e-4;
-        "(k|epsilon)"   1e-4;
-    }
+    nCorrectors         2;
 }
 
 relaxationFactors
