@@ -93,7 +93,6 @@ SourceFiles
 #include "localAxesRotation.H"
 #include "NamedEnum.H"
 #include "actuatorLineSource.H"
-#include "actuatorLineElementList.H"
 #include "volFieldsFwd.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -167,11 +166,14 @@ protected:
         //- Maximum radius
         scalar rMax_;
 
-        //- Blade data
-        actuatorLineSource blade_;
-
-        //- Profile data
-        actuatorLineElementList profiles_;
+        //- List of actuator lines as blades
+        List<actuatorLineSource> blades_;
+        
+        //- List of actuator lines as struts
+        //List<actuatorLineSource> struts_;
+        
+        //- Actuator line for shaft
+        //actuatorLineSource shaft_;
 
 
     // Protected Member Functions

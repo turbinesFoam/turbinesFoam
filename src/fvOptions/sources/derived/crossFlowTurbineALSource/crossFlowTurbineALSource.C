@@ -194,7 +194,7 @@ void Foam::fv::crossFlowTurbineALSource::setFaceArea(vector& axis, const bool co
 
 void Foam::fv::crossFlowTurbineALSource::createCoordinateSystem()
 {
-    // construct the local rotor co-prdinate system
+    // construct the local rotor coordinate system
     vector origin(vector::zero);
     vector axis(vector::zero);
     vector refDir(vector::zero);
@@ -289,9 +289,7 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     area_(cells_.size(), 0.0),
     coordSys_(false),
     localAxesRotation_(),
-    rMax_(0.0),
-    blade_(coeffs_.subDict("blades")),
-    profiles_(coeffs_.subDict("profiles"))
+    rMax_(0.0)
 {
     read(dict);
 }
@@ -347,10 +345,7 @@ void Foam::fv::crossFlowTurbineALSource::calculate
             // i2 = index of upper radius bound data point in blade list
             scalar twist = 0.0;
             scalar chord = 0.0;
-            label i1 = -1;
-            label i2 = -1;
             scalar invDr = 0.0;
-            blade_.interpolate(radius, twist, chord, i1, i2, invDr);
 
             // flip geometric angle if blade is spinning in reverse (clockwise)
             scalar alphaGeom = twist;
@@ -373,17 +368,11 @@ void Foam::fv::crossFlowTurbineALSource::calculate
             AOAmin = min(AOAmin, alphaEff);
             AOAmax = max(AOAmax, alphaEff);
 
-            // determine profile data for this radius and angle of attack
-            const label profile1 = blade_.profileID()[i1];
-            const label profile2 = blade_.profileID()[i2];
-
             scalar Cd1 = 0.0;
             scalar Cl1 = 0.0;
-            profiles_[profile1].Cdl(alphaEff, Cd1, Cl1);
 
             scalar Cd2 = 0.0;
             scalar Cl2 = 0.0;
-            profiles_[profile2].Cdl(alphaEff, Cd2, Cl2);
 
             scalar Cd = invDr*(Cd2 - Cd1) + Cd1;
             scalar Cl = invDr*(Cl2 - Cl1) + Cl1;
