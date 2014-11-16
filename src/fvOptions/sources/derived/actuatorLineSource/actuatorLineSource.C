@@ -81,8 +81,15 @@ void Foam::fv::actuatorLineSource::interpolateWeights
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::fv::actuatorLineSource::actuatorLineSource(const dictionary& dict)
+Foam::fv::actuatorLineSource::actuatorLineSource
+(
+		const word& name,
+		const word& modelType,
+		const dictionary& dict,
+		const fvMesh& mesh
+)
 :
+    option(name, modelType, dict, mesh),
     profileName_(),
     profileID_(),
     radius_(),

@@ -39,6 +39,7 @@ SourceFiles
 #include "dictionary.H"
 #include "vector.H"
 #include "actuatorLineElement.H"
+#include "fvOption.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -52,6 +53,8 @@ namespace fv
 \*---------------------------------------------------------------------------*/
 
 class actuatorLineSource
+:
+    public option
 {
 
 protected:
@@ -108,7 +111,13 @@ protected:
 public:
 
     //- Constructor
-    actuatorLineSource(const dictionary& dict);
+    actuatorLineSource
+	(
+		const word& name,
+		const word& modelType,
+		const dictionary& dict,
+		const fvMesh& mesh
+	);
 
 
     //- Destructor
