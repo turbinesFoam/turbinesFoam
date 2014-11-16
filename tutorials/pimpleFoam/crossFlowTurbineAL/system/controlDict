@@ -14,7 +14,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     simpleFoam;
+application     pimpleFoam;
 
 startFrom       startTime;
 
@@ -22,9 +22,9 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         50; // Was 5000
+endTime         1;
 
-deltaT          0.1;
+deltaT          0.002;
 
 writeControl    timeStep;
 
@@ -44,7 +44,7 @@ timePrecision   6;
 
 runTimeModifiable true;
 
-adjustTimeStep  true;
+adjustTimeStep  false;
 
 maxCo           0.9;
 
@@ -53,7 +53,7 @@ libs
     "libOpenFOAM.so"
     "libincompressibleTurbulenceModel.so"
     "libincompressibleRASModels.so"
-    "libmyFvOptions.so"
+    "libturbinesFoam.so"
 );
 
 // ************************************************************************* //

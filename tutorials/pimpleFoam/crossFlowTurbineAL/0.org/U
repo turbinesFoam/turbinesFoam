@@ -52,33 +52,7 @@ boundaryField
 	type		fixedValue;
 	value		uniform (1 0 0);
     }
-/*
-    inlet
-    {
-        type            atmBoundaryLayerInletVelocity;
-        Uref            $Uref;
-        Href            $Href;
-        n               $windDirection;
-        z               $zDirection;
-        z0              $z0;
-        value           $internalField;
-        zGround         $zGround;
-    }
 
-    "terrain_.*"
-    {
-        type            uniformFixedValue;
-        uniformValue    (0 0 0);
-        value           uniform (0 0 0);
-    }
-
-    ground
-    {
-        type            uniformFixedValue;
-        value           uniform (0 0 0);
-        uniformValue    constant (0 0 0);
-    }
-*/
     #include "include/sideAndTopPatches"
 }
 
