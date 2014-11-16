@@ -44,9 +44,6 @@ Description
 
         geometryMode    auto;   // geometry specification
 
-        refDirection    (-1 0 0); // reference direction
-                                  // - used as reference for psi angle
-
         trimModel       fixed;  // fixed || targetForce
 
         flapCoeffs
@@ -99,7 +96,6 @@ SourceFiles
 
 namespace Foam
 {
-
 namespace fv
 {
 
@@ -133,6 +129,9 @@ protected:
 
         //- Inlet velocity for specified inflow
         vector freeStreamVelocity_;
+        
+        //- Upstream point to determine free stream velocity
+        vector upstreamPoint_;
         
         //- Rotor tip speed ratio
         scalar tipSpeedRatio_;
@@ -290,6 +289,9 @@ public:
 
             //- Read source dictionary
             virtual bool read(const dictionary& dict);
+            
+            //- Print dictionary values
+            virtual void printCoeffs() const;
 };
 
 

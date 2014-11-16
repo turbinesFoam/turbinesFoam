@@ -201,7 +201,6 @@ void Foam::fv::crossFlowTurbineALSource::createCoordinateSystem()
 
     coeffs_.lookup("origin") >> origin;
     coeffs_.lookup("axis") >> axis;
-    coeffs_.lookup("refDirection") >> refDir;
 
     localAxesRotation_.reset
     (
@@ -245,9 +244,6 @@ void Foam::fv::crossFlowTurbineALSource::constructGeometry()
 
             // cache max radius
             rMax_ = max(rMax_, x_[i].x());
-
-            // swept angle relative to rDir axis [radians] in range 0 -> 2*pi
-            scalar psi = x_[i].y();
 
             // Wrong rotation tensor
             R_[i] = tensor(0, 0, 0, 0, 1, 0, 0, 0, 0);
@@ -502,10 +498,46 @@ void Foam::fv::crossFlowTurbineALSource::writeData(Ostream& os) const
 }
 
 
+void Foam::fv::crossFlowTurbineALSource::printCoeffs() const
+{
+    Info<< "Coefficients:" << endl;
+    Info<< coeffs_ << endl;
+    
+    //~ Info<< "TOC:" << endl;
+    //~ Info<< coeffs_.toc() << endl;
+    
+    //~ Info<< "Tokens:" << endl;
+    //~ Info<< coeffs_.tokens() << endl;
+    
+    Info<< "Blades subdict:" << endl;
+    dictionary bladesSubDict(coeffs_.subDict("blades"));
+    Info<< bladesSubDict << endl;
+    
+    Info<< "Blade names:" << endl;
+    wordList bladeNames(bladesSubDict.toc());
+    Info<< bladeNames << endl;
+    
+    forAll(bladeNames, i)
+    {
+        Info<< "Name for blade number " << i << endl;
+        Info<< bladeNames[i] << endl;
+        Info<< "Blade definition points " << i << endl;
+        Info<< bladesSubDict.subDict(bladeNames[i]).lookup("elementData").size() << endl;
+    }
+    
+    Info<< "Number of blades:" << endl;
+    Info<< nBlades_ << endl;
+    
+    Info<< "Profiles subdict:" << endl;
+    Info<< coeffs_.subDict("profiles") << endl;
+}
+
+
 bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
 {
     if (option::read(dict))
     {
+        
         coeffs_.lookup("fieldNames") >> fieldNames_;
         applied_.setSize(fieldNames_.size(), false);
 
@@ -515,9 +547,18 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
         coeffs_.lookup("rotorRadius") >> rotorRadius_;
         omega_ = tipSpeedRatio_*mag(freeStreamVelocity_)/rotorRadius_;
 
-        coeffs_.lookup("nBlades") >> nBlades_;
+        // Infer nBlades from size of subDict
+        nBlades_ = coeffs_.subDict("blades").keys().size();
+        
+        // Set size of blades list
+        Info<< "Setting size of blades list" << endl;
+        //~ blades_.setSize(nBlades_);
 
         coeffs_.lookup("tipEffect") >> tipEffect_;
+        
+        // Print turbine properties
+        Info<< "Cross-flow turbine properties:" << endl;
+        printCoeffs();
 
         // create co-ordinate system
         createCoordinateSystem();
@@ -526,7 +567,7 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
         checkData();
 
         constructGeometry();
-
+        
         if (debug)
         {
             Info<< "Debugging on" << endl;
