@@ -166,7 +166,7 @@ protected:
         scalar rMax_;
 
         //- List of actuator lines as blades
-        List<actuatorLineSource> blades_;
+        PtrList<actuatorLineSource> blades_;
         
         //- List of actuator lines as struts
         //List<actuatorLineSource> struts_;
@@ -182,6 +182,9 @@ protected:
 
         //- Set the face areas per cell, and optionally correct the rotor axis
         void setFaceArea(vector& axis, const bool correct);
+        
+        //- Create actuator lines for blades
+        void createBlades();
 
         //- Create the co-ordinate system
         void createCoordinateSystem();

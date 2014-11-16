@@ -262,6 +262,12 @@ Foam::tmp<Foam::vectorField> Foam::fv::crossFlowTurbineALSource::inflowVelocity
 }
 
 
+void Foam::fv::crossFlowTurbineALSource::createBlades()
+{
+    blades_(nBlades_);
+}
+
+
 // * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
 Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
@@ -549,16 +555,16 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
 
         // Infer nBlades from size of subDict
         nBlades_ = coeffs_.subDict("blades").keys().size();
-        
-        // Set size of blades list
-        Info<< "Setting size of blades list" << endl;
-        //~ blades_.setSize(nBlades_);
 
         coeffs_.lookup("tipEffect") >> tipEffect_;
         
         // Print turbine properties
         Info<< "Cross-flow turbine properties:" << endl;
         printCoeffs();
+        
+        // Set size of blades list
+        Info<< "Creating blades" << endl;
+        createBlades();
 
         // create co-ordinate system
         createCoordinateSystem();
