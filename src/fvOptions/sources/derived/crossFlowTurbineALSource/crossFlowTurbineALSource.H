@@ -166,7 +166,9 @@ protected:
         scalar rMax_;
 
         //- List of actuator lines as blades
-        PtrList<actuatorLineSource> blades_;
+        PtrList<actuatorLineSource*> blades_;
+        
+        //wordList bladeNames_;
         
         //- List of actuator lines as struts
         //List<actuatorLineSource> struts_;

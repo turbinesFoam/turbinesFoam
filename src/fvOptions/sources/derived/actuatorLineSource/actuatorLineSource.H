@@ -89,7 +89,7 @@ protected:
         fileName fName_;
         
         //- List of actuator line elements
-        List<actuatorLineElement> actuatorLineElements_;
+        PtrList<actuatorLineElement*> actuatorLineElements_;
 
 
     // Protected Member Functions
@@ -109,6 +109,17 @@ protected:
 
 
 public:
+
+    // Selectors
+
+    //- Return a reference to the selected fvOption model
+    static autoPtr<actuatorLineSource> New
+    (
+        const word& name,
+        const dictionary& dict,
+        const fvMesh& mesh
+    );
+        
 
     //- Constructor
     actuatorLineSource

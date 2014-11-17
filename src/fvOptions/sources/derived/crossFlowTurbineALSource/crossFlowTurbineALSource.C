@@ -264,7 +264,14 @@ Foam::tmp<Foam::vectorField> Foam::fv::crossFlowTurbineALSource::inflowVelocity
 
 void Foam::fv::crossFlowTurbineALSource::createBlades()
 {
-    blades_(nBlades_);
+    int nBlades = nBlades_;
+    blades_.setSize(nBlades);
+    
+    for (int i = 0; i < nBlades_; i++)
+    {
+        actuatorLineSource *blade = new actuatorLineSource(name_, modelType_, dict_, mesh_);
+        blades_[i] = blade;
+    }
 }
 
 
@@ -520,15 +527,15 @@ void Foam::fv::crossFlowTurbineALSource::printCoeffs() const
     Info<< bladesSubDict << endl;
     
     Info<< "Blade names:" << endl;
-    wordList bladeNames(bladesSubDict.toc());
-    Info<< bladeNames << endl;
+    wordList bladeNames_ = bladesSubDict.toc();
+    Info<< bladeNames_ << endl;
     
-    forAll(bladeNames, i)
+    forAll(bladeNames_, i)
     {
         Info<< "Name for blade number " << i << endl;
-        Info<< bladeNames[i] << endl;
+        Info<< bladeNames_[i] << endl;
         Info<< "Blade definition points " << i << endl;
-        Info<< bladesSubDict.subDict(bladeNames[i]).lookup("elementData").size() << endl;
+        Info<< bladesSubDict.subDict(bladeNames_[i]).lookup("elementData").size() << endl;
     }
     
     Info<< "Number of blades:" << endl;
