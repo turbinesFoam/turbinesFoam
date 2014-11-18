@@ -98,7 +98,7 @@ protected:
         //volVectorField fluidVelocityField_;
         
         //- Force field to impart on flow
-        //volVectorField forceField_;
+        //~ volVectorField forceField_;
         
         //- Reference density for incompressible case
         scalar rhoRef_;

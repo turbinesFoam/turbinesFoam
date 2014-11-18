@@ -89,7 +89,7 @@ protected:
         fileName fName_;
         
         //- List of actuator line elements
-        PtrList<actuatorLineElement*> actuatorLineElements_;
+        PtrList<actuatorLineElement> actuatorLineElements_;
 
 
     // Protected Member Functions
