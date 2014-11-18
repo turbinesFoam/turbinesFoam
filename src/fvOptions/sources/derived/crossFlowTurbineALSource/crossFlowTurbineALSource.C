@@ -266,11 +266,26 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
 {
     int nBlades = nBlades_;
     blades_.setSize(nBlades);
+    int nElements;
+    dictionary bladeSubDict;
+    word profileName;
+    List<List<scalar> > elementData;
     
     for (int i = 0; i < nBlades_; i++)
     {
-        actuatorLineSource *blade = new actuatorLineSource(name_, modelType_, dict_, mesh_);
-        blades_[i] = blade;
+        word& bladeName = bladeNames_[i];
+        Info<< "Creating actuator line blade " << bladeName << endl;
+        //~ actuatorLineSource* blade = new actuatorLineSource(name_, modelType_, dict_, mesh_);
+        //~ blades_[i] = blade;
+        bladeSubDict = bladesDict_.subDict(bladeName);
+        bladeSubDict.lookup("nElements") >> nElements;
+        Info<< "Blade has " << nElements << " elements" << endl;
+        
+        Info<< "Blade profile: " << bladeSubDict.lookup("profile") << endl;
+        
+        Info<< "Element data:" << endl;
+        bladeSubDict.lookup("elementData") >> elementData;
+        Info<< elementData << endl << endl;
     }
 }
 
@@ -513,31 +528,6 @@ void Foam::fv::crossFlowTurbineALSource::writeData(Ostream& os) const
 
 void Foam::fv::crossFlowTurbineALSource::printCoeffs() const
 {
-    Info<< "Coefficients:" << endl;
-    Info<< coeffs_ << endl;
-    
-    //~ Info<< "TOC:" << endl;
-    //~ Info<< coeffs_.toc() << endl;
-    
-    //~ Info<< "Tokens:" << endl;
-    //~ Info<< coeffs_.tokens() << endl;
-    
-    Info<< "Blades subdict:" << endl;
-    dictionary bladesSubDict(coeffs_.subDict("blades"));
-    Info<< bladesSubDict << endl;
-    
-    Info<< "Blade names:" << endl;
-    wordList bladeNames_ = bladesSubDict.toc();
-    Info<< bladeNames_ << endl;
-    
-    forAll(bladeNames_, i)
-    {
-        Info<< "Name for blade number " << i << endl;
-        Info<< bladeNames_[i] << endl;
-        Info<< "Blade definition points " << i << endl;
-        Info<< bladesSubDict.subDict(bladeNames_[i]).lookup("elementData").size() << endl;
-    }
-    
     Info<< "Number of blades:" << endl;
     Info<< nBlades_ << endl;
     
@@ -560,8 +550,10 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
         coeffs_.lookup("rotorRadius") >> rotorRadius_;
         omega_ = tipSpeedRatio_*mag(freeStreamVelocity_)/rotorRadius_;
 
-        // Infer nBlades from size of subDict
-        nBlades_ = coeffs_.subDict("blades").keys().size();
+        // Get blade information
+        bladesDict_ = coeffs_.subDict("blades");
+        nBlades_ = bladesDict_.keys().size();
+        bladeNames_ = bladesDict_.toc();
 
         coeffs_.lookup("tipEffect") >> tipEffect_;
         
@@ -569,8 +561,7 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
         Info<< "Cross-flow turbine properties:" << endl;
         printCoeffs();
         
-        // Set size of blades list
-        Info<< "Creating blades" << endl;
+        // Create blades
         createBlades();
 
         // create co-ordinate system

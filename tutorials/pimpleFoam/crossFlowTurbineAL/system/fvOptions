@@ -39,31 +39,34 @@ turbine0
 
         blades
         {
-            blade0
-            {
-                nElements   20;
-                elementData
-                ( // axialDistance, radius, azimuth, profile, chord, chordMount, pitch
-                    (-0.5 0.5 0.0 NACA0020 0.14 0.5 0.0)
-                    ( 0.5 0.5 0.0 NACA0020 0.14 0.5 0.0)
-                );
-            }
             blade1
             {
-                nElements   20;
+                nElements   24;
+                profile     NACA0020;
                 elementData
-                ( // axialDistance, radius, azimuth, profile, chord, chordMount, pitch
-                    (-0.5 0.5 120.0 NACA0020 0.14 0.5 0.0)
-                    ( 0.5 0.5 120.0 NACA0020 0.14 0.5 0.0)
+                ( // axialDistance, radius, azimuth, chord, chordMount, pitch
+                    (-0.5 0.5 0.0 0.14 0.5 0.0)
+                    ( 0.5 0.5 0.0 0.14 0.5 0.0)
                 );
             }
             blade2
             {
-                nElements   20;
+                nElements   32;
+                profile     NACA0018;
                 elementData
-                ( // axialDistance, radius, azimuth, profile, chord, chordMount, pitch
-                    (-0.5 0.5 240.0 NACA0020 0.14 0.5 0.0)
-                    ( 0.5 0.5 240.0 NACA0020 0.14 0.5 0.0)
+                ( // axialDistance, radius, azimuth, chord, chordMount, pitch
+                    (-0.5 0.5 120.0 0.14 0.5 0.0)
+                    ( 0.5 0.5 120.0 0.14 0.5 0.0)
+                );
+            }
+            blade3
+            {
+                nElements   48;
+                profile     NACA0021;
+                elementData
+                ( // axialDistance, radius, azimuth, chord, chordMount, pitch
+                    (-0.5 0.5 240.0 0.14 0.5 0.0)
+                    ( 0.5 0.5 240.0 0.14 0.5 0.0)
                 );
             };
         };

@@ -175,6 +175,11 @@ protected:
         
         //- Actuator line for shaft
         //actuatorLineSource shaft_;
+        
+        //- Blade definitions dictionary
+        dictionary bladesDict_;
+        
+        wordList bladeNames_;
 
 
     // Protected Member Functions
