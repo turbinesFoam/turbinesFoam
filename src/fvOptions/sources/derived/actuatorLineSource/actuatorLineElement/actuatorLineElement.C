@@ -54,12 +54,9 @@ bool Foam::fv::actuatorLineElement::readFromFile() const
 Foam::fv::actuatorLineElement::actuatorLineElement
 (
     const word& name,
-    const word& modelType,
-    const dictionary& dict,
-    const fvMesh& mesh
+    const dictionary& dict
 )
 :
-    option(name, modelType, dict, mesh),
     dict_(dict),
     name_(name),
     fName_(fileName::null)
@@ -97,36 +94,6 @@ Foam::vector& Foam::fv::actuatorLineElement::force()
 {
     calculate();
     return force_;
-}
-
-
-void Foam::fv::actuatorLineElement::addSup
-(
-    fvMatrix<vector>& eqn,
-    const label fieldI
-)
-{
-    // Read the reference density for incompressible flow
-    coeffs_.lookup("rhoRef") >> rhoRef_;
-
-    calculate();
-
-    // Add source to rhs of eqn
-    //eqn -= forceField_;
-}
-
-
-void Foam::fv::actuatorLineElement::addSup
-(
-    const volScalarField& rho,
-    fvMatrix<vector>& eqn,
-    const label fieldI
-)
-{
-    calculate();
-
-    // Add source to rhs of eqn
-    //eqn -= forceField_;
 }
 
 

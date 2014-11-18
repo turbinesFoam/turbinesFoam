@@ -40,7 +40,6 @@ SourceFiles
 #include "runTimeSelectionTables.H"
 #include "dictionary.H"
 #include "vector.H"
-#include "fvOption.H"
 #include "localAxesRotation.H"
 #include "volFieldsFwd.H"
 
@@ -56,8 +55,6 @@ namespace fv
 \*---------------------------------------------------------------------------*/
 
 class actuatorLineElement
-:
-    public option
 {
 
 protected:
@@ -140,9 +137,7 @@ public:
     actuatorLineElement
 	(
 		const word& name,
-		const word& modelType,
-		const dictionary& dict,
-		const fvMesh& mesh
+		const dictionary& dict
 	);
 
 
@@ -186,23 +181,6 @@ public:
             
             //- Calculate forces
             void calculate();
-            
-        // Source term addition
-
-            //- Source term to momentum equation
-            virtual void addSup
-            (
-                fvMatrix<vector>& eqn,
-                const label fieldI
-            );
-
-            //- Source term to compressible momentum equation
-            virtual void addSup
-            (
-                const volScalarField& rho,
-                fvMatrix<vector>& eqn,
-                const label fieldI
-            );
             
 };
 
