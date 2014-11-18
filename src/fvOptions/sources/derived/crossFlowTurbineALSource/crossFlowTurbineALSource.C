@@ -270,6 +270,9 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
     dictionary bladeSubDict;
     word profileName;
     List<List<scalar> > elementData;
+    List<List<scalar> > profileData;
+    
+    const dictionary& profilesSubDict(coeffs_.subDict("profiles"));
     
     for (int i = 0; i < nBlades_; i++)
     {
@@ -281,11 +284,16 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         bladeSubDict.lookup("nElements") >> nElements;
         Info<< "Blade has " << nElements << " elements" << endl;
         
-        Info<< "Blade profile: " << bladeSubDict.lookup("profile") << endl;
+        bladeSubDict.lookup("profile") >> profileName;
+        Info<< "Blade profile: " << profileName << endl;
         
         Info<< "Element data:" << endl;
         bladeSubDict.lookup("elementData") >> elementData;
         Info<< elementData << endl << endl;
+        
+        Info<< "Profile sectional coefficient data:" << endl;
+        profilesSubDict.subDict(profileName).lookup("data") >> profileData;
+        Info<< profileData << endl << endl;
     }
 }
 
@@ -528,11 +536,7 @@ void Foam::fv::crossFlowTurbineALSource::writeData(Ostream& os) const
 
 void Foam::fv::crossFlowTurbineALSource::printCoeffs() const
 {
-    Info<< "Number of blades:" << endl;
-    Info<< nBlades_ << endl;
-    
-    Info<< "Profiles subdict:" << endl;
-    Info<< coeffs_.subDict("profiles") << endl;
+    Info<< "Number of blades: " << nBlades_ << endl;
 }
 
 
