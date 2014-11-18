@@ -91,14 +91,17 @@ protected:
         //- Fluid force on element
         vector force_;
         
-        //- Fluid velocity field
-        //volVectorField fluidVelocityField_;
-        
-        //- Force field to impart on flow
-        //~ volVectorField forceField_;
-        
         //- Reference density for incompressible case
         scalar rhoRef_;
+        
+        //- Angle of attack
+        scalar angleOfAttack_;
+        
+        //- Lift coefficient
+        scalar liftCoefficient_;
+        
+        //- Drag coefficient;
+        scalar dragCoefficient_;
 
 
     // Protected Member Functions
@@ -170,14 +173,6 @@ public:
             void pitch(scalar radians);
 
         // Evaluation
-
-            //- Return the Cd and Cl for a given angle-of-attack
-            virtual void Cdl
-            (
-                const scalar alpha,
-                scalar& Cd,
-                scalar& Cl
-            ) const = 0;
             
             //- Calculate forces
             void calculate();
