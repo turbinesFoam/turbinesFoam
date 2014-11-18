@@ -106,6 +106,12 @@ protected:
             label& i2,
             scalar& ddx
         ) const;
+        
+        //- Create actuator line elements
+        void createElements();
+        
+        //- Read dictionary
+        void read();
 
 
 public:
