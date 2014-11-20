@@ -268,6 +268,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
     blades_.setSize(nBlades);
     int nElements;
     dictionary bladeSubDict;
+    dictionary dict; // Individual actuatorLineSource dictionary
     word profileName;
     List<List<scalar> > elementData;
     List<List<scalar> > profileData;
@@ -278,7 +279,8 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
     {
         word& bladeName = bladeNames_[i];
         Info<< "Creating actuator line blade " << bladeName << endl;
-        //~ actuatorLineSource* blade = new actuatorLineSource(name_, modelType_, dict_, mesh_);
+        // Create dictionary items for this blade
+        //~ actuatorLineSource* blade = new actuatorLineSource(name_, modelType_, dict, mesh_);
         //~ blades_[i] = blade;
         bladeSubDict = bladesDict_.subDict(bladeName);
         bladeSubDict.lookup("nElements") >> nElements;
