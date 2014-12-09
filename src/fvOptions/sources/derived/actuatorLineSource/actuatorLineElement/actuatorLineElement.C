@@ -43,11 +43,6 @@ namespace fv
 
 // * * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * //
 
-bool Foam::fv::actuatorLineElement::readFromFile() const
-{
-    return fName_ != fileName::null;
-}
-
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -58,10 +53,9 @@ Foam::fv::actuatorLineElement::actuatorLineElement
 )
 :
     dict_(dict),
-    name_(name),
-    fName_(fileName::null)
+    name_(name)
 {
-    dict.readIfPresent("fileName", fName_);
+    // Do nothing
 }
 
 // * * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * //

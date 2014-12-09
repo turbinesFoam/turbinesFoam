@@ -66,18 +66,18 @@ protected:
 
         //- Name of profile model
         const word name_;
-
-        //- File name (optional)
-        fileName fName_;
         
         //- Chord direction
-        vector chord_;
+        vector chordDirection_;
         
         //- Chord length
         scalar chordLength_;
         
-        //- Element span, for calculating force
-        scalar span_;
+        //- Span direction
+        vector spanDirection_;
+        
+        //- Element span length, for calculating force
+        scalar spanLength_;
         
         //- Location of element's half chord
         vector position_;
@@ -88,7 +88,8 @@ protected:
         //- Fluid velocity near the element
         vector fluidVelocity_;
         
-        //- Fluid force on element
+        //- Fluid force on element; a vector that is perpendicular to 
+        // spanDirection, 
         vector force_;
         
         //- Reference density for incompressible case
@@ -102,12 +103,12 @@ protected:
         
         //- Drag coefficient;
         scalar dragCoefficient_;
+        
+        //- List of triplets (using vector class) (AoA, C_l, C_d)
+        List<vector> coefficientData_;
 
 
     // Protected Member Functions
-
-        //- Return true if file name is set
-        bool readFromFile() const;
 
 
 public:
