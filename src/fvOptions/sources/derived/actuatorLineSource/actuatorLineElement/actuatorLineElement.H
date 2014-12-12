@@ -104,8 +104,8 @@ protected:
         //- Drag coefficient;
         scalar dragCoefficient_;
         
-        //- List of triplets (using vector class) (AoA, C_l, C_d)
-        List<vector> coefficientData_;
+        //- List of triplets (AoA, C_l, C_d)
+        List<List<scalar> > coefficientData_;
 
 
     // Protected Member Functions
