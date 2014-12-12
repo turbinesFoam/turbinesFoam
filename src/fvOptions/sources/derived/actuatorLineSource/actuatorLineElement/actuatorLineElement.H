@@ -88,6 +88,9 @@ protected:
         //- Fluid velocity near the element
         vector fluidVelocity_;
         
+        //- Reference to the velocity field
+        volVectorField& U_;
+        
         //- Fluid force on element; a vector that is perpendicular to 
         // spanDirection, 
         vector force_;
@@ -141,7 +144,8 @@ public:
     actuatorLineElement
 	(
 		const word& name,
-		const dictionary& dict
+		const dictionary& dict,
+        volVectorField& U
 	);
 
 

@@ -49,11 +49,13 @@ namespace fv
 Foam::fv::actuatorLineElement::actuatorLineElement
 (
     const word& name,
-    const dictionary& dict
+    const dictionary& dict,
+    volVectorField& U
 )
 :
     dict_(dict),
-    name_(name)
+    name_(name),
+    U_(U)
 {
     // Do nothing
 }
