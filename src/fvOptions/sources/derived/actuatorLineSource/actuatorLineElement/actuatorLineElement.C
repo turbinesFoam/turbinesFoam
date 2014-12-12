@@ -43,6 +43,11 @@ namespace fv
 
 // * * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * //
 
+void Foam::fv::actuatorLineElement::readData()
+{
+    Info<< "Reading coefficient data for actuatorLineElement" << endl;
+}
+
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -50,12 +55,12 @@ Foam::fv::actuatorLineElement::actuatorLineElement
 (
     const word& name,
     const dictionary& dict,
-    volVectorField& U
+    fvMesh& mesh
 )
 :
     dict_(dict),
     name_(name),
-    U_(U)
+    mesh_(mesh)
 {
     // Do nothing
 }

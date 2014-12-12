@@ -42,6 +42,7 @@ SourceFiles
 #include "vector.H"
 #include "localAxesRotation.H"
 #include "volFieldsFwd.H"
+#include "fvMesh.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -88,8 +89,8 @@ protected:
         //- Fluid velocity near the element
         vector fluidVelocity_;
         
-        //- Reference to the velocity field
-        volVectorField& U_;
+        //- Reference to the mesh
+        fvMesh& mesh_;
         
         //- Fluid force on element; a vector that is perpendicular to 
         // spanDirection, 
@@ -145,7 +146,7 @@ public:
 	(
 		const word& name,
 		const dictionary& dict,
-        volVectorField& U
+        fvMesh& mesh
 	);
 
 
@@ -181,6 +182,9 @@ public:
             
             //- Calculate forces
             void calculate();
+            
+            //- Read coefficient data
+            void readData();
             
 };
 
