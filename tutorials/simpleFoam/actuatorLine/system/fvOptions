@@ -36,7 +36,7 @@ foil
             ((0.0 0.0 0.5) (0 0 1) 0.14 4.0)
         );
         
-        profileData(
+        coefficientData(
                 (-90 0.21 1.45) // alpha C_d C_l -- should be C_l C_d
                 (-18 0.21 1.45)
                 (-16 0.165 1.3)

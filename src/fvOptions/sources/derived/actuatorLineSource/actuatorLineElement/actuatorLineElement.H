@@ -184,7 +184,7 @@ public:
             void calculate();
             
             //- Read coefficient data
-            void readData();
+            void read();
             
 };
 

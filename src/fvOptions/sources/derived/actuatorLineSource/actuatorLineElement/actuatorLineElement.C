@@ -43,9 +43,15 @@ namespace fv
 
 // * * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * //
 
-void Foam::fv::actuatorLineElement::readData()
+void Foam::fv::actuatorLineElement::read()
 {
     Info<< "Reading coefficient data for actuatorLineElement" << endl;
+    // Parse dictionary
+    dict_.lookup("chordLength") >> chordLength_;
+    dict_.lookup("chordDirection") >> chordDirection_;
+    dict_.lookup("spanLength") >> spanLength_;
+    dict_.lookup("spanDirection") >> spanDirection_;
+    dict_.lookup("coefficientData") >> coefficientData_;
 }
 
 
