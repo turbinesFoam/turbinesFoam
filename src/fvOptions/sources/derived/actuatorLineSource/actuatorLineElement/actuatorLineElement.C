@@ -68,7 +68,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     name_(name),
     mesh_(mesh)
 {
-    // Do nothing
+    read();
 }
 
 // * * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * //
