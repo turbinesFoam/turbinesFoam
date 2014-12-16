@@ -1,0 +1,5 @@
+log.*
+constant/polyMesh
+0
+0.*
+ constant/polyMesh/blockMeshDict
