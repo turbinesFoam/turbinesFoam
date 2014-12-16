@@ -25,17 +25,29 @@ License
 
 #include "actuatorLineSource.H"
 #include "unitConversion.H"
+#include "addToRunTimeSelectionTable.H"
 #include "Tuple2.H"
 #include "vector.H"
 #include "IFstream.H"
 
+// * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
+
+namespace Foam
+{
+namespace fv
+{
+    defineTypeNameAndDebug(actuatorLineSource, 0);
+    addToRunTimeSelectionTable
+    (
+        option,
+        actuatorLineSource,
+        dictionary
+    );
+}
+}
+
 
 // * * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * //
-
-bool Foam::fv::actuatorLineSource::readFromFile() const
-{
-    return fName_ != fileName::null;
-}
 
 
 void Foam::fv::actuatorLineSource::interpolateWeights
@@ -97,40 +109,7 @@ Foam::fv::actuatorLineSource::actuatorLineSource
     chord_(),
     fName_(fileName::null)
 {
-    List<Tuple2<word, vector> > data;
-    if (readFromFile())
-    {
-        IFstream is(fName_);
-        is  >> data;
-    }
-    else
-    {
-        dict.lookup("data") >> data;
-    }
-
-
-    if (data.size() > 0)
-    {
-        profileName_.setSize(data.size());
-        profileID_.setSize(data.size());
-        radius_.setSize(data.size());
-        pitch_.setSize(data.size());
-        chord_.setSize(data.size());
-
-        forAll(data, i)
-        {
-            profileName_[i] = data[i].first();
-            profileID_[i] = -1;
-            radius_[i] = data[i].second()[0];
-            pitch_[i] = degToRad(data[i].second()[1]);
-            chord_[i] = data[i].second()[2];
-        }
-    }
-    else
-    {
-        FatalErrorIn("Foam::fv::actuatorLineSource::actuatorLineSource(const dictionary&)")
-            << "No blade data specified" << exit(FatalError);
-    }
+    read(dict_);
 }
 
 // * * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * //
@@ -191,6 +170,55 @@ void Foam::fv::actuatorLineSource::interpolate
 
     pitch = invDr*(pitch_[i2] - pitch_[i1]) + pitch_[i1];
     chord = invDr*(chord_[i2] - chord_[i1]) + chord_[i1];
+}
+
+
+void Foam::fv::actuatorLineSource::printCoeffs() const
+{
+    Info<< "Coefficient data:" << endl;
+    Info<< coefficientData_ << endl;
+}
+
+
+bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
+{
+    if (option::read(dict))
+    {
+        
+        coeffs_.lookup("fieldNames") >> fieldNames_;
+        applied_.setSize(fieldNames_.size(), false);
+
+        // Get foil information
+        coeffs_.lookup("coefficientData") >> coefficientData_;
+
+        coeffs_.lookup("tipEffect") >> tipEffect_;
+        
+        // Print turbine properties
+        Info<< "Actuator line properties:" << endl;
+        printCoeffs();
+        
+        // Create blades
+        //createBlades();
+
+        // create co-ordinate system
+        //createCoordinateSystem();
+
+        // read co-odinate system dependent properties
+        //checkData();
+
+        //constructGeometry();
+        
+        if (debug)
+        {
+            Info<< "Debugging on" << endl;
+        }
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 

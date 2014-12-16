@@ -53,7 +53,7 @@ libs
     "libOpenFOAM.so"
     "libincompressibleTurbulenceModel.so"
     "libincompressibleRASModels.so"
-    "libmyFvOptions.so"
+    "libturbinesFoam.so"
 );
 
 // ************************************************************************* //

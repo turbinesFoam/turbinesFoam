@@ -90,12 +90,15 @@ protected:
         
         //- List of actuator line elements
         PtrList<actuatorLineElement> actuatorLineElements_;
+        
+        //- Tip effect
+        scalar tipEffect_;
+        
+        //- Sectional coefficient data for the foil profile
+        List<List<scalar> > coefficientData_;
 
 
     // Protected Member Functions
-
-        //- Return ture if file name is set
-        bool readFromFile() const;
 
         //- Return the interpolation indices and gradient
         void interpolateWeights
@@ -111,10 +114,13 @@ protected:
         void createElements();
         
         //- Read dictionary
-        void read();
+        bool read(const dictionary& dict);
 
 
 public:
+
+    //- Runtime type information
+    TypeName("actuatorLineSource");
 
     // Selectors
 
@@ -191,6 +197,11 @@ public:
                 label& i2,
                 scalar& invDr
             ) const;
+            
+        // IO
+        
+            //- Print dictionary values
+            virtual void printCoeffs() const;
 };
 
 
