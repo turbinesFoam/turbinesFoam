@@ -1,4 +1,0 @@
-sources/derived/axialFlowTurbineSource/axialFlowTurbineSource.C
-sources/derived/crossFlowTurbineSource/crossFlowTurbineSource.C
-
-LIB = $(FOAM_USER_LIBBIN)/libfvOptions
