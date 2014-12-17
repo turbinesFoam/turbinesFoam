@@ -90,7 +90,7 @@ protected:
         vector fluidVelocity_;
         
         //- Reference to the mesh
-        fvMesh& mesh_;
+        const fvMesh& mesh_;
         
         //- Fluid force on element; a vector that is perpendicular to 
         // spanDirection, 
@@ -137,7 +137,7 @@ public:
 
     // Selectors
 
-        //- Return a reference to the selected fvOption model
+        //- Return a reference
         static autoPtr<actuatorLineElement> New(const dictionary& dict);
 
 
@@ -146,7 +146,7 @@ public:
 	(
 		const word& name,
 		const dictionary& dict,
-        fvMesh& mesh
+        const fvMesh& mesh
 	);
 
 

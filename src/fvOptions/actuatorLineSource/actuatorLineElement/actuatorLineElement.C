@@ -61,7 +61,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
 (
     const word& name,
     const dictionary& dict,
-    fvMesh& mesh
+    const fvMesh& mesh
 )
 :
     dict_(dict),

@@ -110,6 +110,7 @@ Foam::fv::actuatorLineSource::actuatorLineSource
     fName_(fileName::null)
 {
     read(dict_);
+    createElements();
 }
 
 // * * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * //
@@ -226,5 +227,17 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
     }
 }
 
+
+void Foam::fv::actuatorLineSource::createElements()
+{
+    for (int i = 0; i < nElements_; i++)
+    {
+        const word name = "None";
+        const dictionary dict;
+        // Create a dictionary for this actuatorLineElement
+        actuatorLineElement* element = new actuatorLineElement(name, dict, mesh_);
+        elements_[i] = element;
+    }
+}
 
 // ************************************************************************* //
