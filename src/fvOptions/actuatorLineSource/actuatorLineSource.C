@@ -190,12 +190,14 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
 
         // Get foil information
         coeffs_.lookup("coefficientData") >> coefficientData_;
-
         coeffs_.lookup("tipEffect") >> tipEffect_;
+        List<List<List<scalar> > > elementGeometry;
+        coeffs_.lookup("elementGeometry") >> elementGeometry;
         
         // Print turbine properties
         Info<< "Actuator line properties:" << endl;
         printCoeffs();
+        Info<< elementGeometry[0] << endl;
         
         // Create blades
         //createBlades();

@@ -32,8 +32,8 @@ foil
 
         elementGeometry // Will be interpolated linearly per nElements
         (      // point spanDir chordLength pitch (from freeStreamVelocity direction)
-            ((0.0 0.0 -0.5) (0 0 1) 0.14 4.0)
-            ((0.0 0.0 0.5) (0 0 1) 0.14 4.0)
+            ((0.0 0.0 -0.5) (0 0 1) (0.14) (4.0))
+            ((0.0 0.0 0.5) (0 0 1) (0.14) (4.0))
         );
         
         coefficientData
