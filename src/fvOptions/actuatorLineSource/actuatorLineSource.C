@@ -193,6 +193,9 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
         coeffs_.lookup("tipEffect") >> tipEffect_;
         List<List<List<scalar> > > elementGeometry;
         coeffs_.lookup("elementGeometry") >> elementGeometry;
+        coeffs_.lookup("nElements") >> nElements_;
+        
+        coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
         
         // Print turbine properties
         Info<< "Actuator line properties:" << endl;

@@ -96,6 +96,12 @@ protected:
         
         //- Sectional coefficient data for the foil profile
         List<List<scalar> > coefficientData_;
+        
+        //- Number of blade elements
+        label nElements_;
+        
+        //- Free stream velocity
+        vector freeStreamVelocity_;
 
 
     // Protected Member Functions

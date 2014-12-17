@@ -27,7 +27,7 @@ foil
         fieldNames      (U);
         tipEffect       0.95; 
         freeStreamVelocity (1 0 0);
-        upstreamPoint   (-1.0, 0, 0);
+        upstreamPoint   (-1.0 0 0);
         nElements   24;
 
         elementGeometry // Will be interpolated linearly per nElements
