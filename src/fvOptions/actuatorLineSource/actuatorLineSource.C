@@ -233,8 +233,15 @@ void Foam::fv::actuatorLineSource::createElements()
     for (int i = 0; i < nElements_; i++)
     {
         const word name = "None";
-        const dictionary dict;
+
         // Create a dictionary for this actuatorLineElement
+        dictionary dict;
+        dict.add("coefficientData", coefficientData_);
+        scalar chordLength = 0.1;
+        vector chordDirection(0, 0, 1);
+        dict.add("chordLength", chordLength);
+        dict.add("chordDirection", chordDirection);
+        
         actuatorLineElement* element = new actuatorLineElement(name, dict, mesh_);
         elements_[i] = element;
     }
