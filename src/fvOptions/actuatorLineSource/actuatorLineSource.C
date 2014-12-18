@@ -202,17 +202,7 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
         Info<< "Actuator line properties:" << endl;
         printCoeffs();
         Info<< elementGeometry[0] << endl;
-        
-        // Create blades
-        //createBlades();
 
-        // create co-ordinate system
-        //createCoordinateSystem();
-
-        // read co-odinate system dependent properties
-        //checkData();
-
-        //constructGeometry();
         
         if (debug)
         {
