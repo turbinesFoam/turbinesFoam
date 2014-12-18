@@ -267,11 +267,10 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
     int nBlades = nBlades_;
     blades_.setSize(nBlades);
     int nElements;
-    dictionary bladeSubDict;
-    dictionary dict; // Individual actuatorLineSource dictionary
     word profileName;
     List<List<scalar> > elementData;
     List<List<scalar> > profileData;
+    word modelType = "actuatorLineSource";
     
     const dictionary& profilesSubDict(coeffs_.subDict("profiles"));
     
@@ -280,8 +279,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         word& bladeName = bladeNames_[i];
         Info<< "Creating actuator line blade " << bladeName << endl;
         // Create dictionary items for this blade
-        actuatorLineSource* blade = new actuatorLineSource(name_, modelType_, dict, mesh_);
-        blades_[i] = blade;
+        dictionary bladeSubDict;
         bladeSubDict = bladesDict_.subDict(bladeName);
         bladeSubDict.lookup("nElements") >> nElements;
         Info<< "Blade has " << nElements << " elements" << endl;
@@ -296,6 +294,24 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         Info<< "Profile sectional coefficient data:" << endl;
         profilesSubDict.subDict(profileName).lookup("data") >> profileData;
         Info<< profileData << endl << endl;
+        
+        bladeSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
+        bladeSubDict.add("coefficientData", profileData);
+        bladeSubDict.add("tipEffect", tipEffect_);
+        bladeSubDict.add("elementGeometry", elementData);
+        
+        dictionary dict;
+        dict.add("actuatorLineSourceCoeffs", bladeSubDict);
+        dict.add("type", "actuatorLineSource");
+        dict.add("active", dict_.lookup("active"));
+        dict.add("selectionMode", dict_.lookup("selectionMode"));
+        dict.add("cellSet", dict_.lookup("cellSet"));
+        
+        actuatorLineSource* blade = new actuatorLineSource(bladeName, 
+                                                           modelType, 
+                                                           dict, 
+                                                           mesh_);
+        blades_[i] = blade;
     }
 }
 
