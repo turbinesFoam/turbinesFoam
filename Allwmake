@@ -6,12 +6,6 @@
 
 # wmake
 
-cd $WM_PROJECT_USER_DIR/turbinesFoam/src/fvOptions/actuatorLineSource
-
+cd $WM_PROJECT_USER_DIR/turbinesFoam/src/fvOptions
 wmake libso
-
-cd $WM_PROJECT_USER_DIR/turbinesFoam/src/fvOptions/crossFlowTurbineALSource
-
-wmake libso
-
 cd $WM_PROJECT_USER_DIR/turbinesFoam
