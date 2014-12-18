@@ -230,6 +230,8 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
 
 void Foam::fv::actuatorLineSource::createElements()
 {
+	elements_.setSize(nElements_);
+	
     for (int i = 0; i < nElements_; i++)
     {
         const word name = "None";
