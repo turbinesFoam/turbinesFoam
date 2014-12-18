@@ -1,4 +1,0 @@
-actuatorLineSource.C
-actuatorLineElement/actuatorLineElement.C
-
-LIB = $(FOAM_USER_LIBBIN)/libturbinesFoam

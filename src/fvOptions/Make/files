@@ -1,0 +1,5 @@
+actuatorLineSource/actuatorLineSource.C
+actuatorLineSource/actuatorLineElement/actuatorLineElement.C
+crossFlowTurbineALSource/crossFlowTurbineALSource.C
+
+LIB = $(FOAM_USER_LIBBIN)/libturbinesFoam
