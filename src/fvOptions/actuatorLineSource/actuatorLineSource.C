@@ -26,9 +26,10 @@ License
 #include "actuatorLineSource.H"
 #include "unitConversion.H"
 #include "addToRunTimeSelectionTable.H"
-#include "Tuple2.H"
 #include "vector.H"
-#include "IFstream.H"
+#include "fvMatrices.H"
+#include "geometricOneField.H"
+#include "syncTools.H"
 
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
 
@@ -270,6 +271,82 @@ void Foam::fv::actuatorLineSource::createElements()
         
         actuatorLineElement* element = new actuatorLineElement(name, dict, mesh_);
         elements_.set(i, element);
+    }
+}
+
+
+void Foam::fv::actuatorLineSource::addSup
+(
+    fvMatrix<vector>& eqn,
+    const label fieldI
+)
+{
+    volVectorField force
+    (
+        IOobject
+        (
+            name_ + ":force",
+            mesh_.time().timeName(),
+            mesh_
+        ),
+        mesh_,
+        dimensionedVector
+        (
+            "zero",
+            eqn.dimensions()/dimVolume,
+            vector::zero
+        )
+    );
+
+    // Read the reference density for incompressible flow
+    //coeffs_.lookup("rhoRef") >> rhoRef_;
+
+    //const vectorField Uin(inflowVelocity(eqn.psi()));
+    //calculate();
+
+    // Add source to rhs of eqn
+    eqn -= force;
+
+    if (mesh_.time().outputTime())
+    {
+        force.write();
+    }
+}
+
+
+void Foam::fv::actuatorLineSource::addSup
+(
+    const volScalarField& rho,
+    fvMatrix<vector>& eqn,
+    const label fieldI
+)
+{
+    volVectorField force
+    (
+        IOobject
+        (
+            name_ + ":force",
+            mesh_.time().timeName(),
+            mesh_
+        ),
+        mesh_,
+        dimensionedVector
+        (
+            "zero",
+            eqn.dimensions()/dimVolume,
+            vector::zero
+        )
+    );
+
+    //const vectorField Uin(inflowVelocity(eqn.psi()));
+    //calculate();
+
+    // Add source to rhs of eqn
+    eqn -= force;
+
+    if (mesh_.time().outputTime())
+    {
+        force.write();
     }
 }
 

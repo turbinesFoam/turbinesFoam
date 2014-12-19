@@ -40,6 +40,7 @@ SourceFiles
 #include "vector.H"
 #include "actuatorLineElement.H"
 #include "fvOption.H"
+#include "volFieldsFwd.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -215,6 +216,24 @@ public:
         
             //- Print dictionary values
             virtual void printCoeffs() const;
+
+
+        // Source term addition
+
+            //- Source term to momentum equation
+            virtual void addSup
+            (
+                fvMatrix<vector>& eqn,
+                const label fieldI
+            );
+
+            //- Source term to compressible momentum equation
+            virtual void addSup
+            (
+                const volScalarField& rho,
+                fvMatrix<vector>& eqn,
+                const label fieldI
+            );
 };
 
 
