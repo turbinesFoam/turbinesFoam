@@ -107,10 +107,10 @@ Foam::vector& Foam::fv::actuatorLineElement::force()
 void Foam::fv::actuatorLineElement::addSup
 (
     fvMatrix<vector>& eqn,
-    const label fieldI
+    volVectorField& force
 )
 {
-    volVectorField force
+    volVectorField forceI
     (
         IOobject
         (
@@ -134,12 +134,7 @@ void Foam::fv::actuatorLineElement::addSup
     calculate();
 
     // Add source to rhs of eqn
-    eqn -= force;
-
-    if (mesh_.time().outputTime())
-    {
-        force.write();
-    }
+    force += forceI;
 }
 
 
@@ -147,10 +142,10 @@ void Foam::fv::actuatorLineElement::addSup
 (
     const volScalarField& rho,
     fvMatrix<vector>& eqn,
-    const label fieldI
+    volVectorField& force
 )
 {
-    volVectorField force
+    volVectorField forceI
     (
         IOobject
         (
@@ -170,13 +165,8 @@ void Foam::fv::actuatorLineElement::addSup
     //const vectorField Uin(inflowVelocity(eqn.psi()));
     calculate();
 
-    // Add source to rhs of eqn
-    eqn -= force;
-
-    if (mesh_.time().outputTime())
-    {
-        force.write();
-    }
+    // Add force to total actuator line force
+    force += forceI;
 }
 
 

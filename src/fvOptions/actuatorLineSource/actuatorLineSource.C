@@ -306,7 +306,7 @@ void Foam::fv::actuatorLineSource::addSup
     
     for (int i = 0; i < nElements_; i++)
     {
-        elements_[i].addSup(eqn, fieldI);
+        elements_[i].addSup(eqn, force);
     }
 
     // Add source to rhs of eqn
