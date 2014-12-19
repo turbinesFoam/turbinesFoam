@@ -104,34 +104,6 @@ Foam::vector& Foam::fv::actuatorLineElement::force()
 }
 
 
-Foam::autoPtr<Foam::fv::actuatorLineElement> Foam::fv::actuatorLineElement::New
-(
-    const dictionary& dict
-)
-{
-    const word& modelName(dict.dictName());
-
-    const word modelType(dict.lookup("type"));
-
-    Info<< "    - creating " << modelType << " profile " << modelName << endl;
-
-    dictionaryConstructorTable::iterator cstrIter =
-        dictionaryConstructorTablePtr_->find(modelType);
-
-    if (cstrIter == dictionaryConstructorTablePtr_->end())
-    {
-        FatalErrorIn("actuatorLineElement::New(const dictionary&)")
-            << "Unknown profile model type " << modelType
-            << nl << nl
-            << "Valid model types are :" << nl
-            << dictionaryConstructorTablePtr_->sortedToc()
-            << exit(FatalError);
-    }
-
-    return autoPtr<actuatorLineElement>(cstrIter()(dict, modelName));
-}
-
-
 void Foam::fv::actuatorLineElement::addSup
 (
     fvMatrix<vector>& eqn,
