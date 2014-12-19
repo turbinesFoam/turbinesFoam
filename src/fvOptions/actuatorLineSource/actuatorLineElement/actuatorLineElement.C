@@ -87,7 +87,6 @@ const Foam::word& Foam::fv::actuatorLineElement::name() const
 
 void Foam::fv::actuatorLineElement::calculate()
 {
-	Info<< "Calculating force contribution from actuator line element" << endl;
 	// Calculate local wind velocity
 	// Calculate relative velocity
 	// Calculate angle of attack

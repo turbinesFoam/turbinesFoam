@@ -316,6 +316,9 @@ void Foam::fv::actuatorLineSource::addSup
     {
         force.write();
     }
+    
+    Info<< "Force contribution from actuator line " << name_ << ":" << endl;
+    Info<< force.average() << endl;
 }
 
 
