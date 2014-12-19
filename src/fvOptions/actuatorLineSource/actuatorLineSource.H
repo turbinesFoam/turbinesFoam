@@ -108,7 +108,7 @@ protected:
         vector freeStreamVelocity_;
         
         //- List of actuator line elements
-        PtrList<actuatorLineElement*> elements_;
+        PtrList<actuatorLineElement> elements_;
 
 
     // Protected Member Functions

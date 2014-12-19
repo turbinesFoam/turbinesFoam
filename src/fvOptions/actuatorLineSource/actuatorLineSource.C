@@ -269,7 +269,7 @@ void Foam::fv::actuatorLineSource::createElements()
         dict.add("spanDirection", spanDirection);
         
         actuatorLineElement* element = new actuatorLineElement(name, dict, mesh_);
-        elements_[i] = element;
+        elements_.set(i, element);
     }
 }
 
