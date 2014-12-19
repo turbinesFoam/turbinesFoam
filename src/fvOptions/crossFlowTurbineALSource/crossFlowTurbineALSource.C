@@ -311,7 +311,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
                                                            modelType, 
                                                            dict, 
                                                            mesh_);
-        blades_[i] = blade;
+        blades_.set(i, blade);
     }
 }
 
