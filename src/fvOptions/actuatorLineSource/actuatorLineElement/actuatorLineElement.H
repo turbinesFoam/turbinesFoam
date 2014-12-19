@@ -43,6 +43,7 @@ SourceFiles
 #include "localAxesRotation.H"
 #include "volFieldsFwd.H"
 #include "fvMesh.H"
+#include "fvMatrices.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -185,6 +186,23 @@ public:
             
             //- Read coefficient data
             void read();
+            
+        // Source term addition
+
+            //- Source term to momentum equation
+            virtual void addSup
+            (
+                fvMatrix<vector>& eqn,
+                const label fieldI
+            );
+
+            //- Source term to compressible momentum equation
+            virtual void addSup
+            (
+                const volScalarField& rho,
+                fvMatrix<vector>& eqn,
+                const label fieldI
+            );
             
 };
 
