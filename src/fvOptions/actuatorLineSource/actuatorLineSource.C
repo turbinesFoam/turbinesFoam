@@ -192,8 +192,7 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
         // Get foil information
         coeffs_.lookup("coefficientData") >> coefficientData_;
         coeffs_.lookup("tipEffect") >> tipEffect_;
-        List<List<List<scalar> > > elementGeometry;
-        coeffs_.lookup("elementGeometry") >> elementGeometry;
+        coeffs_.lookup("elementGeometry") >> elementGeometry_;
         coeffs_.lookup("nElements") >> nElements_;
         
         coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
@@ -201,7 +200,7 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
         // Print turbine properties
         Info<< "Actuator line properties:" << endl;
         printCoeffs();
-        Info<< elementGeometry[0] << endl;
+        Info<< elementGeometry_[0] << endl;
 
         
         if (debug)
@@ -221,18 +220,53 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
 void Foam::fv::actuatorLineSource::createElements()
 {
 	elements_.setSize(nElements_);
+    
+    label nGeometryPoints = elementGeometry_.size();
+    List<vector> points(nGeometryPoints);
+    List<vector> spanDirs(nGeometryPoints);
+    List<scalar> chordLengths(nGeometryPoints);
+    List<scalar> pitches(nGeometryPoints);
+    
+    for (int i = 0; i < nGeometryPoints; i++)
+    {
+        // Extract geometry point
+        scalar x = elementGeometry_[i][0][0];
+        scalar y = elementGeometry_[i][0][1];
+        scalar z = elementGeometry_[i][0][2];
+        points[i] = vector(x, y, z);
+        // Read span direction
+        x = elementGeometry_[i][1][0];
+        y = elementGeometry_[i][1][1];
+        z = elementGeometry_[i][1][2];
+        spanDirs[i] = vector(x, y, z);
+        // Read chord length
+        chordLengths[i] = elementGeometry_[i][2][0];
+        // Read pitch
+        pitches[i] = elementGeometry_[i][3][0];
+    }
+    
+    Info<< "Points:" << endl << points << endl;
+    Info<< "Span directions:" << endl << spanDirs << endl;
+    Info<< "Chord lengths:" << endl << chordLengths << endl;
+    Info<< "Pitches:" << endl << pitches << endl;
 	
     for (int i = 0; i < nElements_; i++)
     {
         const word name = "None";
 
+        // Sample values -- should be calculated from elementGeometry
+        scalar chordLength = 0.1;
+        vector chordDirection(1, 0, 0);
+        scalar spanLength = 0.1;
+        vector spanDirection(0, 0, 1);
+        
         // Create a dictionary for this actuatorLineElement
         dictionary dict;
         dict.add("coefficientData", coefficientData_);
-        scalar chordLength = 0.1;
-        vector chordDirection(0, 0, 1);
         dict.add("chordLength", chordLength);
         dict.add("chordDirection", chordDirection);
+        dict.add("spanLength", spanLength);
+        dict.add("spanDirection", spanDirection);
         
         actuatorLineElement* element = new actuatorLineElement(name, dict, mesh_);
         elements_[i] = element;

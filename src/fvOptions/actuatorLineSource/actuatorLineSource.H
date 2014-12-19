@@ -97,6 +97,10 @@ protected:
         //- Sectional coefficient data for the foil profile
         List<List<scalar> > coefficientData_;
         
+        //- Element geometry
+        // point, spanDirection, chordLength, pitch (from freeStreamVelocity_)
+        List<List<List<scalar> > > elementGeometry_;
+        
         //- Number of blade elements
         label nElements_;
         
