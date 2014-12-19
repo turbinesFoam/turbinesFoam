@@ -303,6 +303,11 @@ void Foam::fv::actuatorLineSource::addSup
 
     //const vectorField Uin(inflowVelocity(eqn.psi()));
     //calculate();
+    
+    for (int i = 0; i < nElements_; i++)
+    {
+        force += elements_[i].force();
+    }
 
     // Add source to rhs of eqn
     eqn -= force;
