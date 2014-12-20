@@ -298,7 +298,25 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         bladeSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
         bladeSubDict.add("coefficientData", profileData);
         bladeSubDict.add("tipEffect", tipEffect_);
-        bladeSubDict.add("elementGeometry", elementData);
+        bladeSubDict.add("freeStreamVelocity", freeStreamVelocity_);
+        
+        // Convert element data into actuator line element geometry
+        label nGeomPoints = elementData.size();
+        List<List<List<scalar> > > elementGeometry(nGeomPoints, 4);
+        for (int j = 0; j < nGeomPoints; j++)
+        {
+            elementGeometry[j][0][0] = 0.0; // x location of geom point
+            elementGeometry[j][0][1] = 0.0; // y location of geom point
+            elementGeometry[j][0][2] = 0.0; // z location of geom point
+            elementGeometry[j][1][0] = 0.0; // x component of span direction
+            elementGeometry[j][1][1] = 0.0; // y component of span direction
+            elementGeometry[j][1][2] = 0.0; // z component of span direction
+            elementGeometry[j][2] = 0.0;    // chord length
+            elementGeometry[j][3] = 0.0;    // pitch
+        }
+        Info<< "Converted element geometry:" << endl << elementGeometry << endl;
+        bladeSubDict.add("elementGeometry", elementGeometry);
+        
         
         dictionary dict;
         dict.add("actuatorLineSourceCoeffs", bladeSubDict);
