@@ -302,17 +302,23 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         
         // Convert element data into actuator line element geometry
         label nGeomPoints = elementData.size();
-        List<List<List<scalar> > > elementGeometry(nGeomPoints, 4);
+        List<List<List<scalar> > > elementGeometry;
+        elementGeometry.setSize(nGeomPoints);
         for (int j = 0; j < nGeomPoints; j++)
         {
+            elementGeometry[j].setSize(4);
+            elementGeometry[j][0].setSize(3);
+            elementGeometry[j][1].setSize(3);
+            elementGeometry[j][2].setSize(1);
+            elementGeometry[j][3].setSize(1);
             elementGeometry[j][0][0] = 0.0; // x location of geom point
             elementGeometry[j][0][1] = 0.0; // y location of geom point
             elementGeometry[j][0][2] = 0.0; // z location of geom point
             elementGeometry[j][1][0] = 0.0; // x component of span direction
             elementGeometry[j][1][1] = 0.0; // y component of span direction
             elementGeometry[j][1][2] = 0.0; // z component of span direction
-            elementGeometry[j][2] = 0.0;    // chord length
-            elementGeometry[j][3] = 0.0;    // pitch
+            elementGeometry[j][2][0] = 0.0;    // chord length
+            elementGeometry[j][3][0] = 0.0;    // pitch
         }
         Info<< "Converted element geometry:" << endl << elementGeometry << endl;
         bladeSubDict.add("elementGeometry", elementGeometry);
