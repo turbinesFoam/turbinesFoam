@@ -56,10 +56,12 @@ libs
     "libturbinesFoam.so"
 );
 
-debugSwitches
+DebugSwitches
 {
     crossFlowTurbineALSource 1;
     option 1;
+    actuatorLineSource  1;
+    actuatorLineElement 1;
 }
 
 // ************************************************************************* //
