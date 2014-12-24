@@ -22,9 +22,9 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         50; // Was 5000
+endTime         1; // Was 5000
 
-deltaT          0.1;
+deltaT          1;
 
 writeControl    timeStep;
 
@@ -59,7 +59,7 @@ libs
 DebugSwitches
 {
     actuatorLineSource  1;
-    actuatorLineElement 1;
+    actuatorLineElement 0;
 }
 
 // ************************************************************************* //
