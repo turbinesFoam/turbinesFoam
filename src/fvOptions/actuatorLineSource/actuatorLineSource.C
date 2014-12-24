@@ -177,8 +177,12 @@ void Foam::fv::actuatorLineSource::interpolate
 
 void Foam::fv::actuatorLineSource::printCoeffs() const
 {
+    // Print turbine properties
+    Info<< "Actuator line properties:" << endl;
     Info<< "Coefficient data:" << endl;
     Info<< coefficientData_ << endl;
+    Info<< "First item of element geometry:" << endl;
+    Info<< elementGeometry_[0] << endl;
 }
 
 
@@ -198,15 +202,10 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
         
         coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
         
-        // Print turbine properties
-        Info<< "Actuator line properties:" << endl;
-        printCoeffs();
-        Info<< elementGeometry_[0] << endl;
-
-        
         if (debug)
         {
-            Info<< "Debugging on" << endl;
+            Info<< "Debugging for actuatorLineSource on" << endl;
+            printCoeffs();
         }
 
         return true;
@@ -246,10 +245,13 @@ void Foam::fv::actuatorLineSource::createElements()
         pitches[i] = elementGeometry_[i][3][0];
     }
     
-    Info<< "Points:" << endl << points << endl;
-    Info<< "Span directions:" << endl << spanDirs << endl;
-    Info<< "Chord lengths:" << endl << chordLengths << endl;
-    Info<< "Pitches:" << endl << pitches << endl;
+    if (debug)
+    {
+        Info<< "Points:" << endl << points << endl;
+        Info<< "Span directions:" << endl << spanDirs << endl;
+        Info<< "Chord lengths:" << endl << chordLengths << endl;
+        Info<< "Pitches:" << endl << pitches << endl;
+    }
 	
     for (int i = 0; i < nElements_; i++)
     {

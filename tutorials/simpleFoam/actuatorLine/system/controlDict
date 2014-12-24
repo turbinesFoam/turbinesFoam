@@ -60,7 +60,6 @@ DebugSwitches
 {
     actuatorLineSource  1;
     actuatorLineElement 1;
-    option              1;
 }
 
 // ************************************************************************* //

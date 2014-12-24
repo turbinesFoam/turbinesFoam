@@ -45,13 +45,22 @@ namespace fv
 
 void Foam::fv::actuatorLineElement::read()
 {
-    Info<< "Reading coefficient data for actuatorLineElement" << endl;
     // Parse dictionary
     dict_.lookup("chordLength") >> chordLength_;
     dict_.lookup("chordDirection") >> chordDirection_;
     dict_.lookup("spanLength") >> spanLength_;
     dict_.lookup("spanDirection") >> spanDirection_;
     dict_.lookup("coefficientData") >> coefficientData_;
+    
+    if (debug)
+    {
+       Info<< "actuatorLineElement properties:" << endl;
+       Info<< "chordLength: " << chordLength_ << endl;
+       Info<< "chordDirection: " << chordDirection_ << endl;
+       Info<< "spanLength: " << spanLength_ << endl;
+       Info<< "spanDirection: " << spanDirection_ << endl;
+       Info<< "coefficientData: " << coefficientData_ << endl;
+    }
 }
 
 
