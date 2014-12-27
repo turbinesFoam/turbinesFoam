@@ -174,7 +174,7 @@ public:
             void translate(vector translationVector);
             
             //- Rotate the element about some axis
-            void rotate(vector axis, scalar radians);
+            void rotate(vector rotationPoint, vector axis, scalar radians);
             
             //- Pitch the element about its half chord
             void pitch(scalar radians);

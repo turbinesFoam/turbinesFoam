@@ -196,7 +196,7 @@ public:
             void translate(vector translation);
             
             //- Rotate the actuator line about a specified axis
-            void rotate(vector axis, scalar radians);
+            void rotate(vector rotationPoint, vector axis, scalar radians);
 
 
         // Evaluation

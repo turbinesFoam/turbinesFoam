@@ -277,6 +277,16 @@ void Foam::fv::actuatorLineSource::createElements()
 }
 
 
+void Foam::fv::actuatorLineSource::rotate(vector rotationPoint, vector axis,
+                                          scalar radians)
+{
+    forAll(elements_, i)
+    {
+        elements_[i].rotate(rotationPoint, axis, radians);
+    }
+} 
+
+
 void Foam::fv::actuatorLineSource::addSup
 (
     fvMatrix<vector>& eqn,
