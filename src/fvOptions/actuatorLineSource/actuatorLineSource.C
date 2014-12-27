@@ -255,7 +255,10 @@ void Foam::fv::actuatorLineSource::createElements()
 	
     for (label i = 0; i < nElements_; i++)
     {
-        const word name = name_ + "Element" + word(i);
+        std::stringstream ss;
+        ss << i;
+        string str = ss.str();
+        const word name = name_ + "Element" + str;
 
         // Sample values -- should be calculated from elementGeometry
         scalar chordLength = 0.1;
