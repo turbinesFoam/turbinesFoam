@@ -253,9 +253,9 @@ void Foam::fv::actuatorLineSource::createElements()
         Info<< "Pitches:" << endl << pitches << endl;
     }
 	
-    for (int i = 0; i < nElements_; i++)
+    for (label i = 0; i < nElements_; i++)
     {
-        const word name = "None";
+        const word name = name_ + "Element" + word(i);
 
         // Sample values -- should be calculated from elementGeometry
         scalar chordLength = 0.1;
@@ -270,6 +270,15 @@ void Foam::fv::actuatorLineSource::createElements()
         dict.add("chordDirection", chordDirection);
         dict.add("spanLength", spanLength);
         dict.add("spanDirection", spanDirection);
+        
+        if (debug)
+        {
+            Info<< "Creating actuatorLineElement: " << name << endl;
+            Info<< "Chord length: " << chordLength << endl;
+            Info<< "Chord direction: " << chordDirection << endl;
+            Info<< "Span length: " << spanLength << endl;
+            Info<< "Span direction: " << spanDirection << endl;
+        }
         
         actuatorLineElement* element = new actuatorLineElement(name, dict, mesh_);
         elements_.set(i, element);
