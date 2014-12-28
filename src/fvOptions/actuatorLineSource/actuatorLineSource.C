@@ -361,8 +361,12 @@ void Foam::fv::actuatorLineSource::createElements()
 }
 
 
-void Foam::fv::actuatorLineSource::rotate(vector rotationPoint, vector axis,
-                                          scalar radians)
+void Foam::fv::actuatorLineSource::rotate
+(
+    vector rotationPoint, 
+    vector axis,
+    scalar radians
+)
 {
     forAll(elements_, i)
     {
