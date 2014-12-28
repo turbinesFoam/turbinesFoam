@@ -116,6 +116,12 @@ protected:
     
         //- Runtime pointer
         const Time& time_;
+        
+        //- Origin of turbine coordinate system
+        vector origin_;
+        
+        //- Turbine axis of rotation
+        vector axis_;
 
         //- Reference density for incompressible case
         scalar rhoRef_;

@@ -277,28 +277,29 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
     for (int i = 0; i < nBlades_; i++)
     {
         word& bladeName = bladeNames_[i];
-        Info<< "Creating actuator line blade " << bladeName << endl;
         // Create dictionary items for this blade
         dictionary bladeSubDict;
         bladeSubDict = bladesDict_.subDict(bladeName);
         bladeSubDict.lookup("nElements") >> nElements;
-        Info<< "Blade has " << nElements << " elements" << endl;
-        
         bladeSubDict.lookup("profile") >> profileName;
-        Info<< "Blade profile: " << profileName << endl;
-        
-        Info<< "Element data:" << endl;
         bladeSubDict.lookup("elementData") >> elementData;
-        Info<< elementData << endl << endl;
-        
-        Info<< "Profile sectional coefficient data:" << endl;
         profilesSubDict.subDict(profileName).lookup("data") >> profileData;
-        Info<< profileData << endl << endl;
         
         bladeSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
         bladeSubDict.add("coefficientData", profileData);
         bladeSubDict.add("tipEffect", tipEffect_);
         bladeSubDict.add("freeStreamVelocity", freeStreamVelocity_);
+        
+        if (debug)
+        {
+            Info<< "Creating actuator line blade " << bladeName << endl;
+            Info<< "Blade has " << nElements << " elements" << endl;
+            Info<< "Blade profile: " << profileName << endl;
+            Info<< "Element data:" << endl;
+            Info<< elementData << endl << endl;
+            Info<< "Profile sectional coefficient data:" << endl;
+            Info<< profileData << endl << endl;
+        }
         
         // Convert element data into actuator line element geometry
         label nGeomPoints = elementData.size();
@@ -311,18 +312,27 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             elementGeometry[j][1].setSize(3);
             elementGeometry[j][2].setSize(1);
             elementGeometry[j][3].setSize(1);
-            elementGeometry[j][0][0] = 0.0; // x location of geom point
-            elementGeometry[j][0][1] = 0.0; // y location of geom point
-            elementGeometry[j][0][2] = 0.0; // z location of geom point
-            elementGeometry[j][1][0] = 0.0; // x component of span direction
-            elementGeometry[j][1][1] = 0.0; // y component of span direction
-            elementGeometry[j][1][2] = 0.0; // z component of span direction
-            elementGeometry[j][2][0] = 0.0;    // chord length
-            elementGeometry[j][3][0] = 0.0;    // pitch
+            scalar axialDistance = elementData[j][0];
+            vector point = origin_ + axis_*axialDistance;
+            elementGeometry[j][0][0] = point.x(); // x location of geom point
+            elementGeometry[j][0][1] = point.y(); // y location of geom point
+            elementGeometry[j][0][2] = point.z(); // z location of geom point
+            elementGeometry[j][1][0] = axis_.x(); // x component of span direction
+            elementGeometry[j][1][1] = axis_.y(); // y component of span direction
+            elementGeometry[j][1][2] = axis_.z(); // z component of span direction
+            scalar chordLength = elementData[j][3];
+            elementGeometry[j][2][0] = chordLength;    // chord length
+            scalar pitch = elementData[j][5];
+            elementGeometry[j][3][0] = pitch;    // pitch
         }
-        Info<< "Converted element geometry:" << endl << elementGeometry << endl;
-        bladeSubDict.add("elementGeometry", elementGeometry);
         
+        if (debug)
+        {
+            Info<< "Converted element geometry:" << endl << elementGeometry 
+                << endl;
+        }
+        
+        bladeSubDict.add("elementGeometry", elementGeometry);
         
         dictionary dict;
         dict.add("actuatorLineSourceCoeffs", bladeSubDict);
@@ -331,10 +341,14 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         dict.add("selectionMode", dict_.lookup("selectionMode"));
         dict.add("cellSet", dict_.lookup("cellSet"));
         
-        actuatorLineSource* blade = new actuatorLineSource(bladeName, 
-                                                           modelType, 
-                                                           dict, 
-                                                           mesh_);
+        actuatorLineSource* blade = new actuatorLineSource
+        (
+            bladeName, 
+            modelType, 
+            dict, 
+            mesh_
+        );
+        
         blades_.set(i, blade);
     }
 }
@@ -591,6 +605,8 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
         applied_.setSize(fieldNames_.size(), false);
 
         // read co-ordinate system/geometry invariant properties
+        coeffs_.lookup("origin") >> origin_;
+        coeffs_.lookup("axis") >> axis_;
         coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
         coeffs_.lookup("tipSpeedRatio") >> tipSpeedRatio_;
         coeffs_.lookup("rotorRadius") >> rotorRadius_;
