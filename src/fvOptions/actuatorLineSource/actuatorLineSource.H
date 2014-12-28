@@ -201,16 +201,13 @@ public:
 
         // Evaluation
 
-            //- Return the twist and chord for a given radius
-            virtual void interpolate
+            //- Interpolate a scalar value
+            scalar interpolate
             (
-                const scalar radius,
-                scalar& twist,
-                scalar& chord,
-                label& i1,
-                label& i2,
-                scalar& invDr
-            ) const;
+                scalar xNew, 
+                List<scalar>& xOld, 
+                List<scalar>& yOld
+            );
             
         // IO
         

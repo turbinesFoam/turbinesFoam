@@ -92,14 +92,78 @@ void Foam::fv::actuatorLineSource::interpolateWeights
 }
 
 
+Foam::scalar Foam::fv::actuatorLineSource::interpolate
+(
+    scalar xNew, 
+    List<scalar>& xOld, 
+    List<scalar>& yOld
+)
+{
+    label index = 0;
+    label indexP = 0;
+    label indexM = 0;
+    scalar error = 1.0E30;
+    forAll(xOld, i)
+    {
+        scalar diff = mag(xNew - xOld[i]);
+        if(diff < error)
+        {
+            index = i;
+            error = diff;
+        }
+    }
+    if (xNew < xOld[index])
+    {
+        if (index == 0)
+        {
+            indexP = 1;
+            indexM = indexP - 1;
+        }
+        else
+        {
+            indexP = index;
+            indexM = indexP - 1;
+        }
+        return yOld[indexM] 
+               + ((yOld[indexP] 
+               - yOld[indexM])/(xOld[indexP] 
+               - xOld[indexM]))*(xNew - xOld[indexM]);
+    }
+    else if (xNew > xOld[index])
+    {
+        if (index == xOld.size() - 1)
+        {
+            indexP = xOld.size() - 1;
+            indexM = indexP - 1;
+        }
+        else
+        {
+            indexP = index + 1;
+            indexM = indexP - 1;
+        }
+        return yOld[indexM] + ((yOld[indexP] 
+               - yOld[indexM])/(xOld[indexP] 
+               - xOld[indexM]))*(xNew - xOld[indexM]);
+    }
+    else if (xNew == xOld[index])
+    {
+        return yOld[index];
+    }
+    else
+    {
+        return 0.0;
+    }
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::fv::actuatorLineSource::actuatorLineSource
 (
-		const word& name,
-		const word& modelType,
-		const dictionary& dict,
-		const fvMesh& mesh
+    const word& name,
+    const word& modelType,
+    const dictionary& dict,
+    const fvMesh& mesh
 )
 :
     option(name, modelType, dict, mesh),
@@ -155,23 +219,6 @@ const Foam::List<Foam::scalar>& Foam::fv::actuatorLineSource::chord() const
 Foam::List<Foam::label>& Foam::fv::actuatorLineSource::profileID()
 {
     return profileID_;
-}
-
-
-void Foam::fv::actuatorLineSource::interpolate
-(
-    const scalar radius,
-    scalar& pitch,
-    scalar& chord,
-    label& i1,
-    label& i2,
-    scalar& invDr
-) const
-{
-    interpolateWeights(radius, radius_, i1, i2, invDr);
-
-    pitch = invDr*(pitch_[i2] - pitch_[i1]) + pitch_[i1];
-    chord = invDr*(chord_[i2] - chord_[i1]) + chord_[i1];
 }
 
 
