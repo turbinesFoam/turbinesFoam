@@ -246,6 +246,7 @@ void Foam::fv::actuatorLineSource::createElements()
         scalar y = elementGeometry_[i][0][1];
         scalar z = elementGeometry_[i][0][2];
         points[i] = vector(x, y, z);
+        if (i > 0) totalLength_ += mag(points[i] - points[i-1]);
         // Read span direction
         x = elementGeometry_[i][1][0];
         y = elementGeometry_[i][1][1];
@@ -259,6 +260,7 @@ void Foam::fv::actuatorLineSource::createElements()
     
     if (debug)
     {
+        Info<< "Total length: " << totalLength_ << endl;
         Info<< "Points:" << endl << points << endl;
         Info<< "Span directions:" << endl << spanDirs << endl;
         Info<< "Chord lengths:" << endl << chordLengths << endl;
