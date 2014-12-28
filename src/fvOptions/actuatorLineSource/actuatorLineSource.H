@@ -64,12 +64,9 @@ protected:
 
         //- Corresponding profile name per section
         List<word> profileName_;
-
-        //- Corresponding profile ID per section
-        List<label> profileID_;
-
-        //- List of blade element axial distance from origin
-        List<scalar> axialDistance_;
+        
+        //- Total length of geometry in meters
+        scalar totalLength_;
         
         //- List of blade element radii in meters
         List<scalar> radius_;

@@ -166,13 +166,7 @@ Foam::fv::actuatorLineSource::actuatorLineSource
     const fvMesh& mesh
 )
 :
-    option(name, modelType, dict, mesh),
-    profileName_(),
-    profileID_(),
-    radius_(),
-    pitch_(),
-    chord_(),
-    fName_(fileName::null)
+    option(name, modelType, dict, mesh)
 {
     read(dict_);
     createElements();
@@ -243,6 +237,7 @@ void Foam::fv::actuatorLineSource::createElements()
     List<vector> spanDirs(nGeometryPoints);
     List<scalar> chordLengths(nGeometryPoints);
     List<scalar> pitches(nGeometryPoints);
+    totalLength_ = 0.0;
     
     for (int i = 0; i < nGeometryPoints; i++)
     {
