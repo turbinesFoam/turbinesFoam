@@ -28,7 +28,7 @@ foil
         tipEffect       0.95; 
         freeStreamVelocity (1 0 0);
         upstreamPoint   (-1.0 0 0);
-        nElements   24;
+        nElements   6;
 
         elementGeometry // Will be interpolated linearly per nElements
         (      // point spanDir chordLength pitch (from freeStreamVelocity direction)
