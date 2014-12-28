@@ -346,7 +346,9 @@ void Foam::fv::actuatorLineSource::createElements()
             Info<< "Geometry segment index: " << geometrySegmentIndex << endl;
             Info<< "Position: " << position << endl;
             Info<< "Chord length: " << chordLength << endl;
-            Info<< "Chord direction: " << chordDirection << endl;
+            Info<< "Chord direction (before pitching): " << chordDirection 
+                << endl;
+            Info<< "Pitch (degrees): " << pitch << endl;
             Info<< "Span length: " << spanLength << endl;
             Info<< "Span direction: " << spanDirection << endl;
         }
