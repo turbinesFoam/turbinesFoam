@@ -300,11 +300,18 @@ void Foam::fv::actuatorLineSource::createElements()
         vector point1 = points[geometrySegmentIndex];
         vector point2 = points[geometrySegmentIndex + 1];
         vector segment = point2 - point1;
-
         position = point1 
                  + segment/nElementsPerSegment*pointIndex
                  + segment/nElementsPerSegment/2;
-        chordLength = chordLengths[0];
+                 
+        // Linearly interpolate chordLength
+        scalar chordLength1 = chordLengths[geometrySegmentIndex];
+        scalar chordLength2 = chordLengths[geometrySegmentIndex + 1];
+        scalar deltaChordTotal = chordLength2 - chordLength1;
+        chordLength = chordLength1 
+                    + deltaChordTotal/nElementsPerSegment*pointIndex
+                    + deltaChordTotal/nElementsPerSegment/2;
+        
         spanDirection = spanDirs[0];
         pitch = pitches[0];
         
@@ -313,6 +320,7 @@ void Foam::fv::actuatorLineSource::createElements()
         
         // Create a dictionary for this actuatorLineElement
         dictionary dict;
+        dict.add("position", position);
         dict.add("coefficientData", coefficientData_);
         dict.add("chordLength", chordLength);
         dict.add("chordDirection", chordDirection);

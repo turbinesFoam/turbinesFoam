@@ -46,6 +46,7 @@ namespace fv
 void Foam::fv::actuatorLineElement::read()
 {
     // Parse dictionary
+    dict_.lookup("position") >> position_;
     dict_.lookup("chordLength") >> chordLength_;
     dict_.lookup("chordDirection") >> chordDirection_;
     dict_.lookup("spanLength") >> spanLength_;
@@ -55,6 +56,7 @@ void Foam::fv::actuatorLineElement::read()
     if (debug)
     {
        Info<< "actuatorLineElement properties:" << endl;
+       Info<< "Position: " << position_ << endl;
        Info<< "chordLength: " << chordLength_ << endl;
        Info<< "chordDirection: " << chordDirection_ << endl;
        Info<< "spanLength: " << spanLength_ << endl;
