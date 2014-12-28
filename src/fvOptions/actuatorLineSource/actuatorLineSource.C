@@ -258,9 +258,13 @@ void Foam::fv::actuatorLineSource::createElements()
         pitches[i] = elementGeometry_[i][3][0];
     }
     
+    // Calculate span length of each element
+    scalar spanLength = totalLength_/nElements_;
+    
     if (debug)
     {
         Info<< "Total length: " << totalLength_ << endl;
+        Info<< "Element span length: " << spanLength << endl;
         Info<< "Points:" << endl << points << endl;
         Info<< "Span directions:" << endl << spanDirs << endl;
         Info<< "Chord lengths:" << endl << chordLengths << endl;
@@ -278,7 +282,6 @@ void Foam::fv::actuatorLineSource::createElements()
         vector position;
         scalar chordLength;
         vector chordDirection;
-        scalar spanLength;
         vector spanDirection;
         scalar pitch;
         
@@ -286,7 +289,6 @@ void Foam::fv::actuatorLineSource::createElements()
         {
             position = points[i];
             chordLength = chordLengths[i];
-            spanLength = mag(points[i] - points[i+1]);
             spanDirection = spanDirs[i];
             pitch = pitches[i];
         }
@@ -295,7 +297,6 @@ void Foam::fv::actuatorLineSource::createElements()
             label ind = nGeometryPoints - 1;
             position = points[ind];
             chordLength = chordLengths[ind];
-            spanLength = mag(points[i] - points[i-1]);
             spanDirection = spanDirs[ind];
             pitch = pitches[ind];
         }
@@ -303,7 +304,6 @@ void Foam::fv::actuatorLineSource::createElements()
         {
             position = vector(0, 0, 0);
             chordLength = 0.0;
-            spanLength = 0.0;
             spanDirection = vector(0, 0, 0);
             pitch = 0.0;
         }
