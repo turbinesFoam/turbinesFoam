@@ -155,7 +155,7 @@ void Foam::fv::actuatorLineElement::rotate(vector rotationPoint, vector axis,
     {
         Info<< "Final position: " << position_ << endl;
         Info<< "Final chordDirection: " << chordDirection_ << endl;
-        Info<< "Final spanDirection: " << spanDirection_ << endl;
+        Info<< "Final spanDirection: " << spanDirection_ << endl << endl;
     }
 }
 

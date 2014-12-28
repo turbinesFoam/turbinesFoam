@@ -233,6 +233,15 @@ void Foam::fv::actuatorLineSource::createElements()
 	elements_.setSize(nElements_);
     
     label nGeometryPoints = elementGeometry_.size();
+    label nGeometryLines = nGeometryPoints - 1;
+    label nElementsPerGeometry = nElements_/nGeometryLines;
+    if (nElements_ % nGeometryLines)
+    {
+        // Need to have integer number of elements per geometry
+        FatalErrorIn("void actuatorLineSource::createElements()")
+            << "Number of actuator line elements must be multiple of the number of actuator line geometry segments" 
+            << abort(FatalError);
+    }
     List<vector> points(nGeometryPoints);
     List<vector> spanDirs(nGeometryPoints);
     List<scalar> chordLengths(nGeometryPoints);
