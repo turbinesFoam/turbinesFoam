@@ -233,9 +233,9 @@ void Foam::fv::actuatorLineSource::createElements()
 	elements_.setSize(nElements_);
     
     label nGeometryPoints = elementGeometry_.size();
-    label nGeometryLines = nGeometryPoints - 1;
-    label nElementsPerGeometry = nElements_/nGeometryLines;
-    if (nElements_ % nGeometryLines)
+    label nGeometrySegments = nGeometryPoints - 1;
+    label nElementsPerSegment = nElements_/nGeometrySegments;
+    if (nElements_ % nGeometrySegments)
     {
         // Need to have integer number of elements per geometry segment
         FatalErrorIn("void actuatorLineSource::createElements()")
@@ -288,35 +288,25 @@ void Foam::fv::actuatorLineSource::createElements()
         const word name = name_ + "Element" + str;
 
         // Actuator point geometry to be calculated from elementGeometry
-        label geometrySegmentIndex = i/nElementsPerGeometry;
+        label geometrySegmentIndex = i/nElementsPerSegment;
+        label pointIndex = i % nElementsPerSegment;
         vector position;
         scalar chordLength;
         vector chordDirection;
         vector spanDirection;
         scalar pitch;
         
-        if (i == 0)
-        {
-            position = points[i];
-            chordLength = chordLengths[i];
-            spanDirection = spanDirs[i];
-            pitch = pitches[i];
-        }
-        else if (i == nElements_ - 1)
-        {
-            label ind = nGeometryPoints - 1;
-            position = points[ind];
-            chordLength = chordLengths[ind];
-            spanDirection = spanDirs[ind];
-            pitch = pitches[ind];
-        }
-        else
-        {
-            position = vector(0, 0, 0);
-            chordLength = 0.0;
-            spanDirection = vector(0, 0, 0);
-            pitch = 0.0;
-        }
+        // Linearly interpolate position
+        vector point1 = points[geometrySegmentIndex];
+        vector point2 = points[geometrySegmentIndex + 1];
+        vector segment = point2 - point1;
+
+        position = point1 
+                 + segment/nElementsPerSegment*pointIndex
+                 + segment/nElementsPerSegment/2;
+        chordLength = chordLengths[0];
+        spanDirection = spanDirs[0];
+        pitch = pitches[0];
         
         // Chord direction points into free stream then rotated by pitch
         chordDirection = -freeStreamVelocity_;
