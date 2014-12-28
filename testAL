@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+./Allwmake
+
+startDir=$PWD
+
+cd tutorials/simpleFoam/actuatorLine
+
+#cp -rf 0.org 0
+#blockMesh
+#snappyHexMesh -overwrite
+#topoSet
+simpleFoam
+
+#./Allclean
+
+cd $startDir
