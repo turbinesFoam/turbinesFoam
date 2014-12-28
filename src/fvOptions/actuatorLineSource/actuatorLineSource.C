@@ -320,9 +320,15 @@ void Foam::fv::actuatorLineSource::createElements()
                       + deltaSpanTotal/nElementsPerSegment*pointIndex
                       + deltaSpanTotal/nElementsPerSegment/2;
 
-        pitch = pitches[0];
+        // Linearly interpolate section pitch
+        scalar pitch1 = pitches[geometrySegmentIndex];
+        scalar pitch2 = pitches[geometrySegmentIndex + 1];
+        scalar deltaPitchTotal = pitch2 - pitch1;
+        pitch = pitch1 
+              + deltaPitchTotal/nElementsPerSegment*pointIndex
+              + deltaPitchTotal/nElementsPerSegment/2;
         
-        // Chord direction points into free stream then rotated by pitch
+        // pitch direction points into free stream then rotated by pitch
         chordDirection = -freeStreamVelocity_;
         
         // Create a dictionary for this actuatorLineElement
