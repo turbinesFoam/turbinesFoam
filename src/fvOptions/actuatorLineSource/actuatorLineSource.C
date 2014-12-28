@@ -237,7 +237,7 @@ void Foam::fv::actuatorLineSource::createElements()
     label nElementsPerGeometry = nElements_/nGeometryLines;
     if (nElements_ % nGeometryLines)
     {
-        // Need to have integer number of elements per geometry
+        // Need to have integer number of elements per geometry segment
         FatalErrorIn("void actuatorLineSource::createElements()")
             << "Number of actuator line elements must be multiple of the number of actuator line geometry segments" 
             << abort(FatalError);
@@ -287,7 +287,8 @@ void Foam::fv::actuatorLineSource::createElements()
         string str = ss.str();
         const word name = name_ + "Element" + str;
 
-        // Sample values -- should be calculated from elementGeometry
+        // Actuator point geometry to be calculated from elementGeometry
+        label geometrySegmentIndex = i/nElementsPerGeometry;
         vector position;
         scalar chordLength;
         vector chordDirection;
@@ -331,6 +332,7 @@ void Foam::fv::actuatorLineSource::createElements()
         if (debug)
         {
             Info<< "Creating actuatorLineElement: " << name << endl;
+            Info<< "Geometry segment index: " << geometrySegmentIndex << endl;
             Info<< "Position: " << position << endl;
             Info<< "Chord length: " << chordLength << endl;
             Info<< "Chord direction: " << chordDirection << endl;
