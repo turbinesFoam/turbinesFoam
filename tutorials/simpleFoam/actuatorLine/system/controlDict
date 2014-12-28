@@ -59,7 +59,7 @@ libs
 DebugSwitches
 {
     actuatorLineSource  1;
-    actuatorLineElement 0;
+    actuatorLineElement 1;
 }
 
 // ************************************************************************* //
