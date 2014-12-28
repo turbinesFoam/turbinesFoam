@@ -311,8 +311,15 @@ void Foam::fv::actuatorLineSource::createElements()
         chordLength = chordLength1 
                     + deltaChordTotal/nElementsPerSegment*pointIndex
                     + deltaChordTotal/nElementsPerSegment/2;
-        
-        spanDirection = spanDirs[0];
+                    
+        // Linearly interpolate spanDirection
+        vector spanDir1 = spanDirs[geometrySegmentIndex];
+        vector spanDir2 = spanDirs[geometrySegmentIndex + 1];
+        vector deltaSpanTotal = spanDir2 - spanDir1;
+        spanDirection = spanDir1 
+                      + deltaSpanTotal/nElementsPerSegment*pointIndex
+                      + deltaSpanTotal/nElementsPerSegment/2;
+
         pitch = pitches[0];
         
         // Chord direction points into free stream then rotated by pitch
