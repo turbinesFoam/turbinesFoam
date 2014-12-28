@@ -261,10 +261,41 @@ void Foam::fv::actuatorLineSource::createElements()
         const word name = name_ + "Element" + str;
 
         // Sample values -- should be calculated from elementGeometry
-        scalar chordLength = 0.1;
-        vector chordDirection(1, 0, 0);
-        scalar spanLength = 0.1;
-        vector spanDirection(0, 0, 1);
+        vector position;
+        scalar chordLength;
+        vector chordDirection;
+        scalar spanLength;
+        vector spanDirection;
+        scalar pitch;
+        
+        if (i == 0)
+        {
+            position = points[i];
+            chordLength = chordLengths[i];
+            spanLength = mag(points[i] - points[i+1]);
+            spanDirection = spanDirs[i];
+            pitch = pitches[i];
+        }
+        else if (i == nElements_ - 1)
+        {
+            label ind = nGeometryPoints - 1;
+            position = points[ind];
+            chordLength = chordLengths[ind];
+            spanLength = mag(points[i] - points[i-1]);
+            spanDirection = spanDirs[ind];
+            pitch = pitches[ind];
+        }
+        else
+        {
+            position = vector(0, 0, 0);
+            chordLength = 0.0;
+            spanLength = 0.0;
+            spanDirection = vector(0, 0, 0);
+            pitch = 0.0;
+        }
+        
+        // Chord direction points into free stream then rotated by pitch
+        chordDirection = -freeStreamVelocity_;
         
         // Create a dictionary for this actuatorLineElement
         dictionary dict;
@@ -277,6 +308,7 @@ void Foam::fv::actuatorLineSource::createElements()
         if (debug)
         {
             Info<< "Creating actuatorLineElement: " << name << endl;
+            Info<< "Position: " << position << endl;
             Info<< "Chord length: " << chordLength << endl;
             Info<< "Chord direction: " << chordDirection << endl;
             Info<< "Span length: " << spanLength << endl;
@@ -285,6 +317,8 @@ void Foam::fv::actuatorLineSource::createElements()
         
         actuatorLineElement* element = new actuatorLineElement(name, dict, mesh_);
         elements_.set(i, element);
+        pitch = pitch/180.0*Foam::constant::mathematical::pi;
+        elements_[i].pitch(pitch);
     }
 }
 

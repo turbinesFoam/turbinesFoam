@@ -124,6 +124,9 @@ void Foam::fv::actuatorLineElement::rotate(vector rotationPoint, vector axis,
     if (debug)
     {
         Info<< "Rotating actuatorLineElement: " << name_ << endl;
+        Info<< "Rotation point: " << rotationPoint << endl;
+        Info<< "Rotation axis: " << axis << endl;
+        Info<< "Rotation angle (radians): " << radians << endl;
         Info<< "Rotation matrix:" << endl << RM << endl;
         Info<< "Initial position: " << position_ << endl;
         Info<< "Initial chordDirection: " << chordDirection_ << endl;
@@ -152,8 +155,14 @@ void Foam::fv::actuatorLineElement::rotate(vector rotationPoint, vector axis,
     {
         Info<< "Final position: " << position_ << endl;
         Info<< "Final chordDirection: " << chordDirection_ << endl;
-        Info<< "Ginal spanDirection: " << spanDirection_ << endl;
+        Info<< "Final spanDirection: " << spanDirection_ << endl;
     }
+}
+
+
+void Foam::fv::actuatorLineElement::pitch(scalar radians)
+{
+    rotate(position_, spanDirection_, radians);
 }
 
 
