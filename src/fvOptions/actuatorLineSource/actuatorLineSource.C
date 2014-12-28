@@ -192,36 +192,6 @@ const Foam::List<Foam::word>& Foam::fv::actuatorLineSource::profileName() const
 }
 
 
-const Foam::List<Foam::label>& Foam::fv::actuatorLineSource::profileID() const
-{
-    return profileID_;
-}
-
-
-const Foam::List<Foam::scalar>& Foam::fv::actuatorLineSource::radius() const
-{
-    return radius_;
-}
-
-
-const Foam::List<Foam::scalar>& Foam::fv::actuatorLineSource::pitch() const
-{
-    return pitch_;
-}
-
-
-const Foam::List<Foam::scalar>& Foam::fv::actuatorLineSource::chord() const
-{
-    return chord_;
-}
-
-
-Foam::List<Foam::label>& Foam::fv::actuatorLineSource::profileID()
-{
-    return profileID_;
-}
-
-
 void Foam::fv::actuatorLineSource::printCoeffs() const
 {
     // Print turbine properties

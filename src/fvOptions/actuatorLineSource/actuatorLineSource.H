@@ -168,29 +168,8 @@ public:
             //- Return const access to the profile name list
             const List<word>& profileName() const;
 
-            //- Return const access to the profile ID list
-            const List<label>& profileID() const;
-
-            //- Return const access to the radius list
-            const List<scalar>& radius() const;
-
-            //- Return const access to the pitch list
-            const List<scalar>& pitch() const;
-            
-            //- Return const access to the initialAzimuth list
-            const List<scalar>& initialAzimuth() const;
-
-            //- Return const access to the chord list
-            const List<scalar>& chord() const;
-            
-            //- Return const access to the chordMount list
-            const List<scalar>& chordMount() const;
-
 
         // Edit
-
-            //- Return non-const access to the profile ID list
-            List<label>& profileID();
             
             //- Translate the actuator line
             void translate(vector translation);
