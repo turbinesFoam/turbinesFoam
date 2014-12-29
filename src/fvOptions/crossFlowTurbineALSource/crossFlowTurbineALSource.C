@@ -328,8 +328,10 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             scalar chordDisplacement = (0.5 - chordMount)*chordLength;
             point += chordDisplacement*freeStreamDirection_;
             point += radius*radialDirection_;
+            initialVelocities[j] = -freeStreamDirection_*omega_*radius;
             // Rotate according to azimuth value
             rotateVector(point, origin_, axis_, azimuthRadians);
+            rotateVector(initialVelocities[j], origin_, axis_, azimuthRadians);
             elementGeometry[j][0][0] = point.x(); // x location of geom point
             elementGeometry[j][0][1] = point.y(); // y location of geom point
             elementGeometry[j][0][2] = point.z(); // z location of geom point

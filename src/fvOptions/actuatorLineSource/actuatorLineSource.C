@@ -341,7 +341,7 @@ void Foam::fv::actuatorLineSource::createElements()
                         + deltaVelTotal/nElementsPerSegment*pointIndex
                         + deltaVelTotal/nElementsPerSegment/2;
         
-        // pitch direction points into free stream then rotated by pitch
+        // Chord direction points into free stream then rotated by pitch
         chordDirection = -freeStreamVelocity_;
         
         // Create a dictionary for this actuatorLineElement
