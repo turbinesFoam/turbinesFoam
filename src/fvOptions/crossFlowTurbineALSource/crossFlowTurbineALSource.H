@@ -136,6 +136,12 @@ protected:
         //- Inlet velocity for specified inflow
         vector freeStreamVelocity_;
         
+        //- Free stream velocity direction
+        vector freeStreamDirection_;
+        
+        //- Radial direction
+        vector radialDirection_;
+        
         //- Upstream point to determine free stream velocity
         vector upstreamPoint_;
         
@@ -165,7 +171,7 @@ protected:
         //- Rotor local cylindrical co-ordinate system (r, theta, z)
         cylindricalCS coordSys_;
 
-         //- Rotor transformation co-ordinate system
+        //- Rotor transformation co-ordinate system
         autoPtr<localAxesRotation> localAxesRotation_;
 
         //- Maximum radius

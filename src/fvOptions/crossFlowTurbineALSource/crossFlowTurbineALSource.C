@@ -188,38 +188,10 @@ void Foam::fv::crossFlowTurbineALSource::setFaceArea(vector& axis, const bool co
 
 void Foam::fv::crossFlowTurbineALSource::createCoordinateSystem()
 {
-    // construct the local rotor coordinate system
-    vector origin(vector::zero);
-    vector axis(vector::zero);
-    vector refDir(vector::zero);
-
-    coeffs_.lookup("origin") >> origin;
-    coeffs_.lookup("axis") >> axis;
-
-    localAxesRotation_.reset
-    (
-        new localAxesRotation
-        (
-            mesh_,
-            axis,
-            origin,
-            cells_
-        )
-    );
-
-    setFaceArea(axis, false);
-
-    coordSys_ = cylindricalCS("rotorCoordSys", origin, axis, refDir, false);
-
-    const scalar sumArea = gSum(area_);
-    const scalar diameter = rotorRadius_*2;
-    Info<< "    Rotor gometry:" << nl
-        << "    - rotor diameter = " << diameter << nl
-        << "    - frontal area   = " << sumArea << nl
-        << "    - origin         = " << coordSys_.origin() << nl
-        << "    - r-axis         = " << coordSys_.R().e1() << nl
-        << "    - theta-axis     = " << coordSys_.R().e2() << nl
-        << "    - z-axis         = " << coordSys_.R().e3() << endl;
+    // Construct the local rotor coordinate system
+    freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
+    radialDirection_ = -freeStreamDirection_^axis_;
+    radialDirection_ = radialDirection_/mag(radialDirection_);
 }
 
 
@@ -265,7 +237,6 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
     List<List<scalar> > elementData;
     List<List<scalar> > profileData;
     word modelType = "actuatorLineSource";
-    vector freeStreamDirection = freeStreamVelocity_/mag(freeStreamVelocity_);
     
     const dictionary& profilesSubDict(coeffs_.subDict("profiles"));
     
@@ -320,7 +291,8 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             // Move along axis
             point += axis_*axialDistance;
             scalar chordDisplacement = (0.5 - chordMount)*chordLength;
-            point += chordDisplacement*freeStreamDirection;
+            point += chordDisplacement*freeStreamDirection_;
+            point += radius*radialDirection_;
             elementGeometry[j][0][0] = point.x(); // x location of geom point
             elementGeometry[j][0][1] = point.y(); // y location of geom point
             elementGeometry[j][0][2] = point.z(); // z location of geom point
@@ -392,9 +364,9 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     rMax_(0.0)
 {
     read(dict);
-    createBlades();
     createCoordinateSystem();
-    constructGeometry();
+    createBlades();
+    //~ constructGeometry();
 }
 
 
