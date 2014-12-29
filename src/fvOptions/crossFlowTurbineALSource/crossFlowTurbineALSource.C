@@ -289,7 +289,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             // Create geometry point for AL source at origin
             vector point = origin_;
             // Move along axis
-            point += axis_*axialDistance;
+            point += axialDistance*axis_;
             scalar chordDisplacement = (0.5 - chordMount)*chordLength;
             point += chordDisplacement*freeStreamDirection_;
             point += radius*radialDirection_;
