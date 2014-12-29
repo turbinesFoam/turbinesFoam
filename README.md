@@ -1,20 +1,18 @@
 turbinesFoam
 ============
 
-Right now, this library is just a dream. Don't expect anything to work and please
-consider contributing! 
-
-Someday, this will hopefully be a library for parameterizing wind and marine 
-hydrokinetic turbines in OpenFOAM. So far, some components for solvers 
+`turbinesFoam` is a library for parameterizing wind and marine 
+hydrokinetic turbines in OpenFOAM. Some components for solvers 
 and turbine models have been taken from NREL's SOWFA and Offwind.
 
-To-do
------
-  - [ ] Write axial-flow turbine actuator line model as `fvOption`, so custom
-        solvers are not necessary.
-  - [ ] Write cross-flow turbine actuator line model as `fvOption`.
-  - [ ] Write cross-flow turbine actuator surface model as `fvOption`.
-
+Status
+------
+Currently, the `actuatorLineSource` can essentially initialize its
+kinematics, but the addition of force to the flow field is not
+implemented. 
+See the [issue tracker](https://github.com/petebachant/turbinesFoam/issues)
+for more details. 
+Pull requests are encouraged!
 
 Features
 --------
