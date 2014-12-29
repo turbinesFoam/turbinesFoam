@@ -105,6 +105,9 @@ protected:
         //- Free stream velocity
         vector freeStreamVelocity_;
         
+        //- Free stream direction
+        vector freeStreamDirection_;
+        
         //- List of actuator line elements
         PtrList<actuatorLineElement> elements_;
 

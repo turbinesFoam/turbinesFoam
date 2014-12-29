@@ -90,6 +90,9 @@ protected:
         //- Fluid velocity near the element
         vector fluidVelocity_;
         
+        //- Free stream direction
+        vector freeStreamDirection_;
+        
         //- Reference to the mesh
         const fvMesh& mesh_;
         

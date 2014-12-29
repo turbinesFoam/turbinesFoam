@@ -52,6 +52,7 @@ void Foam::fv::actuatorLineElement::read()
     dict_.lookup("spanLength") >> spanLength_;
     dict_.lookup("spanDirection") >> spanDirection_;
     dict_.lookup("coefficientData") >> coefficientData_;
+    dict_.lookup("freeStreamDirection") >> freeStreamDirection_;
     
     if (debug)
     {
@@ -105,6 +106,9 @@ void Foam::fv::actuatorLineElement::calculate
 )
 {
 	// Calculate local wind velocity
+    scalar upstreamDistance = chordLength_;
+    vector upstreamPoint = position_ - upstreamDistance*freeStreamDirection_;
+    
 	// Calculate relative velocity
 	// Calculate angle of attack
 	// Lookup lift and drag coefficients

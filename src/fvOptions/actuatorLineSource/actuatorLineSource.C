@@ -205,13 +205,14 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
         coeffs_.lookup("fieldNames") >> fieldNames_;
         applied_.setSize(fieldNames_.size(), false);
 
-        // Get foil information
+        // Look up information in dictionary
         coeffs_.lookup("coefficientData") >> coefficientData_;
         coeffs_.lookup("tipEffect") >> tipEffect_;
         coeffs_.lookup("elementGeometry") >> elementGeometry_;
         coeffs_.lookup("nElements") >> nElements_;
-        
         coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
+        freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
+        
         
         if (debug)
         {
@@ -342,7 +343,7 @@ void Foam::fv::actuatorLineSource::createElements()
                         + deltaVelTotal/nElementsPerSegment/2;
         
         // Chord direction points into free stream then rotated by pitch
-        chordDirection = -freeStreamVelocity_;
+        chordDirection = -freeStreamDirection_;
         
         // Create a dictionary for this actuatorLineElement
         dictionary dict;
@@ -352,6 +353,7 @@ void Foam::fv::actuatorLineSource::createElements()
         dict.add("chordDirection", chordDirection);
         dict.add("spanLength", spanLength);
         dict.add("spanDirection", spanDirection);
+        dict.add("freeStreamDirection", freeStreamDirection_);
         
         if (debug)
         {
