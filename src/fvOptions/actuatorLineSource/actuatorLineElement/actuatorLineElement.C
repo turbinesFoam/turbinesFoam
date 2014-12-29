@@ -226,19 +226,19 @@ void Foam::fv::actuatorLineElement::calculate
     forceVector_ = lift*liftDirection + drag*dragDirection;
     
     // Calculate force field 
-    scalar epsilon = 3.5; // An estimate from SOWFA tutorial
+    scalar epsilon = 0.5; // 3.5 estimate from SOWFA tutorial
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
     
-    // Find the cells within the element's sphere of influence
-    DynamicList<label> sphereCells;
+    // Apply force to the cells within the element's sphere of influence
     scalar sphereRadius = chordLength_ + projectionRadius;
     forAll(mesh_.cells(),cellI)
     {
         if (mag(mesh_.C()[cellI] - position_) <= sphereRadius)
         {
-            sphereCells.append(cellI);
+            forceField[cellI] += forceVector_;
         }
     }
+    
     
     if (debug)
     {
