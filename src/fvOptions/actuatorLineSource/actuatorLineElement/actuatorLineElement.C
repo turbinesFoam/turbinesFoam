@@ -54,6 +54,17 @@ void Foam::fv::actuatorLineElement::read()
     dict_.lookup("coefficientData") >> coefficientData_;
     dict_.lookup("freeStreamDirection") >> freeStreamDirection_;
     
+    // Create lists from coefficient data
+    angleOfAttackList_.setSize(coefficientData_.size());
+    liftCoefficientList_.setSize(coefficientData_.size());
+    dragCoefficientList_.setSize(coefficientData_.size());
+    forAll(coefficientData_, i)
+    {
+        angleOfAttackList_[i] = coefficientData_[i][0];
+        liftCoefficientList_[i] = coefficientData_[i][1];
+        dragCoefficientList_[i] = coefficientData_[i][2];
+    }
+    
     if (debug)
     {
        Info<< "actuatorLineElement properties:" << endl;
@@ -131,6 +142,23 @@ Foam::scalar Foam::fv::actuatorLineElement::interpolate
 }
 
 
+void Foam::fv::actuatorLineElement::lookupCoefficients()
+{
+    liftCoefficient_ = interpolate
+    (
+        angleOfAttack_, 
+        angleOfAttackList_,
+        liftCoefficientList_
+    );
+    dragCoefficient_ = interpolate
+    (
+        angleOfAttack_, 
+        angleOfAttackList_,
+        dragCoefficientList_
+    );
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::fv::actuatorLineElement::actuatorLineElement
@@ -185,8 +213,7 @@ void Foam::fv::actuatorLineElement::calculate
     angleOfAttack_ = angleOfAttackRad/Foam::constant::mathematical::pi*180.0;
     
     // Lookup lift and drag coefficients
-    liftCoefficient_ = 0.5;
-    dragCoefficient_ = 0.05;
+    lookupCoefficients();
     
     // Calculate force per unit density
     scalar area = chordLength_*spanLength_;
