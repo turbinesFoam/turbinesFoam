@@ -178,6 +178,9 @@ public:
             
             //- Pitch the element about its half chord
             void pitch(scalar radians);
+            
+            //- Set velocity of element
+            void setVelocity(vector velocity);
 
         // Evaluation
             

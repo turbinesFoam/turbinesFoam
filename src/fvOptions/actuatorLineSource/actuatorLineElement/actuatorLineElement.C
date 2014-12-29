@@ -174,6 +174,12 @@ void Foam::fv::actuatorLineElement::translate(vector translationVector)
 }
 
 
+void Foam::fv::actuatorLineElement::setVelocity(vector velocity)
+{
+    velocity_ = velocity;
+}
+
+
 Foam::vector& Foam::fv::actuatorLineElement::force()
 {
     calculate();
