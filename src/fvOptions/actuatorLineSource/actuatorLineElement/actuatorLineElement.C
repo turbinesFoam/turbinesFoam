@@ -105,15 +105,50 @@ void Foam::fv::actuatorLineElement::calculate
     volVectorField& forceField
 )
 {
-	// Calculate local wind velocity
+    // Calculate local wind velocity
     scalar upstreamDistance = chordLength_;
     vector upstreamPoint = position_ - upstreamDistance*freeStreamDirection_;
+    // Get velocity vector at upstream point
+    vector inflowVelocity = Uin[mesh_.findCell(upstreamPoint)];
     
-	// Calculate relative velocity
-	// Calculate angle of attack
-	// Lookup lift and drag coefficients
-	// Calculate force
-	// Calculate force field 
+    // Calculate relative velocity (note these are not projected onto a
+    // plane perpendicular to the chord and span direction)
+    vector relativeVelocity = inflowVelocity - velocity_;
+    
+    // Calculate angle of attack (radians)
+    scalar angleOfAttackRad = acos((-chordDirection_ & relativeVelocity)
+                            / (mag(chordDirection_)*mag(relativeVelocity)));
+    angleOfAttack_ = angleOfAttackRad/Foam::constant::mathematical::pi*180.0;
+    
+    // Lookup lift and drag coefficients
+    // Calculate force per unit density
+    
+    // Calculate force field 
+    scalar epsilon = 3.5; // An estimate from SOWFA tutorial
+    scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
+    
+    // Find the cells within the element's sphere of influence
+    DynamicList<label> sphereCells;
+    scalar sphereRadius = chordLength_ + projectionRadius;
+    forAll(mesh_.cells(),cellI)
+    {
+        if (mag(mesh_.C()[cellI] - position_) <= sphereRadius)
+        {
+            sphereCells.append(cellI);
+        }
+    }
+    
+    if (debug)
+    {
+        Info<< "Calculating force contribution from actuatorLineElement " 
+            << name_ << endl;
+        Info<< "    inflowVelocity: " << inflowVelocity << endl;
+        Info<< "    relativeVelocity: " << relativeVelocity << endl;
+        Info<< "    angleOfAttack (degrees): " << angleOfAttack_ << endl;
+        Info<< "    sphereRadius: " << sphereRadius << endl;
+        Info<< "    force (per unit density): " << forceVector_ << endl 
+            << endl;
+    }
 }
 
 

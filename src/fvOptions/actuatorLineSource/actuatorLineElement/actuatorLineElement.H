@@ -103,7 +103,7 @@ protected:
         //- Reference density for incompressible case
         scalar rhoRef_;
         
-        //- Angle of attack
+        //- Angle of attack (degrees)
         scalar angleOfAttack_;
         
         //- Lift coefficient
