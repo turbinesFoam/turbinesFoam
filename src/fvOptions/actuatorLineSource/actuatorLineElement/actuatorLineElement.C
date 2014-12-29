@@ -67,6 +67,70 @@ void Foam::fv::actuatorLineElement::read()
 }
 
 
+Foam::scalar Foam::fv::actuatorLineElement::interpolate
+(
+    scalar xNew, 
+    List<scalar>& xOld, 
+    List<scalar>& yOld
+)
+{
+    label index = 0;
+    label indexP = 0;
+    label indexM = 0;
+    scalar error = 1.0E30;
+    forAll(xOld, i)
+    {
+        scalar diff = mag(xNew - xOld[i]);
+        if(diff < error)
+        {
+            index = i;
+            error = diff;
+        }
+    }
+    if (xNew < xOld[index])
+    {
+        if (index == 0)
+        {
+            indexP = 1;
+            indexM = indexP - 1;
+        }
+        else
+        {
+            indexP = index;
+            indexM = indexP - 1;
+        }
+        return yOld[indexM] 
+               + ((yOld[indexP] 
+               - yOld[indexM])/(xOld[indexP] 
+               - xOld[indexM]))*(xNew - xOld[indexM]);
+    }
+    else if (xNew > xOld[index])
+    {
+        if (index == xOld.size() - 1)
+        {
+            indexP = xOld.size() - 1;
+            indexM = indexP - 1;
+        }
+        else
+        {
+            indexP = index + 1;
+            indexM = indexP - 1;
+        }
+        return yOld[indexM] + ((yOld[indexP] 
+               - yOld[indexM])/(xOld[indexP] 
+               - xOld[indexM]))*(xNew - xOld[indexM]);
+    }
+    else if (xNew == xOld[index])
+    {
+        return yOld[index];
+    }
+    else
+    {
+        return 0.0;
+    }
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::fv::actuatorLineElement::actuatorLineElement
@@ -121,7 +185,18 @@ void Foam::fv::actuatorLineElement::calculate
     angleOfAttack_ = angleOfAttackRad/Foam::constant::mathematical::pi*180.0;
     
     // Lookup lift and drag coefficients
+    liftCoefficient_ = 0.5;
+    dragCoefficient_ = 0.05;
+    
     // Calculate force per unit density
+    scalar area = chordLength_*spanLength_;
+    scalar magSqrU = magSqr(relativeVelocity);
+    scalar lift = 0.5*area*liftCoefficient_*magSqrU;
+    scalar drag = 0.5*area*dragCoefficient_*magSqrU;
+    vector liftDirection = spanDirection_ ^ relativeVelocity;
+    liftDirection /= mag(liftDirection);
+    vector dragDirection = relativeVelocity/mag(relativeVelocity);
+    forceVector_ = lift*liftDirection + drag*dragDirection;
     
     // Calculate force field 
     scalar epsilon = 3.5; // An estimate from SOWFA tutorial

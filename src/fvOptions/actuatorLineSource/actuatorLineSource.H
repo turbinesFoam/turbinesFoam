@@ -182,14 +182,6 @@ public:
 
 
         // Evaluation
-
-            //- Interpolate a scalar value
-            scalar interpolate
-            (
-                scalar xNew, 
-                List<scalar>& xOld, 
-                List<scalar>& yOld
-            );
             
         // IO
         

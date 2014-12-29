@@ -117,6 +117,14 @@ protected:
 
 
     // Protected Member Functions
+    
+        //- Interpolate a scalar value
+        scalar interpolate
+        (
+            scalar xNew, 
+            List<scalar>& xOld, 
+            List<scalar>& yOld
+        );
 
 
 public:
