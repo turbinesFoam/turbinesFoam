@@ -44,6 +44,7 @@ SourceFiles
 #include "volFieldsFwd.H"
 #include "fvMesh.H"
 #include "fvMatrices.H"
+#include "fvCFD.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -95,7 +96,10 @@ protected:
         
         //- Fluid force on element; a vector that is perpendicular to 
         // spanDirection, 
-        vector force_;
+        vector forceVector_;
+        
+        //- Force imparted on the flow by the element
+        volVectorField forceField_;
         
         //- Reference density for incompressible case
         scalar rhoRef_;

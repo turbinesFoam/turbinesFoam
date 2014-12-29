@@ -77,9 +77,22 @@ Foam::fv::actuatorLineElement::actuatorLineElement
 :
     dict_(dict),
     name_(name),
-    mesh_(mesh)
+    mesh_(mesh),
+    forceField_
+    (
+        IOobject
+        (
+            "actuatorLineElementForce",
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh_,
+        dimensionedVector("force", dimForce/dimVolume/dimDensity, vector::zero)
+    )
 {
     velocity_ = vector::zero;
+    forceVector_ = vector::zero;
     read();
 }
 
@@ -199,7 +212,7 @@ void Foam::fv::actuatorLineElement::setVelocity(vector velocity)
 Foam::vector& Foam::fv::actuatorLineElement::force()
 {
     calculate();
-    return force_;
+    return forceVector_;
 }
 
 
