@@ -65,8 +65,8 @@ turbine0
                 profile     NACA0021;
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
-                    (-0.5 0.5 240.0 0.14 0.5 0.0)
-                    ( 0.5 0.5 240.0 0.14 0.5 0.0)
+                    (-0.5 0.5 240.0 0.14 0.25 0.0)
+                    ( 0.5 0.5 240.0 0.14 0.25 0.0)
                 );
             }
         }
