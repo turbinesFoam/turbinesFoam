@@ -173,6 +173,9 @@ public:
             
             //- Rotate the actuator line about a specified axis
             void rotate(vector rotationPoint, vector axis, scalar radians);
+            
+            //- Pitch the blade about its half chord
+            void pitch(scalar radians);
 
 
         // Evaluation

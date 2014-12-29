@@ -370,7 +370,16 @@ void Foam::fv::actuatorLineSource::rotate
 {
     forAll(elements_, i)
     {
-        elements_[i].rotate(rotationPoint, axis, radians);
+        elements_[i].rotate(rotationPoint, axis, radians, true);
+    }
+}
+
+
+void Foam::fv::actuatorLineSource::pitch(scalar radians)
+{
+    forAll(elements_, i)
+    {
+        elements_[i].pitch(radians);
     }
 }
 
