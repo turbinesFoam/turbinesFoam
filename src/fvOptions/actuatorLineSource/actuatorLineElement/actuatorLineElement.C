@@ -187,6 +187,11 @@ void Foam::fv::actuatorLineElement::translate(vector translationVector)
 
 void Foam::fv::actuatorLineElement::setVelocity(vector velocity)
 {
+    if (debug) 
+    {
+        Info<< "Setting velocity of " << name_ << " from " 
+            << velocity_ << " to " << velocity << endl << endl;
+    }
     velocity_ = velocity;
 }
 

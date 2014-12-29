@@ -270,6 +270,10 @@ void Foam::fv::actuatorLineSource::createElements()
     // Calculate span length of each element
     scalar spanLength = totalLength_/nElements_;
     
+    // Lookup initial element velocities if present
+    List<vector> initialVelocities(nElements_, vector::zero);
+    coeffs_.readIfPresent("initialVelocities", initialVelocities);
+    
     if (debug)
     {
         Info<< "Total length: " << totalLength_ << endl;
@@ -295,6 +299,7 @@ void Foam::fv::actuatorLineSource::createElements()
         vector chordDirection;
         vector spanDirection;
         scalar pitch;
+        vector initialVelocity;
         
         // Linearly interpolate position
         vector point1 = points[geometrySegmentIndex];
@@ -327,6 +332,14 @@ void Foam::fv::actuatorLineSource::createElements()
         pitch = pitch1 
               + deltaPitchTotal/nElementsPerSegment*pointIndex
               + deltaPitchTotal/nElementsPerSegment/2;
+              
+        // Linearly interpolate element velocity
+        vector vel1 = initialVelocities[geometrySegmentIndex];
+        vector vel2 = initialVelocities[geometrySegmentIndex + 1];
+        vector deltaVelTotal = vel2 - vel1;
+        initialVelocity = vel1 
+                        + deltaVelTotal/nElementsPerSegment*pointIndex
+                        + deltaVelTotal/nElementsPerSegment/2;
         
         // pitch direction points into free stream then rotated by pitch
         chordDirection = -freeStreamVelocity_;
@@ -357,6 +370,7 @@ void Foam::fv::actuatorLineSource::createElements()
         elements_.set(i, element);
         pitch = pitch/180.0*Foam::constant::mathematical::pi;
         elements_[i].pitch(pitch);
+        elements_[i].setVelocity(initialVelocity);
     }
 }
 

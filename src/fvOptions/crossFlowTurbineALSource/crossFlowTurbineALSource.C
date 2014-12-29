@@ -302,8 +302,8 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         
         // Convert element data into actuator line element geometry
         label nGeomPoints = elementData.size();
-        List<List<List<scalar> > > elementGeometry;
-        elementGeometry.setSize(nGeomPoints);
+        List<List<List<scalar> > > elementGeometry(nGeomPoints);
+        List<vector> initialVelocities(nGeomPoints, vector::one);
         for (int j = 0; j < nGeomPoints; j++)
         {
             // Read CFTAL dict data
@@ -355,6 +355,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         }
         
         bladeSubDict.add("elementGeometry", elementGeometry);
+        bladeSubDict.add("initialVelocities", initialVelocities);
         
         dictionary dict;
         dict.add("actuatorLineSourceCoeffs", bladeSubDict);
