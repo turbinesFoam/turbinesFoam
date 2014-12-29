@@ -233,9 +233,13 @@ void Foam::fv::actuatorLineElement::calculate
     scalar sphereRadius = chordLength_ + projectionRadius;
     forAll(mesh_.cells(),cellI)
     {
-        if (mag(mesh_.C()[cellI] - position_) <= sphereRadius)
+        scalar dis = mag(mesh_.C()[cellI] - position_);
+        if (dis <= sphereRadius)
         {
-            forceField[cellI] += forceVector_;
+            scalar factor = Foam::exp(-Foam::sqr(dis/epsilon))
+                          / (Foam::pow(epsilon,3)
+                          * Foam::pow(Foam::constant::mathematical::pi,1.5));
+            forceField[cellI] += factor*forceVector_;
         }
     }
     
