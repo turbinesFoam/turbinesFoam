@@ -79,6 +79,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     name_(name),
     mesh_(mesh)
 {
+    velocity_ = vector::zero;
     read();
 }
 
@@ -107,8 +108,13 @@ void Foam::fv::actuatorLineElement::calculate()
 }
 
 
-void Foam::fv::actuatorLineElement::rotate(vector rotationPoint, vector axis, 
-                                           scalar radians)
+void Foam::fv::actuatorLineElement::rotate
+(
+    vector rotationPoint, 
+    vector axis, 
+    scalar radians,
+    bool rotateVelocity=true
+)
 {
     // Declare and define the rotation matrix (from SOWFA)
     tensor RM;
@@ -133,6 +139,7 @@ void Foam::fv::actuatorLineElement::rotate(vector rotationPoint, vector axis,
         Info<< "Initial position: " << position_ << endl;
         Info<< "Initial chordDirection: " << chordDirection_ << endl;
         Info<< "Initial spanDirection: " << spanDirection_ << endl;
+        Info<< "Initial velocity: " << velocity_ << endl;
     }
 
     // Rotation matrices make a rotation about the origin, so need to subtract 
@@ -153,18 +160,22 @@ void Foam::fv::actuatorLineElement::rotate(vector rotationPoint, vector axis,
     chordDirection_ = RM & chordDirection_;
     spanDirection_ = RM & spanDirection_;
     
+    // Rotate the element's velocity vector if specified
+    if (rotateVelocity) velocity_ = RM & velocity_;
+    
     if (debug)
     {
         Info<< "Final position: " << position_ << endl;
         Info<< "Final chordDirection: " << chordDirection_ << endl;
-        Info<< "Final spanDirection: " << spanDirection_ << endl << endl;
+        Info<< "Final spanDirection: " << spanDirection_ << endl;
+        Info<< "Final velocity: " << velocity_ << endl << endl;
     }
 }
 
 
 void Foam::fv::actuatorLineElement::pitch(scalar radians)
 {
-    rotate(position_, spanDirection_, radians);
+    rotate(position_, spanDirection_, radians, false);
 }
 
 

@@ -174,13 +174,28 @@ public:
             void translate(vector translationVector);
             
             //- Rotate the element about some axis
-            void rotate(vector rotationPoint, vector axis, scalar radians);
+            void rotate
+            (
+                vector rotationPoint, 
+                vector axis, 
+                scalar radians,
+                bool rotateVelocity
+            );
+            void rotate
+            (
+                vector rotationPoint, 
+                vector axis, 
+                scalar radians
+            );
             
             //- Pitch the element about its half chord
             void pitch(scalar radians);
             
             //- Set velocity of element
             void setVelocity(vector velocity);
+            
+            //- Set element speed (velocity magnitude)
+            void setSpeed(scalar speed);
 
         // Evaluation
             
