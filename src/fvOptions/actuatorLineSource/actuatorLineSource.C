@@ -372,7 +372,16 @@ void Foam::fv::actuatorLineSource::rotate
     {
         elements_[i].rotate(rotationPoint, axis, radians);
     }
-} 
+}
+
+
+void Foam::fv::actuatorLineSource::translate(vector translationVector)
+{
+    forAll(elements_, i)
+    {
+        elements_[i].translate(translationVector);
+    }
+}
 
 
 void Foam::fv::actuatorLineSource::addSup

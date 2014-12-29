@@ -168,6 +168,12 @@ void Foam::fv::actuatorLineElement::pitch(scalar radians)
 }
 
 
+void Foam::fv::actuatorLineElement::translate(vector translationVector)
+{
+    position_ += translationVector;
+}
+
+
 Foam::vector& Foam::fv::actuatorLineElement::force()
 {
     calculate();
