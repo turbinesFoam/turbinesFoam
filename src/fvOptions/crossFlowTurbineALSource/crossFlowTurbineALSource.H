@@ -190,9 +190,6 @@ protected:
 
     // Protected Member Functions
 
-        //- Check data
-        void checkData();
-
         //- Set the face areas per cell, and optionally correct the rotor axis
         void setFaceArea(vector& axis, const bool correct);
         

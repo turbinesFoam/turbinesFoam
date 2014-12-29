@@ -50,12 +50,6 @@ namespace fv
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
-void Foam::fv::crossFlowTurbineALSource::checkData()
-{
-    Info<< "Data is not being checked..." << endl;
-}
-
-
 void Foam::fv::crossFlowTurbineALSource::setFaceArea(vector& axis, const bool correct)
 {
     area_ = 0.0;
@@ -271,6 +265,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
     List<List<scalar> > elementData;
     List<List<scalar> > profileData;
     word modelType = "actuatorLineSource";
+    vector freeStreamDirection = freeStreamVelocity_/mag(freeStreamVelocity_);
     
     const dictionary& profilesSubDict(coeffs_.subDict("profiles"));
     
@@ -307,23 +302,40 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         elementGeometry.setSize(nGeomPoints);
         for (int j = 0; j < nGeomPoints; j++)
         {
+            // Read CFTAL dict data
+            scalar axialDistance = elementData[j][0];
+            scalar radius = elementData[j][1];
+            scalar chordLength = elementData[j][3];
+            scalar chordMount = elementData[j][4];
+            
+            // Set sizes for actuatorLineSource elementGeometry lists
             elementGeometry[j].setSize(4);
             elementGeometry[j][0].setSize(3);
             elementGeometry[j][1].setSize(3);
             elementGeometry[j][2].setSize(1);
             elementGeometry[j][3].setSize(1);
-            scalar axialDistance = elementData[j][0];
-            vector point = origin_ + axis_*axialDistance;
+            
+            // Create geometry point for AL source at origin
+            vector point = origin_;
+            // Move along axis
+            point += axis_*axialDistance;
+            scalar chordDisplacement = (0.5 - chordMount)*chordLength;
+            point += chordDisplacement*freeStreamDirection;
             elementGeometry[j][0][0] = point.x(); // x location of geom point
             elementGeometry[j][0][1] = point.y(); // y location of geom point
             elementGeometry[j][0][2] = point.z(); // z location of geom point
+            
+            // Set span directions for AL source
             elementGeometry[j][1][0] = axis_.x(); // x component of span direction
             elementGeometry[j][1][1] = axis_.y(); // y component of span direction
             elementGeometry[j][1][2] = axis_.z(); // z component of span direction
-            scalar chordLength = elementData[j][3];
-            elementGeometry[j][2][0] = chordLength;    // chord length
+            
+            // Set chord length
+            elementGeometry[j][2][0] = chordLength;
+            
+            // Set pitch
             scalar pitch = elementData[j][5];
-            elementGeometry[j][3][0] = pitch;    // pitch
+            elementGeometry[j][3][0] = pitch;
         }
         
         if (debug)
@@ -380,6 +392,9 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     rMax_(0.0)
 {
     read(dict);
+    createBlades();
+    createCoordinateSystem();
+    constructGeometry();
 }
 
 
@@ -604,7 +619,7 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
         coeffs_.lookup("fieldNames") >> fieldNames_;
         applied_.setSize(fieldNames_.size(), false);
 
-        // read co-ordinate system/geometry invariant properties
+        // Read coordinate system/geometry invariant properties
         coeffs_.lookup("origin") >> origin_;
         coeffs_.lookup("axis") >> axis_;
         coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
@@ -619,24 +634,11 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
 
         coeffs_.lookup("tipEffect") >> tipEffect_;
         
-        // Print turbine properties
-        Info<< "Cross-flow turbine properties:" << endl;
-        printCoeffs();
-        
-        // Create blades
-        createBlades();
-
-        // create co-ordinate system
-        createCoordinateSystem();
-
-        // read co-odinate system dependent properties
-        checkData();
-
-        constructGeometry();
-        
         if (debug)
         {
             Info<< "Debugging on" << endl;
+            Info<< "Cross-flow turbine properties:" << endl;
+            printCoeffs();
         }
 
         return true;
