@@ -77,19 +77,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
 :
     dict_(dict),
     name_(name),
-    mesh_(mesh),
-    forceField_
-    (
-        IOobject
-        (
-            "actuatorLineElementForce",
-            mesh_,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        mesh_,
-        dimensionedVector("force", dimForce/dimVolume/dimDensity, vector::zero)
-    )
+    mesh_(mesh)
 {
     velocity_ = vector::zero;
     forceVector_ = vector::zero;
@@ -110,7 +98,11 @@ const Foam::word& Foam::fv::actuatorLineElement::name() const
 }
 
 
-void Foam::fv::actuatorLineElement::calculate()
+void Foam::fv::actuatorLineElement::calculate
+(
+    vectorField Uin,
+    volVectorField& forceField
+)
 {
 	// Calculate local wind velocity
 	// Calculate relative velocity
@@ -211,7 +203,6 @@ void Foam::fv::actuatorLineElement::setVelocity(vector velocity)
 
 Foam::vector& Foam::fv::actuatorLineElement::force()
 {
-    calculate();
     return forceVector_;
 }
 
@@ -242,8 +233,8 @@ void Foam::fv::actuatorLineElement::addSup
     // Read the reference density for incompressible flow
     //coeffs_.lookup("rhoRef") >> rhoRef_;
 
-    //const vectorField Uin(inflowVelocity(eqn.psi()));
-    calculate();
+    const vectorField Uin(eqn.psi());
+    calculate(Uin, forceI);
 
     // Add source to rhs of eqn
     force += forceI;
@@ -261,7 +252,7 @@ void Foam::fv::actuatorLineElement::addSup
     (
         IOobject
         (
-            name_ + ":force",
+            name_ + "Force",
             mesh_.time().timeName(),
             mesh_
         ),
@@ -274,8 +265,8 @@ void Foam::fv::actuatorLineElement::addSup
         )
     );
 
-    //const vectorField Uin(inflowVelocity(eqn.psi()));
-    calculate();
+    const vectorField Uin(eqn.psi());
+    calculate(Uin, forceI);
 
     // Add force to total actuator line force
     force += forceI;
