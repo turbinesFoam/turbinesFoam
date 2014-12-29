@@ -189,7 +189,7 @@ void Foam::fv::actuatorLineElement::setVelocity(vector velocity)
 {
     if (debug) 
     {
-        Info<< "Setting velocity of " << name_ << " from " 
+        Info<< "Changing velocity of " << name_ << " from " 
             << velocity_ << " to " << velocity << endl << endl;
     }
     velocity_ = velocity;
