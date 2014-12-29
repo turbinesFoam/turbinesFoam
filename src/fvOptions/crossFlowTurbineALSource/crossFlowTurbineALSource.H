@@ -195,6 +195,15 @@ protected:
 
 
     // Protected Member Functions
+    
+        //- Rotate a vector
+        void rotateVector
+        (
+            vector& vectorToRotate,
+            vector rotationPoint,
+            vector axis,
+            scalar radians
+        );
 
         //- Set the face areas per cell, and optionally correct the rotor axis
         void setFaceArea(vector& axis, const bool correct);

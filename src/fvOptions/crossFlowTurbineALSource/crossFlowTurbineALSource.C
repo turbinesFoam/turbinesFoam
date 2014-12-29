@@ -50,6 +50,39 @@ namespace fv
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
+void Foam::fv::crossFlowTurbineALSource::rotateVector
+(
+    vector& vectorToRotate,
+    vector rotationPoint, 
+    vector axis,
+    scalar radians
+)
+{
+    // Declare and define the rotation matrix (from SOWFA)
+    tensor RM;
+    scalar angle = radians;
+    RM.xx() = Foam::sqr(axis.x()) + (1.0 - Foam::sqr(axis.x())) * Foam::cos(angle); 
+    RM.xy() = axis.x() * axis.y() * (1.0 - Foam::cos(angle)) - axis.z() * Foam::sin(angle); 
+    RM.xz() = axis.x() * axis.z() * (1.0 - Foam::cos(angle)) + axis.y() * Foam::sin(angle);
+    RM.yx() = axis.x() * axis.y() * (1.0 - Foam::cos(angle)) + axis.z() * Foam::sin(angle); 
+    RM.yy() = Foam::sqr(axis.y()) + (1.0 - Foam::sqr(axis.y())) * Foam::cos(angle);
+    RM.yz() = axis.y() * axis.z() * (1.0 - Foam::cos(angle)) - axis.x() * Foam::sin(angle);
+    RM.zx() = axis.x() * axis.z() * (1.0 - Foam::cos(angle)) - axis.y() * Foam::sin(angle);
+    RM.zy() = axis.y() * axis.z() * (1.0 - Foam::cos(angle)) + axis.x() * Foam::sin(angle);
+    RM.zz() = Foam::sqr(axis.z()) + (1.0 - Foam::sqr(axis.z())) * Foam::cos(angle);
+    
+    // Rotation matrices make a rotation about the origin, so need to subtract 
+    // rotation point off the point to be rotated.
+    vectorToRotate -= rotationPoint;
+
+    // Perform the rotation.
+    vectorToRotate = RM & vectorToRotate;
+
+    // Return the rotated point to its new location relative to the rotation point.
+    vectorToRotate += rotationPoint;
+}
+
+
 void Foam::fv::crossFlowTurbineALSource::setFaceArea(vector& axis, const bool correct)
 {
     area_ = 0.0;
@@ -276,6 +309,8 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             // Read CFTAL dict data
             scalar axialDistance = elementData[j][0];
             scalar radius = elementData[j][1];
+            scalar azimuthDegrees = elementData[j][2];
+            scalar azimuthRadians = azimuthDegrees/180.0*mathematical::pi;
             scalar chordLength = elementData[j][3];
             scalar chordMount = elementData[j][4];
             
@@ -293,6 +328,8 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             scalar chordDisplacement = (0.5 - chordMount)*chordLength;
             point += chordDisplacement*freeStreamDirection_;
             point += radius*radialDirection_;
+            // Rotate according to azimuth value
+            rotateVector(point, origin_, axis_, azimuthRadians);
             elementGeometry[j][0][0] = point.x(); // x location of geom point
             elementGeometry[j][0][1] = point.y(); // y location of geom point
             elementGeometry[j][0][2] = point.z(); // z location of geom point
@@ -307,6 +344,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             
             // Set pitch
             scalar pitch = elementData[j][5];
+            pitch += azimuthDegrees;
             elementGeometry[j][3][0] = pitch;
         }
         
