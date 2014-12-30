@@ -2,4 +2,6 @@ log.*
 constant/polyMesh
 0
 0.*
- constant/polyMesh/blockMeshDict
+constant/polyMesh/blockMeshDict
+[0-9]*
+
