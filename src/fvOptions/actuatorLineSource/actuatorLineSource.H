@@ -108,6 +108,9 @@ protected:
         //- Free stream direction
         vector freeStreamDirection_;
         
+        //- Total force vector from all elements
+        vector force_;
+        
         //- List of actuator line elements
         PtrList<actuatorLineElement> elements_;
 
@@ -167,6 +170,9 @@ public:
 
             //- Return const access to the profile name list
             const List<word>& profileName() const;
+            
+            //- Return the total force vector
+            vector& force();
 
 
         // Edit

@@ -345,6 +345,12 @@ void Foam::fv::actuatorLineSource::translate(vector translationVector)
 }
 
 
+Foam::vector& Foam::fv::actuatorLineSource::force()
+{
+    return force_;
+}
+
+
 void Foam::fv::actuatorLineSource::addSup
 (
     fvMatrix<vector>& eqn,
@@ -371,16 +377,16 @@ void Foam::fv::actuatorLineSource::addSup
     // Read the reference density for incompressible flow
     //coeffs_.lookup("rhoRef") >> rhoRef_;
     
-    vector totalForce = vector::zero;
+    force_ = vector::zero;
     
     forAll(elements_, i)
     {
         elements_[i].addSup(eqn, force);
-        totalForce += elements_[i].force();
+        force_ += elements_[i].force();
     }
     
     Info<< "Force contribution (per unit density) from " << name_ << ": "
-        << endl << totalForce << endl << endl;
+        << endl << force_ << endl << endl;
 
     // Add source to rhs of eqn
     eqn -= force;
