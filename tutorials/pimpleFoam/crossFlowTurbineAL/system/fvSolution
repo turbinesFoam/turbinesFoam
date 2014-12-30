@@ -52,8 +52,8 @@ solvers
 PIMPLE
 {
     nNonOrthogonalCorrectors 1;
-    nOuterCorrectors    20;
-    nCorrectors         6;
+    nOuterCorrectors    2;
+    nCorrectors         2;
 }
 
 relaxationFactors
