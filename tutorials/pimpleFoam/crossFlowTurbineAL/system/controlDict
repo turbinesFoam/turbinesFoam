@@ -24,7 +24,7 @@ stopAt          endTime;
 
 endTime         1;
 
-deltaT          0.002;
+deltaT          0.001;
 
 writeControl    timeStep;
 
@@ -60,7 +60,7 @@ DebugSwitches
 {
     crossFlowTurbineALSource 1;
     actuatorLineSource  1;
-    actuatorLineElement 1;
+    actuatorLineElement 0;
 }
 
 // ************************************************************************* //

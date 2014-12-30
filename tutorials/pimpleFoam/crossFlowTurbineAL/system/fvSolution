@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.2                                 |
+|  \\    /   O peration     | Version:  2.3.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -20,61 +20,53 @@ solvers
     {
         solver           GAMG;
         tolerance        1e-7;
-        relTol           0.1;
-        smoother         GaussSeidel;
-        nPreSweeps       0;
-        nPostSweeps      2;
-        cacheAgglomeration on;
-        agglomerator     faceAreaPair;
+        relTol           0.01;
+        smoother         DICGaussSeidel;
+        cacheAgglomeration true;
         nCellsInCoarsestLevel 10;
+        agglomerator     faceAreaPair;
         mergeLevels      1;
     }
 
-    U
+    pFinal
     {
-        solver           smoothSolver;
-        smoother         GaussSeidel;
-        tolerance        1e-8;
-        relTol           0.1;
-        nSweeps          1;
+        $p;
+        relTol          0;
     }
 
-    k
+    "(U|k|epsilon)"
     {
-        solver           smoothSolver;
-        smoother         GaussSeidel;
-        tolerance        1e-8;
-        relTol           0.1;
-        nSweeps          1;
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
+        tolerance       1e-05;
+        relTol          0.1;
     }
 
-    epsilon
+    "(U|k|epsilon)Final"
     {
-        solver           smoothSolver;
-        smoother         GaussSeidel;
-        tolerance        1e-8;
-        relTol           0.1;
-        nSweeps          1;
+        $U;
+        relTol          0;
     }
 }
 
 PIMPLE
 {
-    nNonOrthogonalCorrectors 0;
-    nCorrectors         2;
+    nNonOrthogonalCorrectors 1;
+    nOuterCorrectors    20;
+    nCorrectors         6;
 }
 
 relaxationFactors
 {
     fields
     {
-        p               0.3;
+        p               0.8;
     }
     equations
     {
-        U               0.7;
-        k               0.7;
-        epsilon         0.7;
+        U               0.9;
+        k               0.9;
+        epsilon         0.9;
     }
 }
 

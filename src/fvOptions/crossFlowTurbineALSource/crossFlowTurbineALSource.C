@@ -545,7 +545,7 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     (
         IOobject
         (
-            name_ + ":rotorForce",
+            "force." + name_,
             mesh_.time().timeName(),
             mesh_
         ),
@@ -557,20 +557,23 @@ void Foam::fv::crossFlowTurbineALSource::addSup
             vector::zero
         )
     );
-
+    
     // Read the reference density for incompressible flow
-    coeffs_.lookup("rhoRef") >> rhoRef_;
+    //coeffs_.lookup("rhoRef") >> rhoRef_;
 
-    const vectorField Uin(inflowVelocity(eqn.psi()));
-    calculate(geometricOneField(), Uin, force);
-
-    // Add source to rhs of eqn
-    eqn -= force;
+    // Add source for all actuator lines
+    forAll(blades_, i)
+    {
+        blades_[i].addSup(eqn, fieldI);
+    }
 
     if (mesh_.time().outputTime())
     {
         force.write();
     }
+    
+    // Rotate the turbine
+    
 }
 
 
