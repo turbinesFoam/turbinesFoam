@@ -535,6 +535,23 @@ void Foam::fv::crossFlowTurbineALSource::calculate
 }
 
 
+void Foam::fv::crossFlowTurbineALSource::rotate()
+{
+    scalar deltaT = time_.deltaT().value();
+    scalar radians = omega_*deltaT;
+    forAll(blades_, i)
+    {
+        blades_[i].rotate(origin_, axis_, radians);
+    }
+    
+    if (debug)
+    {
+        Info<< "Rotating " << name_ << " " << radians << " radians" 
+            << endl << endl;
+    }
+}
+
+
 void Foam::fv::crossFlowTurbineALSource::addSup
 (
     fvMatrix<vector>& eqn,
@@ -573,7 +590,7 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     }
     
     // Rotate the turbine
-    
+    rotate();
 }
 
 
