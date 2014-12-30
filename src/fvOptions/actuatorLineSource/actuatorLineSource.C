@@ -379,8 +379,8 @@ void Foam::fv::actuatorLineSource::addSup
         totalForce += elements_[i].force();
     }
     
-    Info<< "Force contribution from " << name_ << ": "
-        << totalForce << endl << endl;
+    Info<< "Force contribution (per unit density) from " << name_ << ": "
+        << endl << totalForce << endl << endl;
 
     // Add source to rhs of eqn
     eqn -= force;
