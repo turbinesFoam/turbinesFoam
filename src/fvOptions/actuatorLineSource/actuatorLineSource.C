@@ -355,7 +355,7 @@ void Foam::fv::actuatorLineSource::addSup
     (
         IOobject
         (
-            name_ + ":force",
+            "force." + name_,
             mesh_.time().timeName(),
             mesh_
         ),
@@ -370,14 +370,17 @@ void Foam::fv::actuatorLineSource::addSup
 
     // Read the reference density for incompressible flow
     //coeffs_.lookup("rhoRef") >> rhoRef_;
-
-    //const vectorField Uin(inflowVelocity(eqn.psi()));
-    //calculate();
     
-    for (int i = 0; i < nElements_; i++)
+    vector totalForce = vector::zero;
+    
+    forAll(elements_, i)
     {
         elements_[i].addSup(eqn, force);
+        totalForce += elements_[i].force();
     }
+    
+    Info<< "Force contribution from " << name_ << ": "
+        << totalForce << endl << endl;
 
     // Add source to rhs of eqn
     eqn -= force;
@@ -386,9 +389,6 @@ void Foam::fv::actuatorLineSource::addSup
     {
         force.write();
     }
-    
-    Info<< "Force contribution from actuator line " << name_ << ":" << endl;
-    Info<< force.average() << endl;
 }
 
 
@@ -403,7 +403,7 @@ void Foam::fv::actuatorLineSource::addSup
     (
         IOobject
         (
-            name_ + ":force",
+            "force." + name_,
             mesh_.time().timeName(),
             mesh_
         ),
@@ -415,9 +415,6 @@ void Foam::fv::actuatorLineSource::addSup
             vector::zero
         )
     );
-
-    //const vectorField Uin(inflowVelocity(eqn.psi()));
-    //calculate();
 
     // Add source to rhs of eqn
     eqn -= force;
