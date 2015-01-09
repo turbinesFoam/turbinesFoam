@@ -7,9 +7,8 @@ and turbine models have been taken from NREL's SOWFA and Offwind.
 
 Status
 ------
-Currently, the `actuatorLineSource` can essentially initialize its
-kinematics, but the addition of force to the flow field is not
-implemented. 
+
+This library is in heavy development and is not yet fully functional.
 See the [issue tracker](https://github.com/petebachant/turbinesFoam/issues)
 for more details. 
 Pull requests are encouraged!
