@@ -170,19 +170,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
 :
     dict_(dict),
     name_(name),
-    mesh_(mesh),
-    forceField_
-    (
-        IOobject
-        (
-            "actuatorLineElementForce",
-            mesh_,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        mesh_,
-        dimensionedVector("force", dimForce/dimVolume/dimDensity, vector::zero)
-    )
+    mesh_(mesh)
 {
     velocity_ = vector::zero;
     forceVector_ = vector::zero;
