@@ -38,17 +38,4 @@ Foam::scalar Foam::fv::crossFlowTurbineALSource::omega() const
     return omega_;
 }
 
-
-const Foam::List<Foam::point>& Foam::fv::crossFlowTurbineALSource::x() const
-{
-    return x_;
-}
-
-
-const Foam::cylindricalCS& Foam::fv::crossFlowTurbineALSource::coordSys() const
-{
-    return coordSys_;
-}
-
-
 // ************************************************************************* //
