@@ -111,6 +111,9 @@ protected:
         //- Total force vector from all elements
         vector force_;
         
+        //- Force field from all elements
+        volVectorField forceField_;
+        
         //- List of actuator line elements
         PtrList<actuatorLineElement> elements_;
 
@@ -173,6 +176,9 @@ public:
             
             //- Return the total force vector
             vector& force();
+            
+            //- Return the force field
+            volVectorField& forceField();
 
 
         // Edit

@@ -402,7 +402,25 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     area_(cells_.size(), 0.0),
     coordSys_(false),
     localAxesRotation_(),
-    rMax_(0.0)
+    rMax_(0.0),
+    forceField_
+    (
+        IOobject
+        (
+            "force." + name_,
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh_,
+        dimensionedVector
+        (
+            "force", 
+            dimForce/dimVolume/dimDensity, 
+            vector::zero
+        )
+    )
 {
     read(dict);
     createCoordinateSystem();
@@ -418,6 +436,18 @@ Foam::fv::crossFlowTurbineALSource::~crossFlowTurbineALSource()
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+Foam::vector& Foam::fv::crossFlowTurbineALSource::force()
+{
+    return force_;
+}
+
+
+Foam::volVectorField& Foam::fv::crossFlowTurbineALSource::forceField()
+{
+    return forceField_;
+}
+
 
 template<class RhoFieldType>
 void Foam::fv::crossFlowTurbineALSource::calculate
@@ -558,22 +588,9 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     const label fieldI
 )
 {
-    volVectorField force
-    (
-        IOobject
-        (
-            "force." + name_,
-            mesh_.time().timeName(),
-            mesh_
-        ),
-        mesh_,
-        dimensionedVector
-        (
-            "zero",
-            eqn.dimensions()/dimVolume,
-            vector::zero
-        )
-    );
+    // Zero out force vector and field
+    forceField_ *= 0;
+    force_ *= 0;
     
     // Read the reference density for incompressible flow
     //coeffs_.lookup("rhoRef") >> rhoRef_;
@@ -582,11 +599,8 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     forAll(blades_, i)
     {
         blades_[i].addSup(eqn, fieldI);
-    }
-
-    if (mesh_.time().outputTime())
-    {
-        force.write();
+        forceField_ += blades_[i].forceField();
+        force_ += blades_[i].force();
     }
     
     // Rotate the turbine

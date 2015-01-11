@@ -192,6 +192,12 @@ protected:
         dictionary bladesDict_;
         
         wordList bladeNames_;
+        
+        //- Force vector
+        vector force_;
+        
+        //- Force field (per unit density)
+        volVectorField forceField_;
 
 
     // Protected Member Functions
@@ -276,6 +282,12 @@ public:
 
             //- Return the rotor co-ordinate system (r, theta, z)
             inline const cylindricalCS& coordSys() const;
+            
+            //- Return force vector
+            vector& force();
+            
+            //- Return force field
+            volVectorField& forceField();
 
 
         // Evaluation

@@ -362,7 +362,7 @@ void Foam::fv::actuatorLineElement::addSup
     (
         IOobject
         (
-            name_ + ":force",
+            "force." + name_,
             mesh_.time().timeName(),
             mesh_
         ),

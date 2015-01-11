@@ -102,7 +102,25 @@ Foam::fv::actuatorLineSource::actuatorLineSource
     const fvMesh& mesh
 )
 :
-    option(name, modelType, dict, mesh)
+    option(name, modelType, dict, mesh),
+    forceField_
+    (
+        IOobject
+        (
+            "force." + name_,
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh_,
+        dimensionedVector
+        (
+            "force", 
+            dimForce/dimVolume/dimDensity, 
+            vector::zero
+        )
+    )
 {
     read(dict_);
     createElements();
@@ -351,37 +369,30 @@ Foam::vector& Foam::fv::actuatorLineSource::force()
 }
 
 
+Foam::volVectorField& Foam::fv::actuatorLineSource::forceField()
+{
+    return forceField_;
+}
+
+
 void Foam::fv::actuatorLineSource::addSup
 (
     fvMatrix<vector>& eqn,
     const label fieldI
 )
 {
-    volVectorField force
-    (
-        IOobject
-        (
-            "force." + name_,
-            mesh_.time().timeName(),
-            mesh_
-        ),
-        mesh_,
-        dimensionedVector
-        (
-            "zero",
-            eqn.dimensions()/dimVolume,
-            vector::zero
-        )
-    );
+    // Zero out force field
+    forceField_ *= 0;
 
     // Read the reference density for incompressible flow
     //coeffs_.lookup("rhoRef") >> rhoRef_;
     
+    // Zero the total force vector
     force_ = vector::zero;
     
     forAll(elements_, i)
     {
-        elements_[i].addSup(eqn, force);
+        elements_[i].addSup(eqn, forceField_);
         force_ += elements_[i].force();
     }
     
@@ -389,12 +400,7 @@ void Foam::fv::actuatorLineSource::addSup
         << endl << force_ << endl << endl;
 
     // Add source to rhs of eqn
-    eqn -= force;
-
-    if (mesh_.time().outputTime())
-    {
-        force.write();
-    }
+    eqn -= forceField_;
 }
 
 
@@ -405,30 +411,11 @@ void Foam::fv::actuatorLineSource::addSup
     const label fieldI
 )
 {
-    volVectorField force
-    (
-        IOobject
-        (
-            "force." + name_,
-            mesh_.time().timeName(),
-            mesh_
-        ),
-        mesh_,
-        dimensionedVector
-        (
-            "zero",
-            eqn.dimensions()/dimVolume,
-            vector::zero
-        )
-    );
+    // Zero force field
+    forceField_ *= 0;
 
     // Add source to rhs of eqn
-    eqn -= force;
-
-    if (mesh_.time().outputTime())
-    {
-        force.write();
-    }
+    eqn -= forceField_;
 }
 
 // ************************************************************************* //
