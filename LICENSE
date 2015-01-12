@@ -1,9 +1,12 @@
                     GNU GENERAL PUBLIC LICENSE
-
+                    
+ turbinesFoam is Copyright (C) 2014-2015 Peter Bachant
+ Contact: Pete Bachant (petebachant@gmail.com)
+ 
  OpenFOAM(R) is Copyright (C) 2011 OpenFOAM Foundation
  Contact: OpenFOAM Foundation (OpenFOAM.Foundation@gmail.com)
 
- You may use, distribute and copy the OpenFOAM CFD Toolbox under the terms
+ You may use, distribute, and copy turbinesFoam under the terms
  of GNU General Public License version 3, which is displayed below, or
  (at your option) any later version.
 
