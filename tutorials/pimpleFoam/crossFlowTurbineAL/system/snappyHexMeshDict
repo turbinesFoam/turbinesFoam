@@ -29,23 +29,13 @@ addLayers       false;
 // - to 'snap' the mesh boundary to the surface
 geometry
 {
-/*
     turbine
     {
-        type searchableBox;
-        min (-0.5 -0.5 -0.5);
-        max (0.5 0.5 0.5);
-    }
-*/
-
-    turbine0
-    {
         type searchableCylinder;
-        point1 (0 0 -0.5);
-        point2 (0 0 0.5);
-        radius 0.5;       
+        point1 (0 0 -0.625);
+        point2 (0 0 0.625);
+        radius 0.625;       
     }
-
 };
 
 

@@ -16,12 +16,12 @@ FoamFile
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 
-turbine0
+turbine
 {
     type            crossFlowTurbineALSource;
-    active          on;         // on/off switch
+    active          on;
     selectionMode   cellSet;    // cellSet // points //cellZone
-    cellSet         turbine0;   // probably won't use this, but we'll see
+    cellSet         turbine;
 
     crossFlowTurbineALSourceCoeffs
     {
