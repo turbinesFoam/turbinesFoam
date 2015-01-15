@@ -83,172 +83,12 @@ void Foam::fv::crossFlowTurbineALSource::rotateVector
 }
 
 
-void Foam::fv::crossFlowTurbineALSource::setFaceArea(vector& axis, const bool correct)
-{
-    area_ = 0.0;
-
-    static const scalar tol = 0.8;
-
-    const label nInternalFaces = mesh_.nInternalFaces();
-    const polyBoundaryMesh& pbm = mesh_.boundaryMesh();
-    const vectorField& Sf = mesh_.Sf();
-    const scalarField& magSf = mesh_.magSf();
-
-    vector n = vector::zero;
-
-    // calculate cell addressing for selected cells
-    labelList cellAddr(mesh_.nCells(), -1);
-    UIndirectList<label>(cellAddr, cells_) = identity(cells_.size());
-    labelList nbrFaceCellAddr(mesh_.nFaces() - nInternalFaces, -1);
-    forAll(pbm, patchI)
-    {
-        const polyPatch& pp = pbm[patchI];
-
-        if (pp.coupled())
-        {
-            forAll(pp, i)
-            {
-                label faceI = pp.start() + i;
-                label nbrFaceI = faceI - nInternalFaces;
-                label own = mesh_.faceOwner()[faceI];
-                nbrFaceCellAddr[nbrFaceI] = cellAddr[own];
-            }
-        }
-    }
-
-    // correct for parallel running
-    syncTools::swapBoundaryFaceList(mesh_, nbrFaceCellAddr);
-
-    // add internal field contributions
-    for (label faceI = 0; faceI < nInternalFaces; faceI++)
-    {
-        const label own = cellAddr[mesh_.faceOwner()[faceI]];
-        const label nbr = cellAddr[mesh_.faceNeighbour()[faceI]];
-
-        if ((own != -1) && (nbr == -1))
-        {
-            vector nf = Sf[faceI]/magSf[faceI];
-
-            if ((nf & axis) > tol)
-            {
-                area_[own] += magSf[faceI];
-                n += Sf[faceI];
-            }
-        }
-        else if ((own == -1) && (nbr != -1))
-        {
-            vector nf = Sf[faceI]/magSf[faceI];
-
-            if ((-nf & axis) > tol)
-            {
-                area_[nbr] += magSf[faceI];
-                n -= Sf[faceI];
-            }
-        }
-    }
-
-
-    // add boundary contributions
-    forAll(pbm, patchI)
-    {
-        const polyPatch& pp = pbm[patchI];
-        const vectorField& Sfp = mesh_.Sf().boundaryField()[patchI];
-        const scalarField& magSfp = mesh_.magSf().boundaryField()[patchI];
-
-        if (pp.coupled())
-        {
-            forAll(pp, j)
-            {
-                const label faceI = pp.start() + j;
-                const label own = cellAddr[mesh_.faceOwner()[faceI]];
-                const label nbr = nbrFaceCellAddr[faceI - nInternalFaces];
-                const vector nf = Sfp[j]/magSfp[j];
-
-                if ((own != -1) && (nbr == -1) && ((nf & axis) > tol))
-                {
-                    area_[own] += magSfp[j];
-                    n += Sfp[j];
-                }
-            }
-        }
-        else
-        {
-            forAll(pp, j)
-            {
-                const label faceI = pp.start() + j;
-                const label own = cellAddr[mesh_.faceOwner()[faceI]];
-                const vector nf = Sfp[j]/magSfp[j];
-
-                if ((own != -1) && ((nf & axis) > tol))
-                {
-                    area_[own] += magSfp[j];
-                    n += Sfp[j];
-                }
-            }
-        }
-    }
-
-    if (correct)
-    {
-        reduce(n, sumOp<vector>());
-        axis = n/mag(n);
-    }
-
-    if (debug)
-    {
-        volScalarField area
-        (
-            IOobject
-            (
-                name_ + ":area",
-                mesh_.time().timeName(),
-                mesh_,
-                IOobject::NO_READ,
-                IOobject::NO_WRITE
-            ),
-            mesh_,
-            dimensionedScalar("0", dimArea, 0)
-        );
-        UIndirectList<scalar>(area.internalField(), cells_) = area_;
-
-        Info<< type() << ": " << name_ << " writing field " << area.name()
-            << endl;
-
-        area.write();
-    }
-}
-
-
 void Foam::fv::crossFlowTurbineALSource::createCoordinateSystem()
 {
     // Construct the local rotor coordinate system
     freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
     radialDirection_ = -freeStreamDirection_^axis_;
     radialDirection_ = radialDirection_/mag(radialDirection_);
-}
-
-
-void Foam::fv::crossFlowTurbineALSource::constructGeometry()
-{
-    const vectorField& C = mesh_.C();
-
-    forAll(cells_, i)
-    {
-        if (area_[i] > ROOTVSMALL)
-        {
-            const label cellI = cells_[i];
-
-            // position in (planar) rotor co-ordinate system
-            x_[i] = coordSys_.localPosition(C[cellI]);
-
-            // cache max radius
-            rMax_ = max(rMax_, x_[i].x());
-
-            // Wrong rotation tensor
-            R_[i] = tensor(0, 0, 0, 0, 1, 0, 0, 0, 0);
-            invR_[i] = R_[i].T();
-        }
-    }
 }
 
 
@@ -396,12 +236,6 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     nBlades_(0),
     freeStreamVelocity_(vector::zero),
     tipEffect_(1.0),
-    x_(cells_.size(), vector::zero),
-    R_(cells_.size(), I),
-    invR_(cells_.size(), I),
-    area_(cells_.size(), 0.0),
-    coordSys_(false),
-    localAxesRotation_(),
     rMax_(0.0),
     forceField_
     (
@@ -425,7 +259,6 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     read(dict);
     createCoordinateSystem();
     createBlades();
-    //~ constructGeometry();
     lastRotationTime_ = time_.value();
 }
 
@@ -448,123 +281,6 @@ Foam::volVectorField& Foam::fv::crossFlowTurbineALSource::forceField()
 {
     return forceField_;
 }
-
-
-template<class RhoFieldType>
-void Foam::fv::crossFlowTurbineALSource::calculate
-(
-    const RhoFieldType& rho,
-    const vectorField& U,
-    vectorField& force,
-    const bool divideVolume,
-    const bool output
-) const
-{
-    const scalarField& V = mesh_.V();
-
-    // logging info
-    scalar dragEff = 0.0;
-    scalar liftEff = 0.0;
-    scalar AOAmin = GREAT;
-    scalar AOAmax = -GREAT;
-
-    forAll(cells_, i)
-    {
-        if (area_[i] > ROOTVSMALL)
-        {
-            const label cellI = cells_[i];
-
-            const scalar radius = x_[i].x();
-
-            // velocity in local cylindrical reference frame
-            vector Uc = localAxesRotation_->transform(U[cellI], i);
-
-            // transform from rotor cylindrical into local coning system
-            Uc = R_[i] & Uc;
-
-            // set radial component of velocity to zero
-            Uc.x() = 0.0;
-
-            // set blade normal component of velocity
-            Uc.y() = radius*omega_ - Uc.y();
-
-            // determine blade data for this radius
-            // i2 = index of upper radius bound data point in blade list
-            scalar twist = 0.0;
-            scalar chord = 0.0;
-            scalar invDr = 0.0;
-
-            // flip geometric angle if blade is spinning in reverse (clockwise)
-            scalar alphaGeom = twist;
-            if (omega_ < 0)
-            {
-                alphaGeom = mathematical::pi - alphaGeom;
-            }
-
-            // effective angle of attack
-            scalar alphaEff = alphaGeom - atan2(-Uc.z(), Uc.y());
-            if (alphaEff > mathematical::pi)
-            {
-                alphaEff -= mathematical::twoPi;
-            }
-            if (alphaEff < -mathematical::pi)
-            {
-                alphaEff += mathematical::twoPi;
-            }
-
-            AOAmin = min(AOAmin, alphaEff);
-            AOAmax = max(AOAmax, alphaEff);
-
-            scalar Cd1 = 0.0;
-            scalar Cl1 = 0.0;
-
-            scalar Cd2 = 0.0;
-            scalar Cl2 = 0.0;
-
-            scalar Cd = invDr*(Cd2 - Cd1) + Cd1;
-            scalar Cl = invDr*(Cl2 - Cl1) + Cl1;
-
-            // apply tip effect for blade lift
-            scalar tipFactor = neg(radius/rMax_ - tipEffect_);
-
-            // calculate forces perpendicular to blade
-            scalar pDyn = 0.5*rho[cellI]*magSqr(Uc);
-
-            scalar f = pDyn*chord*nBlades_*area_[i]/radius/mathematical::twoPi;
-            vector localForce = vector(0.0, -f*Cd, tipFactor*f*Cl);
-
-            // accumulate forces
-            dragEff += rhoRef_*localForce.y();
-            liftEff += rhoRef_*localForce.z();
-
-            // convert force from local coning system into rotor cylindrical
-            localForce = invR_[i] & localForce;
-
-            // convert force to global cartesian co-ordinate system
-            force[cellI] = localAxesRotation_->invTransform(localForce, i);
-
-            if (divideVolume)
-            {
-                force[cellI] /= V[cellI];
-            }
-        }
-    }
-
-    if (output)
-    {
-        reduce(AOAmin, minOp<scalar>());
-        reduce(AOAmax, maxOp<scalar>());
-        reduce(dragEff, sumOp<scalar>());
-        reduce(liftEff, sumOp<scalar>());
-
-        Info<< type() << " output:" << nl
-            << "    min/max(AOA)   = " << radToDeg(AOAmin) << ", "
-            << radToDeg(AOAmax) << nl
-            << "    Effective drag = " << dragEff << nl
-            << "    Effective lift = " << liftEff << endl;
-    }
-}
-
 
 void Foam::fv::crossFlowTurbineALSource::rotate()
 {
@@ -621,39 +337,29 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     const label fieldI
 )
 {
-    volVectorField force
-    (
-        IOobject
-        (
-            name_ + ":rotorForce",
-            mesh_.time().timeName(),
-            mesh_
-        ),
-        mesh_,
-        dimensionedVector
-        (
-            "zero",
-            eqn.dimensions()/dimVolume,
-            vector::zero
-        )
-    );
-
-    const vectorField Uin(inflowVelocity(eqn.psi()));
-    calculate(rho, Uin, force);
-
-    // Add source to rhs of eqn
-    eqn -= force;
-
-    if (mesh_.time().outputTime())
+    // Rotate the turbine if time value has changed
+    if (time_.value() != lastRotationTime_)
     {
-        force.write();
+        rotate();
+    }
+
+    // Zero out force vector and field
+    forceField_ *= 0;
+    force_ *= 0;
+
+    // Add source for all actuator lines
+    forAll(blades_, i)
+    {
+        blades_[i].addSup(rho, eqn, fieldI);
+        forceField_ += blades_[i].forceField();
+        force_ += blades_[i].force();
     }
 }
 
 
 void Foam::fv::crossFlowTurbineALSource::writeData(Ostream& os) const
 {
-    os  << indent << name_ << endl;
+    os << indent << name_ << endl;
     dict_.write(os);
 }
 

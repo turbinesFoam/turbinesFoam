@@ -158,25 +158,6 @@ protected:
         //  Ratio of blade radius beyond which lift=0
         scalar tipEffect_;
 
-        //- Cell centre positions in local rotor frame
-        //  (Cylindrical r, theta, z)
-        List<point> x_;
-
-        //- Rotation tensor for flap angle
-        List<tensor> R_;
-
-        //- Inverse rotation tensor for flap angle
-        List<tensor> invR_;
-
-        //- Area [m2]
-        List<scalar> area_;
-
-        //- Rotor local cylindrical co-ordinate system (r, theta, z)
-        cylindricalCS coordSys_;
-
-        //- Rotor transformation co-ordinate system
-        autoPtr<localAxesRotation> localAxesRotation_;
-
         //- Maximum radius
         scalar rMax_;
 
@@ -213,9 +194,6 @@ protected:
             vector axis,
             scalar radians
         );
-
-        //- Set the face areas per cell, and optionally correct the rotor axis
-        void setFaceArea(vector& axis, const bool correct);
         
         //- Create actuator lines for blades
         void createBlades();
@@ -223,20 +201,8 @@ protected:
         //- Create the co-ordinate system
         void createCoordinateSystem();
 
-        //- Construct geometry
-        void constructGeometry();
-
         //- Return the inlet flow field
         tmp<vectorField> inflowVelocity(const volVectorField& U) const;
-
-        //- Helper function to write rotor values
-        template<class Type>
-        void writeField
-        (
-            const word& name,
-            const List<Type>& values,
-            const bool writeNow = false
-        ) const;
         
         //- Rotate the turbine
         void rotate();
@@ -278,34 +244,12 @@ public:
             //- Return the rotational speed [rad/s]
             //  Positive anti-clockwise when looking along -ve lift direction
             inline scalar omega() const;
-
-            //- Return the cell centre positions in local rotor frame
-            // (Cylindrical r, theta, z)
-            inline const List<point>& x() const;
-
-            //- Return the rotor co-ordinate system (r, theta, z)
-            inline const cylindricalCS& coordSys() const;
             
             //- Return force vector
             vector& force();
             
             //- Return force field
             volVectorField& forceField();
-
-
-        // Evaluation
-
-            //- Calculate forces
-            template<class RhoFieldType>
-            void calculate
-            (
-                const RhoFieldType& rho,
-                const vectorField& U,
-                vectorField& force,
-                const bool divideVolume = true,
-                const bool output = true
-            ) const;
-
 
         // Source term addition
 
@@ -346,12 +290,6 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #include "crossFlowTurbineALSourceI.H"
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#ifdef NoRepository
-    #include "crossFlowTurbineALSourceTemplates.C"
-#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
