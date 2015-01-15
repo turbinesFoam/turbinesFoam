@@ -87,7 +87,7 @@ void Foam::fv::crossFlowTurbineALSource::createCoordinateSystem()
 {
     // Construct the local rotor coordinate system
     freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
-    radialDirection_ = -freeStreamDirection_^axis_;
+    radialDirection_ = axis_^freeStreamDirection_;
     radialDirection_ = radialDirection_/mag(radialDirection_);
 }
 
