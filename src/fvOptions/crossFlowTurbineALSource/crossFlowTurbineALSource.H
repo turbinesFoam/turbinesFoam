@@ -117,6 +117,9 @@ protected:
         //- Runtime pointer
         const Time& time_;
         
+        //- Time value used to determine whether to rotate
+        scalar lastRotationTime_;
+        
         //- Origin of turbine coordinate system
         vector origin_;
         

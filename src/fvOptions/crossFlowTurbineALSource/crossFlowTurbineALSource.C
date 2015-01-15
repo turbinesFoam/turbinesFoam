@@ -426,6 +426,7 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     createCoordinateSystem();
     createBlades();
     //~ constructGeometry();
+    lastRotationTime_ = time_.value();
 }
 
 
@@ -579,6 +580,8 @@ void Foam::fv::crossFlowTurbineALSource::rotate()
         Info<< "Rotating " << name_ << " " << radians << " radians" 
             << endl << endl;
     }
+    
+    lastRotationTime_ = time_.value();
 }
 
 
@@ -588,6 +591,12 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     const label fieldI
 )
 {
+    // Rotate the turbine if time value has changed
+    if (time_.value() != lastRotationTime_)
+    {
+        rotate();
+    }
+
     // Zero out force vector and field
     forceField_ *= 0;
     force_ *= 0;
@@ -602,9 +611,6 @@ void Foam::fv::crossFlowTurbineALSource::addSup
         forceField_ += blades_[i].forceField();
         force_ += blades_[i].force();
     }
-    
-    // Rotate the turbine
-    rotate();
 }
 
 
