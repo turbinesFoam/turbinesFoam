@@ -197,8 +197,9 @@ void Foam::fv::actuatorLineElement::calculate
     volVectorField& forceField
 )
 {
-    // Calculate local wind velocity
-    scalar upstreamDistance = chordLength_;
+    // Calculate local wind velocity 0.6 chord lengths upstream from 
+    // mid-chord
+    scalar upstreamDistance = chordLength_*0.6;
     vector upstreamPoint = position_ - upstreamDistance*freeStreamDirection_;
     // Get velocity vector at upstream point
     vector inflowVelocity = Uin[mesh_.findCell(upstreamPoint)];
