@@ -211,6 +211,12 @@ void Foam::fv::actuatorLineElement::calculate
     // Calculate angle of attack (radians)
     scalar angleOfAttackRad = acos((-chordDirection_ & relativeVelocity)
                             / (mag(chordDirection_)*mag(relativeVelocity)));
+    vector alphaDir = chordDirection_ ^ relativeVelocity;
+    alphaDir /= mag(alphaDir);
+    if ((alphaDir & spanDirection_) < 0)
+    {
+        angleOfAttackRad *= -1;
+    }
     angleOfAttack_ = angleOfAttackRad/Foam::constant::mathematical::pi*180.0;
     
     // Lookup lift and drag coefficients
@@ -250,6 +256,8 @@ void Foam::fv::actuatorLineElement::calculate
     {
         Info<< "Calculating force contribution from actuatorLineElement " 
             << name_ << endl;
+        Info<< "    chordDirection: " << chordDirection_ << endl;
+        Info<< "    elementVelocity: " << velocity_ << endl;
         Info<< "    inflowVelocity: " << inflowVelocity << endl;
         Info<< "    relativeVelocity: " << relativeVelocity << endl;
         Info<< "    angleOfAttack (degrees): " << angleOfAttack_ << endl;
