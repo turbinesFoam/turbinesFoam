@@ -396,11 +396,11 @@ void Foam::fv::actuatorLineSource::addSup
         force_ += elements_[i].force();
     }
     
-    Info<< "Force contribution (per unit density) from " << name_ << ": "
+    Info<< "Force (per unit density) on " << name_ << ": "
         << endl << force_ << endl << endl;
 
-    // Add source to rhs of eqn
-    eqn -= forceField_;
+    // Add source to eqn
+    eqn += forceField_;
 }
 
 
@@ -414,8 +414,8 @@ void Foam::fv::actuatorLineSource::addSup
     // Zero force field
     forceField_ *= 0;
 
-    // Add source to rhs of eqn
-    eqn -= forceField_;
+    // Add source to eqn
+    eqn += forceField_;
 }
 
 // ************************************************************************* //
