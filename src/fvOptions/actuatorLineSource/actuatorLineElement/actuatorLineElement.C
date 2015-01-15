@@ -220,7 +220,7 @@ void Foam::fv::actuatorLineElement::calculate
     scalar magSqrU = magSqr(relativeVelocity);
     scalar lift = 0.5*area*liftCoefficient_*magSqrU;
     scalar drag = 0.5*area*dragCoefficient_*magSqrU;
-    vector liftDirection = spanDirection_ ^ relativeVelocity;
+    vector liftDirection = relativeVelocity ^ spanDirection_;
     liftDirection /= mag(liftDirection);
     vector dragDirection = relativeVelocity/mag(relativeVelocity);
     forceVector_ = lift*liftDirection + drag*dragDirection;
@@ -239,7 +239,8 @@ void Foam::fv::actuatorLineElement::calculate
             scalar factor = Foam::exp(-Foam::sqr(dis/epsilon))
                           / (Foam::pow(epsilon, 3)
                           * Foam::pow(Foam::constant::mathematical::pi, 1.5));
-            forceField[cellI] += factor*forceVector_;
+            // forceField is opposite forceVector
+            forceField[cellI] += -forceVector_*factor;
         }
     }
     
