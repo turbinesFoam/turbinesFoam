@@ -236,7 +236,6 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     nBlades_(0),
     freeStreamVelocity_(vector::zero),
     tipEffect_(1.0),
-    rMax_(0.0),
     forceField_
     (
         IOobject

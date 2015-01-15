@@ -151,15 +151,12 @@ protected:
         //- Rotor tip speed ratio
         scalar tipSpeedRatio_;
         
-        //- Rotor radius
+        //- Rotor radius for calculating tip speed ratio
         scalar rotorRadius_;
 
         //- Tip effect [0-1]
         //  Ratio of blade radius beyond which lift=0
         scalar tipEffect_;
-
-        //- Maximum radius
-        scalar rMax_;
 
         //- List of actuator lines as blades
         PtrList<actuatorLineSource> blades_;
