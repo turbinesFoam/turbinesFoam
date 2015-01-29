@@ -194,6 +194,9 @@ public:
 
 
         // Evaluation
+        
+            //- Compute the moment about a given point
+            vector moment(vector point);
             
         // IO
         

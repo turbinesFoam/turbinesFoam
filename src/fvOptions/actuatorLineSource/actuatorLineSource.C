@@ -375,6 +375,17 @@ Foam::volVectorField& Foam::fv::actuatorLineSource::forceField()
 }
 
 
+Foam::vector Foam::fv::actuatorLineSource::moment(vector point)
+{
+    vector moment(0, 0, 0);
+    forAll(elements_, i)
+    {
+        moment += elements_[i].moment(point);
+    }
+    return moment;
+}
+
+
 void Foam::fv::actuatorLineSource::addSup
 (
     fvMatrix<vector>& eqn,
