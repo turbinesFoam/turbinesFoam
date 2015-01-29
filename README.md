@@ -25,7 +25,7 @@ Compiling
 
 ```
 cd $WM_PROJECT_USER_DIR
-git clone https://github.com/petebachant/turbinesFoam.git
+git clone https://github.com/turbinesFoam/turbinesFoam.git
 cd turbinesFoam
 ./Allwmake
 ```
