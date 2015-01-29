@@ -185,6 +185,9 @@ protected:
         
         //- Torque about the axis
         scalar torque_;
+        
+        //- Frontal area in m^2
+        scalar frontalArea_;
 
 
     // Protected Member Functions

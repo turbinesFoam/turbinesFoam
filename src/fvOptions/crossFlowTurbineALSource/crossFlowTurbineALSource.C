@@ -112,6 +112,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
     List<List<scalar> > elementData;
     List<List<scalar> > profileData;
     word modelType = "actuatorLineSource";
+    List<scalar> frontalAreas(nBlades); // frontal area from each blade
     
     const dictionary& profilesSubDict(coeffs_.subDict("profiles"));
     
@@ -146,7 +147,9 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         label nGeomPoints = elementData.size();
         List<List<List<scalar> > > elementGeometry(nGeomPoints);
         List<vector> initialVelocities(nGeomPoints, vector::one);
-        for (int j = 0; j < nGeomPoints; j++)
+        // Frontal area for this blade
+        scalar frontalArea = 0.0;
+        forAll(elementData, j)
         {
             // Read CFTAL dict data
             scalar axialDistance = elementData[j][0];
@@ -155,6 +158,14 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             scalar azimuthRadians = azimuthDegrees/180.0*mathematical::pi;
             scalar chordLength = elementData[j][3];
             scalar chordMount = elementData[j][4];
+            
+            // Compute frontal area contribution from this geometry segment
+            if (j > 0)
+            {
+                scalar deltaAxial = axialDistance - elementData[j-1][0];
+                scalar meanRadius = (radius + elementData[j-1][1])/2;
+                frontalArea += mag(deltaAxial*meanRadius);
+            }
             
             // Set sizes for actuatorLineSource elementGeometry lists
             elementGeometry[j].setSize(4);
@@ -192,9 +203,14 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             elementGeometry[j][3][0] = pitch;
         }
         
+        // Add frontal area to list
+        frontalAreas[i] = frontalArea;
+        
         if (debug)
         {
             Info<< "Converted element geometry:" << endl << elementGeometry 
+                << endl;
+            Info<< "Frontal area from " << bladeName << ": " << frontalArea
                 << endl;
         }
         
@@ -218,6 +234,10 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         
         blades_.set(i, blade);
     }
+    
+    // Frontal area is twice the maximum blade frontal area
+    frontalArea_ = 2*max(frontalAreas);
+    Info<< "Frontal area of " << name_ << ": " << frontalArea_ << endl;
 }
 
 
@@ -256,7 +276,8 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
             dimForce/dimVolume/dimDensity, 
             vector::zero
         )
-    )
+    ),
+    frontalArea_(0.0)
 {
     read(dict);
     createCoordinateSystem();
