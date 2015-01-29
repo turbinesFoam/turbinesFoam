@@ -89,6 +89,8 @@ void Foam::fv::crossFlowTurbineALSource::createCoordinateSystem()
     freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
     radialDirection_ = axis_^freeStreamDirection_;
     radialDirection_ = radialDirection_/mag(radialDirection_);
+    // Make sure axis is a unit vector
+    axis_ /= mag(axis_);
 }
 
 
@@ -233,6 +235,7 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     time_(mesh.time()),
     rhoRef_(1.0),
     omega_(0.0),
+    angleDeg_(0.0),
     nBlades_(0),
     freeStreamVelocity_(vector::zero),
     tipEffect_(1.0),
@@ -281,6 +284,13 @@ Foam::volVectorField& Foam::fv::crossFlowTurbineALSource::forceField()
     return forceField_;
 }
 
+
+Foam::scalar& Foam::fv::crossFlowTurbineALSource::torque()
+{
+    return torque_;
+}
+
+
 void Foam::fv::crossFlowTurbineALSource::rotate()
 {
     scalar deltaT = time_.deltaT().value();
@@ -295,7 +305,7 @@ void Foam::fv::crossFlowTurbineALSource::rotate()
         Info<< "Rotating " << name_ << " " << radians << " radians" 
             << endl << endl;
     }
-    
+    angleDeg_ += radians*180.0/Foam::constant::mathematical::pi;
     lastRotationTime_ = time_.value();
 }
 
@@ -316,6 +326,9 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     forceField_ *= 0;
     force_ *= 0;
     
+    // Create local moment vector
+    vector moment(vector::zero);
+    
     // Read the reference density for incompressible flow
     //coeffs_.lookup("rhoRef") >> rhoRef_;
 
@@ -325,7 +338,15 @@ void Foam::fv::crossFlowTurbineALSource::addSup
         blades_[i].addSup(eqn, fieldI);
         forceField_ += blades_[i].forceField();
         force_ += blades_[i].force();
+        moment += blades_[i].moment(origin_);
     }
+    
+    // Torque is the projection of the moment from all blades on the axis
+    torque_ = moment & axis_;
+    Info<< "Azimuthal angle (degrees) of " << name_ << ": " << angleDeg_ 
+        << endl;
+    Info<< "Torque (per unit density) from " << name_ << ": " << torque_ 
+        << endl << endl;
 }
 
 
@@ -345,6 +366,9 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     // Zero out force vector and field
     forceField_ *= 0;
     force_ *= 0;
+    
+    // Create local moment vector
+    vector moment(vector::zero);
 
     // Add source for all actuator lines
     forAll(blades_, i)
@@ -353,6 +377,13 @@ void Foam::fv::crossFlowTurbineALSource::addSup
         forceField_ += blades_[i].forceField();
         force_ += blades_[i].force();
     }
+    
+    // Torque is the projection of the moment from all blades on the axis
+    torque_ = moment & axis_;
+    Info<< "Azimuthal angle (degrees) of " << name_ << ": " << angleDeg_ 
+        << endl;
+    Info<< "Torque (per unit density) from " << name_ << ": " << torque_ 
+        << endl << endl;
 }
 
 

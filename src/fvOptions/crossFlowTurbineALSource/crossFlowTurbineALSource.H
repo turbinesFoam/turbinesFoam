@@ -129,9 +129,12 @@ protected:
         //- Reference density for incompressible case
         scalar rhoRef_;
 
-        //- Rotational speed [rad/s]
+        //- Rotational speed in rad/s
         //  Positive anti-clockwise when looking along axis direction
         scalar omega_;
+        
+        //- Azimuthal angle in degrees (does not reset each rotation)
+        scalar angleDeg_;
 
         //- Number of blades
         label nBlades_;
@@ -179,6 +182,9 @@ protected:
         
         //- Force field (per unit density)
         volVectorField forceField_;
+        
+        //- Torque about the axis
+        scalar torque_;
 
 
     // Protected Member Functions
@@ -247,6 +253,9 @@ public:
             
             //- Return force field
             volVectorField& forceField();
+            
+            //- Return torque
+            scalar& torque();
 
         // Source term addition
 
