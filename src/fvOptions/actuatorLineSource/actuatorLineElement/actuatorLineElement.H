@@ -228,6 +228,9 @@ public:
             //- Read coefficient data
             void read();
             
+            //- Calculate and return moment about specified point
+            vector moment(vector point);
+            
         // Source term addition
 
             //- Source term to momentum equation

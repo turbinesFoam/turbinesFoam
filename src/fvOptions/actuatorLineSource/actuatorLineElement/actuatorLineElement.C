@@ -362,6 +362,15 @@ Foam::vector& Foam::fv::actuatorLineElement::force()
 }
 
 
+Foam::vector Foam::fv::actuatorLineElement::moment(vector point)
+{
+    // Calculate radius vector
+    vector radius = position_ - point;
+    vector moment = radius ^ forceVector_;
+    return moment;
+}
+
+
 void Foam::fv::actuatorLineElement::addSup
 (
     fvMatrix<vector>& eqn,
