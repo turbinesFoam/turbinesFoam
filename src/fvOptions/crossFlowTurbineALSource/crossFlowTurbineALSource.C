@@ -412,7 +412,7 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     Info<< "Power coefficient from " << name_ << ": " << powerCoefficient_
         << endl << endl;
         
-    // Write data if time value has changed
+    // Write data if time value has changed and master processor
     if (write and Pstream::master())
     {
         writeData();
