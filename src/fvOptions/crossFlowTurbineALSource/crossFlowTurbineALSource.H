@@ -188,6 +188,15 @@ protected:
         
         //- Frontal area in m^2
         scalar frontalArea_;
+        
+        //- Nondimensional power coefficient
+        scalar powerCoefficient_;
+        
+        //- Nondimensional drag coefficient
+        scalar dragCoefficient_;
+        
+        //- Nondimensional torque coefficient
+        scalar torqueCoefficient_;
 
 
     // Protected Member Functions

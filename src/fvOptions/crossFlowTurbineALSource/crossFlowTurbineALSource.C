@@ -367,6 +367,14 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     Info<< "Azimuthal angle (degrees) of " << name_ << ": " << angleDeg_ 
         << endl;
     Info<< "Torque (per unit density) from " << name_ << ": " << torque_ 
+        << endl;
+        
+    torqueCoefficient_ = torque_/(0.5*frontalArea_*rotorRadius_
+                       * magSqr(freeStreamVelocity_));
+                       
+    powerCoefficient_ = torqueCoefficient_*tipSpeedRatio_;
+                             
+    Info<< "Power coefficient from " << name_ << ": " << powerCoefficient_
         << endl << endl;
 }
 
