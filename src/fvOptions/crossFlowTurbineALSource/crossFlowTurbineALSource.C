@@ -263,13 +263,15 @@ void Foam::fv::crossFlowTurbineALSource::createOutputFile()
 
     outputFile_ = new OFstream(dir/name_ + ".csv");
     
-    *outputFile_<< "time," << "cp" << endl;
+    *outputFile_<< "time,angle_deg,tsr,cp,cd,ct" << endl;
 }
 
 
 void Foam::fv::crossFlowTurbineALSource::writeData()
 {
-    *outputFile_<< time_.value() << "," << powerCoefficient_ << endl;
+    *outputFile_<< time_.value() << "," << angleDeg_ << "," 
+                << tipSpeedRatio_ << "," << powerCoefficient_ << "," 
+                << dragCoefficient_ << "," << torqueCoefficient_ << endl;
 }
 
 
@@ -406,8 +408,9 @@ void Foam::fv::crossFlowTurbineALSource::addSup
         
     torqueCoefficient_ = torque_/(0.5*frontalArea_*rotorRadius_
                        * magSqr(freeStreamVelocity_));
-                       
     powerCoefficient_ = torqueCoefficient_*tipSpeedRatio_;
+    dragCoefficient_ = force_ & freeStreamDirection_
+                     / (0.5*frontalArea_*magSqr(freeStreamVelocity_));
                              
     Info<< "Power coefficient from " << name_ << ": " << powerCoefficient_
         << endl << endl;
