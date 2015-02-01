@@ -13,6 +13,9 @@ See the [issue tracker](https://github.com/petebachant/turbinesFoam/issues)
 for more details. 
 Pull requests are encouraged!
 
+Also be sure to check out the 
+[development snapshot videos on YouTube](https://www.youtube.com/playlist?list=PLOlLyh5gytG8n8D3V1lDeZ3e9fJf9ux-e).
+
 Features
 --------
 `fvOptions` classes for adding turbine effects (actuator line model)
