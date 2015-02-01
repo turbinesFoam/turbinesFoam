@@ -91,6 +91,7 @@ SourceFiles
 #include "NamedEnum.H"
 #include "actuatorLineSource.H"
 #include "volFieldsFwd.H"
+#include "OFstream.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -197,6 +198,9 @@ protected:
         
         //- Nondimensional torque coefficient
         scalar torqueCoefficient_;
+        
+        //- Output file stream
+        OFstream* outputFile_;
 
 
     // Protected Member Functions
@@ -288,9 +292,12 @@ public:
 
 
         // I-O
+        
+            //- Create the turbine output file
+            virtual void createOutputFile();
 
-            //- Write the source properties
-            virtual void writeData(Ostream&) const;
+            //- Write the turbine performance to file
+            virtual void writeData();
 
             //- Read source dictionary
             virtual bool read(const dictionary& dict);

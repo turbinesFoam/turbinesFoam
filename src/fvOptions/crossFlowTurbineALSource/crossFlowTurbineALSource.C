@@ -241,6 +241,38 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
 }
 
 
+void Foam::fv::crossFlowTurbineALSource::createOutputFile()
+{
+    fileName dir;
+    
+    if (Pstream::parRun())
+    {
+        dir = time_.path()/"../postProcessing/turbines"
+            / time_.timeName();
+    }
+    else
+    {
+        dir = time_.path()/"postProcessing/turbines"
+            / time_.timeName();
+    }
+    
+    if (!isDir(dir))
+    {
+        mkDir(dir);
+    }
+
+    outputFile_ = new OFstream(dir/name_ + ".csv");
+    
+    *outputFile_<< "time," << "cp" << endl;
+}
+
+
+void Foam::fv::crossFlowTurbineALSource::writeData()
+{
+    *outputFile_<< time_.value() << "," << powerCoefficient_ << endl;
+}
+
+
 // * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
 Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
@@ -283,6 +315,7 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     createCoordinateSystem();
     createBlades();
     lastRotationTime_ = time_.value();
+    createOutputFile();
 }
 
 
@@ -337,10 +370,12 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     const label fieldI
 )
 {
+    bool write = false;
     // Rotate the turbine if time value has changed
     if (time_.value() != lastRotationTime_)
     {
         rotate();
+        write = true;
     }
 
     // Zero out force vector and field
@@ -376,6 +411,12 @@ void Foam::fv::crossFlowTurbineALSource::addSup
                              
     Info<< "Power coefficient from " << name_ << ": " << powerCoefficient_
         << endl << endl;
+        
+    // Write data if time value has changed
+    if (write and Pstream::master())
+    {
+        writeData();
+    }
 }
 
 
@@ -413,13 +454,6 @@ void Foam::fv::crossFlowTurbineALSource::addSup
         << endl;
     Info<< "Torque (per unit density) from " << name_ << ": " << torque_ 
         << endl << endl;
-}
-
-
-void Foam::fv::crossFlowTurbineALSource::writeData(Ostream& os) const
-{
-    os << indent << name_ << endl;
-    dict_.write(os);
 }
 
 
