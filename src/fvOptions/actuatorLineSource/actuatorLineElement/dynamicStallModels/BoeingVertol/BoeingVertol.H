@@ -22,36 +22,27 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::BoeingVertol
+    Foam::fv::BoeingVertol
 
 Description
+    Boeing-Vertol dynamic stall model for use with actuatorLineElement.
 
 SourceFiles
-    BoeingVertolI.H
     BoeingVertol.C
-    BoeingVertolIO.C
 
 \*---------------------------------------------------------------------------*/
 
 #ifndef BoeingVertol_H
 #define BoeingVertol_H
 
-#include ".H"
+#include "dynamicStallModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-
-// Forward declaration of classes
-class Istream;
-class Ostream;
-
-// Forward declaration of friend functions and operators
-class BoeingVertol;
-Istream& operator>>(Istream&, BoeingVertol&);
-Ostream& operator<<(Ostream&, const BoeingVertol&);
-
+namespace fv
+{
 
 /*---------------------------------------------------------------------------*\
                          Class BoeingVertol Declaration
@@ -59,41 +50,17 @@ Ostream& operator<<(Ostream&, const BoeingVertol&);
 
 class BoeingVertol
 :
-    public baseClassName
+    public dynamicStallModel
 {
-    // Private data
-
-        //- Description of data_
-        dataType data_;
-
-
-    // Private Member Functions
-
-        //- Disallow default bitwise copy construct
-        BoeingVertol(const BoeingVertol&);
-
-        //- Disallow default bitwise assignment
-        void operator=(const BoeingVertol&);
 
 
 public:
-
-    // Static data members
-
-        //- Static data staticData
-        static const dataType staticData;
 
 
     // Constructors
 
         //- Construct null
         BoeingVertol();
-
-        //- Construct from components
-        BoeingVertol(const dataType& data);
-
-        //- Construct from Istream
-        BoeingVertol(Istream&);
 
         //- Construct as copy
         BoeingVertol(const BoeingVertol&);
@@ -119,30 +86,13 @@ public:
 
         // Write
 
-
-    // Member Operators
-
-        void operator=(const BoeingVertol&);
-
-
-    // Friend Functions
-
-    // Friend Operators
-
-    // IOstream Operators
-
-        friend Istream& operator>>(Istream&, BoeingVertol&);
-        friend Ostream& operator<<(Ostream&, const BoeingVertol&);
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+} // End namespace fv
 } // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#include "BoeingVertolI.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

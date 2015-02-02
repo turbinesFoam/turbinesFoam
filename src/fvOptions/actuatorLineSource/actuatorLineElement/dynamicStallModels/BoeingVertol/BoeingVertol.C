@@ -25,47 +25,20 @@ License
 
 #include "BoeingVertol.H"
 
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
-
-const dataType Foam::BoeingVertol::staticData();
-
-
-// * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
-
-
-// * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
-
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::BoeingVertol::BoeingVertol()
-:
-    baseClassName(),
-    data_()
-{}
-
-
-Foam::BoeingVertol::BoeingVertol(const dataType& data)
-:
-    baseClassName(),
-    data_(data)
-{}
-
-
-Foam::BoeingVertol::BoeingVertol(const BoeingVertol&)
-:
-    baseClassName(),
-    data_()
+Foam::fv::BoeingVertol::BoeingVertol()
 {}
 
 
 // * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
 
-Foam::autoPtr<Foam::BoeingVertol>
-Foam::BoeingVertol::New()
+Foam::autoPtr<Foam::fv::BoeingVertol>
+Foam::fv::BoeingVertol::New()
 {
     return autoPtr<BoeingVertol>(new BoeingVertol);
 }
@@ -73,30 +46,11 @@ Foam::BoeingVertol::New()
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::BoeingVertol::~BoeingVertol()
+Foam::fv::BoeingVertol::~BoeingVertol()
 {}
 
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
-
-
-// * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * * //
-
-void Foam::BoeingVertol::operator=(const BoeingVertol& rhs)
-{
-    // Check for assignment to self
-    if (this == &rhs)
-    {
-        FatalErrorIn("Foam::BoeingVertol::operator=(const Foam::BoeingVertol&)")
-            << "Attempted assignment to self"
-            << abort(FatalError);
-    }
-}
-
-// * * * * * * * * * * * * * * Friend Functions  * * * * * * * * * * * * * * //
-
-
-// * * * * * * * * * * * * * * Friend Operators * * * * * * * * * * * * * * //
 
 
 // ************************************************************************* //
