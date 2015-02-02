@@ -37,6 +37,7 @@ SourceFiles
 #include "autoPtr.H"
 #include "runTimeSelectionTables.H"
 #include "dictionary.H"
+#include "vector.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -55,6 +56,9 @@ class dynamicStallModel
 protected:
 
     // Protected data
+    
+        //- Model name
+        word modelName_;
 
 
 public:
@@ -101,6 +105,11 @@ public:
         // Check
 
         // Edit
+        
+        // Evaluation
+        
+            // Correct lift and drag coefficients
+            void correct(scalar alpha, scalar& cl, scalar& cd);
 
         // Write
 

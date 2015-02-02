@@ -24,6 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "dynamicStallModel.H"
+#include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -66,6 +67,10 @@ Foam::fv::dynamicStallModel::~dynamicStallModel()
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
+void Foam::fv::dynamicStallModel::correct(scalar alpha, scalar& cl, scalar& cd)
+{
+    // Do nothing for now
+}
 
 
 // ************************************************************************* //

@@ -222,6 +222,9 @@ void Foam::fv::actuatorLineElement::calculate
     // Lookup lift and drag coefficients
     lookupCoefficients();
     
+    // Correct coefficients with dynamic stall model
+    dynamicStall_.correct(angleOfAttack_, liftCoefficient_, dragCoefficient_);
+    
     // Calculate force per unit density
     scalar area = chordLength_*spanLength_;
     scalar magSqrU = magSqr(relativeVelocity);
