@@ -25,33 +25,22 @@ Class
     Foam::LeishmanBeddoes
 
 Description
+    Leishman-Beddoes dynamic stall model for use with actuatorLineElement.
 
 SourceFiles
-    LeishmanBeddoesI.H
     LeishmanBeddoes.C
-    LeishmanBeddoesIO.C
 
 \*---------------------------------------------------------------------------*/
 
 #ifndef LeishmanBeddoes_H
 #define LeishmanBeddoes_H
 
-#include ".H"
+#include "dynamicStallModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-
-// Forward declaration of classes
-class Istream;
-class Ostream;
-
-// Forward declaration of friend functions and operators
-class LeishmanBeddoes;
-Istream& operator>>(Istream&, LeishmanBeddoes&);
-Ostream& operator<<(Ostream&, const LeishmanBeddoes&);
-
 
 /*---------------------------------------------------------------------------*\
                          Class LeishmanBeddoes Declaration
@@ -59,13 +48,9 @@ Ostream& operator<<(Ostream&, const LeishmanBeddoes&);
 
 class LeishmanBeddoes
 :
-    public baseClassName
+    public dynamicStallModel
 {
     // Private data
-
-        //- Description of data_
-        dataType data_;
-
 
     // Private Member Functions
 

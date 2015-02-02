@@ -44,6 +44,7 @@ SourceFiles
 #include "volFieldsFwd.H"
 #include "fvMesh.H"
 #include "fvMatrices.H"
+#include "dynamicStallModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

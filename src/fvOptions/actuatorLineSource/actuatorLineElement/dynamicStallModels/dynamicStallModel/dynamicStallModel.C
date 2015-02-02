@@ -25,47 +25,23 @@ License
 
 #include "dynamicStallModel.H"
 
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
-
-const dataType Foam::dynamicStallModel::staticData();
-
-
-// * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
-
-
-// * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
-
-
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::dynamicStallModel::dynamicStallModel()
-:
-    baseClassName(),
-    data_()
+Foam::fv::dynamicStallModel::dynamicStallModel()
 {}
 
 
-Foam::dynamicStallModel::dynamicStallModel(const dataType& data)
-:
-    baseClassName(),
-    data_(data)
-{}
-
-
-Foam::dynamicStallModel::dynamicStallModel(const dynamicStallModel&)
-:
-    baseClassName(),
-    data_()
+Foam::fv::dynamicStallModel::dynamicStallModel(const dynamicStallModel&)
 {}
 
 
 // * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
 
-Foam::autoPtr<Foam::dynamicStallModel>
-Foam::dynamicStallModel::New()
+Foam::autoPtr<Foam::fv::dynamicStallModel>
+Foam::fv::dynamicStallModel::New()
 {
     return autoPtr<dynamicStallModel>(new dynamicStallModel);
 }
@@ -73,30 +49,12 @@ Foam::dynamicStallModel::New()
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::dynamicStallModel::~dynamicStallModel()
+Foam::fv::dynamicStallModel::~dynamicStallModel()
 {}
 
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
-
-// * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * * //
-
-void Foam::dynamicStallModel::operator=(const dynamicStallModel& rhs)
-{
-    // Check for assignment to self
-    if (this == &rhs)
-    {
-        FatalErrorIn("Foam::dynamicStallModel::operator=(const Foam::dynamicStallModel&)")
-            << "Attempted assignment to self"
-            << abort(FatalError);
-    }
-}
-
-// * * * * * * * * * * * * * * Friend Functions  * * * * * * * * * * * * * * //
-
-
-// * * * * * * * * * * * * * * Friend Operators * * * * * * * * * * * * * * //
 
 
 // ************************************************************************* //
