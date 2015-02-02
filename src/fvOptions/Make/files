@@ -1,8 +1,8 @@
+crossFlowTurbineALSource/crossFlowTurbineALSource.C
 actuatorLineSource/actuatorLineSource.C
 actuatorLineSource/actuatorLineElement/actuatorLineElement.C
 actuatorLineSource/actuatorLineElement/dynamicStallModels/dynamicStallModel/dynamicStallModel.C
 actuatorLineSource/actuatorLineElement/dynamicStallModels/LeishmanBeddoes/LeishmanBeddoes.C
 actuatorLineSource/actuatorLineElement/dynamicStallModels/BoeingVertol/BoeingVertol.C
-crossFlowTurbineALSource/crossFlowTurbineALSource.C
 
 LIB = $(FOAM_USER_LIBBIN)/libturbinesFoam
