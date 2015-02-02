@@ -22,7 +22,7 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::LeishmanBeddoes
+    Foam::fv::LeishmanBeddoes
 
 Description
     Leishman-Beddoes dynamic stall model for use with actuatorLineElement.
@@ -41,6 +41,8 @@ SourceFiles
 
 namespace Foam
 {
+namespace fv
+{
 
 /*---------------------------------------------------------------------------*\
                          Class LeishmanBeddoes Declaration
@@ -50,35 +52,15 @@ class LeishmanBeddoes
 :
     public dynamicStallModel
 {
-    // Private data
-
-    // Private Member Functions
-
-        //- Disallow default bitwise copy construct
-        LeishmanBeddoes(const LeishmanBeddoes&);
-
-        //- Disallow default bitwise assignment
-        void operator=(const LeishmanBeddoes&);
 
 
 public:
-
-    // Static data members
-
-        //- Static data staticData
-        static const dataType staticData;
 
 
     // Constructors
 
         //- Construct null
         LeishmanBeddoes();
-
-        //- Construct from components
-        LeishmanBeddoes(const dataType& data);
-
-        //- Construct from Istream
-        LeishmanBeddoes(Istream&);
 
         //- Construct as copy
         LeishmanBeddoes(const LeishmanBeddoes&);
@@ -104,30 +86,13 @@ public:
 
         // Write
 
-
-    // Member Operators
-
-        void operator=(const LeishmanBeddoes&);
-
-
-    // Friend Functions
-
-    // Friend Operators
-
-    // IOstream Operators
-
-        friend Istream& operator>>(Istream&, LeishmanBeddoes&);
-        friend Ostream& operator<<(Ostream&, const LeishmanBeddoes&);
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+} // End namespace fv
 } // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#include "LeishmanBeddoesI.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

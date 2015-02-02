@@ -25,47 +25,20 @@ License
 
 #include "LeishmanBeddoes.H"
 
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
-
-const dataType Foam::LeishmanBeddoes::staticData();
-
-
-// * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
-
-
-// * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
-
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::LeishmanBeddoes::LeishmanBeddoes()
-:
-    baseClassName(),
-    data_()
-{}
-
-
-Foam::LeishmanBeddoes::LeishmanBeddoes(const dataType& data)
-:
-    baseClassName(),
-    data_(data)
-{}
-
-
-Foam::LeishmanBeddoes::LeishmanBeddoes(const LeishmanBeddoes&)
-:
-    baseClassName(),
-    data_()
+Foam::fv::LeishmanBeddoes::LeishmanBeddoes()
 {}
 
 
 // * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
 
-Foam::autoPtr<Foam::LeishmanBeddoes>
-Foam::LeishmanBeddoes::New()
+Foam::autoPtr<Foam::fv::LeishmanBeddoes>
+Foam::fv::LeishmanBeddoes::New()
 {
     return autoPtr<LeishmanBeddoes>(new LeishmanBeddoes);
 }
@@ -73,30 +46,11 @@ Foam::LeishmanBeddoes::New()
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::LeishmanBeddoes::~LeishmanBeddoes()
+Foam::fv::LeishmanBeddoes::~LeishmanBeddoes()
 {}
 
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
-
-
-// * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * * //
-
-void Foam::LeishmanBeddoes::operator=(const LeishmanBeddoes& rhs)
-{
-    // Check for assignment to self
-    if (this == &rhs)
-    {
-        FatalErrorIn("Foam::LeishmanBeddoes::operator=(const Foam::LeishmanBeddoes&)")
-            << "Attempted assignment to self"
-            << abort(FatalError);
-    }
-}
-
-// * * * * * * * * * * * * * * Friend Functions  * * * * * * * * * * * * * * //
-
-
-// * * * * * * * * * * * * * * Friend Operators * * * * * * * * * * * * * * //
 
 
 // ************************************************************************* //
