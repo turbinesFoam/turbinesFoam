@@ -25,6 +25,17 @@ License
 
 #include "dynamicStallModel.H"
 
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+namespace Foam
+{
+namespace fv
+{
+    defineTypeNameAndDebug(dynamicStallModel, 0);
+    defineRunTimeSelectionTable(dynamicStallModel, dictionary);
+}
+}
+
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
 

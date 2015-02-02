@@ -34,7 +34,9 @@ SourceFiles
 #ifndef dynamicStallModel_H
 #define dynamicStallModel_H
 
-#include "actuatorLineElement.H"
+#include "autoPtr.H"
+#include "runTimeSelectionTables.H"
+#include "dictionary.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -54,15 +56,28 @@ protected:
 
     // Protected data
 
-        //- List of static foil data angles of attack
-        List<scalar> angleOfAttackList_;
-
 
 public:
 
+    //- Runtime type information
+    TypeName("dynamicStallModel");
+
+        // Declare run-time constructor selection table
+        declareRunTimeSelectionTable
+        (
+            autoPtr,
+            dynamicStallModel,
+            dictionary,
+            (
+                const dictionary& dict,
+                const word& modelName
+            ),
+            (dict, modelName)
+        );
+
     // Constructors
 
-        //- Construct null
+        //- Construct from components
         dynamicStallModel();
 
         //- Construct as copy
@@ -76,7 +91,7 @@ public:
 
 
     //- Destructor
-    ~dynamicStallModel();
+    virtual ~dynamicStallModel();
 
 
     // Member Functions

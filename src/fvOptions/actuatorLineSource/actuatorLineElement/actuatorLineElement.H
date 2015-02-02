@@ -124,6 +124,9 @@ protected:
         
         //- List of drag coefficients
         List<scalar> dragCoefficientList_;
+        
+        //- Dynamic stall model
+        dynamicStallModel dynamicStall_;
 
 
     // Protected Member Functions
