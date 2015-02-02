@@ -86,9 +86,6 @@ protected:
         //- File name (optional)
         fileName fName_;
         
-        //- List of actuator line elements
-        PtrList<actuatorLineElement> actuatorLineElements_;
-        
         //- Tip effect
         scalar tipEffect_;
         
