@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # cd $WM_PROJECT_USER_DIR/turbinesFoam/src/turbineModels
 
 # wmake libso
