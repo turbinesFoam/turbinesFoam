@@ -411,6 +411,9 @@ void Foam::fv::crossFlowTurbineALSource::createShaft()
         elementGeometry[j][3][0] = 0.0;
     }
     
+    shaftSubDict.add("elementGeometry", elementGeometry);
+    shaftSubDict.add("initialVelocities", initialVelocities);
+    shaftSubDict.add("nElements", nElements);
     shaftSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
     shaftSubDict.add("coefficientData", profileData);
     shaftSubDict.add("tipEffect", tipEffect_);
@@ -615,20 +618,26 @@ void Foam::fv::crossFlowTurbineALSource::addSup
         moment += blades_[i].moment(origin_);
     }
     
-    // Add source for strut actuator lines
-    forAll(struts_, i)
+    if (hasStruts_)
     {
-        struts_[i].addSup(eqn, fieldI);
-        forceField_ += struts_[i].forceField();
-        force_ += struts_[i].force();
-        moment += struts_[i].moment(origin_);
+        // Add source for strut actuator lines
+        forAll(struts_, i)
+        {
+            struts_[i].addSup(eqn, fieldI);
+            forceField_ += struts_[i].forceField();
+            force_ += struts_[i].force();
+            moment += struts_[i].moment(origin_);
+        }
     }
     
-    // Add source for shaft actuator line
-    shaft_->addSup(eqn, fieldI);
-    forceField_ += shaft_->forceField();
-    force_ += shaft_->force();
-    moment += shaft_->moment(origin_);
+    if (hasShaft_)
+    {
+        // Add source for shaft actuator line
+        shaft_->addSup(eqn, fieldI);
+        forceField_ += shaft_->forceField();
+        force_ += shaft_->force();
+        moment += shaft_->moment(origin_);
+    }
     
     // Torque is the projection of the moment from all blades on the axis
     torque_ = moment & axis_;
@@ -726,7 +735,7 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
         
         // Get shaft information
         shaftDict_ = coeffs_.subOrEmptyDict("shaft");
-        if (shaftDict_.keys().size() > 0) hasShaft_ = true;
+        //~ if (shaftDict_.keys().size() > 0) hasShaft_ = true;
         
         // Get profiles information
         profilesDict_ = coeffs_.subDict("profiles");
