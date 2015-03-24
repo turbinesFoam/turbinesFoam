@@ -373,7 +373,7 @@ void Foam::fv::crossFlowTurbineALSource::createShaft()
     // Convert element data into actuator line element geometry
     label nGeomPoints = elementData.size();
     List<List<List<scalar> > > elementGeometry(nGeomPoints);
-    List<vector> initialVelocities(nGeomPoints, vector::one);
+    List<vector> initialVelocities(nGeomPoints, vector::zero);
 
     forAll(elementData, j)
     {
@@ -392,8 +392,6 @@ void Foam::fv::crossFlowTurbineALSource::createShaft()
         vector point = origin_;
         // Move along axis
         point += axialDistance*axis_;
-
-        initialVelocities[j] = vector::zero;
         
         elementGeometry[j][0][0] = point.x(); // x location of geom point
         elementGeometry[j][0][1] = point.y(); // y location of geom point
@@ -735,7 +733,7 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
         
         // Get shaft information
         shaftDict_ = coeffs_.subOrEmptyDict("shaft");
-        //~ if (shaftDict_.keys().size() > 0) hasShaft_ = true;
+        if (shaftDict_.keys().size() > 0) hasShaft_ = true;
         
         // Get profiles information
         profilesDict_ = coeffs_.subDict("profiles");
