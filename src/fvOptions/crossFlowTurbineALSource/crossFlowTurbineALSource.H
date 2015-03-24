@@ -297,7 +297,10 @@ public:
             virtual void createOutputFile();
 
             //- Write the turbine performance to file
-            virtual void writeData();
+            virtual void writePerf();
+            
+            //- Write the source properties
+            virtual void writeData(Ostream&) const;
 
             //- Read source dictionary
             virtual bool read(const dictionary& dict);

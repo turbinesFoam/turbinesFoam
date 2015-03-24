@@ -267,13 +267,18 @@ void Foam::fv::crossFlowTurbineALSource::createOutputFile()
 }
 
 
-void Foam::fv::crossFlowTurbineALSource::writeData()
+void Foam::fv::crossFlowTurbineALSource::writePerf()
 {
     *outputFile_<< time_.value() << "," << angleDeg_ << "," 
                 << tipSpeedRatio_ << "," << powerCoefficient_ << "," 
                 << dragCoefficient_ << "," << torqueCoefficient_ << endl;
 }
 
+void Foam::fv::crossFlowTurbineALSource::writeData(Ostream& os) const
+{
+    os  << indent << name_ << endl;
+    dict_.write(os);
+}
 
 // * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
@@ -415,10 +420,10 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     Info<< "Power coefficient from " << name_ << ": " << powerCoefficient_
         << endl << endl;
         
-    // Write data if time value has changed and master processor
+    // Write performance data if time value has changed and master processor
     if (write and Pstream::master())
     {
-        writeData();
+        writePerf();
     }
 }
 
