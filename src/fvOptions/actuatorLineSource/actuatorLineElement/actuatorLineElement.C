@@ -260,6 +260,7 @@ void Foam::fv::actuatorLineElement::calculate
         Info<< "Calculating force contribution from actuatorLineElement " 
             << name_ << endl;
         Info<< "    chordDirection: " << chordDirection_ << endl;
+        Info<< "    spanDirection: " << spanDirection_ << endl;
         Info<< "    elementVelocity: " << velocity_ << endl;
         Info<< "    inflowVelocity: " << inflowVelocity << endl;
         Info<< "    relativeVelocity: " << relativeVelocity << endl;
