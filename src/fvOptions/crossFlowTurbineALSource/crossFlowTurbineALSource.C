@@ -359,7 +359,79 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
 
 void Foam::fv::crossFlowTurbineALSource::createShaft()
 {
-    // TODO
+    int nElements;
+    word profileName;
+    List<List<scalar> > elementData;
+    List<List<scalar> > profileData;
+    dictionary shaftSubDict;
+    
+    shaftDict_.lookup("nElements") >> nElements;
+    shaftDict_.lookup("profile") >> profileName;
+    shaftDict_.lookup("elementData") >> elementData;
+    profilesDict_.subDict(profileName).lookup("data") >> profileData;
+    
+    // Convert element data into actuator line element geometry
+    label nGeomPoints = elementData.size();
+    List<List<List<scalar> > > elementGeometry(nGeomPoints);
+    List<vector> initialVelocities(nGeomPoints, vector::one);
+
+    forAll(elementData, j)
+    {
+        // Read shaft element data
+        scalar axialDistance = elementData[j][0];
+        scalar diameter = elementData[j][1];
+        
+        // Set sizes for actuatorLineSource elementGeometry lists
+        elementGeometry[j].setSize(4);
+        elementGeometry[j][0].setSize(3);
+        elementGeometry[j][1].setSize(3);
+        elementGeometry[j][2].setSize(1);
+        elementGeometry[j][3].setSize(1);
+        
+        // Create geometry point for AL source at origin
+        vector point = origin_;
+        // Move along axis
+        point += axialDistance*axis_;
+
+        initialVelocities[j] = vector::zero;
+        
+        elementGeometry[j][0][0] = point.x(); // x location of geom point
+        elementGeometry[j][0][1] = point.y(); // y location of geom point
+        elementGeometry[j][0][2] = point.z(); // z location of geom point
+        
+        // Set span directions
+        elementGeometry[j][1][0] = axis_.x(); // x component of span direction
+        elementGeometry[j][1][1] = axis_.y(); // y component of span direction
+        elementGeometry[j][1][2] = axis_.z(); // z component of span direction
+        
+        // Set chord length
+        elementGeometry[j][2][0] = diameter;
+        
+        // Set pitch
+        elementGeometry[j][3][0] = 0.0;
+    }
+    
+    shaftSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
+    shaftSubDict.add("coefficientData", profileData);
+    shaftSubDict.add("tipEffect", tipEffect_);
+    shaftSubDict.add("freeStreamVelocity", freeStreamVelocity_);
+        
+    dictionary dict;
+    dict.add("actuatorLineSourceCoeffs", shaftSubDict);
+    dict.add("type", "actuatorLineSource");
+    dict.add("active", dict_.lookup("active"));
+    dict.add("selectionMode", dict_.lookup("selectionMode"));
+    dict.add("cellSet", dict_.lookup("cellSet"));
+    
+    actuatorLineSource* shaft = new actuatorLineSource
+    (
+        "shaft", 
+        "actuatorLineSource", 
+        dict, 
+        mesh_
+    );
+    
+    shaft_.set(shaft);
 }
 
 
@@ -497,7 +569,7 @@ void Foam::fv::crossFlowTurbineALSource::rotate()
     
     if (hasShaft_)
     {
-        shaft_.rotate(origin_, axis_, radians);
+        shaft_->rotate(origin_, axis_, radians);
     }
     
     if (debug)
