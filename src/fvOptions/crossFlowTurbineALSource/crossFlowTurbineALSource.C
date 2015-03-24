@@ -314,10 +314,10 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
             elementGeometry[j][0][1] = point.y(); // y location of geom point
             elementGeometry[j][0][2] = point.z(); // z location of geom point
             
-            // Set span directions for AL source (perpendicular to shaft)
-            elementGeometry[j][1][0] = axis_.y(); // x component of span direction
-            elementGeometry[j][1][1] = axis_.z(); // y component of span direction
-            elementGeometry[j][1][2] = axis_.x(); // z component of span direction
+            // Set span directions for AL source (in radial direction)
+            elementGeometry[j][1][0] = radialDirection_.x(); 
+            elementGeometry[j][1][1] = radialDirection_.y(); 
+            elementGeometry[j][1][2] = radialDirection_.z(); 
             
             // Set chord length
             elementGeometry[j][2][0] = chordLength;
