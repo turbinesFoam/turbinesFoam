@@ -200,6 +200,7 @@ void Foam::fv::actuatorLineSource::createElements()
     List<vector> points(nGeometryPoints);
     List<vector> spanDirs(nGeometryPoints);
     List<scalar> chordLengths(nGeometryPoints);
+    List<vector> chordRefDirs(nGeometryPoints);
     List<scalar> pitches(nGeometryPoints);
     totalLength_ = 0.0;
     
@@ -218,8 +219,13 @@ void Foam::fv::actuatorLineSource::createElements()
         spanDirs[i] = vector(x, y, z);
         // Read chord length
         chordLengths[i] = elementGeometry_[i][2][0];
+        // Read chord ref dir
+        x = elementGeometry_[i][3][0];
+        y = elementGeometry_[i][3][1];
+        z = elementGeometry_[i][3][2];
+        chordRefDirs[i] = vector(x, y, z);
         // Read pitch
-        pitches[i] = elementGeometry_[i][3][0];
+        pitches[i] = elementGeometry_[i][4][0];
     }
     
     // Calculate span length of each element
@@ -296,8 +302,14 @@ void Foam::fv::actuatorLineSource::createElements()
                         + deltaVelTotal/nElementsPerSegment*pointIndex
                         + deltaVelTotal/nElementsPerSegment/2;
         
-        // Chord direction points into free stream then rotated by pitch
-        chordDirection = -freeStreamDirection_;
+        // Linearly interpolate chordDirection
+        vector chordDir1 = chordRefDirs[geometrySegmentIndex];
+        vector chordDir2 = chordRefDirs[geometrySegmentIndex + 1];
+        vector deltaChordDirTotal = chordDir2 - chordDir1;
+        chordDirection = chordDir1 
+                       + deltaChordDirTotal/nElementsPerSegment*pointIndex
+                       + deltaChordDirTotal/nElementsPerSegment/2;
+
         
         // Create a dictionary for this actuatorLineElement
         dictionary dict;

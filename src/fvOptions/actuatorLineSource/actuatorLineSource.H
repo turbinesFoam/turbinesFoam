@@ -93,7 +93,7 @@ protected:
         List<List<scalar> > coefficientData_;
         
         //- Element geometry
-        // point, spanDirection, chordLength, pitch (from freeStreamVelocity_)
+        // point, spanDirection, chordLength, chordRefDir, pitch 
         List<List<List<scalar> > > elementGeometry_;
         
         //- Number of blade elements
