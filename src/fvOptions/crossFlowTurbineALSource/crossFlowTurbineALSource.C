@@ -487,6 +487,19 @@ void Foam::fv::crossFlowTurbineALSource::rotate()
         blades_[i].rotate(origin_, axis_, radians);
     }
     
+    if (hasStruts_)
+    {
+        forAll(struts_, i)
+        {
+            struts_[i].rotate(origin_, axis_, radians);
+        }
+    }
+    
+    if (hasShaft_)
+    {
+        shaft_.rotate(origin_, axis_, radians);
+    }
+    
     if (debug)
     {
         Info<< "Rotating " << name_ << " " << radians << " radians" 
