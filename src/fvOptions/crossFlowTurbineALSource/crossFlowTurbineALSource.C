@@ -114,8 +114,6 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
     word modelType = "actuatorLineSource";
     List<scalar> frontalAreas(nBlades); // frontal area from each blade
     
-    const dictionary& profilesSubDict(coeffs_.subDict("profiles"));
-    
     for (int i = 0; i < nBlades_; i++)
     {
         word& bladeName = bladeNames_[i];
@@ -125,7 +123,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         bladeSubDict.lookup("nElements") >> nElements;
         bladeSubDict.lookup("profile") >> profileName;
         bladeSubDict.lookup("elementData") >> elementData;
-        profilesSubDict.subDict(profileName).lookup("data") >> profileData;
+        profilesDict_.subDict(profileName).lookup("data") >> profileData;
         
         bladeSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
         bladeSubDict.add("coefficientData", profileData);
@@ -241,6 +239,18 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
 }
 
 
+void Foam::fv::crossFlowTurbineALSource::createStruts()
+{
+    // TODO
+}
+
+
+void Foam::fv::crossFlowTurbineALSource::createShaft()
+{
+    // TODO
+}
+
+
 void Foam::fv::crossFlowTurbineALSource::createOutputFile()
 {
     fileName dir;
@@ -296,6 +306,8 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     omega_(0.0),
     angleDeg_(0.0),
     nBlades_(0),
+    hasStruts_(false),
+    hasShaft_(false),
     freeStreamVelocity_(vector::zero),
     tipEffect_(1.0),
     forceField_
@@ -321,6 +333,8 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     read(dict);
     createCoordinateSystem();
     createBlades();
+    if (hasStruts_) createStruts();
+    if (hasShaft_) createShaft();
     lastRotationTime_ = time_.value();
     createOutputFile();
 }
@@ -395,7 +409,7 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     // Read the reference density for incompressible flow
     //coeffs_.lookup("rhoRef") >> rhoRef_;
 
-    // Add source for all actuator lines
+    // Add source for blade actuator lines
     forAll(blades_, i)
     {
         blades_[i].addSup(eqn, fieldI);
@@ -403,6 +417,21 @@ void Foam::fv::crossFlowTurbineALSource::addSup
         force_ += blades_[i].force();
         moment += blades_[i].moment(origin_);
     }
+    
+    // Add source for strut actuator lines
+    forAll(struts_, i)
+    {
+        struts_[i].addSup(eqn, fieldI);
+        forceField_ += struts_[i].forceField();
+        force_ += struts_[i].force();
+        moment += struts_[i].moment(origin_);
+    }
+    
+    // Add source for shaft actuator line
+    shaft_->addSup(eqn, fieldI);
+    forceField_ += shaft_->forceField();
+    force_ += shaft_->force();
+    moment += shaft_->moment(origin_);
     
     // Torque is the projection of the moment from all blades on the axis
     torque_ = moment & axis_;
@@ -493,6 +522,17 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
         bladeNames_ = bladesDict_.toc();
 
         coeffs_.lookup("tipEffect") >> tipEffect_;
+        
+        // Get struts information
+        strutsDict_ = coeffs_.subOrEmptyDict("struts");
+        if (strutsDict_.keys().size() > 0) hasStruts_ = true;
+        
+        // Get shaft information
+        shaftDict_ = coeffs_.subOrEmptyDict("shaft");
+        if (shaftDict_.keys().size() > 0) hasShaft_ = true;
+        
+        // Get profiles information
+        profilesDict_ = coeffs_.subDict("profiles");
         
         if (debug)
         {

@@ -139,6 +139,12 @@ protected:
 
         //- Number of blades
         label nBlades_;
+        
+        //- Switch for struts
+        bool hasStruts_;
+        
+        //- Switch for shaft
+        bool hasShaft_;
 
         //- Inlet velocity for specified inflow
         vector freeStreamVelocity_;
@@ -165,18 +171,26 @@ protected:
         //- List of actuator lines as blades
         PtrList<actuatorLineSource> blades_;
         
-        //wordList bladeNames_;
-        
         //- List of actuator lines as struts
-        //List<actuatorLineSource> struts_;
+        PtrList<actuatorLineSource> struts_;
         
         //- Actuator line for shaft
-        //actuatorLineSource shaft_;
+        autoPtr<actuatorLineSource> shaft_;
         
         //- Blade definitions dictionary
         dictionary bladesDict_;
         
+        //- List of blade names
         wordList bladeNames_;
+        
+        //- Strut definitions dictionary
+        dictionary strutsDict_;
+        
+        //- Shaft dictionary
+        dictionary shaftDict_;
+        
+        //- Dictionary for profile coefficient data
+        dictionary profilesDict_;
         
         //- Force vector
         vector force_;
@@ -216,6 +230,12 @@ protected:
         
         //- Create actuator lines for blades
         void createBlades();
+        
+        //- Create actuator lines for struts
+        void createStruts();
+        
+        //- Create actuator line for shaft
+        void createShaft();
 
         //- Create the co-ordinate system
         void createCoordinateSystem();
