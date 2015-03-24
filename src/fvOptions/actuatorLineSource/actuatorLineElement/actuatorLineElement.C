@@ -208,15 +208,13 @@ void Foam::fv::actuatorLineElement::calculate
     // plane perpendicular to the chord and span direction)
     vector relativeVelocity = inflowVelocity - velocity_;
     
+    // Calculate vector normal to chord--span plane
+    vector planformNormal = -chordDirection_ ^ spanDirection_;
+    planformNormal /= mag(planformNormal);
+    
     // Calculate angle of attack (radians)
-    scalar angleOfAttackRad = acos((-chordDirection_ & relativeVelocity)
-                            / (mag(chordDirection_)*mag(relativeVelocity)));
-    vector alphaDir = chordDirection_ ^ relativeVelocity;
-    alphaDir /= mag(alphaDir);
-    if ((alphaDir & spanDirection_) < 0)
-    {
-        angleOfAttackRad *= -1;
-    }
+    scalar angleOfAttackRad = asin((planformNormal & relativeVelocity)
+                            / (mag(planformNormal)*mag(relativeVelocity)));
     angleOfAttack_ = angleOfAttackRad/Foam::constant::mathematical::pi*180.0;
     
     // Lookup lift and drag coefficients
