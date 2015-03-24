@@ -241,7 +241,119 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
 
 void Foam::fv::crossFlowTurbineALSource::createStruts()
 {
-    // TODO
+    int nStruts = strutsDict_.keys().size();
+    struts_.setSize(nStruts);
+    int nElements;
+    word profileName;
+    List<List<scalar> > elementData;
+    List<List<scalar> > profileData;
+    word modelType = "actuatorLineSource";
+    List<word> strutNames = strutsDict_.toc();
+    
+    for (int i = 0; i < nStruts; i++)
+    {
+        word& strutName = strutNames[i];
+        // Create dictionary items for this strut
+        dictionary strutSubDict;
+        strutSubDict = strutsDict_.subDict(strutName);
+        strutSubDict.lookup("nElements") >> nElements;
+        strutSubDict.lookup("profile") >> profileName;
+        strutSubDict.lookup("elementData") >> elementData;
+        profilesDict_.subDict(profileName).lookup("data") >> profileData;
+        
+        strutSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
+        strutSubDict.add("coefficientData", profileData);
+        strutSubDict.add("tipEffect", tipEffect_);
+        strutSubDict.add("freeStreamVelocity", freeStreamVelocity_);
+        
+        if (debug)
+        {
+            Info<< "Creating actuator line strut " << strutName << endl;
+            Info<< "Strut has " << nElements << " elements" << endl;
+            Info<< "Strut profile: " << profileName << endl;
+            Info<< "Element data:" << endl;
+            Info<< elementData << endl << endl;
+            Info<< "Profile sectional coefficient data:" << endl;
+            Info<< profileData << endl << endl;
+        }
+        
+        // Convert element data into actuator line element geometry
+        label nGeomPoints = elementData.size();
+        List<List<List<scalar> > > elementGeometry(nGeomPoints);
+        List<vector> initialVelocities(nGeomPoints, vector::one);
+
+        forAll(elementData, j)
+        {
+            // Read CFTAL dict data
+            scalar axialDistance = elementData[j][0];
+            scalar radius = elementData[j][1];
+            scalar azimuthDegrees = elementData[j][2];
+            scalar azimuthRadians = azimuthDegrees/180.0*mathematical::pi;
+            scalar chordLength = elementData[j][3];
+            scalar chordMount = elementData[j][4];
+            
+            // Set sizes for actuatorLineSource elementGeometry lists
+            elementGeometry[j].setSize(4);
+            elementGeometry[j][0].setSize(3);
+            elementGeometry[j][1].setSize(3);
+            elementGeometry[j][2].setSize(1);
+            elementGeometry[j][3].setSize(1);
+            
+            // Create geometry point for AL source at origin
+            vector point = origin_;
+            // Move along axis
+            point += axialDistance*axis_;
+            scalar chordDisplacement = (0.5 - chordMount)*chordLength;
+            point += chordDisplacement*freeStreamDirection_;
+            point += radius*radialDirection_;
+            initialVelocities[j] = -freeStreamDirection_*omega_*radius;
+            // Rotate according to azimuth value
+            rotateVector(point, origin_, axis_, azimuthRadians);
+            rotateVector(initialVelocities[j], origin_, axis_, azimuthRadians);
+            elementGeometry[j][0][0] = point.x(); // x location of geom point
+            elementGeometry[j][0][1] = point.y(); // y location of geom point
+            elementGeometry[j][0][2] = point.z(); // z location of geom point
+            
+            // Set span directions for AL source (perpendicular to shaft)
+            elementGeometry[j][1][0] = axis_.y(); // x component of span direction
+            elementGeometry[j][1][1] = axis_.z(); // y component of span direction
+            elementGeometry[j][1][2] = axis_.x(); // z component of span direction
+            
+            // Set chord length
+            elementGeometry[j][2][0] = chordLength;
+            
+            // Set pitch
+            scalar pitch = elementData[j][5];
+            pitch += azimuthDegrees;
+            elementGeometry[j][3][0] = pitch;
+        }
+
+        if (debug)
+        {
+            Info<< "Converted element geometry:" << endl << elementGeometry 
+                << endl;
+        }
+        
+        strutSubDict.add("elementGeometry", elementGeometry);
+        strutSubDict.add("initialVelocities", initialVelocities);
+        
+        dictionary dict;
+        dict.add("actuatorLineSourceCoeffs", strutSubDict);
+        dict.add("type", "actuatorLineSource");
+        dict.add("active", dict_.lookup("active"));
+        dict.add("selectionMode", dict_.lookup("selectionMode"));
+        dict.add("cellSet", dict_.lookup("cellSet"));
+        
+        actuatorLineSource* strut = new actuatorLineSource
+        (
+            strutName, 
+            modelType, 
+            dict, 
+            mesh_
+        );
+        
+        struts_.set(i, strut);
+    }
 }
 
 
