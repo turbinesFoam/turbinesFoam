@@ -127,6 +127,12 @@ protected:
 
         //- TODO: Define this
         scalar dcv_;
+        
+        //- TODO: Define this
+        scalar angleOfAttack0_;
+        
+        //- TODO: Define this
+        scalar liftCoeffIdeal_;
 
 
 public:
