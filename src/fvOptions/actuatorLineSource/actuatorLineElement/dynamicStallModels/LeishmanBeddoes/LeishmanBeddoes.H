@@ -53,6 +53,21 @@ class LeishmanBeddoes
     public dynamicStallModel
 {
 
+protected:
+
+    // Protected data
+    
+        //- Time constant for leading edge pressure response to change in C_l
+        scalar timeConstantP_;
+        
+        //- Time constant for trailing edge separation point travel
+        scalar timeConstantSepPointTravel_;
+        
+        //- Time constant for leading edge vortex lift indicial function
+        scalar timeConstantLEVortexLift_;
+        
+        //- Characteristic leading edge vortex travel time
+        scalar timeConstantLEVortexTravel_;
 
 public:
 
