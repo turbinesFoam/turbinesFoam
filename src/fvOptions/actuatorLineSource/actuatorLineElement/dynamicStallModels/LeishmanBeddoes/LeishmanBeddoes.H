@@ -96,7 +96,9 @@ protected:
         //- TODO: Define this
         scalar cvPrev_;
 
-        //- TODO: Define this
+        //- Time step normalized as ds = 2*U*dt/c where U is the relative 
+        //  velocity and c is the chord (note: at the same t, s is different 
+        //  on each element)
         scalar ds_;
 
         //- Reference lift coefficient
