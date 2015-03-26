@@ -122,7 +122,10 @@ protected:
         //- TODO: Define this
         scalar F_;
 
-        //- TODO: Define this
+        //- Vortex feed -- proportional to the difference in unsteady
+        //  circulatory lift and the non-linear lift given from the Kirchoff 
+        //  flow equation with the dynamic value of the separation point 
+        //  position.
         scalar cv_;
 
         //- TODO: Define this
