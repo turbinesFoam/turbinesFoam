@@ -70,7 +70,7 @@ protected:
         scalar timeConstLEVortexTravel_;
         
         //- TODO: Define this
-        scalar dP_;
+        scalar dp_;
         
         //- TODO: Define this
         scalar dF_;
@@ -91,10 +91,40 @@ protected:
         scalar liftCoeffRefLEPrev_;
         
         //- TODO: Define this
-        scalar fStatePrev_;
+        scalar FStatePrev_;
         
         //- TODO: Define this
         scalar cvPrev_;
+
+        //- TODO: Define this
+        scalar ds_;
+
+        //- Reference lift coefficient
+        scalar liftCoeffRef_;
+        
+        //- Reference leading edge lift coefficient
+        scalar liftCoeffRefLE_;
+
+        //- TODO: Define this
+        scalar liftCoeffCritP_;
+        
+        //- TODO: Define this
+        scalar liftCoeffCritN_;
+
+        //- Lift coefficient rate switch
+        bool liftCoeffRateFlag_;
+
+        //- TODO: Define this
+        scalar FState_;
+
+        //- TODO: Define this
+        scalar F_;
+
+        //- TODO: Define this
+        scalar cv_;
+
+        //- TODO: Define this
+        scalar dcv_;
 
 
 public:
