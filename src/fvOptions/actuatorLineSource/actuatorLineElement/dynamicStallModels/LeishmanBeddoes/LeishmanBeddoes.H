@@ -58,16 +58,44 @@ protected:
     // Protected data
     
         //- Time constant for leading edge pressure response to change in C_l
-        scalar timeConstantP_;
+        scalar timeConstP_;
         
         //- Time constant for trailing edge separation point travel
-        scalar timeConstantSepPointTravel_;
+        scalar timeConstSepPointTravel_;
         
         //- Time constant for leading edge vortex lift indicial function
-        scalar timeConstantLEVortexLift_;
+        scalar timeConstLEVortexLift_;
         
         //- Characteristic leading edge vortex travel time
-        scalar timeConstantLEVortexTravel_;
+        scalar timeConstLEVortexTravel_;
+        
+        //- TODO: Define this
+        scalar dP_;
+        
+        //- TODO: Define this
+        scalar dF_;
+
+        //- TODO: Define this
+        scalar dCNv_;
+        
+        //- Switch for leading edge separation
+        bool leadingEdgeSeparated_;
+        
+        //- TODO: Define this
+        scalar sLEv_;
+        
+        //- Previous reference lift coefficient
+        scalar liftCoeffRefPrev_;
+        
+        //- Previous leading edge reference lift coefficient
+        scalar liftCoeffRefLEPrev_;
+        
+        //- TODO: Define this
+        scalar fStatePrev_;
+        
+        //- TODO: Define this
+        scalar cvPrev_;
+
 
 public:
 
