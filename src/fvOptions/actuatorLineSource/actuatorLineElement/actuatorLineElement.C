@@ -191,6 +191,12 @@ const Foam::word& Foam::fv::actuatorLineElement::name() const
 }
 
 
+Foam::scalar& Foam::fv::actuatorLineElement::angleOfAttack()
+{
+    return angleOfAttack_;
+}
+
+
 void Foam::fv::actuatorLineElement::calculate
 (
     vectorField Uin,
@@ -438,5 +444,47 @@ void Foam::fv::actuatorLineElement::addSup
     force += forceI;
 }
 
+
+void Foam::fv::actuatorLineElement::addTurbulence(fvMatrix<scalar>& eqn)
+{
+    volScalarField turbulence
+    (
+        IOobject
+        (
+            "turbulence." + name_,
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh_,
+        dimensionedScalar
+        (
+            "zero", 
+            eqn.dimensions()/dimVolume, 
+            0.0
+        )
+    );
+    
+    scalarField turbulenceExisting = eqn.psi();
+    
+    scalar epsilon = chordLength_/4;
+    scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
+    
+    // Add turbulence to the cells within the element's sphere of influence
+    scalar sphereRadius = chordLength_/4 + projectionRadius;
+    forAll(mesh_.cells(), cellI)
+    {
+        scalar dis = mag(mesh_.C()[cellI] - position_);
+        if (dis <= sphereRadius)
+        {
+            turbulence[cellI] = 0.01;
+        }
+        else turbulence[cellI] = turbulenceExisting[cellI];
+    }
+    
+    eqn *= 0;
+    eqn += turbulence;
+}
 
 // ************************************************************************* //

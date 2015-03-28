@@ -209,6 +209,13 @@ public:
                 fvMatrix<vector>& eqn,
                 const label fieldI
             );
+            
+            //- Source term to turbulence scalars
+            virtual void addSup
+            (
+                fvMatrix<scalar>& eqn,
+                const label fieldI
+            );
 
             //- Source term to compressible momentum equation
             virtual void addSup

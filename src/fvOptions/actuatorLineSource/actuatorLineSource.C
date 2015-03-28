@@ -429,6 +429,20 @@ void Foam::fv::actuatorLineSource::addSup
 
 void Foam::fv::actuatorLineSource::addSup
 (
+    fvMatrix<scalar>& eqn,
+    const label fieldI
+)
+{
+    Info<< endl << "Adding turbulence from " << name_ << endl << endl;
+    forAll(elements_, i)
+    {
+        elements_[i].addTurbulence(eqn);
+    }
+}
+
+
+void Foam::fv::actuatorLineSource::addSup
+(
     const volScalarField& rho,
     fvMatrix<vector>& eqn,
     const label fieldI

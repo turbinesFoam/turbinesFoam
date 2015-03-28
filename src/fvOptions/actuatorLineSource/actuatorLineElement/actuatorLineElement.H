@@ -195,6 +195,9 @@ public:
             //- Return force vector from element
             vector& force();
             
+            //- Return element angle of attack in degrees
+            scalar& angleOfAttack();
+            
         // Manipulation
         
             //- Translate the element's location
@@ -243,6 +246,9 @@ public:
                 fvMatrix<vector>& eqn,
                 volVectorField& force
             );
+            
+            //- Add source term to turbulence quantity
+            virtual void addTurbulence(fvMatrix<scalar>& eqn);
 
             //- Source term to compressible momentum equation
             virtual void addSup
