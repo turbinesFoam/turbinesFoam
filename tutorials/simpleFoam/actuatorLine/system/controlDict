@@ -22,7 +22,7 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         100; // Was 5000
+endTime         1000; // Was 5000
 
 deltaT          1;
 
@@ -52,7 +52,7 @@ libs
 (
     "libOpenFOAM.so"
     "libincompressibleTurbulenceModel.so"
-    "libincompressibleRASModels.so"
+    "libturbinesFoamTurbulenceModels.so"
     "libturbinesFoam.so"
 );
 
