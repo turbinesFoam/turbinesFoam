@@ -1,0 +1,3 @@
+kEpsilonSources/kEpsilonSources.C
+
+LIB = $(FOAM_USER_LIBBIN)/libturbinesFoamTurbulenceModels
