@@ -456,7 +456,7 @@ void Foam::fv::actuatorLineSource::addSup
     
     word fieldName = fieldNames_[fieldI];
 
-    Info<< endl << "Adding turbulence from " << name_ << endl << endl;
+    Info<< endl << "Adding " << fieldName << " from " << name_ << endl << endl;
     forAll(elements_, i)
     {
         elements_[i].calculate(U, dummyField);
