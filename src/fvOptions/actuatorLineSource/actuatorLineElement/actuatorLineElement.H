@@ -70,6 +70,9 @@ protected:
         //- Name of profile model
         const word name_;
         
+        //- Reference to the mesh
+        const fvMesh& mesh_;
+        
         //- Chord direction
         vector chordDirection_;
         
@@ -93,9 +96,6 @@ protected:
         
         //- Free stream direction
         vector freeStreamDirection_;
-        
-        //- Reference to the mesh
-        const fvMesh& mesh_;
         
         //- Fluid force on element; a vector that is perpendicular to 
         // spanDirection, 

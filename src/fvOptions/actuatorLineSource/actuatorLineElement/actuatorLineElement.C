@@ -170,10 +170,11 @@ Foam::fv::actuatorLineElement::actuatorLineElement
 :
     dict_(dict),
     name_(name),
-    mesh_(mesh)
+    mesh_(mesh),
+    velocity_(vector::zero),
+    forceVector_(vector::zero),
+    angleOfAttack_(0.0)
 {
-    velocity_ = vector::zero;
-    forceVector_ = vector::zero;
     read();
 }
 
