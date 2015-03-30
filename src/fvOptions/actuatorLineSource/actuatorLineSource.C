@@ -433,10 +433,34 @@ void Foam::fv::actuatorLineSource::addSup
     const label fieldI
 )
 {
+    volVectorField dummyField
+    (
+        IOobject
+        (
+            "none",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh_,
+        dimensionedVector
+        (
+            "force", 
+            dimForce/dimVolume/dimDensity, 
+            vector::zero
+        )
+    );
+    
+    const volVectorField& U = mesh_.lookupObject<volVectorField>("U");
+    
+    word fieldName = fieldNames_[fieldI];
+
     Info<< endl << "Adding turbulence from " << name_ << endl << endl;
     forAll(elements_, i)
     {
-        elements_[i].addTurbulence(eqn);
+        elements_[i].calculate(U, dummyField);
+        elements_[i].addTurbulence(eqn, fieldName);
     }
 }
 

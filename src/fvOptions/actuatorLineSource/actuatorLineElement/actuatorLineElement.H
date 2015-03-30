@@ -248,7 +248,7 @@ public:
             );
             
             //- Add source term to turbulence quantity
-            virtual void addTurbulence(fvMatrix<scalar>& eqn);
+            virtual void addTurbulence(fvMatrix<scalar>& eqn, word fieldName);
 
             //- Source term to compressible momentum equation
             virtual void addSup

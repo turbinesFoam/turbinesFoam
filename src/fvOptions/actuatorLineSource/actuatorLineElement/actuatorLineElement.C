@@ -446,7 +446,11 @@ void Foam::fv::actuatorLineElement::addSup
 }
 
 
-void Foam::fv::actuatorLineElement::addTurbulence(fvMatrix<scalar>& eqn)
+void Foam::fv::actuatorLineElement::addTurbulence
+(   
+    fvMatrix<scalar>& eqn,
+    word fieldName
+)
 {
     volScalarField turbulence
     (
@@ -467,24 +471,30 @@ void Foam::fv::actuatorLineElement::addTurbulence(fvMatrix<scalar>& eqn)
         )
     );
     
-    scalarField turbulenceExisting = eqn.psi();
-    
-    scalar epsilon = chordLength_/4;
+    scalar epsilon = chordLength_/2;
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
     
     // Add turbulence to the cells within the element's sphere of influence
-    scalar sphereRadius = chordLength_/4 + projectionRadius;
+    scalar sphereRadius = chordLength_/2 + projectionRadius;
     forAll(mesh_.cells(), cellI)
     {
         scalar dis = mag(mesh_.C()[cellI] - position_);
         if (dis <= sphereRadius)
         {
-            turbulence[cellI] = 0.01;
+            scalar factor = Foam::exp(-Foam::sqr(dis/epsilon))
+                          / (Foam::pow(epsilon, 3)
+                          * Foam::pow(Foam::constant::mathematical::pi, 1.5));
+            if (fieldName == "k")
+            {
+                turbulence[cellI] = factor*0.2*angleOfAttack_/12.0;
+            }
+            else if (fieldName == "epsilon")
+            {
+                turbulence[cellI] = factor*20*angleOfAttack_/12.0;
+            }
         }
-        else turbulence[cellI] = turbulenceExisting[cellI];
     }
     
-    eqn *= 0;
     eqn += turbulence;
 }
 
