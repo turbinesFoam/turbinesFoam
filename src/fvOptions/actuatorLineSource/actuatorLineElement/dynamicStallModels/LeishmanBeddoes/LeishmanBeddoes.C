@@ -41,6 +41,13 @@ void Foam::fv::LeishmanBeddoes::correct
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::fv::LeishmanBeddoes::LeishmanBeddoes()
+:
+    dynamicStallModel(),
+
+    A1_(0.3),
+    A2_(0.7),
+    b1_(0.14),
+    b2_(0.53)
 {}
 
 
