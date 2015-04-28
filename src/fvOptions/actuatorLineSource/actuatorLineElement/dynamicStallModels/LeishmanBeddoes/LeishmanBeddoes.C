@@ -24,7 +24,23 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "LeishmanBeddoes.H"
+#include "addToRunTimeSelectionTable.H"
 
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+namespace Foam
+{
+namespace fv
+{
+    defineTypeNameAndDebug(LeishmanBeddoes, 0);
+    addToRunTimeSelectionTable
+    (
+        dynamicStallModel, 
+        LeishmanBeddoes,
+        dictionary
+    );
+}
+}
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
