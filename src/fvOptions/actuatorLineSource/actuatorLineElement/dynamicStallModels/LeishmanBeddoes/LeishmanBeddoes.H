@@ -131,6 +131,11 @@ public:
         // Edit
 
         // Write
+        
+        // Evaluation
+        
+            // Correct lift and drag coefficients
+            virtual void correct(scalar alphaDeg, scalar& cl, scalar& cd);
 
 };
 

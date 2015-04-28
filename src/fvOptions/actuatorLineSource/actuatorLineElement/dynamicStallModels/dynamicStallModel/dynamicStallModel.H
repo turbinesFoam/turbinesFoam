@@ -38,6 +38,7 @@ SourceFiles
 #include "runTimeSelectionTables.H"
 #include "dictionary.H"
 #include "vector.H"
+#include "fvCFD.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -109,7 +110,7 @@ public:
         // Evaluation
         
             // Correct lift and drag coefficients
-            void correct(scalar alpha, scalar& cl, scalar& cd);
+            virtual void correct(scalar alphaDeg, scalar& cl, scalar& cd);
 
         // Write
 

@@ -28,6 +28,15 @@ License
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
+void Foam::fv::LeishmanBeddoes::correct
+(
+    scalar alphaDeg, 
+    scalar& cl, 
+    scalar& cd
+)
+{
+    scalar alphaRad = alphaDeg/180*Foam::constant::mathematical::pi;
+}
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
