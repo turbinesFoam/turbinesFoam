@@ -173,7 +173,8 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     mesh_(mesh),
     velocity_(vector::zero),
     forceVector_(vector::zero),
-    angleOfAttack_(0.0)
+    angleOfAttack_(0.0),
+    dynamicStall_(dict, name)
 {
     read();
 }

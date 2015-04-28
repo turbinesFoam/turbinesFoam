@@ -60,7 +60,11 @@ public:
     // Constructors
 
         //- Construct null
-        BoeingVertol();
+        BoeingVertol
+        (
+            const dictionary& dict,
+            const word& modelName
+        );
 
         //- Construct as copy
         BoeingVertol(const BoeingVertol&);
@@ -69,7 +73,11 @@ public:
     // Selectors
 
         //- Select null constructed
-        static autoPtr<BoeingVertol> New();
+        static autoPtr<BoeingVertol> New
+        (
+            const dictionary& dict,
+            const word& modelName
+        );
 
 
     //- Destructor

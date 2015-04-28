@@ -42,21 +42,16 @@ namespace fv
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::fv::dynamicStallModel::dynamicStallModel()
+Foam::fv::dynamicStallModel::dynamicStallModel
+(
+    const dictionary& dict,
+    const word& modelName
+)
 {}
 
 
 Foam::fv::dynamicStallModel::dynamicStallModel(const dynamicStallModel&)
 {}
-
-
-// * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
-
-Foam::autoPtr<Foam::fv::dynamicStallModel>
-Foam::fv::dynamicStallModel::New()
-{
-    return autoPtr<dynamicStallModel>(new dynamicStallModel);
-}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //

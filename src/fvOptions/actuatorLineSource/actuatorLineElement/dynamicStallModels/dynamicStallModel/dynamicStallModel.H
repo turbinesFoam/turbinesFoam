@@ -67,8 +67,8 @@ public:
     //- Runtime type information
     TypeName("dynamicStallModel");
 
-        // Declare run-time constructor selection table
-        declareRunTimeSelectionTable
+        // Declare run-time new constructor selection table
+        declareRunTimeNewSelectionTable
         (
             autoPtr,
             dynamicStallModel,
@@ -83,7 +83,7 @@ public:
     // Constructors
 
         //- Construct from components
-        dynamicStallModel();
+        dynamicStallModel(const dictionary&, const word& modelName);
 
         //- Construct as copy
         dynamicStallModel(const dynamicStallModel&);
@@ -92,7 +92,11 @@ public:
     // Selectors
 
         //- Select null constructed
-        static autoPtr<dynamicStallModel> New();
+        static autoPtr<dynamicStallModel> New
+        (
+            const dictionary&, 
+            const word& modelName
+        );
 
 
     //- Destructor

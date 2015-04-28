@@ -31,17 +31,14 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::fv::BoeingVertol::BoeingVertol()
+Foam::fv::BoeingVertol::BoeingVertol
+(
+    const dictionary& dict,
+    const word& modelName
+)
+:
+    dynamicStallModel(dict, modelName)
 {}
-
-
-// * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
-
-Foam::autoPtr<Foam::fv::BoeingVertol>
-Foam::fv::BoeingVertol::New()
-{
-    return autoPtr<BoeingVertol>(new BoeingVertol);
-}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //

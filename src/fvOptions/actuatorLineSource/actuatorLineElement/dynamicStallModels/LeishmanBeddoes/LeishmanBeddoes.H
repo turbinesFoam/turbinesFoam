@@ -109,7 +109,7 @@ public:
     // Constructors
 
         //- Construct null
-        LeishmanBeddoes();
+        LeishmanBeddoes(const dictionary& dict, const word& modelName);
 
         //- Construct as copy
         LeishmanBeddoes(const LeishmanBeddoes&);
@@ -118,7 +118,11 @@ public:
     // Selectors
 
         //- Select null constructed
-        static autoPtr<LeishmanBeddoes> New();
+        static autoPtr<LeishmanBeddoes> New
+        (
+            const dictionary& dict,
+            const word& modelName
+        );
 
 
     //- Destructor

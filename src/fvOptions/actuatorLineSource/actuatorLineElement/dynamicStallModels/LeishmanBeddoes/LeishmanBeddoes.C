@@ -40,24 +40,19 @@ void Foam::fv::LeishmanBeddoes::correct
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::fv::LeishmanBeddoes::LeishmanBeddoes()
+Foam::fv::LeishmanBeddoes::LeishmanBeddoes
+(
+    const dictionary& dict,
+    const word& modelName
+)
 :
-    dynamicStallModel(),
-
+    dynamicStallModel(dict, modelName),
+    
     A1_(0.3),
     A2_(0.7),
     b1_(0.14),
     b2_(0.53)
 {}
-
-
-// * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
-
-Foam::autoPtr<Foam::fv::LeishmanBeddoes>
-Foam::fv::LeishmanBeddoes::New()
-{
-    return autoPtr<LeishmanBeddoes>(new LeishmanBeddoes);
-}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
