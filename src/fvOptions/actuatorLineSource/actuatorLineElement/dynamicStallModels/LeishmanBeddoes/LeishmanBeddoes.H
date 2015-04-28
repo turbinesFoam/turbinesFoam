@@ -57,85 +57,47 @@ protected:
 
     // Protected data
     
-        //- Time constant for leading edge pressure response to change in C_l
-        scalar timeConstP_;
+        //- Normal force coefficient from circulatory effects
+        scalar CNC_;
         
-        //- Time constant for trailing edge separation point travel
-        scalar timeConstSepPointTravel_;
+        //- Equivalent angle of attack in radians
+        scalar alphaEquiv_;
         
-        //- Time constant for leading edge vortex lift indicial function
-        scalar timeConstLEVortexLift_;
+        //- Deficiency function for equivalent angle of attack
+        scalar X_;
         
-        //- Characteristic leading edge vortex travel time
-        scalar timeConstLEVortexTravel_;
+        //- Deficiency function for equivalent angle of attack
+        scalar Y_;
         
-        //- TODO: Define this
-        scalar dp_;
+        //- Mach number
+        scalar M_;
         
-        //- TODO: Define this
-        scalar dF_;
+        //- Constant in angle of attack deficiency function; 0.3 by default
+        scalar A1_;
+        
+        //- Constant in angle of attack deficiency function; 0.7 by default
+        scalar A2_;
 
-        //- TODO: Define this
-        scalar dCNv_;
+        //- Constant in angle of attack deficiency function; 0.14 by default
+        scalar b1_;
         
-        //- Switch for leading edge separation
-        bool leadingEdgeSeparated_;
+        //- Constant in angle of attack deficiency function; 0.53 by default
+        scalar b2_;
         
-        //- TODO: Define this
-        scalar sLEv_;
+        //- Change in angle of attack (radians)
+        scalar deltaAlpha_;
         
-        //- Previous reference lift coefficient
-        scalar liftCoeffRefPrev_;
+        //- Time step in seconds
+        scalar deltaT_;
         
-        //- Previous leading edge reference lift coefficient
-        scalar liftCoeffRefLEPrev_;
+        //- Nondimensional time step
+        scalar deltaS_;
         
-        //- TODO: Define this
-        scalar FStatePrev_;
+        //- Normal force coefficient from impulsive effects
+        scalar CNI_;
         
-        //- TODO: Define this
-        scalar cvPrev_;
-
-        //- Time step normalized as ds = 2*U*dt/c where U is the relative 
-        //  velocity and c is the chord (note: at the same t, s is different 
-        //  on each element)
-        scalar ds_;
-
-        //- Reference lift coefficient
-        scalar liftCoeffRef_;
-        
-        //- Reference leading edge lift coefficient
-        scalar liftCoeffRefLE_;
-
-        //- TODO: Define this
-        scalar liftCoeffCritP_;
-        
-        //- TODO: Define this
-        scalar liftCoeffCritN_;
-
-        //- Lift coefficient rate switch
-        bool liftCoeffRateFlag_;
-
-        //- TODO: Define this
-        scalar FState_;
-
-        //- TODO: Define this
-        scalar F_;
-
-        //- Vortex feed -- proportional to the difference in unsteady
-        //  circulatory lift and the non-linear lift given from the Kirchoff 
-        //  flow equation with the dynamic value of the separation point 
-        //  position.
-        scalar cv_;
-
-        //- TODO: Define this
-        scalar dcv_;
-        
-        //- TODO: Define this
-        scalar angleOfAttack0_;
-        
-        //- TODO: Define this
-        scalar liftCoeffIdeal_;
+        //- Time constant for impulsive loading = c/a
+        scalar TI_;
 
 
 public:
