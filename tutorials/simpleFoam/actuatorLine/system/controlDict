@@ -60,7 +60,7 @@ DebugSwitches
 {
     actuatorLineSource  1;
     actuatorLineElement 1;
-    dynamicStallModel   1;
+    LeishmanBeddoes     1;
 }
 
 // ************************************************************************* //

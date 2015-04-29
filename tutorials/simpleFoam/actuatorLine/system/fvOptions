@@ -42,11 +42,7 @@ foil
             dynamicStallModel   LeishmanBeddoes;
             LeishmanBeddoesCoeffs
             {
-                speedOfSound    1e12; // Make Mach number very low
-                A1              0.3;
-                A2              0.7;
-                b1              0.14;
-                b2              0.53;
+                speedOfSound    343;
             }
         }
         
