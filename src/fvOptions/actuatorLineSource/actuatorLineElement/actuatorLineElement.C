@@ -247,9 +247,14 @@ void Foam::fv::actuatorLineElement::calculate
     {
         dynamicStall_->correct
         (
-            angleOfAttack_, 
-            liftCoefficient_, 
-            dragCoefficient_
+            mesh_.time().value(),
+            mag(relativeVelocity),
+            angleOfAttack_,
+            liftCoefficient_,
+            dragCoefficient_,
+            angleOfAttackList_,
+            liftCoefficientList_,
+            dragCoefficientList_
         );
     }
     
