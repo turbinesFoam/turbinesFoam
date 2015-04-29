@@ -126,7 +126,10 @@ protected:
         List<scalar> dragCoefficientList_;
         
         //- Dynamic stall model
-        dynamicStallModel dynamicStall_;
+        autoPtr<dynamicStallModel> dynamicStall_;
+        
+        //- Switch for existence of dynamic stall model
+        bool hasDynamicStall_;
 
 
     // Protected Member Functions

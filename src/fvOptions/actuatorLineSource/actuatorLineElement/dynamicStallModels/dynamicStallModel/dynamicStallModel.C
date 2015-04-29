@@ -37,6 +37,30 @@ namespace fv
 }
 }
 
+
+// * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
+
+Foam::autoPtr<Foam::fv::dynamicStallModel>
+Foam::fv::dynamicStallModel::New(const dictionary& dict, const word& modelName)
+{
+    
+    dictionaryConstructorTable::iterator cstrIter =
+        dictionaryConstructorTablePtr_->find(modelName);
+
+    if (cstrIter == dictionaryConstructorTablePtr_->end())
+    {
+        FatalErrorIn("dynamicStallModel::New(const dictionary&)")
+            << "Unknown dynamic stall model type " << modelName
+            << nl << nl
+            << "Valid model types are :" << nl
+            << dictionaryConstructorTablePtr_->sortedToc()
+            << exit(FatalError);
+    }
+
+    return autoPtr<dynamicStallModel>(cstrIter()(dict, modelName));
+}
+
+
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
 
@@ -47,7 +71,8 @@ Foam::fv::dynamicStallModel::dynamicStallModel
     const dictionary& dict,
     const word& modelName
 )
-{}
+{
+}
 
 
 Foam::fv::dynamicStallModel::dynamicStallModel()
@@ -68,7 +93,6 @@ Foam::fv::dynamicStallModel::~dynamicStallModel()
 
 void Foam::fv::dynamicStallModel::correct(scalar alpha, scalar& cl, scalar& cd)
 {
-    // Do nothing for now
 }
 
 

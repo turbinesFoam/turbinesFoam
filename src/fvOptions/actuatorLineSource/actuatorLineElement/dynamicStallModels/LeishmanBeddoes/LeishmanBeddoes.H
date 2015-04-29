@@ -126,7 +126,7 @@ public:
 
     // Constructors
 
-        //- Construct null
+        //- Construct from components
         LeishmanBeddoes(const dictionary& dict, const word& modelName);
 
         //- Construct as copy

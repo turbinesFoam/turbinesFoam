@@ -56,6 +56,8 @@ class BoeingVertol
 
 public:
 
+    //- Runtime type information
+    TypeName("BoeingVertol");
 
     // Constructors
 

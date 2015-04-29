@@ -70,7 +70,8 @@ void Foam::fv::actuatorLineElement::read()
     {
         dictionary dsDict = dict_.subDict("dynamicStall");
         word dsName = dsDict.lookup("dynamicStallModel");
-        dynamicStall_ = dynamicStallModel(dsDict, dsName);
+        dynamicStall_ = dynamicStallModel::New(dsDict, dsName);
+        hasDynamicStall_ = true;
     }
     
     if (debug)
@@ -181,7 +182,8 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     mesh_(mesh),
     velocity_(vector::zero),
     forceVector_(vector::zero),
-    angleOfAttack_(0.0)
+    angleOfAttack_(0.0),
+    hasDynamicStall_(false)
 {
     read();
 }
@@ -236,7 +238,15 @@ void Foam::fv::actuatorLineElement::calculate
     lookupCoefficients();
     
     // Correct coefficients with dynamic stall model
-    dynamicStall_.correct(angleOfAttack_, liftCoefficient_, dragCoefficient_);
+    if (hasDynamicStall_)
+    {
+        dynamicStall_->correct
+        (
+            angleOfAttack_, 
+            liftCoefficient_, 
+            dragCoefficient_
+        );
+    }
     
     // Calculate force per unit density
     scalar area = chordLength_*spanLength_;

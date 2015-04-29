@@ -42,6 +42,7 @@ namespace fv
 }
 }
 
+
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
 void Foam::fv::LeishmanBeddoes::correct
@@ -68,7 +69,8 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     A2_(0.7),
     b1_(0.14),
     b2_(0.53)
-{}
+{
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //

@@ -320,7 +320,10 @@ void Foam::fv::actuatorLineSource::createElements()
         dict.add("spanLength", spanLength);
         dict.add("spanDirection", spanDirection);
         dict.add("freeStreamDirection", freeStreamDirection_);
-        dict.add("dynamicStall", coeffs_.subOrEmptyDict("dynamicStall"));
+        if (coeffs_.found("dynamicStall"))
+        {
+            dict.add("dynamicStall", coeffs_.subOrEmptyDict("dynamicStall"));
+        }
         
         if (debug)
         {

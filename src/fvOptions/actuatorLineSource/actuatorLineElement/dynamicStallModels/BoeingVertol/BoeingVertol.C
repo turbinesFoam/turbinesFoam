@@ -24,7 +24,23 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "BoeingVertol.H"
+#include "addToRunTimeSelectionTable.H"
 
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+namespace Foam
+{
+namespace fv
+{
+    defineTypeNameAndDebug(BoeingVertol, 0);
+    addToRunTimeSelectionTable
+    (
+        dynamicStallModel, 
+        BoeingVertol,
+        dictionary
+    );
+}
+}
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
