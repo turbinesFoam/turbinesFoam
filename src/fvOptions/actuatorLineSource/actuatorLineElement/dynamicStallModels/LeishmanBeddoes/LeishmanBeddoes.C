@@ -52,6 +52,21 @@ void Foam::fv::LeishmanBeddoes::correct
     scalar& cd
 )
 {
+}
+
+void Foam::fv::LeishmanBeddoes::correct
+(
+    scalar time,
+    scalar magU,
+    scalar alphaDeg,
+    scalar& cl,
+    scalar& cd,
+    List<scalar> alphaDegList,
+    List<scalar> clList,
+    List<scalar> cdList
+)
+{
+    time_ = time;
     scalar alphaRad = alphaDeg/180*Foam::constant::mathematical::pi;
 }
 
