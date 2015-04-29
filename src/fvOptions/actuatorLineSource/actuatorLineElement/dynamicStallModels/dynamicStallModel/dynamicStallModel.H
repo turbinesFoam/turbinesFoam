@@ -124,6 +124,21 @@ public:
         
             // Correct lift and drag coefficients
             virtual void correct(scalar alphaDeg, scalar& cl, scalar& cd);
+            
+            // Correct lift and drag coefficients
+            virtual void correct
+            (
+                scalar time,
+                scalar magU,
+                scalar alphaDeg,
+                scalar& cl,
+                scalar& cd,
+                List<scalar> alphaDegList,
+                List<scalar> clList,
+                List<scalar> cdList
+            );
+            
+            // Update previous time step values
 
         // Write
 
