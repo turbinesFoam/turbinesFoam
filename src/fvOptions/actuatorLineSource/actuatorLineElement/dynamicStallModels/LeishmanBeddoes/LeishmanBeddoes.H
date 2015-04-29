@@ -56,6 +56,7 @@ class LeishmanBeddoes
 protected:
 
     // Protected data
+    
         //- Chord length in meters
         scalar c_;
     
@@ -92,6 +93,9 @@ protected:
         //- Constant in angle of attack deficiency function; 0.53 by default
         scalar b2_;
         
+        //- Angle of attack (radians)
+        scalar alpha_;
+        
         //- Previous angle of attack (radians)
         scalar alphaPrev_;
         
@@ -121,6 +125,12 @@ protected:
         
         //- Previous time value
         scalar timePrev_;
+        
+        
+    // Protected member functions
+    
+        // Update previous time step values
+        void update();
 
 
 public:

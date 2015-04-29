@@ -45,30 +45,15 @@ namespace fv
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
-void Foam::fv::LeishmanBeddoes::correct
-(
-    scalar alphaDeg, 
-    scalar& cl, 
-    scalar& cd
-)
+void Foam::fv::LeishmanBeddoes::update()
 {
+    timePrev_ = time_;
+    alphaPrev_ = alpha_;
+    XPrev_ = X_;
+    YPrev_ = Y_;
+    deltaAlphaPrev_ = alphaPrev_;
 }
 
-void Foam::fv::LeishmanBeddoes::correct
-(
-    scalar time,
-    scalar magU,
-    scalar alphaDeg,
-    scalar& cl,
-    scalar& cd,
-    List<scalar> alphaDegList,
-    List<scalar> clList,
-    List<scalar> cdList
-)
-{
-    time_ = time;
-    scalar alphaRad = alphaDeg/180*Foam::constant::mathematical::pi;
-}
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -105,5 +90,34 @@ Foam::fv::LeishmanBeddoes::~LeishmanBeddoes()
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
+void Foam::fv::LeishmanBeddoes::correct
+(
+    scalar alphaDeg, 
+    scalar& cl, 
+    scalar& cd
+)
+{
+}
+
+void Foam::fv::LeishmanBeddoes::correct
+(
+    scalar time,
+    scalar magU,
+    scalar alphaDeg,
+    scalar& cl,
+    scalar& cd,
+    List<scalar> alphaDegList,
+    List<scalar> clList,
+    List<scalar> cdList
+)
+{
+    time_ = time;
+    scalar alphaRad = alphaDeg/180*Foam::constant::mathematical::pi;
+    
+    if (time_ != timePrev_)
+    {
+        update();
+    }
+}
 
 // ************************************************************************* //
