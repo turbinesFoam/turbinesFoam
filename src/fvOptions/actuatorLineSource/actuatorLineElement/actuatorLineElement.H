@@ -129,7 +129,7 @@ protected:
         autoPtr<dynamicStallModel> dynamicStall_;
         
         //- Switch for existence of dynamic stall model
-        bool hasDynamicStall_;
+        bool dynamicStallActive_;
 
 
     // Protected Member Functions

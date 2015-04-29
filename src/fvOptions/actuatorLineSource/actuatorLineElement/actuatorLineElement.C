@@ -71,7 +71,7 @@ void Foam::fv::actuatorLineElement::read()
         dictionary dsDict = dict_.subDict("dynamicStall");
         word dsName = dsDict.lookup("dynamicStallModel");
         dynamicStall_ = dynamicStallModel::New(dsDict, dsName);
-        hasDynamicStall_ = true;
+        dynamicStallActive_ = true;
     }
     
     if (debug)
@@ -183,7 +183,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     velocity_(vector::zero),
     forceVector_(vector::zero),
     angleOfAttack_(0.0),
-    hasDynamicStall_(false)
+    dynamicStallActive_(false)
 {
     read();
 }
@@ -238,7 +238,7 @@ void Foam::fv::actuatorLineElement::calculate
     lookupCoefficients();
     
     // Correct coefficients with dynamic stall model
-    if (hasDynamicStall_)
+    if (dynamicStallActive_)
     {
         dynamicStall_->correct
         (
