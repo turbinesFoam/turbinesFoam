@@ -66,8 +66,14 @@ protected:
         //- Deficiency function for equivalent angle of attack
         scalar X_;
         
+        //- Previous value of X
+        scalar XPrev_;
+        
         //- Deficiency function for equivalent angle of attack
         scalar Y_;
+        
+        //- Previous value of Y
+        scalar YPrev_;
         
         //- Mach number
         scalar M_;
@@ -84,8 +90,14 @@ protected:
         //- Constant in angle of attack deficiency function; 0.53 by default
         scalar b2_;
         
+        //- Previous angle of attack (radians)
+        scalar alphaPrev_;
+        
         //- Change in angle of attack (radians)
         scalar deltaAlpha_;
+        
+        //- Previous value of deltaAlpha
+        scalar deltaAlphaPrev_;
         
         //- Time step in seconds
         scalar deltaT_;
@@ -98,6 +110,12 @@ protected:
         
         //- Time constant for impulsive loading = c/a
         scalar TI_;
+        
+        //- Chord length in meters
+        scalar c_;
+        
+        //- Speed of sound (m/s)
+        scalar a_;
 
 
 public:
