@@ -66,6 +66,9 @@ protected:
         
         //- Coefficients subdict
         const dictionary coeffs_;
+        
+        //- Starting time for the model
+        scalar startTime_;
 
 
 public:
@@ -81,9 +84,10 @@ public:
             dictionary,
             (
                 const dictionary& dict,
-                const word& modelName
+                const word& modelName,
+                const scalar startTime
             ),
-            (dict, modelName)
+            (dict, modelName, startTime)
         );
 
     // Constructors
@@ -92,7 +96,12 @@ public:
         dynamicStallModel();
 
         //- Construct from components
-        dynamicStallModel(const dictionary&, const word& modelName);
+        dynamicStallModel
+        (
+            const dictionary&, 
+            const word& modelName,
+            const scalar startTime
+        );
 
         //- Construct as copy
         dynamicStallModel(const dynamicStallModel&);
@@ -104,7 +113,8 @@ public:
         static autoPtr<dynamicStallModel> New
         (
             const dictionary& dict, 
-            const word& modelName
+            const word& modelName,
+            const scalar startTime
         );
 
 

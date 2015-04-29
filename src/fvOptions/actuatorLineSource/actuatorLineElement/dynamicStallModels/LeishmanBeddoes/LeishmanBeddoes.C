@@ -60,10 +60,11 @@ void Foam::fv::LeishmanBeddoes::correct
 Foam::fv::LeishmanBeddoes::LeishmanBeddoes
 (
     const dictionary& dict,
-    const word& modelName
+    const word& modelName,
+    const scalar startTime
 )
 :
-    dynamicStallModel(dict, modelName),
+    dynamicStallModel(dict, modelName, startTime),
     
     A1_(coeffs_.lookupOrDefault("A1", 0.3)),
     A2_(coeffs_.lookupOrDefault("A2", 0.7)),

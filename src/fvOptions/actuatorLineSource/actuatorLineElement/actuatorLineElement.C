@@ -70,7 +70,12 @@ void Foam::fv::actuatorLineElement::read()
     {
         dictionary dsDict = dict_.subDict("dynamicStall");
         word dsName = dsDict.lookup("dynamicStallModel");
-        dynamicStall_ = dynamicStallModel::New(dsDict, dsName);
+        dynamicStall_ = dynamicStallModel::New
+        (
+            dsDict, 
+            dsName, 
+            mesh_.time().value()
+        );
         dsDict.lookup("active") >> dynamicStallActive_;
     }
     

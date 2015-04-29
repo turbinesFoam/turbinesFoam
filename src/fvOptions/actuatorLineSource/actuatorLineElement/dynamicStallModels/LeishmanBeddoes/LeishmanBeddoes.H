@@ -126,7 +126,12 @@ public:
     // Constructors
 
         //- Construct from components
-        LeishmanBeddoes(const dictionary& dict, const word& modelName);
+        LeishmanBeddoes
+        (
+            const dictionary& dict, 
+            const word& modelName,
+            const scalar startTime
+        );
 
         //- Construct as copy
         LeishmanBeddoes(const LeishmanBeddoes&);
@@ -138,7 +143,8 @@ public:
         static autoPtr<LeishmanBeddoes> New
         (
             const dictionary& dict,
-            const word& modelName
+            const word& modelName,
+            const scalar startTime
         );
 
 
