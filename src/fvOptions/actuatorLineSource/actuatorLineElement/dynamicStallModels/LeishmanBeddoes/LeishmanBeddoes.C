@@ -65,11 +65,16 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
 :
     dynamicStallModel(dict, modelName),
     
-    A1_(0.3),
-    A2_(0.7),
-    b1_(0.14),
-    b2_(0.53)
+    A1_(coeffs_.lookupOrDefault("A1", 0.3)),
+    A2_(coeffs_.lookupOrDefault("A2", 0.7)),
+    b1_(coeffs_.lookupOrDefault("b1", 0.14)),
+    b2_(coeffs_.lookupOrDefault("b2", 0.53))
 {
+    if (debug)
+    {
+        Info<< modelName << " dynamic stall model created" << endl
+            << "    Coeffs:" << endl << coeffs_ << endl;
+    }
 }
 
 

@@ -74,8 +74,13 @@ Foam::fv::dynamicStallModel::dynamicStallModel
 :
     dict_(dict),
     modelName_(modelName),
-    coeffs_(dict.subOrEmptyDict(modelName + "coeffs"))
+    coeffs_(dict.subOrEmptyDict(modelName + "Coeffs"))
 {
+    if (debug)
+    {
+        Info<< modelName << " dynamic stall model created" << endl
+            << "    Coeffs:" << endl << coeffs_ << endl;
+    }
 }
 
 
