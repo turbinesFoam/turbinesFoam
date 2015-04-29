@@ -81,6 +81,9 @@ public:
         );
 
     // Constructors
+    
+        //- Default contructor
+        dynamicStallModel();
 
         //- Construct from components
         dynamicStallModel(const dictionary&, const word& modelName);

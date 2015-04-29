@@ -65,6 +65,14 @@ void Foam::fv::actuatorLineElement::read()
         dragCoefficientList_[i] = coefficientData_[i][2];
     }
     
+    // Create dynamic stall model if found
+    if (dict_.found("dynamicStall"))
+    {
+        dictionary dsDict = dict_.subDict("dynamicStall");
+        word dsName = dsDict.lookup("dynamicStallModel");
+        dynamicStall_ = dynamicStallModel(dsDict, dsName);
+    }
+    
     if (debug)
     {
        Info<< "actuatorLineElement properties:" << endl;
@@ -173,8 +181,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     mesh_(mesh),
     velocity_(vector::zero),
     forceVector_(vector::zero),
-    angleOfAttack_(0.0),
-    dynamicStall_(dict, name)
+    angleOfAttack_(0.0)
 {
     read();
 }

@@ -50,6 +50,10 @@ Foam::fv::dynamicStallModel::dynamicStallModel
 {}
 
 
+Foam::fv::dynamicStallModel::dynamicStallModel()
+{}
+
+
 Foam::fv::dynamicStallModel::dynamicStallModel(const dynamicStallModel&)
 {}
 
