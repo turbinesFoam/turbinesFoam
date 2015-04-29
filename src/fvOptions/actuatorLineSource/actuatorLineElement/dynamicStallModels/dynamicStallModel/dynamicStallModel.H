@@ -58,8 +58,14 @@ protected:
 
     // Protected data
     
+        //- Dictionary
+        const dictionary dict_;
+    
         //- Model name
-        word modelName_;
+        const word modelName_;
+        
+        //- Coefficients subdict
+        const dictionary coeffs_;
 
 
 public:
