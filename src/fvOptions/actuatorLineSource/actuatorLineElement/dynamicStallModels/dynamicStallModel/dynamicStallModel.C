@@ -71,6 +71,10 @@ Foam::fv::dynamicStallModel::dynamicStallModel
     const dictionary& dict,
     const word& modelName
 )
+:
+    dict_(dict),
+    modelName_(modelName),
+    coeffs_(dict.subOrEmptyDict(modelName + "coeffs"))
 {
 }
 
