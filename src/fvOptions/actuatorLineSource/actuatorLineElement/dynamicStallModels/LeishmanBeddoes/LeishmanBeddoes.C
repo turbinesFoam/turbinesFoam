@@ -68,8 +68,11 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     A1_(coeffs_.lookupOrDefault("A1", 0.3)),
     A2_(coeffs_.lookupOrDefault("A2", 0.7)),
     b1_(coeffs_.lookupOrDefault("b1", 0.14)),
-    b2_(coeffs_.lookupOrDefault("b2", 0.53))
+    b2_(coeffs_.lookupOrDefault("b2", 0.53)),
+    a_(coeffs_.lookupOrDefault("speedOfSound", 1e12))
 {
+    dict_.lookup("chordLength") >> c_;
+    
     if (debug)
     {
         Info<< modelName << " dynamic stall model created" << endl

@@ -322,7 +322,9 @@ void Foam::fv::actuatorLineSource::createElements()
         dict.add("freeStreamDirection", freeStreamDirection_);
         if (coeffs_.found("dynamicStall"))
         {
-            dict.add("dynamicStall", coeffs_.subOrEmptyDict("dynamicStall"));
+            dictionary dsDict = coeffs_.subDict("dynamicStall");
+            dsDict.add("chordLength", chordLength);
+            dict.add("dynamicStall", dsDict);
         }
         
         if (debug)

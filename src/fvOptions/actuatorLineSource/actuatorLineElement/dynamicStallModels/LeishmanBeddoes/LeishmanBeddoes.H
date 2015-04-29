@@ -56,6 +56,8 @@ class LeishmanBeddoes
 protected:
 
     // Protected data
+        //- Chord length in meters
+        scalar c_;
     
         //- Normal force coefficient from circulatory effects
         scalar CNC_;
@@ -110,9 +112,6 @@ protected:
         
         //- Time constant for impulsive loading = c/a
         scalar TI_;
-        
-        //- Chord length in meters
-        scalar c_;
         
         //- Speed of sound (m/s)
         scalar a_;
