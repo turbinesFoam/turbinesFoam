@@ -112,7 +112,7 @@ void Foam::fv::LeishmanBeddoes::correct
 )
 {
     time_ = time;
-    scalar alphaRad = alphaDeg/180*Foam::constant::mathematical::pi;
+    alpha_ = alphaDeg/180*Foam::constant::mathematical::pi;
     
     if (time_ != timePrev_)
     {
