@@ -124,6 +124,8 @@ void Foam::fv::LeishmanBeddoes::correct
         deltaT_ = time_ - timePrev_;
     }
     
+    deltaS_ = 2*magU*deltaT_/c_;
+    
     if (debug)
     {
         Info<< "Leishman-Beddoes dynamic stall model correcting" << endl;
