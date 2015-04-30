@@ -144,6 +144,58 @@ protected:
         //- Previous value of CNP
         scalar CNPPrev_;
         
+        //- Lagged normal force coefficient
+        scalar CNPrime_;
+        
+        //- Normal force coefficient slope
+        scalar CNAlpha_;
+        
+        //- Critical normal force coefficient
+        scalar CN1_;
+        
+        //- Delayed separation point
+        scalar fPrime_;
+        
+        //- Previous value of fPrime
+        scalar fPrimePrev_;
+        
+        //- Second order delayed separation point
+        scalar fDoublePrime_;
+        
+        //- Delayed angle of attack (radians)
+        scalar alphaPrime_;
+        
+        //- Angle of attack for the breakpoint of separation (radians)
+        scalar alpha1_;
+        
+        //- Deficiency function for the delayed separation point
+        scalar DF_;
+        
+        //- Previous value of DF
+        scalar DFPrev_;
+        
+        //- Vortex lift
+        scalar CV_;
+        
+        //- Previous value of CV
+        scalar CVPrev_;
+        
+        //- Vortex lift contribution to normal force coefficient
+        scalar CNV_;
+        
+        //- Previous value of CNV
+        scalar CNVPrev_;
+        
+        //- Total normal force coefficient
+        scalar CN_;
+        
+        //- Tangential force coefficient
+        scalar CT_;
+        
+        //- Tangential force efficiency factor
+        scalar eta_;
+        
+        
     // Protected member functions
     
         // Update previous time step values
