@@ -117,7 +117,10 @@ void Foam::fv::LeishmanBeddoes::correct
     alpha_ = alphaDeg/180*Foam::constant::mathematical::pi;
     M_ = magU/a_;
     deltaAlpha_ = alpha_ - alphaPrev_;
-    deltaT_ = time_ - timePrev_;
+    if (time != timePrev_)
+    {
+        deltaT_ = time_ - timePrev_;
+    }
     
     if (debug)
     {
