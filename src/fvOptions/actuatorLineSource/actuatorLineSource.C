@@ -51,47 +51,6 @@ namespace fv
 // * * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * //
 
 
-void Foam::fv::actuatorLineSource::interpolateWeights
-(
-    const scalar& xIn,
-    const List<scalar>& values,
-    label& i1,
-    label& i2,
-    scalar& ddx
-) const
-{
-    i2 = 0;
-    label nElem = values.size();
-
-    if (nElem == 1)
-    {
-        i1 = i2;
-        ddx = 0.0;
-        return;
-    }
-    else
-    {
-        while ((values[i2] < xIn) && (i2 < nElem))
-        {
-            i2++;
-        }
-
-        if (i2 == nElem)
-        {
-            i2 = nElem - 1;
-            i1 = i2;
-            ddx = 0.0;
-            return;
-        }
-        else
-        {
-            i1 = i2 - 1;
-            ddx = (xIn - values[i1])/(values[i2] - values[i1]);
-        }
-    }
-}
-
-
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::fv::actuatorLineSource::actuatorLineSource
@@ -133,12 +92,6 @@ Foam::fv::actuatorLineSource::~actuatorLineSource()
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-const Foam::List<Foam::word>& Foam::fv::actuatorLineSource::profileName() const
-{
-    return profileName_;
-}
-
 
 void Foam::fv::actuatorLineSource::printCoeffs() const
 {

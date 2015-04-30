@@ -61,30 +61,9 @@ class actuatorLineSource
 protected:
 
     // Protected data
-
-        //- Corresponding profile name per section
-        List<word> profileName_;
         
         //- Total length of geometry in meters
         scalar totalLength_;
-        
-        //- List of blade element radii in meters
-        List<scalar> radius_;
-
-        //- List of blade element initial azimuthal positions in degrees
-        List<scalar> initialAzimuth_;
-
-        //- Chord mounting location relative to radius, as a fraction of chord
-        List<scalar> chordMount_;
-
-        //- Preset blade pitch in degrees, eventually converted to radians
-        List<scalar> pitch_;
-
-        //- Chord in meters
-        List<scalar> chord_;
-
-        //- File name (optional)
-        fileName fName_;
         
         //- Tip effect
         scalar tipEffect_;
@@ -116,16 +95,6 @@ protected:
 
 
     // Protected Member Functions
-
-        //- Return the interpolation indices and gradient
-        void interpolateWeights
-        (
-            const scalar& xIn,
-            const List<scalar>& values,
-            label& i1,
-            label& i2,
-            scalar& ddx
-        ) const;
         
         //- Create actuator line elements
         void createElements();
@@ -167,9 +136,6 @@ public:
     // Member functions
 
         // Access
-
-            //- Return const access to the profile name list
-            const List<word>& profileName() const;
             
             //- Return the total force vector
             vector& force();
