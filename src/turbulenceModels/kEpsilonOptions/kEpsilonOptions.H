@@ -22,7 +22,7 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::incompressible::RASModels::kEpsilonSources
+    Foam::incompressible::RASModels::kEpsilonOptions
 
 Group
     grpIcoRASTurbulence
@@ -32,7 +32,7 @@ Description
 
     The default model coefficients correspond to the following:
     \verbatim
-        kEpsilonSourcesCoeffs
+        kEpsilonOptionsCoeffs
         {
             Cmu         0.09;
             C1          1.44;
@@ -42,12 +42,12 @@ Description
     \endverbatim
 
 SourceFiles
-    kEpsilonSources.C
+    kEpsilonOptions.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef kEpsilonSources_H
-#define kEpsilonSources_H
+#ifndef kEpsilonOptions_H
+#define kEpsilonOptions_H
 
 #include "RASModel.H"
 #include "fvIOoptionList.H"
@@ -62,10 +62,10 @@ namespace RASModels
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class kEpsilonSources Declaration
+                           Class kEpsilonOptions Declaration
 \*---------------------------------------------------------------------------*/
 
-class kEpsilonSources
+class kEpsilonOptions
 :
     public RASModel
 {
@@ -94,12 +94,12 @@ protected:
 public:
 
     //- Runtime type information
-    TypeName("kEpsilonSources");
+    TypeName("kEpsilonOptions");
 
     // Constructors
 
         //- Construct from components
-        kEpsilonSources
+        kEpsilonOptions
         (
             const volVectorField& U,
             const surfaceScalarField& phi,
@@ -110,7 +110,7 @@ public:
 
 
     //- Destructor
-    virtual ~kEpsilonSources()
+    virtual ~kEpsilonOptions()
     {}
 
 

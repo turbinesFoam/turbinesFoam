@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "kEpsilonSources.H"
+#include "kEpsilonOptions.H"
 #include "addToRunTimeSelectionTable.H"
 
 #include "backwardsCompatibilityWallFunctions.H"
@@ -39,12 +39,12 @@ namespace RASModels
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-defineTypeNameAndDebug(kEpsilonSources, 0);
-addToRunTimeSelectionTable(RASModel, kEpsilonSources, dictionary);
+defineTypeNameAndDebug(kEpsilonOptions, 0);
+addToRunTimeSelectionTable(RASModel, kEpsilonOptions, dictionary);
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-kEpsilonSources::kEpsilonSources
+kEpsilonOptions::kEpsilonOptions
 (
     const volVectorField& U,
     const surfaceScalarField& phi,
@@ -142,7 +142,7 @@ kEpsilonSources::kEpsilonSources
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-tmp<volSymmTensorField> kEpsilonSources::R() const
+tmp<volSymmTensorField> kEpsilonOptions::R() const
 {
     return tmp<volSymmTensorField>
     (
@@ -163,7 +163,7 @@ tmp<volSymmTensorField> kEpsilonSources::R() const
 }
 
 
-tmp<volSymmTensorField> kEpsilonSources::devReff() const
+tmp<volSymmTensorField> kEpsilonOptions::devReff() const
 {
     return tmp<volSymmTensorField>
     (
@@ -183,7 +183,7 @@ tmp<volSymmTensorField> kEpsilonSources::devReff() const
 }
 
 
-tmp<fvVectorMatrix> kEpsilonSources::divDevReff(volVectorField& U) const
+tmp<fvVectorMatrix> kEpsilonOptions::divDevReff(volVectorField& U) const
 {
     return
     (
@@ -193,7 +193,7 @@ tmp<fvVectorMatrix> kEpsilonSources::divDevReff(volVectorField& U) const
 }
 
 
-tmp<fvVectorMatrix> kEpsilonSources::divDevRhoReff
+tmp<fvVectorMatrix> kEpsilonOptions::divDevRhoReff
 (
     const volScalarField& rho,
     volVectorField& U
@@ -209,7 +209,7 @@ tmp<fvVectorMatrix> kEpsilonSources::divDevRhoReff
 }
 
 
-bool kEpsilonSources::read()
+bool kEpsilonOptions::read()
 {
     if (RASModel::read())
     {
@@ -227,7 +227,7 @@ bool kEpsilonSources::read()
 }
 
 
-void kEpsilonSources::correct()
+void kEpsilonOptions::correct()
 {
     RASModel::correct();
 
