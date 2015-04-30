@@ -465,6 +465,7 @@ void Foam::fv::actuatorLineSource::addSup
     Info<< endl << "Adding " << fieldName << " from " << name_ << endl << endl;
     forAll(elements_, i)
     {
+        elements_[i].setDynamicStallActive(false);
         elements_[i].calculate(U, dummyField);
         elements_[i].addTurbulence(eqn, fieldName);
     }

@@ -229,6 +229,9 @@ public:
             
             //- Set element speed (velocity magnitude)
             void setSpeed(scalar speed);
+            
+            //- Set dynamic stall active
+            void setDynamicStallActive(bool active);
 
         // Evaluation
             

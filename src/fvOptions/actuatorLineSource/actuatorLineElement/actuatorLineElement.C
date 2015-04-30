@@ -526,4 +526,10 @@ void Foam::fv::actuatorLineElement::addTurbulence
     eqn += turbulence;
 }
 
+
+void Foam::fv::actuatorLineElement::setDynamicStallActive(bool active)
+{
+    dynamicStallActive_ = active;
+}
+
 // ************************************************************************* //
