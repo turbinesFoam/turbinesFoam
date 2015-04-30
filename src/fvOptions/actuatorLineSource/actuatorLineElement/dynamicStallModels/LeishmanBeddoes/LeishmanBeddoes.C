@@ -117,6 +117,8 @@ void Foam::fv::LeishmanBeddoes::correct
     alpha_ = alphaDeg/180*Foam::constant::mathematical::pi;
     M_ = magU/a_;
     deltaAlpha_ = alpha_ - alphaPrev_;
+    
+    // Only calculate deltaT if time has changed
     if (time != timePrev_)
     {
         deltaT_ = time_ - timePrev_;
@@ -126,6 +128,7 @@ void Foam::fv::LeishmanBeddoes::correct
     {
         Info<< "Leishman-Beddoes dynamic stall model correcting" << endl;
         Info<< "deltaT: " << deltaT_ << endl;
+        Info<< "deltaAlpha: " << deltaAlpha_ << endl;
     }
     
     if (time_ != timePrev_)
