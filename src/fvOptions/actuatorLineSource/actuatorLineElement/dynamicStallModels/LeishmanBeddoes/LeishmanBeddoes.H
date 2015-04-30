@@ -126,6 +126,23 @@ protected:
         //- Previous time value
         scalar timePrev_;
         
+        //- Deficiency function for the impulsive force response
+        scalar D_;
+        
+        //- Previous value of D
+        scalar DPrev_;
+        
+        //- Deficiency function for delayed pressure response
+        scalar DP_;
+        
+        //- Previous value of DP
+        scalar DPPrev_;
+        
+        //- Total normal force coefficient under the unsteady attached flow
+        scalar CNP_;
+        
+        //- Previous value of CNP
+        scalar CNPPrev_;
         
     // Protected member functions
     
