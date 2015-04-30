@@ -51,7 +51,7 @@ void Foam::fv::LeishmanBeddoes::update()
     alphaPrev_ = alpha_;
     XPrev_ = X_;
     YPrev_ = Y_;
-    deltaAlphaPrev_ = alphaPrev_;
+    deltaAlphaPrev_ = deltaAlpha_;
 }
 
 
