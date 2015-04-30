@@ -73,6 +73,8 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     a_(coeffs_.lookupOrDefault("speedOfSound", 1e12))
 {
     dict_.lookup("chordLength") >> c_;
+    time_ = startTime;
+    timePrev_ = startTime;
     
     if (debug)
     {
@@ -115,6 +117,13 @@ void Foam::fv::LeishmanBeddoes::correct
     alpha_ = alphaDeg/180*Foam::constant::mathematical::pi;
     M_ = magU/a_;
     deltaAlpha_ = alpha_ - alphaPrev_;
+    deltaT_ = time_ - timePrev_;
+    
+    if (debug)
+    {
+        Info<< "Leishman-Beddoes dynamic stall model correcting" << endl;
+        Info<< "deltaT: " << deltaT_ << endl;
+    }
     
     if (time_ != timePrev_)
     {
