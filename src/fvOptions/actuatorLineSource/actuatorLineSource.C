@@ -147,7 +147,8 @@ void Foam::fv::actuatorLineSource::createElements()
     {
         // Need to have integer number of elements per geometry segment
         FatalErrorIn("void actuatorLineSource::createElements()")
-            << "Number of actuator line elements must be multiple of the number of actuator line geometry segments" 
+            << "Number of actuator line elements must be multiple of the "
+            << "number of actuator line geometry segments" 
             << abort(FatalError);
     }
     List<vector> points(nGeometryPoints);
@@ -293,7 +294,10 @@ void Foam::fv::actuatorLineSource::createElements()
             Info<< "Span direction: " << spanDirection << endl;
         }
         
-        actuatorLineElement* element = new actuatorLineElement(name, dict, mesh_);
+        actuatorLineElement* element = new actuatorLineElement
+        (
+            name, dict, mesh_
+        );
         elements_.set(i, element);
         pitch = pitch/180.0*Foam::constant::mathematical::pi;
         elements_[i].pitch(pitch);
