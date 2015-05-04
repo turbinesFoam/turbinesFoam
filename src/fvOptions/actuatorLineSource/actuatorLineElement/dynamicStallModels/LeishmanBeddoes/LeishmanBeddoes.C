@@ -148,7 +148,39 @@ void Foam::fv::LeishmanBeddoes::calcUnsteady()
 
 void Foam::fv::LeishmanBeddoes::calcSeparated()
 {
-    // Calculate separated flow quantities here
+    // Calculate trailing-edge separation point
+    if (abs(alphaPrime_) < alpha1_)
+    {
+        fPrime_ = 1.0 - 0.3*exp((abs(alphaPrime_) - alpha1_)/S1_);
+    }
+    else if (abs(alphaPrime_) >= alpha1_)
+    {
+        fPrime_ = 0.04 + 0.66*exp((alpha1_ - abs(alphaPrime_))/S2_);
+    }
+    
+    // Calculate dynamic separation point
+    DF_ = DFPrev_*exp(-deltaS_/Tf_) 
+        + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf_));
+    fDoublePrime_ = fPrime_ - DF_;
+    
+    // Calculate normal force coefficient for dynamic separation point
+    CNF_ = CNAlpha_*alphaEquiv_*pow(((1 + sqrt(fDoublePrime_))/2), 2) + CNI_;
+    
+    // Evaluate vortex tracking time
+    if (not stalledPrev_) tau_ = 0.0;
+    else tau_ = tauPrev_ + deltaS_;
+    
+    // Evaluate vortex lift contributions
+    if (tau_ < Tvl_)
+    {
+        CV_ = CNC_*(1 - pow(((1 + sqrt(fDoublePrime_))/2), 2));
+        CNV_ = CNVPrev_*exp(-deltaS_/Tv_) 
+             + (CV_ - CVPrev_)*exp(-deltaS_/(2*Tv_));
+    }
+    else
+    {
+        CNV_ = CNVPrev_*exp(-deltaS_/Tv_);
+    }
 }
 
 
@@ -166,6 +198,8 @@ void Foam::fv::LeishmanBeddoes::update()
     fPrimePrev_ = fPrime_;
     CVPrev_ = CV_;
     CNVPrev_ = CNV_;
+    stalledPrev_ = stalled_;
+    tauPrev_ = tau_;
 }
 
 

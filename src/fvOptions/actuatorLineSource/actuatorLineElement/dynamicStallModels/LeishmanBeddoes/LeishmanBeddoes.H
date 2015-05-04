@@ -208,6 +208,9 @@ protected:
         //- Switch to indicate stall
         bool stalled_;
         
+        //- Previous stall state
+        bool stalledPrev_;
+        
         //- Time constant associated with the pressure response, 1.7 by default
         scalar Tp_;
         
@@ -219,6 +222,12 @@ protected:
         
         //- Time constant associated with the vortex convection
         scalar Tvl_;
+        
+        //- Nondimensional vortex tracking time
+        scalar tau_;
+        
+        //- Previous value of tau
+        scalar tauPrev_;
         
         
     // Protected member functions
