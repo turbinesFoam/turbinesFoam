@@ -198,6 +198,15 @@ protected:
         
     // Protected member functions
     
+        // Evaluate the static foil data, i.e., calculate CNAlpha, CN1, 
+        // alpha1, S1, S2, and CD0
+        void evalStaticData
+        (
+            List<scalar> alphaDegList,
+            List<scalar> clList,
+            List<scalar> cdList
+        );
+    
         // Update previous time step values
         void update();
 
@@ -248,15 +257,6 @@ public:
         // Write
         
         // Evaluation
-        
-            // Evaluate the static foil data, i.e., calculate CNAlpha, CN1, 
-            // alpha1, S1, S2, and CD0
-            void evalStaticData
-            (
-                List<scalar> alphaDegList,
-                List<scalar> clList,
-                List<scalar> cdList
-            );
         
             // Correct lift and drag coefficients
             virtual void correct(scalar alphaDeg, scalar& cl, scalar& cd);
