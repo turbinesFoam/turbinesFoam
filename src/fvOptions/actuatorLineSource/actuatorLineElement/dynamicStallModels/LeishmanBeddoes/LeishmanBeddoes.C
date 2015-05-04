@@ -216,7 +216,6 @@ void Foam::fv::LeishmanBeddoes::update()
     CNVPrev_ = CNV_;
     stalledPrev_ = stalled_;
     tauPrev_ = tau_;
-    firstTime_ = false;
 }
 
 
@@ -245,7 +244,6 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     dict_.lookup("chordLength") >> c_;
     time_ = startTime;
     timePrev_ = startTime;
-    firstTime_ = true;
     
     if (debug)
     {
@@ -287,9 +285,7 @@ void Foam::fv::LeishmanBeddoes::correct
     time_ = time;
     alpha_ = alphaDeg/180*Foam::constant::mathematical::pi;
     M_ = magU/a_;
-    
-    if (firstTime_) deltaAlpha_ = 0.0;
-    else deltaAlpha_ = alpha_ - alphaPrev_;
+    deltaAlpha_ = alpha_ - alphaPrev_;
     
     // Only calculate deltaT if time has changed
     if (time != timePrev_)
