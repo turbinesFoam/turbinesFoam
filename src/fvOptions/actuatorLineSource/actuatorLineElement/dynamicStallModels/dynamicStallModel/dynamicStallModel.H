@@ -69,6 +69,17 @@ protected:
         
         //- Starting time for the model
         scalar startTime_;
+        
+
+    // Protected member functions
+    
+        //- Interpolate a scalar value
+        scalar interpolate
+        (
+            scalar xNew, 
+            List<scalar>& xOld, 
+            List<scalar>& yOld
+        );
 
 
 public:

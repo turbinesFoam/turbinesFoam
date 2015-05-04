@@ -68,6 +68,69 @@ Foam::fv::dynamicStallModel::New
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
+Foam::scalar Foam::fv::dynamicStallModel::interpolate
+(
+    scalar xNew, 
+    List<scalar>& xOld, 
+    List<scalar>& yOld
+)
+{
+    label index = 0;
+    label indexP = 0;
+    label indexM = 0;
+    scalar error = 1.0E30;
+    forAll(xOld, i)
+    {
+        scalar diff = mag(xNew - xOld[i]);
+        if(diff < error)
+        {
+            index = i;
+            error = diff;
+        }
+    }
+    if (xNew < xOld[index])
+    {
+        if (index == 0)
+        {
+            indexP = 1;
+            indexM = indexP - 1;
+        }
+        else
+        {
+            indexP = index;
+            indexM = indexP - 1;
+        }
+        return yOld[indexM] 
+               + ((yOld[indexP] 
+               - yOld[indexM])/(xOld[indexP] 
+               - xOld[indexM]))*(xNew - xOld[indexM]);
+    }
+    else if (xNew > xOld[index])
+    {
+        if (index == xOld.size() - 1)
+        {
+            indexP = xOld.size() - 1;
+            indexM = indexP - 1;
+        }
+        else
+        {
+            indexP = index + 1;
+            indexM = indexP - 1;
+        }
+        return yOld[indexM] + ((yOld[indexP] 
+               - yOld[indexM])/(xOld[indexP] 
+               - xOld[indexM]))*(xNew - xOld[indexM]);
+    }
+    else if (xNew == xOld[index])
+    {
+        return yOld[index];
+    }
+    else
+    {
+        return 0.0;
+    }
+}
+
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
