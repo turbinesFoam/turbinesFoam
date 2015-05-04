@@ -75,6 +75,14 @@ Foam::scalar Foam::fv::dynamicStallModel::interpolate
     List<scalar>& yOld
 )
 {
+    if (debug)
+    {
+        Info<< "dynamicStallModel interpolate function called" << endl;
+        Info<< "xNew: " << xNew << endl;
+        Info<< "xOld: " << xOld << endl;
+        Info<< "yOld: " << yOld << endl;
+    }
+    
     label index = 0;
     label indexP = 0;
     label indexM = 0;

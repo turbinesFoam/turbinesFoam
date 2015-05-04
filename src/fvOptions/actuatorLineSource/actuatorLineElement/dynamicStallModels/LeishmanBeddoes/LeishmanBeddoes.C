@@ -56,13 +56,21 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
     // Create lists for normal and chordwise coefficients
     scalar pi = Foam::constant::mathematical::pi;
     scalar alphaRad = alphaDeg/180*pi;
-    List<scalar> alphaRadList = alphaDegList/180*pi;
-    List<scalar> cnList = clList*sin(alphaRadList) - cdList*cos(alphaRadList);
+    List<scalar> alphaRadList(alphaDegList.size());
+    List<scalar> cnList(clList.size());
+    
+    forAll(alphaDegList, i)
+    {
+        alphaRadList[i] = alphaDegList[i]/180*pi;
+        cnList[i] = clList[i]*sin(alphaRadList[i]) 
+                  - cdList[i]*cos(alphaRadList[i]);
+    }
     
     // Calculate lift slope CNAlpha
-    scalar cn0 = interpolate(0, alphaDegList, cnList);
-    scalar cn5 = interpolate(5, alphaDegList, cnList);
-    CNAlpha_ = (cn5 - cn0)/(5/180*pi);
+    scalar cn0 = interpolate(0.0, alphaDegList, cnList);
+    scalar cn5 = interpolate(5.0, alphaDegList, cnList);
+    scalar dAlpha = 5.0/180.0*pi;
+    CNAlpha_ = (cn5 - cn0)/dAlpha;
     
     // Calculate critical normal force coefficient CN1, where the slope of the
     // drag coefficient curve slope first breaks 0.02 per degree
@@ -101,6 +109,43 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
 }
 
 
+void Foam::fv::LeishmanBeddoes::evalUnsteady()
+{
+    // Calculate the equivalent angle of attack
+    scalar beta = 1 - M_;
+    X_ = XPrev_*exp(-b1_*beta*deltaS_) 
+       + A1_*deltaAlpha_*exp(b1_*beta*deltaS_/2);
+    Y_ = YPrev_*exp(-b2_*beta*deltaS_) 
+       + A2_*deltaAlpha_*exp(b2_*beta*deltaS_/2);
+    alphaEquiv_ = alpha_ - X_ - Y_;
+    
+    // Calculate the circulatory normal force coefficient
+    CNC_ = CNAlpha_*alphaEquiv_;
+    
+    // Calculate the impulsive normal force coefficient
+    scalar pi = Foam::constant::mathematical::pi;
+    scalar kAlpha = 0.75/(1 - M_ + pi*(1 - M_*M_)*M_*M_*(A1_*b1_ + A2_*b2_));
+    TI_ = c_/a_;
+    D_ = DPrev_*exp(-deltaT_/(kAlpha*TI_)) 
+       - ((deltaAlpha_ - deltaAlphaPrev_)/deltaT_)
+       *exp(-deltaT_/(2*kAlpha*TI_));
+    CNI_ = 4*kAlpha*TI_/M_*(deltaAlpha_/deltaT_ - D_);
+    
+    // Calculate total normal force coefficient
+    CNP_ = CNC_ + CNI_;
+    
+    // Apply first-order lag to normal force coefficient
+    DP_ = DPPrev_*exp(-deltaS_/Tp_) + (CNP_ - CNPPrev_)*exp(-deltaS_/(2*Tp_));
+    CNPrime_ = CNP_ - DP_;
+    
+    // Calculate lagged angle of attack
+    alphaPrime_ = CNPrime_/CNAlpha_;
+    
+    // Set stalled switch
+    stalled_ = (CNPrime_ > CN1_);
+}
+
+
 void Foam::fv::LeishmanBeddoes::update()
 {
     timePrev_ = time_;
@@ -133,7 +178,11 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     A2_(coeffs_.lookupOrDefault("A2", 0.7)),
     b1_(coeffs_.lookupOrDefault("b1", 0.14)),
     b2_(coeffs_.lookupOrDefault("b2", 0.53)),
-    a_(coeffs_.lookupOrDefault("speedOfSound", 1e12))
+    a_(coeffs_.lookupOrDefault("speedOfSound", 1e12)),
+    Tp_(coeffs_.lookupOrDefault("Tp", 1.7)),
+    Tf_(coeffs_.lookupOrDefault("Tf", 3.0)),
+    Tv_(coeffs_.lookupOrDefault("Tv", 6.0)),
+    Tvl_(coeffs_.lookupOrDefault("Tvl", 7.0))
 {
     dict_.lookup("chordLength") >> c_;
     time_ = startTime;
@@ -195,6 +244,9 @@ void Foam::fv::LeishmanBeddoes::correct
         Info<< "deltaT: " << deltaT_ << endl;
         Info<< "deltaAlpha: " << deltaAlpha_ << endl;
     }
+    
+    evalStaticData(alphaDeg, alphaDegList, clList, cdList);
+    evalUnsteady();
     
     if (time_ != timePrev_)
     {

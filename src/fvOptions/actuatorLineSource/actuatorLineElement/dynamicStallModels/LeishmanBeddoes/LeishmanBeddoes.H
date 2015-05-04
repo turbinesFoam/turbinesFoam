@@ -205,6 +205,18 @@ protected:
         //- Switch to indicate stall
         bool stalled_;
         
+        //- Time constant associated with the pressure response, 1.7 by default
+        scalar Tp_;
+        
+        //- Time constant associated with the separation point, 3 by default
+        scalar Tf_;
+        
+        //- Time constant associated with the vortex lift
+        scalar Tv_;
+        
+        //- Time constant associated with the vortex convection
+        scalar Tvl_;
+        
         
     // Protected member functions
     
@@ -217,6 +229,9 @@ protected:
             List<scalar> clList,
             List<scalar> cdList
         );
+        
+        // Evaluate unsteady quantities
+        void evalUnsteady();
     
         // Update previous time step values
         void update();
