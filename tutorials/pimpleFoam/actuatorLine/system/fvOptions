@@ -24,7 +24,7 @@ foil
 
     actuatorLineSourceCoeffs
     {
-        fieldNames          (U);
+        fieldNames          (U k epsilon);
         tipEffect           0.95; 
         freeStreamVelocity  (1 0 0);
         nElements           6;
@@ -35,6 +35,16 @@ foil
             ((0.0 0.0 0.0) (0 0 1) (0.20) (-1 0 0) (4.0))
             ((0.0 0.0 0.5) (0 0 1) (0.10) (-1 0 0) (4.0))
         );
+        
+        dynamicStall
+        {
+            active              on;
+            dynamicStallModel   LeishmanBeddoes;
+            LeishmanBeddoesCoeffs
+            {
+                speedOfSound    343;
+            }
+        }
         
         coefficientData
         ( // alpha C_l C_d

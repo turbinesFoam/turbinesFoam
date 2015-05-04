@@ -9,56 +9,52 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    object      controlDict;
+    class       volVectorField;
+    location    "0";
+    object      U;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     pimpleFoam;
+#include        "include/initialConditions"
 
-startFrom       latestTime;
+dimensions      [0 1 -1 0 0 0 0];
 
-startTime       0;
+internalField   uniform $flowVelocity;
 
-stopAt          endTime;
-
-endTime         1;
-
-deltaT          0.001;
-
-writeControl    timeStep;
-
-writeInterval   10;
-
-writeFormat     ascii;
-
-writePrecision  12;
-
-writeCompression uncompressed;
-
-timeFormat      general;
-
-timePrecision   6;
-
-runTimeModifiable true;
-
-adjustTimeStep  false;
-
-maxCo           0.9;
-
-libs
-(
-    "libOpenFOAM.so"
-    "libincompressibleTurbulenceModel.so"
-    "libincompressibleRASModels.so"
-    "libturbinesFoam.so"
-);
-
-DebugSwitches
+boundaryField
 {
-    actuatorLineSource  1;
-    actuatorLineElement 1;
-    LeishmanBeddoes     1;
+    //#include "include/ABLConditions"
+    #include "include/fixedInlet"
+
+    //- Set patchGroups for constraint patches
+    #include "${WM_PROJECT_DIR}/etc/caseDicts/setConstraintTypes"
+
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      uniform (0 0 0);
+        value           $internalField;
+    }
+
+    walls
+    {
+	type		fixedValue;
+	value		uniform (1 0 0);
+    }
+
+    top
+    {
+	type		slip;
+    }
+
+    bottom
+    {
+	type		fixedValue;
+	value		uniform (1 0 0);
+    }
+
+    #include "include/sideAndTopPatches"
 }
+
 
 // ************************************************************************* //
