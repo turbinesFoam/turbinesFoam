@@ -221,6 +221,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         
         bladeSubDict.add("elementGeometry", elementGeometry);
         bladeSubDict.add("initialVelocities", initialVelocities);
+        bladeSubDict.add("dynamicStall", dynamicStallDict_);
         
         dictionary dict;
         dict.add("actuatorLineSourceCoeffs", bladeSubDict);
@@ -748,6 +749,9 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
         bladeNames_ = bladesDict_.toc();
 
         coeffs_.lookup("tipEffect") >> tipEffect_;
+        
+        // Get dynamic stall subdict
+        dynamicStallDict_ = coeffs_.subOrEmptyDict("dynamicStall");
         
         // Get struts information
         strutsDict_ = coeffs_.subOrEmptyDict("struts");

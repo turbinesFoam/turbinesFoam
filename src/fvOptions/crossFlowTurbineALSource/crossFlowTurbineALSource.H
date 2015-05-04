@@ -215,6 +215,9 @@ protected:
         
         //- Output file stream
         OFstream* outputFile_;
+        
+        //- Dynamic stall dictionary
+        dictionary dynamicStallDict_;
 
 
     // Protected Member Functions
