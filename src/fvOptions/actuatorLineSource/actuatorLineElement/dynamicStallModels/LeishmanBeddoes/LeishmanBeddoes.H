@@ -202,6 +202,9 @@ protected:
         //- Drag coefficient at zero angle of attack
         scalar CD0_;
         
+        //- Switch to indicate stall
+        bool stalled_;
+        
         
     // Protected member functions
     
