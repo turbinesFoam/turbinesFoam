@@ -288,17 +288,19 @@ void Foam::fv::LeishmanBeddoes::correct
     evalStaticData(alphaDeg, alphaDegList, clList, cdList);
     calcUnsteady();
     
-    scalar cn;
-    
     if (stalled_)
     {
         calcSeparated();
-        cn = CNF_ + CNV_;
+        CN_ = CNF_ + CNV_;
     }
     else
     {
-        cn = CNP_;
+        CN_ = CNP_;
     }
+    
+    // Modify lift and drag coefficients based on new normal force coefficient
+    cl = CN_*cos(alpha_) - CT_*sin(alpha_);
+    cd = CN_*sin(alpha_) + CT_*cos(alpha_);
     
     if (time_ != timePrev_)
     {
