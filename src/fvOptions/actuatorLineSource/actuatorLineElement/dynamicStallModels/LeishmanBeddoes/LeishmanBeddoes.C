@@ -96,15 +96,9 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
     scalar f = 0.7;
     alpha1_ = CN1_/CNAlpha_/pow((1 + sqrt(f))/2, 2);
     
-    // Calculate S1 or S2, depending on whether alpha is above or below alpha1
-    if (abs(alphaRad) < alpha1_)
-    {
-        S1_ = (abs(alphaRad) - alpha1_)/log((f - 1)/(-0.3));
-    }
-    else if (abs(alphaRad) >= alpha1_)
-    {
-        S2_ = (alpha1_ - abs(alphaRad))/log((f - 0.04)/(0.66));
-    }
+    // Calculate S1 and S2, though only one will be used
+    S1_ = (abs(alphaRad) - alpha1_)/log((f - 1)/(-0.3));
+    S2_ = (alpha1_ - abs(alphaRad))/log((f - 0.04)/(0.66));
     
     // Calculate CD0
     CD0_ = interpolate(0, alphaDegList, cdList);
