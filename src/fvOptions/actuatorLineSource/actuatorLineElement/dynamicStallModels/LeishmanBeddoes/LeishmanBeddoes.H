@@ -174,6 +174,9 @@ protected:
         //- Previous value of DF
         scalar DFPrev_;
         
+        //- Normal force coefficient for the delayed separation point
+        scalar CNF_;
+        
         //- Vortex lift
         scalar CV_;
         
@@ -230,8 +233,11 @@ protected:
             List<scalar> cdList
         );
         
-        // Evaluate unsteady quantities
-        void evalUnsteady();
+        // Calculate unsteady quantities
+        void calcUnsteady();
+        
+        // Calculate separated flow quantities
+        void calcSeparated();
     
         // Update previous time step values
         void update();

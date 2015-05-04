@@ -109,7 +109,7 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
 }
 
 
-void Foam::fv::LeishmanBeddoes::evalUnsteady()
+void Foam::fv::LeishmanBeddoes::calcUnsteady()
 {
     // Calculate the equivalent angle of attack
     scalar beta = 1 - M_;
@@ -143,6 +143,12 @@ void Foam::fv::LeishmanBeddoes::evalUnsteady()
     
     // Set stalled switch
     stalled_ = (CNPrime_ > CN1_);
+}
+
+
+void Foam::fv::LeishmanBeddoes::calcSeparated()
+{
+    // Calculate separated flow quantities here
 }
 
 
@@ -246,7 +252,19 @@ void Foam::fv::LeishmanBeddoes::correct
     }
     
     evalStaticData(alphaDeg, alphaDegList, clList, cdList);
-    evalUnsteady();
+    calcUnsteady();
+    
+    scalar cn;
+    
+    if (stalled_)
+    {
+        calcSeparated();
+        cn = CNF_ + CNV_;
+    }
+    else
+    {
+        cn = CNP_;
+    }
     
     if (time_ != timePrev_)
     {
