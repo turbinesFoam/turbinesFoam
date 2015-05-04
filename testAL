@@ -4,13 +4,20 @@
 
 startDir=$PWD
 
-cd tutorials/simpleFoam/actuatorLine
+if [ $1 ]
+then
+    app=$1
+else
+    app="pimpleFoam"
+fi
+
+cd tutorials/$app/actuatorLine
 
 #cp -rf 0.org 0
 #blockMesh
 #snappyHexMesh -overwrite
 #topoSet
-simpleFoam
+$app
 
 #./Allclean
 
