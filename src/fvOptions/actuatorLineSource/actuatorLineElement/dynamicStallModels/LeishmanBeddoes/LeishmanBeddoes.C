@@ -45,6 +45,62 @@ namespace fv
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
+void Foam::fv::LeishmanBeddoes::evalStaticData
+(
+    scalar alphaDeg,
+    List<scalar> alphaDegList,
+    List<scalar> clList,
+    List<scalar> cdList
+)
+{
+    // Create lists for normal and chordwise coefficients
+    scalar pi = Foam::constant::mathematical::pi;
+    scalar alphaRad = alphaDeg/180*pi;
+    List<scalar> alphaRadList = alphaDegList/180*pi;
+    List<scalar> cnList = clList*sin(alphaRadList) - cdList*cos(alphaRadList);
+    
+    // Calculate lift slope CNAlpha
+    scalar cn0 = interpolate(0, alphaDegList, cnList);
+    scalar cn5 = interpolate(5, alphaDegList, cnList);
+    CNAlpha_ = (cn5 - cn0)/(5/180*pi);
+    
+    // Calculate critical normal force coefficient CN1, where the slope of the
+    // drag coefficient curve slope first breaks 0.02 per degree
+    forAll(alphaDegList, i)
+    {
+        scalar alpha = alphaDegList[i];
+        scalar cd0, cd1;
+        if (alpha > 4 && alpha < 25)
+        {
+            cd1 = interpolate(alpha, alphaDegList, cdList);
+            cd0 = interpolate(alpha + 0.5, alphaDegList, cdList);
+            if ((cd1 - cd0)/0.5 > 0.02)
+            {
+                CN1_ = cnList[i];
+                break;
+            }
+        }
+    }
+    
+    // Calculate alpha1
+    scalar f = 0.7;
+    alpha1_ = CN1_/CNAlpha_/pow((1 + sqrt(f))/2, 2);
+    
+    // Calculate S1 or S2, depending on whether alpha is above or below alpha1
+    if (abs(alphaRad) < alpha1_)
+    {
+        S1_ = (abs(alphaRad) - alpha1_)/log((f - 1)/(-0.3));
+    }
+    else if (abs(alphaRad) >= alpha1_)
+    {
+        S2_ = (alpha1_ - abs(alphaRad))/log((f - 0.04)/(0.66));
+    }
+    
+    // Calculate CD0
+    CD0_ = interpolate(0, alphaDegList, cdList);
+}
+
+
 void Foam::fv::LeishmanBeddoes::update()
 {
     timePrev_ = time_;

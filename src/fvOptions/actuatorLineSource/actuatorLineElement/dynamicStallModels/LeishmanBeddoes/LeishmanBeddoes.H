@@ -195,6 +195,13 @@ protected:
         //- Tangential force efficiency factor
         scalar eta_;
         
+        //- Separation point calculation constants
+        scalar S1_;
+        scalar S2_;
+        
+        //- Drag coefficient at zero angle of attack
+        scalar CD0_;
+        
         
     // Protected member functions
     
@@ -202,6 +209,7 @@ protected:
         // alpha1, S1, S2, and CD0
         void evalStaticData
         (
+            scalar alphaDeg,
             List<scalar> alphaDegList,
             List<scalar> clList,
             List<scalar> cdList
