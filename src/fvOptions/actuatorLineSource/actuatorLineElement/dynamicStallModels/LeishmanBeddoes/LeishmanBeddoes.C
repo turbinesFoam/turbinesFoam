@@ -77,12 +77,14 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
     forAll(alphaDegList, i)
     {
         scalar alpha = alphaDegList[i];
-        scalar cd0, cd1;
+        scalar cd0, cd1, slope, dAlpha;
         if (alpha > 4 && alpha < 25)
         {
-            cd1 = interpolate(alpha, alphaDegList, cdList);
-            cd0 = interpolate(alpha + 0.5, alphaDegList, cdList);
-            if ((cd1 - cd0)/0.5 > 0.02)
+            cd1 = cdList[i + 1];
+            cd0 = cdList[i];
+            dAlpha = alphaDegList[i + 1] - alpha;
+            slope = (cd1 - cd0)/dAlpha;
+            if (slope > 0.02)
             {
                 CN1_ = cnList[i];
                 break;
@@ -166,20 +168,34 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     // Calculate normal force coefficient for dynamic separation point
     CNF_ = CNAlpha_*alphaEquiv_*pow(((1 + sqrt(fDoublePrime_))/2), 2) + CNI_;
     
-    // Evaluate vortex tracking time
-    if (not stalledPrev_) tau_ = 0.0;
-    else tau_ = tauPrev_ + deltaS_;
-    
-    // Evaluate vortex lift contributions
-    if (tau_ < Tvl_)
+    // Calculate tangential force coefficient
+    if (fDoublePrime_ < 0.7)
     {
-        CV_ = CNC_*(1 - pow(((1 + sqrt(fDoublePrime_))/2), 2));
-        CNV_ = CNVPrev_*exp(-deltaS_/Tv_) 
-             + (CV_ - CVPrev_)*exp(-deltaS_/(2*Tv_));
+        CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*sqrt(fDoublePrime_);
     }
     else
     {
-        CNV_ = CNVPrev_*exp(-deltaS_/Tv_);
+        CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*pow(fDoublePrime_, 1.5);
+    }
+    
+    // Compute vortex shedding process if stalled
+    if (stalled_)
+    {
+        // Evaluate vortex tracking time
+        if (not stalledPrev_) tau_ = 0.0;
+        else tau_ = tauPrev_ + deltaS_;
+        
+        // Evaluate vortex lift contributions
+        if (tau_ < Tvl_)
+        {
+            CV_ = CNC_*(1 - pow(((1 + sqrt(fDoublePrime_))/2), 2));
+            CNV_ = CNVPrev_*exp(-deltaS_/Tv_) 
+                 + (CV_ - CVPrev_)*exp(-deltaS_/(2*Tv_));
+        }
+        else
+        {
+            CNV_ = CNVPrev_*exp(-deltaS_/Tv_);
+        }
     }
 }
 
@@ -219,6 +235,7 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     b1_(coeffs_.lookupOrDefault("b1", 0.14)),
     b2_(coeffs_.lookupOrDefault("b2", 0.53)),
     a_(coeffs_.lookupOrDefault("speedOfSound", 1e12)),
+    eta_(coeffs_.lookupOrDefault("eta", 0.95)),
     Tp_(coeffs_.lookupOrDefault("Tp", 1.7)),
     Tf_(coeffs_.lookupOrDefault("Tf", 3.0)),
     Tv_(coeffs_.lookupOrDefault("Tv", 6.0)),
@@ -287,10 +304,10 @@ void Foam::fv::LeishmanBeddoes::correct
     
     evalStaticData(alphaDeg, alphaDegList, clList, cdList);
     calcUnsteady();
+    calcSeparated();
     
     if (stalled_)
     {
-        calcSeparated();
         CN_ = CNF_ + CNV_;
     }
     else
@@ -299,8 +316,8 @@ void Foam::fv::LeishmanBeddoes::correct
     }
     
     // Modify lift and drag coefficients based on new normal force coefficient
-    cl = CN_*cos(alpha_) - CT_*sin(alpha_);
-    cd = CN_*sin(alpha_) + CT_*cos(alpha_);
+    cl = CN_*cos(alpha_) + CT_*sin(alpha_);
+    cd = CN_*sin(alpha_) - CT_*cos(alpha_) + CD0_;
     
     if (time_ != timePrev_)
     {
