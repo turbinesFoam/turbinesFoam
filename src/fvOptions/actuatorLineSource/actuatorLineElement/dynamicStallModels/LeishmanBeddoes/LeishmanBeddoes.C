@@ -58,6 +58,7 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
     scalar alphaRad = alphaDeg/180*pi;
     List<scalar> alphaRadList(alphaDegList.size());
     List<scalar> cnList(clList.size());
+    List<scalar> ctList(cdList.size());
     
     forAll(alphaDegList, i)
     {
@@ -73,16 +74,16 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
     CNAlpha_ = (cn5 - cn0)/dAlpha;
     
     // Calculate critical normal force coefficient CN1, where the slope of the
-    // drag coefficient curve slope first breaks 0.02 per degree
+    // curve slope first breaks 0.02 per degree
+    scalar alpha=GREAT, cd0, cd1, slope;
     forAll(alphaDegList, i)
     {
-        scalar alpha = alphaDegList[i];
-        scalar cd0, cd1, slope, dAlpha;
+        alpha = alphaDegList[i];
         if (alpha > 4 && alpha < 25)
         {
-            cd1 = cdList[i + 1];
-            cd0 = cdList[i];
-            dAlpha = alphaDegList[i + 1] - alpha;
+            cd1 = interpolate(alpha + 1.0, alphaDegList, cdList);
+            cd0 = interpolate(alpha, alphaDegList, cdList);
+            dAlpha = 1.0;
             slope = (cd1 - cd0)/dAlpha;
             if (slope > 0.02)
             {
@@ -90,6 +91,11 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
                 break;
             }
         }
+    }
+    
+    if (debug)
+    {
+        Info<< "Static stall angle (deg): " << alpha << endl;
     }
     
     // Calculate alpha1
