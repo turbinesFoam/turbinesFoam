@@ -15,7 +15,7 @@ def plot_cp(angle0=540.0):
     df = pd.read_csv("postProcessing/turbines/0/turbine.csv")
     if df.angle_deg.max() < angle0:
         angle0 = 0.0
-    print("Performance from {} degrees onward:".format(angle0))
+    print("Performance from {:.1f}--{:.1f} degrees:".format(angle0, df.angle_deg.max()))
     print("Mean TSR = {:.2f}".format(df.tsr[df.angle_deg >= angle0].mean()))
     print("Mean C_P = {:.2f}".format(df.cp[df.angle_deg >= angle0].mean()))
     print("Mean C_D = {:.2f}".format(df.cd[df.angle_deg >= angle0].mean()))
