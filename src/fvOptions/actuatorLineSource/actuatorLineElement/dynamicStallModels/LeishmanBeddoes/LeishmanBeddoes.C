@@ -63,8 +63,8 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
     forAll(alphaDegList, i)
     {
         alphaRadList[i] = alphaDegList[i]/180*pi;
-        cnList[i] = clList[i]*sin(alphaRadList[i]) 
-                  - cdList[i]*cos(alphaRadList[i]);
+        cnList[i] = clList[i]*cos(alphaRadList[i]) 
+                  - cdList[i]*sin(alphaRadList[i]);
     }
     
     // Calculate lift slope CNAlpha
@@ -95,7 +95,11 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
     
     if (debug)
     {
-        Info<< "Static stall angle (deg): " << alpha << endl;
+        scalar cn = CNAlpha_*alpha_;
+        Info<< "    Static stall angle (deg): " << alpha << endl;
+        Info<< "    Normal coefficients: " << cn5 << " - " << cn0 << endl;
+        Info<< "    Normal coefficient slope: " << CNAlpha_ << endl;
+        Info<< "    Normal coefficient from slope: " << cn << endl;
     }
     
     // Calculate alpha1
@@ -114,7 +118,7 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
 void Foam::fv::LeishmanBeddoes::calcUnsteady()
 {
     // Calculate the equivalent angle of attack
-    scalar beta = 1 - M_;
+    scalar beta = 1 - M_*M_;
     X_ = XPrev_*exp(-b1_*beta*deltaS_) 
        + A1_*deltaAlpha_*exp(b1_*beta*deltaS_/2);
     Y_ = YPrev_*exp(-b2_*beta*deltaS_) 
@@ -144,7 +148,7 @@ void Foam::fv::LeishmanBeddoes::calcUnsteady()
     alphaPrime_ = CNPrime_/CNAlpha_;
     
     // Set stalled switch
-    stalled_ = (CNPrime_ > CN1_);
+    stalled_ = (abs(CNPrime_) > CN1_);
 }
 
 
@@ -163,10 +167,7 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     // Calculate dynamic separation point
     DF_ = DFPrev_*exp(-deltaS_/Tf_) 
         + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf_));
-    fDoublePrime_ = fPrime_ - DF_;
-    
-    // Do not allow separation point to be negative
-    if (fDoublePrime_ < 0) fDoublePrime_ = 0;
+    fDoublePrime_ = abs(fPrime_ - DF_);
     
     // Calculate normal force coefficient for dynamic separation point
     CNF_ = CNAlpha_*alphaEquiv_*pow(((1 + sqrt(fDoublePrime_))/2), 2) + CNI_;
@@ -290,8 +291,9 @@ void Foam::fv::LeishmanBeddoes::correct
     List<scalar> cdList
 )
 {
+    scalar pi = Foam::constant::mathematical::pi;
     time_ = time;
-    alpha_ = alphaDeg/180*Foam::constant::mathematical::pi;
+    alpha_ = alphaDeg/180*pi;
     M_ = magU/a_;
     deltaAlpha_ = alpha_ - alphaPrev_;
     
@@ -305,9 +307,14 @@ void Foam::fv::LeishmanBeddoes::correct
     
     if (debug)
     {
+        scalar cn0 = cl*cos(alpha_) - cd*sin(alpha_);
         Info<< "Leishman-Beddoes dynamic stall model correcting" << endl;
-        Info<< "deltaT: " << deltaT_ << endl;
-        Info<< "deltaAlpha: " << deltaAlpha_ << endl;
+        Info<< "    Angle of attack (deg): " << alphaDeg << endl;
+        Info<< "    deltaT: " << deltaT_ << endl;
+        Info<< "    deltaAlpha: " << deltaAlpha_ << endl;
+        Info<< "    Initial normal force coefficient: " << cn0 << endl;
+        Info<< "    Initial lift coefficient: " << cl << endl;
+        Info<< "    Initial drag coefficient: " << cd << endl;
     }
     
     evalStaticData(alphaDeg, alphaDegList, clList, cdList);
@@ -326,6 +333,18 @@ void Foam::fv::LeishmanBeddoes::correct
     // Modify lift and drag coefficients based on new normal force coefficient
     cl = CN_*cos(alpha_) + CT_*sin(alpha_);
     cd = CN_*sin(alpha_) - CT_*cos(alpha_) + CD0_;
+    
+    if (debug)
+    {
+        scalar alphE = alphaEquiv_/pi*180.0;
+        Info<< "    Stalled: " << stalled_ << endl;
+        Info<< "    Equivalent angle of attack: " << alphE << endl;
+        Info<< "    Corrected normal force coefficient: " << CN_ << endl;
+        Info<< "    Circulatory normal force coefficient " << CNC_ << endl;
+        Info<< "    Impulsive normal force coefficient " << CNI_ << endl;
+        Info<< "    Corrected lift coefficient: " << cl << endl;
+        Info<< "    Corrected drag coefficient: " << cd << endl << endl;
+    }
     
     if (time_ != timePrev_)
     {
