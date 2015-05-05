@@ -159,6 +159,9 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
         + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf_));
     fDoublePrime_ = fPrime_ - DF_;
     
+    // Do not allow separation point to be negative
+    if (fDoublePrime_ < 0) fDoublePrime_ = 0;
+    
     // Calculate normal force coefficient for dynamic separation point
     CNF_ = CNAlpha_*alphaEquiv_*pow(((1 + sqrt(fDoublePrime_))/2), 2) + CNI_;
     
@@ -175,6 +178,11 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     // Compute vortex shedding process if stalled
     if (stalled_)
     {
+        if (debug)
+        {
+            Info<< "Section stalled" << endl;
+        }
+        
         // Evaluate vortex tracking time
         if (not stalledPrev_) tau_ = 0.0;
         else tau_ = tauPrev_ + deltaS_;
