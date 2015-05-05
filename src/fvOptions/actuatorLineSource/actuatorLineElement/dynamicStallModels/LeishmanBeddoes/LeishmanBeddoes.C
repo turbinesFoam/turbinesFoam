@@ -97,7 +97,6 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
     {
         scalar cn = CNAlpha_*alpha_;
         Info<< "    Static stall angle (deg): " << alpha << endl;
-        Info<< "    Normal coefficients: " << cn5 << " - " << cn0 << endl;
         Info<< "    Normal coefficient slope: " << CNAlpha_ << endl;
         Info<< "    Normal coefficient from slope: " << cn << endl;
     }
@@ -185,11 +184,6 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     // Compute vortex shedding process if stalled
     if (stalled_)
     {
-        if (debug)
-        {
-            Info<< "Section stalled" << endl;
-        }
-        
         // Evaluate vortex tracking time
         if (not stalledPrev_) tau_ = 0.0;
         else tau_ = tauPrev_ + deltaS_;
@@ -225,6 +219,7 @@ void Foam::fv::LeishmanBeddoes::update()
     CNVPrev_ = CNV_;
     stalledPrev_ = stalled_;
     tauPrev_ = tau_;
+    firstTimeStep_ = false;
 }
 
 
@@ -253,6 +248,9 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     dict_.lookup("chordLength") >> c_;
     time_ = startTime;
     timePrev_ = startTime;
+    XPrev_ = 0;
+    YPrev_ = 0;
+    firstTimeStep_ = true;
     
     if (debug)
     {
@@ -295,7 +293,9 @@ void Foam::fv::LeishmanBeddoes::correct
     time_ = time;
     alpha_ = alphaDeg/180*pi;
     M_ = magU/a_;
-    deltaAlpha_ = alpha_ - alphaPrev_;
+    
+    if (firstTimeStep_) deltaAlpha_ = 0.0;
+    else deltaAlpha_ = alpha_ - alphaPrev_;
     
     // Only calculate deltaT if time has changed
     if (time != timePrev_)

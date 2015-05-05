@@ -229,6 +229,9 @@ protected:
         //- Previous value of tau
         scalar tauPrev_;
         
+        //- Switch for first time step
+        bool firstTimeStep_;
+        
         
     // Protected member functions
     
