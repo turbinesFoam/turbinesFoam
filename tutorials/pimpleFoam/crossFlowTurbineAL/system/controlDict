@@ -61,6 +61,7 @@ DebugSwitches
     crossFlowTurbineALSource 1;
     actuatorLineSource  1;
     actuatorLineElement 0;
+    LeishmanBeddoes 1;
 }
 
 // ************************************************************************* //
