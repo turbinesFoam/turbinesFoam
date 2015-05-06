@@ -532,6 +532,15 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     if (hasShaft_) createShaft();
     lastRotationTime_ = time_.value();
     createOutputFile();
+    torqueCoefficient_ = 0.0;
+    dragCoefficient_ = 0.0;
+    powerCoefficient_ = 0.0;
+    
+    if (debug)
+    {
+        Info<< "crossFlowTurbineALSource created at time = " << time_.value()
+            << endl;
+    }
 }
 
 
@@ -605,12 +614,10 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     const label fieldI
 )
 {
-    bool write = false;
     // Rotate the turbine if time value has changed
     if (time_.value() != lastRotationTime_)
     {
         rotate();
-        write = true;
     }
 
     // Zero out force vector and field
@@ -669,11 +676,9 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     Info<< "Power coefficient from " << name_ << ": " << powerCoefficient_
         << endl << endl;
         
-    // Write performance data if time value has changed and master processor
-    if (write and Pstream::master())
-    {
-        writePerf();
-    }
+    // Write performance data -- note this will write multiples if there are
+    // multiple PIMPLE loops
+    writePerf();
 }
 
 
