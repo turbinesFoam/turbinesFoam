@@ -32,9 +32,9 @@ geometry
     turbine
     {
         type searchableCylinder;
-        point1 (0 0 -0.625);
-        point2 (0 0 0.625);
-        radius 0.625;       
+        point1 (0 0 -0.75);
+        point2 (0 0 0.75);
+        radius 0.75;       
     }
 };
 

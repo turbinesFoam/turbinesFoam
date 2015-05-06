@@ -38,7 +38,7 @@ solvers
     {
         solver          smoothSolver;
         smoother        symGaussSeidel;
-        tolerance       1e-05;
+        tolerance       1e-6;
         relTol          0.1;
     }
 
@@ -51,22 +51,38 @@ solvers
 
 PIMPLE
 {
-    nNonOrthogonalCorrectors 1;
-    nOuterCorrectors    2;
-    nCorrectors         2;
+    correctPhi          no;
+    nOuterCorrectors    50;
+    nCorrectors         1;
+    nNonOrthogonalCorrectors 0;
+
+    residualControl
+    {
+        U
+        {
+            tolerance 1e-2;
+            relTol 0;
+        }
+
+        p
+        {
+            tolerance 1e-2;
+            relTol 0;
+        }
+    }
 }
 
 relaxationFactors
 {
     fields
     {
-        p               0.8;
+        p               1;
     }
     equations
     {
-        U               0.9;
-        k               0.9;
-        epsilon         0.9;
+        U               1;
+        k               1;
+        epsilon         1;
     }
 }
 
