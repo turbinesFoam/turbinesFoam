@@ -20,22 +20,23 @@ turbine
 {
     type            crossFlowTurbineALSource;
     active          on;
-    selectionMode   cellSet;    // cellSet // points //cellZone
+    selectionMode   cellSet;            // cellSet || points || cellZone
     cellSet         turbine;
 
     crossFlowTurbineALSourceCoeffs
     {
-        fieldNames      (U);
-        nBlades	        3;
-        tipEffect       0.95; 
+        fieldNames          (U);
+        nBlades             3;
+        tipEffect           0.95; 
 
-        freeStreamVelocity (1 0 0);
-        upstreamPoint   (-1.0, 0, 0); // probably don't need this
-        tipSpeedRatio   1.9;
+        freeStreamVelocity  (1 0 0);
+        tipSpeedRatio       1.9;
+        tsrAmplitude        0.1;        // Amplitude for TSR oscillation
+        tsrPhase            1.57;       // Angle of first peak (rad)
 
-        origin          (0 0 0);
-        axis            (0 0 1); // negative for opposite rotation
-        rotorRadius     0.5; // for tip speed ratio calculation
+        origin              (0 0 0);
+        axis                (0 0 1);    // Negative for opposite rotation
+        rotorRadius         0.5;        // For tip speed ratio calculation
         
         dynamicStall
         {
