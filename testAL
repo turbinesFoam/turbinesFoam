@@ -11,7 +11,7 @@ else
     app="pimpleFoam"
 fi
 
-cd tutorials/$app/actuatorLine
+cd tutorials/actuatorLine/$app
 
 #cp -rf 0.org 0
 #blockMesh

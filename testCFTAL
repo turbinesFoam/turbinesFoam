@@ -4,7 +4,7 @@
 
 startDir=$PWD
 
-cd tutorials/pimpleFoam/crossFlowTurbineAL
+cd tutorials/crossFlowTurbineAL
 
 #cp -rf 0.org 0
 #blockMesh
