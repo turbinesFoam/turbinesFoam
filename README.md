@@ -4,8 +4,7 @@ turbinesFoam
 ============
 
 `turbinesFoam` is a library for simulating wind and marine 
-hydrokinetic turbines in OpenFOAM (2.3.x). Some components for solvers 
-and turbine models have been taken from NREL's SOWFA and Offwind.
+hydrokinetic turbines in OpenFOAM (2.3.x).
 
 Status
 ------

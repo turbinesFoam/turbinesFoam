@@ -1,3 +1,0 @@
-horizontalAxisWindTurbinesALM/horizontalAxisWindTurbinesALM.C
-
-LIB = $(FOAM_USER_LIBBIN)/libuserTurbineModels

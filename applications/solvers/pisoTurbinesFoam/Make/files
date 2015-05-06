@@ -1,3 +1,0 @@
-pisoTurbinesFoam.C
-
-EXE = $(FOAM_APPBIN)/pisoTurbinesFoam
