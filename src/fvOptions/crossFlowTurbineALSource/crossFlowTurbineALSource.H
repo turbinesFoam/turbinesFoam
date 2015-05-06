@@ -218,6 +218,15 @@ protected:
         
         //- Dynamic stall dictionary
         dictionary dynamicStallDict_;
+        
+        //- Amplitude of prescribed TSR oscillation
+        scalar tsrAmplitude_;
+        
+        //- Angle of first peak in TSR oscillation (rad)
+        scalar tsrPhase_;
+        
+        //- Mean tip speed ratio
+        scalar meanTSR_;
 
 
     // Protected Member Functions

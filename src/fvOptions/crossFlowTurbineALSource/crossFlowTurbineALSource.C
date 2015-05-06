@@ -563,6 +563,12 @@ Foam::scalar& Foam::fv::crossFlowTurbineALSource::torque()
 
 void Foam::fv::crossFlowTurbineALSource::rotate()
 {
+    // Update tip speed ratio and omega
+    scalar t = time_.value();
+    tipSpeedRatio_ = meanTSR_ 
+                   + tsrAmplitude_*cos(nBlades_*(meanTSR_*t - tsrPhase_));
+    omega_ = tipSpeedRatio_*mag(freeStreamVelocity_)/rotorRadius_;
+
     scalar deltaT = time_.deltaT().value();
     scalar radians = omega_*deltaT;
     forAll(blades_, i)
@@ -653,7 +659,7 @@ void Foam::fv::crossFlowTurbineALSource::addSup
         << endl;
     Info<< "Torque (per unit density) from " << name_ << ": " << torque_ 
         << endl;
-        
+    
     torqueCoefficient_ = torque_/(0.5*frontalArea_*rotorRadius_
                        * magSqr(freeStreamVelocity_));
     powerCoefficient_ = torqueCoefficient_*tipSpeedRatio_;
@@ -718,7 +724,6 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
 {
     if (option::read(dict))
     {
-        
         coeffs_.lookup("fieldNames") >> fieldNames_;
         applied_.setSize(fieldNames_.size(), false);
 
@@ -726,16 +731,22 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
         coeffs_.lookup("origin") >> origin_;
         coeffs_.lookup("axis") >> axis_;
         coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
-        coeffs_.lookup("tipSpeedRatio") >> tipSpeedRatio_;
+        coeffs_.lookup("tipSpeedRatio") >> meanTSR_;
         coeffs_.lookup("rotorRadius") >> rotorRadius_;
-        omega_ = tipSpeedRatio_*mag(freeStreamVelocity_)/rotorRadius_;
+        coeffs_.lookup("tipEffect") >> tipEffect_;
+        tsrAmplitude_ = coeffs_.lookupOrDefault("tsrAmplitude", 0.0);
+        tsrPhase_ = coeffs_.lookupOrDefault("tsrPhase", 0.0);
 
         // Get blade information
         bladesDict_ = coeffs_.subDict("blades");
         nBlades_ = bladesDict_.keys().size();
         bladeNames_ = bladesDict_.toc();
-
-        coeffs_.lookup("tipEffect") >> tipEffect_;
+        
+        // Set tip speed ratio and omega
+        scalar t = time_.value();
+        tipSpeedRatio_ = meanTSR_ 
+                       + tsrAmplitude_*cos(nBlades_*(meanTSR_*t - tsrPhase_));
+        omega_ = tipSpeedRatio_*mag(freeStreamVelocity_)/rotorRadius_;
         
         // Get dynamic stall subdict
         dynamicStallDict_ = coeffs_.subOrEmptyDict("dynamicStall");
