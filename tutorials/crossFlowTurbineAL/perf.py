@@ -20,7 +20,7 @@ def plot_cp(angle0=540.0):
     print("Mean TSR = {:.2f}".format(df.tsr[df.angle_deg >= angle0].mean()))
     print("Mean C_P = {:.2f}".format(df.cp[df.angle_deg >= angle0].mean()))
     print("Mean C_D = {:.2f}".format(df.cd[df.angle_deg >= angle0].mean()))
-    plt.plot(df.angle_deg, df.cp)
+    plt.plot(df.angle_deg, df.cp, "-o")
     plt.xlabel("Azimuthal angle (degrees)")
     plt.ylabel("$C_P$")
     if savefig:
