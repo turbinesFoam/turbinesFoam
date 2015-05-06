@@ -20,7 +20,7 @@ turbine
 {
     type            crossFlowTurbineALSource;
     active          on;
-    selectionMode   cellSet;            // cellSet || points || cellZone
+    selectionMode   cellSet; // cellSet || points || cellZone
     cellSet         turbine;
 
     crossFlowTurbineALSourceCoeffs
@@ -31,8 +31,8 @@ turbine
 
         freeStreamVelocity  (1 0 0);
         tipSpeedRatio       1.9;
-        tsrAmplitude        0.1;        // Amplitude for TSR oscillation
-        tsrPhase            1.57;       // Angle of first peak (rad)
+        tsrAmplitude        0.19;       // Amplitude for TSR oscillation
+        tsrPhase            0.70;       // Angle of first peak (rad)
 
         origin              (0 0 0);
         axis                (0 0 1);    // Negative for opposite rotation

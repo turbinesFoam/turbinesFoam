@@ -28,4 +28,5 @@ def plot_cp(angle0=540.0):
         plt.savefig("cp.pdf")
     plt.show()
 
-plot_cp()
+if __name__ == "__main__":
+    plot_cp()
