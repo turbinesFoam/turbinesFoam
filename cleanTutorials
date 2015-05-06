@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 
-./tutorials/pisoTurbinesFoam/axialFlowWindTurbine/Allclean
-./tutorials/simpleFoam/crossFlowTurbineAL/Allclean
-./tutorials/simpleFoam/crossFlowTurbineAS/Allclean
+startDir=$PWD
 
+cd $startDir/tutorials/crossFlowTurbineAL
+./Allclean
+
+cd $startDir/tutorials/actuatorLine/simpleFoam
+./Allclean
+
+cd $startDir/tutorials/actuatorLine/pimpleFoam
+./Allclean
+
+cd $startDir
