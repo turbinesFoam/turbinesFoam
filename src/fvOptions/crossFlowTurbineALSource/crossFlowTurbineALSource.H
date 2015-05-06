@@ -258,7 +258,6 @@ public:
 
     // Constructors
 
-
         //- Construct from components
         crossFlowTurbineALSource
         (
@@ -283,8 +282,7 @@ public:
             //- Return the reference density for incompressible case
             inline scalar rhoRef() const;
 
-            //- Return the rotational speed [rad/s]
-            //  Positive anti-clockwise when looking along -ve lift direction
+            //- Return the rotational speed (rad/s)
             inline scalar omega() const;
             
             //- Return force vector
