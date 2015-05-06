@@ -31,7 +31,7 @@ turbine
 
         freeStreamVelocity (1 0 0);
         upstreamPoint   (-1.0, 0, 0); // probably don't need this
-        tipSpeedRatio   3.1;
+        tipSpeedRatio   1.9;
 
         origin          (0 0 0);
         axis            (0 0 1); // negative for opposite rotation
@@ -51,9 +51,8 @@ turbine
                 profile     NACA0021;
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
-                    (-0.4 0.54 0.0 0.040 0.5 0.0)
-                    ( 0.0 0.54 0.0 0.067 0.5 0.0)
-                    ( 0.4 0.54 0.0 0.040 0.5 0.0)
+                    (-0.5 0.5 0.0 0.14 0.5 0.0)
+                    ( 0.5 0.5 0.0 0.14 0.5 0.0)
                 );
             }
             blade2
@@ -62,9 +61,8 @@ turbine
                 profile     NACA0021;
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
-                    (-0.4 0.54 120.0 0.040 0.5 0.0)
-                    ( 0.0 0.54 120.0 0.067 0.5 0.0)
-                    ( 0.4 0.54 120.0 0.040 0.5 0.0)
+                    (-0.5 0.5 0.0 0.14 0.5 0.0)
+                    ( 0.5 0.5 0.0 0.14 0.5 0.0)
                 );
             }
             blade3
@@ -73,9 +71,8 @@ turbine
                 profile     NACA0021;
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
-                    (-0.4 0.54 240.0 0.040 0.5 0.0)
-                    ( 0.0 0.54 240.0 0.067 0.5 0.0)
-                    ( 0.4 0.54 240.0 0.040 0.5 0.0)
+                    (-0.5 0.5 0.0 0.14 0.5 0.0)
+                    ( 0.5 0.5 0.0 0.14 0.5 0.0)
                 );
             }
         }
@@ -88,8 +85,8 @@ turbine
                 profile     NACA0021;
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
-                    (0.0 0.04 0.0 0.06 0.5 0.0)
-                    (0.0 0.53 0.0 0.06 0.5 0.0)
+                    (0.0 0.05 0.0 0.14 0.5 0.0)
+                    (0.0 0.49 0.0 0.14 0.5 0.0)
                 );
             }
             strut2
@@ -98,8 +95,8 @@ turbine
                 profile     NACA0021;
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
-                    (0.0 0.04 120.0 0.06 0.5 0.0)
-                    (0.0 0.53 120.0 0.06 0.5 0.0)
+                    (0.0 0.05 0.0 0.14 0.5 0.0)
+                    (0.0 0.49 0.0 0.14 0.5 0.0)
                 );
             }
             strut3
@@ -108,8 +105,8 @@ turbine
                 profile     NACA0021;
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
-                    (0.0 0.04 240.0 0.06 0.5 0.0)
-                    (0.0 0.53 240.0 0.06 0.5 0.0)
+                    (0.0 0.05 0.0 0.14 0.5 0.0)
+                    (0.0 0.49 0.0 0.14 0.5 0.0)
                 );
             }
         }
@@ -120,8 +117,8 @@ turbine
             profile     cylinder;
             elementData
             ( // axialDistance, diameter
-                (-0.66 0.0635)
-                ( 0.66 0.0635)
+                (-0.66 0.09)
+                ( 0.66 0.09)
             );
         }
         
@@ -131,12 +128,6 @@ turbine
             {
                 data ( // alpha C_l C_d
                     #include "NACA0021_1.6e5"
-                );
-            }
-            NACA64_A17
-            {
-                data (
-                    #include "NACA64_A17"
                 );
             }
             cylinder
