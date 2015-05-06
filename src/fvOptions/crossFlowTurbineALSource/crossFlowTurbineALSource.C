@@ -485,19 +485,6 @@ void Foam::fv::crossFlowTurbineALSource::createOutputFile()
 }
 
 
-void Foam::fv::crossFlowTurbineALSource::writePerf()
-{
-    *outputFile_<< time_.value() << "," << angleDeg_ << "," 
-                << tipSpeedRatio_ << "," << powerCoefficient_ << "," 
-                << dragCoefficient_ << "," << torqueCoefficient_ << endl;
-}
-
-void Foam::fv::crossFlowTurbineALSource::writeData(Ostream& os) const
-{
-    os  << indent << name_ << endl;
-    dict_.write(os);
-}
-
 // * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
 Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
@@ -777,6 +764,20 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
     {
         return false;
     }
+}
+
+
+void Foam::fv::crossFlowTurbineALSource::writePerf()
+{
+    *outputFile_<< time_.value() << "," << angleDeg_ << "," 
+                << tipSpeedRatio_ << "," << powerCoefficient_ << "," 
+                << dragCoefficient_ << "," << torqueCoefficient_ << endl;
+}
+
+void Foam::fv::crossFlowTurbineALSource::writeData(Ostream& os) const
+{
+    os  << indent << name_ << endl;
+    dict_.write(os);
 }
 
 
