@@ -219,7 +219,6 @@ void Foam::fv::LeishmanBeddoes::update()
     CNVPrev_ = CNV_;
     stalledPrev_ = stalled_;
     tauPrev_ = tau_;
-    firstTimeStep_ = false;
 }
 
 
@@ -248,9 +247,19 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     dict_.lookup("chordLength") >> c_;
     time_ = startTime;
     timePrev_ = startTime;
-    XPrev_ = 0;
-    YPrev_ = 0;
+    X_ = 0.0;
+    Y_ = 0.0;
     firstTimeStep_ = true;
+    deltaAlpha_ = 0.0;
+    D_ = 0.0;
+    DP_ = 0.0;
+    CNP_ = 0.0;
+    DF_ = 0.0;
+    fPrime_ = 1.0;
+    CV_ = 0.0;
+    CNV_ = 0.0;
+    stalledPrev_ = false;
+    tau_ = 0.0;
     
     if (debug)
     {
@@ -291,18 +300,22 @@ void Foam::fv::LeishmanBeddoes::correct
 {
     scalar pi = Foam::constant::mathematical::pi;
     time_ = time;
-    alpha_ = alphaDeg/180*pi;
-    M_ = magU/a_;
     
-    if (firstTimeStep_) deltaAlpha_ = 0.0;
-    else deltaAlpha_ = alpha_ - alphaPrev_;
+    if (firstTimeStep_)
+    {
+        alpha_ = alphaDeg/180*pi;
+    }
     
     // Only calculate deltaT if time has changed
     if (time != timePrev_)
     {
         deltaT_ = time_ - timePrev_;
+        update();
     }
     
+    alpha_ = alphaDeg/180*pi;
+    M_ = magU/a_;
+    deltaAlpha_ = alpha_ - alphaPrev_;
     deltaS_ = 2*magU*deltaT_/c_;
     
     if (debug)
@@ -310,6 +323,7 @@ void Foam::fv::LeishmanBeddoes::correct
         scalar cn0 = cl*cos(alpha_) - cd*sin(alpha_);
         Info<< "Leishman-Beddoes dynamic stall model correcting" << endl;
         Info<< "    Angle of attack (deg): " << alphaDeg << endl;
+        Info<< "    Time: " << time_ << endl;
         Info<< "    deltaT: " << deltaT_ << endl;
         Info<< "    deltaAlpha: " << deltaAlpha_ << endl;
         Info<< "    Initial normal force coefficient: " << cn0 << endl;
@@ -340,15 +354,16 @@ void Foam::fv::LeishmanBeddoes::correct
         Info<< "    Stalled: " << stalled_ << endl;
         Info<< "    Equivalent angle of attack: " << alphE << endl;
         Info<< "    Corrected normal force coefficient: " << CN_ << endl;
-        Info<< "    Circulatory normal force coefficient " << CNC_ << endl;
-        Info<< "    Impulsive normal force coefficient " << CNI_ << endl;
+        Info<< "    Circulatory normal force coefficient: " << CNC_ << endl;
+        Info<< "    Impulsive normal force coefficient: " << CNI_ << endl;
         Info<< "    Corrected lift coefficient: " << cl << endl;
         Info<< "    Corrected drag coefficient: " << cd << endl << endl;
     }
     
-    if (time_ != timePrev_)
+    if (firstTimeStep_)
     {
         update();
+        firstTimeStep_ = false;
     }
 }
 
