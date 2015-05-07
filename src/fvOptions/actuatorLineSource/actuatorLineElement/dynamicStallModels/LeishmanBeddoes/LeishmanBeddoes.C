@@ -186,7 +186,13 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     {
         // Evaluate vortex tracking time
         if (not stalledPrev_) tau_ = 0.0;
-        else tau_ = tauPrev_ + deltaS_;
+        else 
+        {
+            if (tau_ == tauPrev_)
+            {
+                tau_ = tauPrev_ + deltaS_;
+            }
+        }
         
         // Evaluate vortex lift contributions
         if (tau_ < Tvl_)
@@ -199,6 +205,10 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
         {
             CNV_ = CNVPrev_*exp(-deltaS_/Tv_);
         }
+    }
+    else
+    {
+        tau_ = 0.0;
     }
 }
 
@@ -249,7 +259,7 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     timePrev_ = startTime;
     X_ = 0.0;
     Y_ = 0.0;
-    firstTimeStep_ = true;
+    nNewTimes_ = 0;
     deltaAlpha_ = 0.0;
     D_ = 0.0;
     DP_ = 0.0;
@@ -301,16 +311,21 @@ void Foam::fv::LeishmanBeddoes::correct
     scalar pi = Foam::constant::mathematical::pi;
     time_ = time;
     
-    if (firstTimeStep_)
-    {
-        alpha_ = alphaDeg/180*pi;
-    }
-    
     // Only calculate deltaT if time has changed
     if (time != timePrev_)
     {
+        nNewTimes_++;
         deltaT_ = time_ - timePrev_;
-        update();
+        if (nNewTimes_ > 1) 
+        {
+            update();
+        }
+    }
+    
+    if (nNewTimes_ <= 1)
+    {
+        alpha_ = alphaDeg/180*pi;
+        alphaPrev_ = alpha_;
     }
     
     alpha_ = alphaDeg/180*pi;
@@ -322,9 +337,11 @@ void Foam::fv::LeishmanBeddoes::correct
     {
         scalar cn0 = cl*cos(alpha_) - cd*sin(alpha_);
         Info<< "Leishman-Beddoes dynamic stall model correcting" << endl;
-        Info<< "    Angle of attack (deg): " << alphaDeg << endl;
+        Info<< "    New times: " << nNewTimes_ << endl;
         Info<< "    Time: " << time_ << endl;
         Info<< "    deltaT: " << deltaT_ << endl;
+        Info<< "    deltaS: " << deltaS_ << endl;
+        Info<< "    Angle of attack (deg): " << alphaDeg << endl;
         Info<< "    deltaAlpha: " << deltaAlpha_ << endl;
         Info<< "    Initial normal force coefficient: " << cn0 << endl;
         Info<< "    Initial lift coefficient: " << cl << endl;
@@ -352,18 +369,13 @@ void Foam::fv::LeishmanBeddoes::correct
     {
         scalar alphE = alphaEquiv_/pi*180.0;
         Info<< "    Stalled: " << stalled_ << endl;
+        Info<< "    tau: " << tau_ << endl;
         Info<< "    Equivalent angle of attack: " << alphE << endl;
         Info<< "    Corrected normal force coefficient: " << CN_ << endl;
         Info<< "    Circulatory normal force coefficient: " << CNC_ << endl;
         Info<< "    Impulsive normal force coefficient: " << CNI_ << endl;
         Info<< "    Corrected lift coefficient: " << cl << endl;
         Info<< "    Corrected drag coefficient: " << cd << endl << endl;
-    }
-    
-    if (firstTimeStep_)
-    {
-        update();
-        firstTimeStep_ = false;
     }
 }
 

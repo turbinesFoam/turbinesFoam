@@ -229,8 +229,8 @@ protected:
         //- Previous value of tau
         scalar tauPrev_;
         
-        //- Switch for first time step
-        bool firstTimeStep_;
+        //- Number of new times evaluated -- does not increment for subcycles
+        label nNewTimes_;
         
         
     // Protected member functions
