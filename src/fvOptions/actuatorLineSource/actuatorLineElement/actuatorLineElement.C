@@ -222,7 +222,8 @@ void Foam::fv::actuatorLineElement::calculate
     // Find local wind velocity upstream
     scalar upstreamDistance = chordLength_*0.6;
     vector upstreamPoint = position_ - upstreamDistance*freeStreamDirection_;
-    vector inflowVelocity = Uin[mesh_.findCell(upstreamPoint)];
+    label upstreamCellI = mesh_.findCell(upstreamPoint);
+    vector inflowVelocity = Uin[upstreamCellI];
     
     // Calculate relative velocity (note these are not projected onto a
     // plane perpendicular to the chord and span direction)
