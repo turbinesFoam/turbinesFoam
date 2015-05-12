@@ -220,10 +220,12 @@ void Foam::fv::actuatorLineElement::calculate
 )
 {
     // Find local wind velocity upstream
-    scalar upstreamDistance = chordLength_*0.6;
+    scalar upstreamDistance = chordLength_*0.7;
     vector upstreamPoint = position_ - upstreamDistance*freeStreamDirection_;
     label upstreamCellI = mesh_.findCell(upstreamPoint);
-    vector inflowVelocity = Uin[upstreamCellI];
+    const volVectorField& U = mesh_.lookupObject<volVectorField>("U");
+    vector UOld = U.oldTime()[upstreamCellI];
+    vector inflowVelocity = (Uin[upstreamCellI] + UOld)/2;
     
     // Calculate relative velocity (note these are not projected onto a
     // plane perpendicular to the chord and span direction)
@@ -237,6 +239,8 @@ void Foam::fv::actuatorLineElement::calculate
     scalar angleOfAttackRad = asin((planformNormal & relativeVelocity)
                             / (mag(planformNormal)*mag(relativeVelocity)));
     angleOfAttack_ = angleOfAttackRad/Foam::constant::mathematical::pi*180.0;
+    
+    // Apply flow curvature correction to angle of attack
     
     // Lookup lift and drag coefficients
     lookupCoefficients();
