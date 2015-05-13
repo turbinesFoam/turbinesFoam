@@ -200,6 +200,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     dynamicStallActive_(false)
 {
     read();
+    omega_ = 0.0;
 }
 
 // * * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * //
