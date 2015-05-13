@@ -2,6 +2,9 @@
 
 ./Allwmake
 
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
 startDir=$PWD
 
 if [ $1 ]
@@ -13,12 +16,14 @@ fi
 
 cd tutorials/actuatorLine/$app
 
-#cp -rf 0.org 0
-#blockMesh
-#snappyHexMesh -overwrite
-#topoSet
-$app
+# Pre-process case only if necessary
+if [ ! -f log.snappyHexMesh ]; then
+    cp -rf 0.org 0
+    runApplication blockMesh
+    runApplication snappyHexMesh -overwrite
+    runApplication topoSet
+fi
 
-#./Allclean
+$app
 
 cd $startDir
