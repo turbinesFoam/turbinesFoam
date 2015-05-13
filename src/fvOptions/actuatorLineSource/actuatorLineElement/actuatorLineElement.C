@@ -197,10 +197,11 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     velocity_(vector::zero),
     forceVector_(vector::zero),
     angleOfAttack_(0.0),
-    dynamicStallActive_(false)
+    dynamicStallActive_(false),
+    omega_(0.0),
+    chordMount_(0.5)
 {
     read();
-    omega_ = 0.0;
 }
 
 // * * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * //

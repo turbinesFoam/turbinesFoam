@@ -139,6 +139,9 @@ protected:
         
         //- Angular velocity for flow curvature correction
         scalar omega_;
+        
+        //- Nondimensional chord mount distance for flow curvature correction
+        scalar chordMount_;
 
 
     // Protected Member Functions
