@@ -248,9 +248,6 @@ void Foam::fv::actuatorLineElement::calculate
     scalar upstreamDistance = chordLength_*0.7;
     vector upstreamPoint = position_ - upstreamDistance*freeStreamDirection_;
     label upstreamCellI = mesh_.findCell(upstreamPoint);
-    //~ const volVectorField& U = mesh_.lookupObject<volVectorField>("U");
-    //~ vector UOld = U.oldTime()[upstreamCellI];
-    //~ vector inflowVelocity = (Uin[upstreamCellI] + UOld)/2;
     vector inflowVelocity = Uin[upstreamCellI];
         
     
