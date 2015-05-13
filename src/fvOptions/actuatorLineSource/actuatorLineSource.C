@@ -357,6 +357,13 @@ Foam::vector Foam::fv::actuatorLineSource::moment(vector point)
     {
         moment += elements_[i].moment(point);
     }
+    
+    if (debug)
+    {
+        Info<< "Moment on " << name_ << " about " << point << ": " << moment
+            << endl;
+    }
+    
     return moment;
 }
 
