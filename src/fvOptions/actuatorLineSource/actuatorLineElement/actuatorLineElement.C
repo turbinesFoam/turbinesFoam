@@ -108,6 +108,11 @@ Foam::scalar Foam::fv::actuatorLineElement::interpolate
     List<scalar>& yOld
 )
 {
+    if (debug)
+    {
+        Info<< "Interpolating " << xNew << " in " << name_ << endl;
+    }
+    
     label index = 0;
     label indexP = 0;
     label indexM = 0;
@@ -230,13 +235,24 @@ void Foam::fv::actuatorLineElement::calculate
     volVectorField& forceField
 )
 {
+    if (debug)
+    {
+        Info<< "Calculating force contribution from actuatorLineElement " 
+            << name_ << endl;
+        Info<< "    chordDirection: " << chordDirection_ << endl;
+        Info<< "    spanDirection: " << spanDirection_ << endl;
+        Info<< "    elementVelocity: " << velocity_ << endl;
+    }
+    
     // Find local wind velocity upstream
     scalar upstreamDistance = chordLength_*0.7;
     vector upstreamPoint = position_ - upstreamDistance*freeStreamDirection_;
     label upstreamCellI = mesh_.findCell(upstreamPoint);
-    const volVectorField& U = mesh_.lookupObject<volVectorField>("U");
-    vector UOld = U.oldTime()[upstreamCellI];
-    vector inflowVelocity = (Uin[upstreamCellI] + UOld)/2;
+    //~ const volVectorField& U = mesh_.lookupObject<volVectorField>("U");
+    //~ vector UOld = U.oldTime()[upstreamCellI];
+    //~ vector inflowVelocity = (Uin[upstreamCellI] + UOld)/2;
+    vector inflowVelocity = Uin[upstreamCellI];
+        
     
     // Calculate relative velocity (note these are not projected onto a
     // plane perpendicular to the chord and span direction)
@@ -255,6 +271,14 @@ void Foam::fv::actuatorLineElement::calculate
     // Apply flow curvature correction to angle of attack
     angleOfAttack_ -= omega_*chordMount_*chordLength_/mag(relativeVelocity);
     angleOfAttack_ -= omega_*chordLength_/(4*mag(relativeVelocity));
+    
+    if (debug)
+    {
+        Info<< "    inflowVelocity: " << inflowVelocity << endl;
+        Info<< "    relativeVelocity: " << relativeVelocity << endl;
+        Info<< "    Reynolds number: " << Re_ << endl;
+        Info<< "    angleOfAttack (degrees): " << angleOfAttack_ << endl;
+    }
     
     // Lookup lift and drag coefficients
     lookupCoefficients();
@@ -307,15 +331,6 @@ void Foam::fv::actuatorLineElement::calculate
     
     if (debug)
     {
-        Info<< "Calculating force contribution from actuatorLineElement " 
-            << name_ << endl;
-        Info<< "    chordDirection: " << chordDirection_ << endl;
-        Info<< "    spanDirection: " << spanDirection_ << endl;
-        Info<< "    elementVelocity: " << velocity_ << endl;
-        Info<< "    inflowVelocity: " << inflowVelocity << endl;
-        Info<< "    relativeVelocity: " << relativeVelocity << endl;
-        Info<< "    Reynolds number: " << Re_ << endl;
-        Info<< "    angleOfAttack (degrees): " << angleOfAttack_ << endl;
         Info<< "    sphereRadius: " << sphereRadius << endl;
         Info<< "    force (per unit density): " << forceVector_ << endl 
             << endl;
