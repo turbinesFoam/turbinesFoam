@@ -108,11 +108,6 @@ Foam::scalar Foam::fv::actuatorLineElement::interpolate
     List<scalar>& yOld
 )
 {
-    if (debug)
-    {
-        Info<< "Interpolating " << xNew << " in " << name_ << endl;
-    }
-    
     label index = 0;
     label indexP = 0;
     label indexM = 0;
@@ -249,12 +244,22 @@ void Foam::fv::actuatorLineElement::calculate
     vector upstreamPoint = position_ - upstreamDistance*freeStreamDirection_;
     label upstreamCellI = mesh_.findCell(upstreamPoint);
     vector inflowVelocity = Uin[upstreamCellI];
-        
+    
+    if (debug)
+    {
+        Info<< "    inflowVelocity: " << inflowVelocity << endl;
+    }
     
     // Calculate relative velocity (note these are not projected onto a
     // plane perpendicular to the chord and span direction)
     vector relativeVelocity = inflowVelocity - velocity_;
     Re_ = mag(relativeVelocity)*chordLength_/nu_;
+    
+    if (debug)
+    {
+        Info<< "    relativeVelocity: " << relativeVelocity << endl;
+        Info<< "    Reynolds number: " << Re_ << endl;
+    }
     
     // Calculate vector normal to chord--span plane
     vector planformNormal = -chordDirection_ ^ spanDirection_;
@@ -271,9 +276,6 @@ void Foam::fv::actuatorLineElement::calculate
     
     if (debug)
     {
-        Info<< "    inflowVelocity: " << inflowVelocity << endl;
-        Info<< "    relativeVelocity: " << relativeVelocity << endl;
-        Info<< "    Reynolds number: " << Re_ << endl;
         Info<< "    angleOfAttack (degrees): " << angleOfAttack_ << endl;
     }
     
