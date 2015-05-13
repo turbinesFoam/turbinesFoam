@@ -411,6 +411,12 @@ void Foam::fv::actuatorLineElement::setVelocity(vector velocity)
 }
 
 
+void Foam::fv::actuatorLineElement::scaleVelocity(scalar scale)
+{
+    velocity_ *= scale;
+}
+
+
 Foam::vector& Foam::fv::actuatorLineElement::force()
 {
     return forceVector_;

@@ -154,6 +154,9 @@ public:
             
             //- Pitch the blade about its half chord
             void pitch(scalar radians);
+            
+            //- Scale the velocity of all elements
+            void scaleVelocity(scalar scale);
 
 
         // Evaluation

@@ -338,6 +338,15 @@ void Foam::fv::actuatorLineSource::translate(vector translationVector)
 }
 
 
+void Foam::fv::actuatorLineSource::scaleVelocity(scalar scale)
+{
+    forAll(elements_, i)
+    {
+        elements_[i].scaleVelocity(scale);
+    }
+}
+
+
 Foam::vector& Foam::fv::actuatorLineSource::force()
 {
     return force_;

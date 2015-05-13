@@ -580,6 +580,7 @@ void Foam::fv::crossFlowTurbineALSource::rotate()
 
     scalar deltaT = time_.deltaT().value();
     scalar radians = omega_*deltaT;
+    
     forAll(blades_, i)
     {
         blades_[i].rotate(origin_, axis_, radians);
