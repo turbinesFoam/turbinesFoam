@@ -79,6 +79,15 @@ void Foam::fv::actuatorLineElement::read()
         dsDict.lookup("active") >> dynamicStallActive_;
     }
     
+    // Read nu from object registry
+    const dictionary& transportProperties = mesh_.lookupObject<IOdictionary>
+    (
+        "transportProperties"
+    );
+    dimensionedScalar nu;
+    transportProperties.lookup("nu") >> nu;
+    nu_ = nu.value();
+    
     if (debug)
     {
        Info<< "actuatorLineElement properties:" << endl;
@@ -230,6 +239,7 @@ void Foam::fv::actuatorLineElement::calculate
     // Calculate relative velocity (note these are not projected onto a
     // plane perpendicular to the chord and span direction)
     vector relativeVelocity = inflowVelocity - velocity_;
+    Re_ = mag(relativeVelocity)*chordLength_/nu_;
     
     // Calculate vector normal to chord--span plane
     vector planformNormal = -chordDirection_ ^ spanDirection_;
@@ -241,6 +251,8 @@ void Foam::fv::actuatorLineElement::calculate
     angleOfAttack_ = angleOfAttackRad/Foam::constant::mathematical::pi*180.0;
     
     // Apply flow curvature correction to angle of attack
+    //~ angleOfAttack_ -= 3.5/0.5/0.5*.14/mag(relativeVelocity);
+    //~ angleOfAttack_ -= 3.5/0.5*.14/(4*mag(relativeVelocity));
     
     // Lookup lift and drag coefficients
     lookupCoefficients();
@@ -300,6 +312,7 @@ void Foam::fv::actuatorLineElement::calculate
         Info<< "    elementVelocity: " << velocity_ << endl;
         Info<< "    inflowVelocity: " << inflowVelocity << endl;
         Info<< "    relativeVelocity: " << relativeVelocity << endl;
+        Info<< "    Reynolds number: " << Re_ << endl;
         Info<< "    angleOfAttack (degrees): " << angleOfAttack_ << endl;
         Info<< "    sphereRadius: " << sphereRadius << endl;
         Info<< "    force (per unit density): " << forceVector_ << endl 

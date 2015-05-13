@@ -130,6 +130,15 @@ protected:
         
         //- Switch for existence of dynamic stall model
         bool dynamicStallActive_;
+        
+        //- Kinematic viscosity (for calculating Re)
+        scalar nu_;
+        
+        //- Chord Reynolds number based on relative velocity
+        scalar Re_;
+        
+        //- Angular velocity for flow curvature correction
+        scalar omega_;
 
 
     // Protected Member Functions
