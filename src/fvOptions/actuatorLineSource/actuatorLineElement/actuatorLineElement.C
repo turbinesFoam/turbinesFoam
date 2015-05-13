@@ -253,8 +253,8 @@ void Foam::fv::actuatorLineElement::calculate
     angleOfAttack_ = angleOfAttackRad/Foam::constant::mathematical::pi*180.0;
     
     // Apply flow curvature correction to angle of attack
-    //~ angleOfAttack_ -= 3.5/0.5/0.5*.14/mag(relativeVelocity);
-    //~ angleOfAttack_ -= 3.5/0.5*.14/(4*mag(relativeVelocity));
+    angleOfAttack_ -= omega_*chordMount_*chordLength_/mag(relativeVelocity);
+    angleOfAttack_ -= omega_*chordLength_/(4*mag(relativeVelocity));
     
     // Lookup lift and drag coefficients
     lookupCoefficients();
@@ -554,6 +554,12 @@ void Foam::fv::actuatorLineElement::addTurbulence
 void Foam::fv::actuatorLineElement::setDynamicStallActive(bool active)
 {
     dynamicStallActive_ = active;
+}
+
+
+void Foam::fv::actuatorLineElement::setOmega(scalar omega)
+{
+    omega_ = omega;
 }
 
 // ************************************************************************* //

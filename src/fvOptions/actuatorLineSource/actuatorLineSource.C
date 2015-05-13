@@ -347,6 +347,15 @@ void Foam::fv::actuatorLineSource::scaleVelocity(scalar scale)
 }
 
 
+void Foam::fv::actuatorLineSource::setOmega(scalar omega)
+{
+    forAll(elements_, i)
+    {
+        elements_[i].setOmega(omega);
+    }
+}
+
+
 Foam::vector& Foam::fv::actuatorLineSource::force()
 {
     return force_;

@@ -157,6 +157,10 @@ public:
             
             //- Scale the velocity of all elements
             void scaleVelocity(scalar scale);
+            
+            //- Set rotational velocity of all elements for flow curvature
+            //  correction
+            void setOmega(scalar omega);
 
 
         // Evaluation

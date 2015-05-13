@@ -584,6 +584,7 @@ void Foam::fv::crossFlowTurbineALSource::rotate()
     forAll(blades_, i)
     {
         blades_[i].rotate(origin_, axis_, radians);
+        blades_[i].setOmega(omega_);
     }
     
     if (hasStruts_)

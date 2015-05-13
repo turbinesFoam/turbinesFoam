@@ -247,6 +247,9 @@ public:
             
             //- Set dynamic stall active
             void setDynamicStallActive(bool active);
+            
+            //- Set omega for flow curvature correction
+            void setOmega(scalar omega);
 
         // Evaluation
             
