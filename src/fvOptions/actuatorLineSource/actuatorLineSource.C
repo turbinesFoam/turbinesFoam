@@ -338,6 +338,20 @@ void Foam::fv::actuatorLineSource::translate(vector translationVector)
 }
 
 
+void Foam::fv::actuatorLineSource::setSpeed
+(
+    vector point,
+    vector axis,
+    scalar omega
+)
+{
+    forAll(elements_, i)
+    {
+        elements_[i].setSpeed(point, axis, omega);
+    }
+}
+
+
 void Foam::fv::actuatorLineSource::scaleVelocity(scalar scale)
 {
     forAll(elements_, i)

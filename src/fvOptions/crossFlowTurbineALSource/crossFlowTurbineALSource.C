@@ -584,7 +584,7 @@ void Foam::fv::crossFlowTurbineALSource::rotate()
     forAll(blades_, i)
     {
         blades_[i].rotate(origin_, axis_, radians);
-        blades_[i].setOmega(omega_);
+        blades_[i].setSpeed(origin_, axis_, omega_);
     }
     
     if (hasStruts_)
@@ -592,12 +592,14 @@ void Foam::fv::crossFlowTurbineALSource::rotate()
         forAll(struts_, i)
         {
             struts_[i].rotate(origin_, axis_, radians);
+            struts_[i].setSpeed(origin_, axis_, omega_);
         }
     }
     
     if (hasShaft_)
     {
         shaft_->rotate(origin_, axis_, radians);
+        shaft_->setSpeed(origin_, axis_, omega_);
     }
     
     if (debug)

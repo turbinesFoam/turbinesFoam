@@ -242,6 +242,9 @@ public:
             //- Set element speed (velocity magnitude)
             void setSpeed(scalar speed);
             
+            //- Set element speed based on rotation
+            void setSpeed(vector point, vector axis, scalar omega);
+            
             //- Scale the velocity
             void scaleVelocity(scalar scale);
             

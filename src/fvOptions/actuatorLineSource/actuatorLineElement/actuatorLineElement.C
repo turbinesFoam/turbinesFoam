@@ -425,6 +425,47 @@ void Foam::fv::actuatorLineElement::setVelocity(vector velocity)
 }
 
 
+void Foam::fv::actuatorLineElement::setSpeed(scalar speed)
+{
+    if (mag(velocity_) > 0)
+    {
+        velocity_ /= mag(velocity_);
+        velocity_ *= speed;
+    }
+}
+
+
+void Foam::fv::actuatorLineElement::setSpeed
+(
+    vector point,
+    vector axis,
+    scalar omega
+)
+{
+    if (debug)
+    {
+        Info<< "Setting speed of " << name_ << " from rotation" << endl;
+        Info<< "    Initial velocity: " << velocity_ << endl;
+    }
+    
+    // First find radius from axis to element position -- formula from 
+    // http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
+    vector point2 = point + axis;
+    scalar radius = mag((position_ - point) ^ (position_ - point2))
+                  / mag(point2 - point);
+    scalar speed = omega*radius;
+    setSpeed(speed);
+    // Also set omega for flow curvature correction
+    setOmega(omega);
+    
+    if (debug)
+    {
+        Info<< "    Radius: " << radius << endl;
+        Info<< "    Final velocity: " << velocity_ << endl;
+    }
+}
+
+
 void Foam::fv::actuatorLineElement::scaleVelocity(scalar scale)
 {
     velocity_ *= scale;

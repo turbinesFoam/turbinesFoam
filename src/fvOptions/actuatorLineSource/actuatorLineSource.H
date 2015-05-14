@@ -158,6 +158,9 @@ public:
             //- Scale the velocity of all elements
             void scaleVelocity(scalar scale);
             
+            //- Set speed of all elements based on rotation
+            void setSpeed(vector point, vector axis, scalar omega);
+            
             //- Set rotational velocity of all elements for flow curvature
             //  correction
             void setOmega(scalar omega);
