@@ -95,6 +95,7 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
     
     if (debug)
     {
+        Info<< endl << "Evaluating static foil data" << endl;
         scalar cn = CNAlpha_*alpha_;
         Info<< "    Static stall angle (deg): " << alpha << endl;
         Info<< "    Normal coefficient slope: " << CNAlpha_ << endl;
@@ -106,11 +107,19 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
     alpha1_ = CN1_/CNAlpha_/pow((1 + sqrt(f))/2, 2);
     
     // Calculate S1 and S2, though only one will be used
-    S1_ = (abs(alphaRad) - alpha1_)/log((f - 1)/(-0.3));
-    S2_ = (alpha1_ - abs(alphaRad))/log((f - 0.04)/(0.66));
+    S1_ = (mag(alphaRad) - alpha1_)/log((f - 1)/(-0.3));
+    S2_ = (alpha1_ - mag(alphaRad))/log((f - 0.04)/(0.66));
     
     // Calculate CD0
     CD0_ = interpolate(0, alphaDegList, cdList);
+    
+    if (debug)
+    {
+        Info<< "    Cd_0: " << CD0_ << endl;
+        Info<< "    alpha1: " << alpha1_ << endl;
+        Info<< "    S1: " << S1_ << endl;
+        Info<< "    S2: " << S2_ << endl << endl;
+    }
 }
 
 
@@ -147,20 +156,20 @@ void Foam::fv::LeishmanBeddoes::calcUnsteady()
     alphaPrime_ = CNPrime_/CNAlpha_;
     
     // Set stalled switch
-    stalled_ = (abs(CNPrime_) > CN1_);
+    stalled_ = (mag(CNPrime_) > CN1_);
 }
 
 
 void Foam::fv::LeishmanBeddoes::calcSeparated()
 {
     // Calculate trailing-edge separation point
-    if (abs(alphaPrime_) < alpha1_)
+    if (mag(alphaPrime_) < alpha1_)
     {
-        fPrime_ = 1.0 - 0.3*exp((abs(alphaPrime_) - alpha1_)/S1_);
+        fPrime_ = 1.0 - 0.3*exp((mag(alphaPrime_) - alpha1_)/S1_);
     }
-    else if (abs(alphaPrime_) >= alpha1_)
+    else
     {
-        fPrime_ = 0.04 + 0.66*exp((alpha1_ - abs(alphaPrime_))/S2_);
+        fPrime_ = 0.04 + 0.66*exp((alpha1_ - mag(alphaPrime_))/S2_);
     }
     
     // Modify Tf time constant if necessary
@@ -175,7 +184,7 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     // Calculate dynamic separation point
     DF_ = DFPrev_*exp(-deltaS_/Tf) 
         + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf));
-    fDoublePrime_ = abs(fPrime_ - DF_);
+    fDoublePrime_ = mag(fPrime_ - DF_);
     
     // Calculate normal force coefficient for dynamic separation point
     CNF_ = CNAlpha_*alphaEquiv_*pow(((1 + sqrt(fDoublePrime_))/2), 2) + CNI_;
@@ -210,7 +219,7 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
         
         // Evaluate vortex lift contributions, which are only nonzero if angle
         // of attack increased in magnitude
-        if (abs(alpha_) > abs(alphaPrev_))
+        if (mag(alpha_) > mag(alphaPrev_))
         {
             scalar Tv = Tv_;
             if (tau_ < Tvl_)
@@ -389,8 +398,7 @@ void Foam::fv::LeishmanBeddoes::correct
     
     // Modify lift and drag coefficients based on new normal force coefficient
     cl = CN_*cos(alpha_) + CT_*sin(alpha_);
-    //~ cd = CN_*sin(alpha_) - CT_*cos(alpha_) + CD0_;
-    cd += 0.33*(CN_*sin(alpha_) - CT_*cos(alpha_));
+    cd = CN_*sin(alpha_) - CT_*cos(alpha_) + CD0_;
     
     if (debug)
     {
@@ -398,9 +406,13 @@ void Foam::fv::LeishmanBeddoes::correct
         Info<< "    Stalled: " << stalled_ << endl;
         Info<< "    tau: " << tau_ << endl;
         Info<< "    Equivalent angle of attack: " << alphE << endl;
+        Info<< "    alphaPrime: " << alphaPrime_ << endl;
+        Info<< "    fPrime: " << fPrime_ << endl;
+        Info<< "    fDoublePrime: " << fDoublePrime_ << endl;
         Info<< "    Corrected normal force coefficient: " << CN_ << endl;
         Info<< "    Circulatory normal force coefficient: " << CNC_ << endl;
         Info<< "    Impulsive normal force coefficient: " << CNI_ << endl;
+        Info<< "    Tangential force coefficient: " << CT_ << endl;
         Info<< "    Corrected lift coefficient: " << cl << endl;
         Info<< "    Corrected drag coefficient: " << cd << endl << endl;
     }
