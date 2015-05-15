@@ -163,9 +163,18 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
         fPrime_ = 0.04 + 0.66*exp((alpha1_ - abs(alphaPrime_))/S2_);
     }
     
+    // Modify Tf time constant if necessary
+    scalar Tf = Tf_;
+    if (tau_ > 0 and tau_ <= Tvl_) Tf = 0.5*Tf_;
+    else if (tau_ > Tvl_ and tau_ <= 2*Tvl_) Tf = 4*Tf_;
+    if (mag(alpha_) < mag(alphaPrev_) and mag(CNPrime_) < CN1_)
+    {
+        Tf = 0.5*Tf_;
+    }
+    
     // Calculate dynamic separation point
-    DF_ = DFPrev_*exp(-deltaS_/Tf_) 
-        + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf_));
+    DF_ = DFPrev_*exp(-deltaS_/Tf) 
+        + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf));
     fDoublePrime_ = abs(fPrime_ - DF_);
     
     // Calculate normal force coefficient for dynamic separation point
@@ -203,15 +212,19 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
         // of attack increased in magnitude
         if (abs(alpha_) > abs(alphaPrev_))
         {
+            scalar Tv = Tv_;
             if (tau_ < Tvl_)
             {
+                // Halve Tv if dAlpha/dt changes sign
+                if (sign(deltaAlpha_) != sign(deltaAlphaPrev_)) Tv = 0.5*Tv_;
                 CV_ = CNC_*(1 - pow(((1 + sqrt(fDoublePrime_))/2), 2));
-                CNV_ = CNVPrev_*exp(-deltaS_/Tv_) 
-                     + (CV_ - CVPrev_)*exp(-deltaS_/(2*Tv_));
+                CNV_ = CNVPrev_*exp(-deltaS_/Tv) 
+                     + (CV_ - CVPrev_)*exp(-deltaS_/(2*Tv));
             }
             else
             {
-                CNV_ = CNVPrev_*exp(-deltaS_/Tv_);
+                Tv = 0.5*Tv_;
+                CNV_ = CNVPrev_*exp(-deltaS_/Tv);
             }
         }
         else
