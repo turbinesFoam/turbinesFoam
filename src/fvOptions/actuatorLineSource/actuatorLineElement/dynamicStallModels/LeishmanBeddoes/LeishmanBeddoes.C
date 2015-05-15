@@ -390,7 +390,7 @@ void Foam::fv::LeishmanBeddoes::correct
     // Modify lift and drag coefficients based on new normal force coefficient
     cl = CN_*cos(alpha_) + CT_*sin(alpha_);
     //~ cd = CN_*sin(alpha_) - CT_*cos(alpha_) + CD0_;
-    cd += 0.4*(CN_*sin(alpha_) - CT_*cos(alpha_));
+    cd += 0.33*(CN_*sin(alpha_) - CT_*cos(alpha_));
     
     if (debug)
     {
