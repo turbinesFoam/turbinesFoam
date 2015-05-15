@@ -194,16 +194,29 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
             }
         }
         
-        // Evaluate vortex lift contributions
-        if (tau_ < Tvl_)
+        // Calculate Strouhal number time constant and set tau to zero to 
+        // allow multiple vortex shedding
+        scalar Tst = 2*(1 - fDoublePrime_)/0.19;
+        if (tau_ > (Tvl_ + Tst)) tau_ = 0.0;
+        
+        // Evaluate vortex lift contributions, which are only nonzero if angle
+        // of attack increased in magnitude
+        if (abs(alpha_) > abs(alphaPrev_))
         {
-            CV_ = CNC_*(1 - pow(((1 + sqrt(fDoublePrime_))/2), 2));
-            CNV_ = CNVPrev_*exp(-deltaS_/Tv_) 
-                 + (CV_ - CVPrev_)*exp(-deltaS_/(2*Tv_));
+            if (tau_ < Tvl_)
+            {
+                CV_ = CNC_*(1 - pow(((1 + sqrt(fDoublePrime_))/2), 2));
+                CNV_ = CNVPrev_*exp(-deltaS_/Tv_) 
+                     + (CV_ - CVPrev_)*exp(-deltaS_/(2*Tv_));
+            }
+            else
+            {
+                CNV_ = CNVPrev_*exp(-deltaS_/Tv_);
+            }
         }
         else
         {
-            CNV_ = CNVPrev_*exp(-deltaS_/Tv_);
+            CNV_ = 0.0;
         }
     }
     else
