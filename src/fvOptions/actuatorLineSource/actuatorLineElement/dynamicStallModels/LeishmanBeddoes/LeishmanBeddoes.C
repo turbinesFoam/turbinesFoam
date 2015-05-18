@@ -55,7 +55,6 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
 {
     // Create lists for normal and chordwise coefficients
     scalar pi = Foam::constant::mathematical::pi;
-    scalar alphaRad = alphaDeg/180*pi;
     List<scalar> alphaRadList(alphaDegList.size());
     List<scalar> cnList(clList.size());
     List<scalar> ctList(cdList.size());
@@ -105,10 +104,11 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
     // Calculate alpha1
     scalar f = 0.7;
     alpha1_ = CN1_/CNAlpha_/pow((1 + sqrt(f))/2, 2);
+    alphaSS_ = alpha/180.0*pi;
     
     // Calculate S1 and S2, though only one will be used
-    S1_ = (mag(alphaRad) - alpha1_)/log((f - 1)/(-0.3));
-    S2_ = (alpha1_ - mag(alphaRad))/log((f - 0.04)/(0.66));
+    S1_ = (mag(alphaSS_) - alpha1_)/log((f - 1)/(-0.3));
+    S2_ = (alpha1_ - mag(alphaSS_))/log((f - 0.04)/(0.66));
     
     // Calculate CD0
     CD0_ = interpolate(0, alphaDegList, cdList);

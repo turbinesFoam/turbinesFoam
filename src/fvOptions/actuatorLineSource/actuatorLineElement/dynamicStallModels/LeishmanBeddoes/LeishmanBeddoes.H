@@ -232,6 +232,9 @@ protected:
         //- Number of new times evaluated -- does not increment for subcycles
         label nNewTimes_;
         
+        //- Static stall angle (radians)
+        scalar alphaSS_;
+        
         
     // Protected member functions
     
