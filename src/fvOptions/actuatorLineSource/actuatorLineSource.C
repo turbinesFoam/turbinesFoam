@@ -293,6 +293,21 @@ void Foam::fv::actuatorLineSource::writePerf()
     scalar alphaDeg = 0.0;
     scalar cl = 0.0;
     scalar cd = 0.0;
+    
+    forAll(elements_, i)
+    {
+        vector pos = elements_[i].position();
+        x += pos[0]; y += pos[1]; z += pos[2];
+        relVelMag += mag(elements_[i].relativeVelocity());
+        alphaDeg += elements_[i].angleOfAttack();
+        cl += elements_[i].liftCoefficient();
+        cd += elements_[i].dragCoefficient();
+    }
+    
+    x /= nElements_; y /= nElements_; z /= nElements_;
+    relVelMag /= nElements_;
+    alphaDeg /= nElements_;
+    cl /= nElements_; cd /= nElements_;
  
     // write time,x,y,z,rel_vel_mag,alpha_deg,cl,cd
     *outputFile_<< time << "," << x << "," << y << "," << z << "," << relVelMag
