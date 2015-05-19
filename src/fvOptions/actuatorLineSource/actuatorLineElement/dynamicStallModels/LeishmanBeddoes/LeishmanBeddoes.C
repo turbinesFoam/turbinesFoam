@@ -223,6 +223,12 @@ void Foam::fv::LeishmanBeddoes::calcS1S2
         S1_ = 0.0;
         S2_ = 1/b;
     }
+    
+    if (debug)
+    {
+        Info<< "    S1: " << S1_ << endl;
+        Info<< "    S2: " << S2_ << endl;
+    }
 }
 
 
