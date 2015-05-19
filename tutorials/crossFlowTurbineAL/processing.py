@@ -14,7 +14,7 @@ import os
 import sys
 import foampy
 from pxl import fdiff
-    
+import pandas as pd
 
 # Some constants
 R = 0.5
@@ -181,16 +181,26 @@ def plotexpwake(Re_D, quantity, z_H=0.0, save=False, savepath="",
     plt.xlabel(r"$y/R$")
     plt.ylabel(ylabels[quantity])
     plt.grid(True)
+    
+def plot_blade_perf():
+    df_turb = pd.read_csv("postProcessing/turbines/0/turbine.csv")
+    df_turb = df_turb.drop_duplicates("time", take_last=True)
+    df = pd.read_csv("postProcessing/actuatorLines/0/blade1.csv")
+    df = df.drop_duplicates("time", take_last=True)
+    plt.plot(df_turb.angle_deg, df.alpha_deg)
+    plt.xlabel("Azimuthal angle (degrees)")
+    plt.ylabel("Angle of attack (degrees)")
+    plt.figure()
+    plt.plot(df_turb.angle_deg, df.rel_vel_mag)
+    plt.xlabel("Azimuthal angle (degrees)")
+    plt.ylabel("Relative velocity (m/s)")
 
 def main():
-    p = "Google Drive/Research/Papers/JOT CFT near-wake/Figures"
-    if "linux" in sys.platform:
-        p = "/home/pete/" + p
-    elif "win" in sys.platform:
-        p = "C:/Users/Pete/" + p
+    p = "figures"
     plt.close("all")
     
-    plotwake(plotlist=["meancomboquiv", "xvorticity"], save=False, savepath=p)
+    #~ plotwake(plotlist=["meancomboquiv", "xvorticity"], save=False, savepath=p)
+    plot_blade_perf()
 
 if __name__ == "__main__":
     main()
