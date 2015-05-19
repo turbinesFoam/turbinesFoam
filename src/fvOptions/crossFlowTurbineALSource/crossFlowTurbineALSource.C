@@ -682,7 +682,7 @@ void Foam::fv::crossFlowTurbineALSource::addSup
         
     // Write performance data -- note this will write multiples if there are
     // multiple PIMPLE loops
-    writePerf();
+    if (Pstream::master()) writePerf();
 }
 
 
