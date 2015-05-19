@@ -11,12 +11,10 @@ import matplotlib.pyplot as plt
 import re
 import numpy as np
 import os
-from styleplot import styleplot
 import sys
 import foampy
-import fdiff
+from pxl import fdiff
     
-exp_path = "/media/pete/External 2/Research/Experiments/2014 Spring RVAT Re dep"
 
 # Some constants
 R = 0.5
@@ -75,13 +73,11 @@ def plotwake(plotlist=["meanu"], save=False, savepath="", savetype=".pdf"):
         ax.set_aspect(2)
         plt.grid(True)
         plt.yticks([0,0.13,0.25,0.38,0.5,0.63])
-        styleplot()
     if "meanv" in plotlist or "all" in plotlist:
         plt.figure(figsize=(10,5))
         cs = plt.contourf(y/0.5, z, v, 20, cmap=plt.cm.coolwarm)
         plt.xlabel(r'$y/R$')
         plt.ylabel(r'$z/H$')
-        styleplot()
         cb = plt.colorbar(cs, shrink=1, extend='both', 
                           orientation='horizontal', pad=0.3)
         cb.set_label(r'$V/U_{\infty}$')
@@ -126,7 +122,6 @@ def plotwake(plotlist=["meanu"], save=False, savepath="", savetype=".pdf"):
         ax = plt.axes()
         ax.set_aspect(2)
         plt.yticks([0,0.13,0.25,0.38,0.5,0.63])
-        styleplot()
         if save:
             plt.savefig(savepath+'/xvorticity_AD'+savetype)
     if "meancomboquiv" in plotlist or "all" in plotlist:
@@ -160,7 +155,6 @@ def plotwake(plotlist=["meanu"], save=False, savepath="", savetype=".pdf"):
                    linewidth=3)
         ax = plt.axes()
         ax.set_aspect(2.0)
-        styleplot()
         if save:
             plt.savefig(savepath+"\\meancomboquiv_AD"+savetype)
     plt.show()
@@ -187,7 +181,6 @@ def plotexpwake(Re_D, quantity, z_H=0.0, save=False, savepath="",
     plt.xlabel(r"$y/R$")
     plt.ylabel(ylabels[quantity])
     plt.grid(True)
-    styleplot()
 
 def main():
     p = "Google Drive/Research/Papers/JOT CFT near-wake/Figures"
@@ -197,7 +190,7 @@ def main():
         p = "C:/Users/Pete/" + p
     plt.close("all")
     
-    plotwake(plotlist=["meancomboquiv"], save=True, savepath=p)
+    plotwake(plotlist=["meancomboquiv", "xvorticity"], save=False, savepath=p)
 
 if __name__ == "__main__":
     main()
