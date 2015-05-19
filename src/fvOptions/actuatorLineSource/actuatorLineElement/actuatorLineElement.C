@@ -196,6 +196,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     mesh_(mesh),
     velocity_(vector::zero),
     forceVector_(vector::zero),
+    relativeVelocity_(vector::zero),
     angleOfAttack_(0.0),
     dynamicStallActive_(false),
     omega_(0.0),
@@ -218,9 +219,33 @@ const Foam::word& Foam::fv::actuatorLineElement::name() const
 }
 
 
+Foam::vector& Foam::fv::actuatorLineElement::position()
+{
+    return position_;
+}
+
+
+Foam::vector& Foam::fv::actuatorLineElement::relativeVelocity()
+{
+    return relativeVelocity_;
+}
+
+
 Foam::scalar& Foam::fv::actuatorLineElement::angleOfAttack()
 {
     return angleOfAttack_;
+}
+
+
+Foam::scalar& Foam::fv::actuatorLineElement::liftCoefficient()
+{
+    return liftCoefficient_;
+}
+
+
+Foam::scalar& Foam::fv::actuatorLineElement::dragCoefficient()
+{
+    return dragCoefficient_;
 }
 
 
@@ -252,12 +277,12 @@ void Foam::fv::actuatorLineElement::calculate
     
     // Calculate relative velocity (note these are not projected onto a
     // plane perpendicular to the chord and span direction)
-    vector relativeVelocity = inflowVelocity - velocity_;
-    Re_ = mag(relativeVelocity)*chordLength_/nu_;
+    relativeVelocity_ = inflowVelocity - velocity_;
+    Re_ = mag(relativeVelocity_)*chordLength_/nu_;
     
     if (debug)
     {
-        Info<< "    relativeVelocity: " << relativeVelocity << endl;
+        Info<< "    relativeVelocity: " << relativeVelocity_ << endl;
         Info<< "    Reynolds number: " << Re_ << endl;
     }
     
@@ -266,13 +291,13 @@ void Foam::fv::actuatorLineElement::calculate
     planformNormal /= mag(planformNormal);
     
     // Calculate angle of attack (radians)
-    scalar angleOfAttackRad = asin((planformNormal & relativeVelocity)
-                            / (mag(planformNormal)*mag(relativeVelocity)));
+    scalar angleOfAttackRad = asin((planformNormal & relativeVelocity_)
+                            / (mag(planformNormal)*mag(relativeVelocity_)));
     angleOfAttack_ = angleOfAttackRad/Foam::constant::mathematical::pi*180.0;
     
     // Apply flow curvature correction to angle of attack
-    angleOfAttack_ -= omega_*chordMount_*chordLength_/mag(relativeVelocity);
-    angleOfAttack_ -= omega_*chordLength_/(4*mag(relativeVelocity));
+    angleOfAttack_ -= omega_*chordMount_*chordLength_/mag(relativeVelocity_);
+    angleOfAttack_ -= omega_*chordLength_/(4*mag(relativeVelocity_));
     
     if (debug)
     {
@@ -288,7 +313,7 @@ void Foam::fv::actuatorLineElement::calculate
         dynamicStall_->correct
         (
             mesh_.time().value(),
-            mag(relativeVelocity),
+            mag(relativeVelocity_),
             angleOfAttack_,
             liftCoefficient_,
             dragCoefficient_,
@@ -300,12 +325,12 @@ void Foam::fv::actuatorLineElement::calculate
     
     // Calculate force per unit density
     scalar area = chordLength_*spanLength_;
-    scalar magSqrU = magSqr(relativeVelocity);
+    scalar magSqrU = magSqr(relativeVelocity_);
     scalar lift = 0.5*area*liftCoefficient_*magSqrU;
     scalar drag = 0.5*area*dragCoefficient_*magSqrU;
-    vector liftDirection = relativeVelocity ^ spanDirection_;
+    vector liftDirection = relativeVelocity_ ^ spanDirection_;
     liftDirection /= mag(liftDirection);
-    vector dragDirection = relativeVelocity/mag(relativeVelocity);
+    vector dragDirection = relativeVelocity_/mag(relativeVelocity_);
     forceVector_ = lift*liftDirection + drag*dragDirection;
     
     // Calculate force field 

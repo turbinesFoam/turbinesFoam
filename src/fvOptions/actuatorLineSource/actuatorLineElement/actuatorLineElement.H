@@ -104,6 +104,9 @@ protected:
         //- Reference density for incompressible case
         scalar rhoRef_;
         
+        //- Relative flow velocity
+        vector relativeVelocity_;
+        
         //- Angle of attack (degrees)
         scalar angleOfAttack_;
         
@@ -204,14 +207,24 @@ public:
             //- Return const access to the element name
             const word& name() const;
             
-            //- Return const access to the element location
-            const vector& position() const;
+            //- Return the element location
+            vector& position();
             
             //- Return force vector from element
             vector& force();
             
+            //- Return relative velocity
+            vector& relativeVelocity();
+            
             //- Return element angle of attack in degrees
             scalar& angleOfAttack();
+            
+            //- Return lift coefficient
+            scalar& liftCoefficient();
+            
+            //- Return drag coefficient
+            scalar& dragCoefficient();
+            
             
         // Manipulation
         
@@ -253,6 +266,7 @@ public:
             
             //- Set omega for flow curvature correction
             void setOmega(scalar omega);
+            
 
         // Evaluation
             
@@ -264,6 +278,7 @@ public:
             
             //- Calculate and return moment about specified point
             vector moment(vector point);
+            
             
         // Source term addition
 
