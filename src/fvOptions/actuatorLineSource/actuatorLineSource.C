@@ -50,6 +50,31 @@ namespace fv
 
 // * * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * //
 
+void Foam::fv::actuatorLineSource::createOutputFile()
+{
+    fileName dir;
+    
+    if (Pstream::parRun())
+    {
+        dir = mesh_.time().path()/"../postProcessing/actuatorLines"
+            / mesh_.time().timeName();
+    }
+    else
+    {
+        dir = mesh_.time().path()/"postProcessing/actuatorLines"
+            / mesh_.time().timeName();
+    }
+    
+    if (!isDir(dir))
+    {
+        mkDir(dir);
+    }
+
+    outputFile_ = new OFstream(dir/name_ + ".csv");
+    
+    *outputFile_<< "time,x,y,z,rel_vel_mag,alpha_deg,cl,cd" << endl;
+}
+
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -79,60 +104,12 @@ Foam::fv::actuatorLineSource::actuatorLineSource
             dimForce/dimVolume/dimDensity, 
             vector::zero
         )
-    )
+    ),
+    writePerf_(coeffs_.lookupOrDefault("writePerf", false))
 {
     read(dict_);
     createElements();
-}
-
-// * * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * //
-
-Foam::fv::actuatorLineSource::~actuatorLineSource()
-{}
-
-
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-void Foam::fv::actuatorLineSource::printCoeffs() const
-{
-    // Print turbine properties
-    Info<< "Actuator line properties:" << endl;
-    Info<< "Coefficient data:" << endl;
-    Info<< coefficientData_ << endl;
-    Info<< "First item of element geometry:" << endl;
-    Info<< elementGeometry_[0] << endl;
-}
-
-
-bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
-{
-    if (option::read(dict))
-    {
-        
-        coeffs_.lookup("fieldNames") >> fieldNames_;
-        applied_.setSize(fieldNames_.size(), false);
-
-        // Look up information in dictionary
-        coeffs_.lookup("coefficientData") >> coefficientData_;
-        coeffs_.lookup("tipEffect") >> tipEffect_;
-        coeffs_.lookup("elementGeometry") >> elementGeometry_;
-        coeffs_.lookup("nElements") >> nElements_;
-        coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
-        freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
-        
-        
-        if (debug)
-        {
-            Info<< "Debugging for actuatorLineSource on" << endl;
-            printCoeffs();
-        }
-
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    if (writePerf_) createOutputFile();
 }
 
 
@@ -306,6 +283,73 @@ void Foam::fv::actuatorLineSource::createElements()
 }
 
 
+void Foam::fv::actuatorLineSource::writePerf()
+{
+    scalar time = mesh_.time().value();
+    scalar x = 0.0;
+    scalar y = 0.0;
+    scalar z = 0.0;
+    scalar relVelMag = 0.0;
+    scalar alphaDeg = 0.0;
+    scalar cl = 0.0;
+    scalar cd = 0.0;
+ 
+    // write time,x,y,z,rel_vel_mag,alpha_deg,cl,cd
+    *outputFile_<< time << "," << x << "," << y << "," << z << "," << relVelMag
+                << "," << alphaDeg << "," << cl << "," << cd << endl;
+}
+
+
+// * * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * //
+
+Foam::fv::actuatorLineSource::~actuatorLineSource()
+{}
+
+
+// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+void Foam::fv::actuatorLineSource::printCoeffs() const
+{
+    // Print turbine properties
+    Info<< "Actuator line properties:" << endl;
+    Info<< "Coefficient data:" << endl;
+    Info<< coefficientData_ << endl;
+    Info<< "First item of element geometry:" << endl;
+    Info<< elementGeometry_[0] << endl;
+}
+
+
+bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
+{
+    if (option::read(dict))
+    {
+        
+        coeffs_.lookup("fieldNames") >> fieldNames_;
+        applied_.setSize(fieldNames_.size(), false);
+
+        // Look up information in dictionary
+        coeffs_.lookup("coefficientData") >> coefficientData_;
+        coeffs_.lookup("tipEffect") >> tipEffect_;
+        coeffs_.lookup("elementGeometry") >> elementGeometry_;
+        coeffs_.lookup("nElements") >> nElements_;
+        coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
+        freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
+        
+        if (debug)
+        {
+            Info<< "Debugging for actuatorLineSource on" << endl;
+            printCoeffs();
+        }
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+
 void Foam::fv::actuatorLineSource::rotate
 (
     vector rotationPoint, 
@@ -426,6 +470,9 @@ void Foam::fv::actuatorLineSource::addSup
 
     // Add source to eqn
     eqn += forceField_;
+    
+    // Write performance to file
+    if (writePerf_ and Pstream::master()) writePerf();
 }
 
 

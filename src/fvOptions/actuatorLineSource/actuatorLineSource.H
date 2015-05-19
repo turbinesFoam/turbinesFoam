@@ -92,6 +92,12 @@ protected:
         
         //- List of actuator line elements
         PtrList<actuatorLineElement> elements_;
+        
+        //- Switch for writing performance
+        bool writePerf_;
+        
+        //- Output file stream
+        OFstream* outputFile_;
 
 
     // Protected Member Functions
@@ -171,10 +177,17 @@ public:
             //- Compute the moment about a given point
             vector moment(vector point);
             
+
         // IO
         
             //- Print dictionary values
             virtual void printCoeffs() const;
+            
+            //- Create the performance output file
+            virtual void createOutputFile();
+            
+            //- Write performance to CSV
+            void writePerf();
 
 
         // Source term addition
