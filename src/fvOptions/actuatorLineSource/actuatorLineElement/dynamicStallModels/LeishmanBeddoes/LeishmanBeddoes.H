@@ -238,11 +238,13 @@ protected:
         
     // Protected member functions
     
+        // Calculate the equivalent angle of attack
+        void calcAlphaEquiv();
+    
         // Evaluate the static foil data, i.e., calculate CNAlpha, CN1, 
-        // alpha1, S1, S2, and CD0
+        // alpha1, and CD0
         void evalStaticData
         (
-            scalar alphaDeg,
             List<scalar> alphaDegList,
             List<scalar> clList,
             List<scalar> cdList
@@ -250,6 +252,14 @@ protected:
         
         // Calculate unsteady quantities
         void calcUnsteady();
+        
+        // Calculate S1 and S2 constants
+        void calcS1S2
+        (
+            List<scalar> alphaDegList,
+            List<scalar> clList,
+            List<scalar> cdList
+        );
         
         // Calculate separated flow quantities
         void calcSeparated();
