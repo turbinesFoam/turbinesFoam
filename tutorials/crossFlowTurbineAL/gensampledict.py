@@ -1,10 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Generate sampleDict for multiple cross-stream profiles
-
-by Pete Bachant (petebachant@gmail.com)
-
 """
 from __future__ import division, print_function
 import numpy as np

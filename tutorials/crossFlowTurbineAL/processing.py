@@ -29,33 +29,85 @@ ylabels = {"meanu" : r"$U/U_\infty$",
            "meanv" : r"$V/U_\infty$",
            "meanw" : r"$W/U_\infty$",
            "meanuv" : r"$\overline{u'v'}/U_\infty^2$"}
+           
+
+class WakeMap(object):
+    """
+    Object that represents a wake map or statistics.
+    """
+    def __init__(self):
+        self.load()
+        
+    def load_single_time(time):
+        """
+        Loads data from a single time step.
+        """
+        timedir = "postProcessing/sets/{}".format(time)
     
-def loadwake():
+def loadwake(time):
     """Loads wake data and returns y/R and statistics."""
-    folder = os.listdir("postProcessing/sets")[0]
+    print("Loading wake data from time", time)
+    # Figure out if time is an int or float
+    if not isinstance(time, str):
+        if time % 1 == 0:
+            folder = str(int(time))
+        else:
+            folder = str(time)
+    else:
+        folder = time
     flist = os.listdir("postProcessing/sets/"+folder)
     data = {}
     for fname in flist:
         fpath = "postProcessing/sets/"+folder+"/"+fname
         z_H = float(fname.split("_")[1])
-        data_s = np.loadtxt(fpath, unpack=True)
-        data[z_H] = data_s
+        data[z_H] = np.loadtxt(fpath, unpack=True)
     return data
     
-def plotwake(plotlist=["meanu"], save=False, savepath="", savetype=".pdf"):
-    data = loadwake()
-    y_R = data[0][0]/R
+def calcwake(t1=0.0):
+    times = os.listdir("postProcessing/sets")
+    times = [float(time) for time in times]
+    times.sort()
+    times = np.asarray(times)
+    data = loadwake(times[0])
     z_H = np.asarray(sorted(data.keys()))
-    # Assemble 2-D arrays
-    u = np.zeros((len(z_H), len(y_R)))
-    v = np.zeros((len(z_H), len(y_R)))
-    w = np.zeros((len(z_H), len(y_R)))
-    xvorticity = np.zeros((len(z_H), len(y_R)))
-    for n in range(len(z_H)):
-        u[n,:] = data[z_H[n]][1]
-        v[n,:] = data[z_H[n]][2]
-        w[n,:] = data[z_H[n]][3]
-        xvorticity[n,:] = data[z_H[n]][4]
+    y_R = data[z_H[0]][0]/R
+    # Find first timestep from which to average over
+    t = times[times >= t1]
+    # Assemble 3-D arrays, with time as first index
+    u = np.zeros((len(t), len(z_H), len(y_R)))
+    v = np.zeros((len(t), len(z_H), len(y_R)))
+    w = np.zeros((len(t), len(z_H), len(y_R)))
+    xvorticity = np.zeros((len(t), len(z_H), len(y_R)))
+    # Loop through all times
+    for n in range(len(t)):
+        data = loadwake(t[n])
+        for m in range(len(z_H)):
+            u[n,m,:] = data[z_H[m]][1]
+            v[n,m,:] = data[z_H[m]][2]
+            w[n,m,:] = data[z_H[m]][3]
+            try:
+                xvorticity[n,m,:] = data[z_H[m]][4]
+            except IndexError:
+                pass
+    meanu = u.mean(axis=0)
+    meanv = v.mean(axis=0)
+    meanw = w.mean(axis=0)
+    xvorticity = xvorticity.mean(axis=0)
+    return {"meanu" : meanu,
+            "meanv" : meanv,
+            "meanw" : meanw,
+            "xvorticity" : xvorticity,
+            "y/R" : y_R, 
+            "z/H" : z_H}
+    
+def plotwake(plotlist=["meanu"], save=False, savepath="", savetype=".pdf"):
+    data = calcwake(t1=2.0)
+    y_R = data["y/R"]
+    z_H = data["z/H"]
+    u = data["meanu"]
+    v = data["meanv"]
+    w = data["meanw"]
+    xvorticity = data["xvorticity"]
     def turb_lines():
         plt.hlines(0.5, -1, 1, linestyles='solid', linewidth=2)
         plt.vlines(-1, 0, 0.5, linestyles='solid', linewidth=2)
@@ -157,7 +209,6 @@ def plotwake(plotlist=["meanu"], save=False, savepath="", savetype=".pdf"):
         ax.set_aspect(2.0)
         if save:
             plt.savefig(savepath+"\\meancomboquiv_AD"+savetype)
-    plt.show()
         
 def plotexpwake(Re_D, quantity, z_H=0.0, save=False, savepath="", 
                 savetype=".pdf", newfig=True, marker="--ok",
@@ -187,6 +238,7 @@ def plot_blade_perf():
     df_turb = df_turb.drop_duplicates("time", take_last=True)
     df = pd.read_csv("postProcessing/actuatorLines/0/blade1.csv")
     df = df.drop_duplicates("time", take_last=True)
+    plt.figure()
     plt.plot(df_turb.angle_deg, df.alpha_deg)
     plt.xlabel("Azimuthal angle (degrees)")
     plt.ylabel("Angle of attack (degrees)")
@@ -199,8 +251,9 @@ def main():
     p = "figures"
     plt.close("all")
     
-    #~ plotwake(plotlist=["meancomboquiv", "xvorticity"], save=False, savepath=p)
+    plotwake(plotlist=["meancomboquiv"], save=False, savepath=p)
     plot_blade_perf()
+    plt.show()
 
 if __name__ == "__main__":
     main()

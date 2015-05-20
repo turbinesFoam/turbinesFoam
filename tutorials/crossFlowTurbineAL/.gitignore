@@ -4,3 +4,4 @@ constant/polyMesh
 *.OpenFOAM
 !constant/polyMesh/blockMeshDict
 log.*
+*.pyc
