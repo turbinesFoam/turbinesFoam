@@ -1,0 +1,107 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.x                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+turbine
+{
+    type            axialFlowTurbineALSource;
+    active          on;
+    selectionMode   cellSet; // cellSet || points || cellZone
+    cellSet         turbine;
+
+    axialFlowTurbineALSourceCoeffs
+    {
+        fieldNames          (U);
+        nBlades             3;
+        tipEffect           0.95; 
+
+        freeStreamVelocity  (1 0 0);
+        tipSpeedRatio       4.0;
+
+        origin              (0 0 0);
+        axis                (1 0 0);
+        rotorRadius         0.5;        // For tip speed ratio calculation
+        
+        dynamicStall
+        {
+            active              off;
+            dynamicStallModel   LeishmanBeddoes;
+        }
+
+        blades
+        {
+            blade1
+            {
+                writePerf   true;
+                nElements   12;
+                profile     NACA0020;
+                elementData
+                ( // radius, azimuth, chord, chordMount, pitch
+                    (0.1 0.0 0.14 0.5 30.0)
+                    (0.5 0.0 0.05 0.5 0.0)
+                );
+            }
+            blade2
+            {
+                nElements   12;
+                profile     NACA0020;
+                elementData
+                ( // radius, azimuth, chord, chordMount, pitch
+                    (0.1 120.0 0.14 0.5 30.0)
+                    (0.5 120.0 0.05 0.5 0.0)
+                );
+            }
+            blade3
+            {
+                nElements   12;
+                profile     NACA0020;
+                elementData
+                ( // radius, azimuth, chord, chordMount, pitch
+                    (0.1 240.0 0.14 0.5 30.0)
+                    (0.5 240.0 0.05 0.5 0.0)
+                );
+            }
+        }
+        
+        tower
+        { 
+            nElements   12;
+            profile     cylinder;
+            elementData
+            ( // axial distance, height, diameter
+                (0.1 -1.22 0.09)
+                (0.1  0.00 0.06)
+            );
+        }
+        
+        profiles
+        {
+            NACA0020
+            {
+                data ( // alpha C_l C_d
+                    #include "NACA0020_fixed"
+                );
+            }
+            cylinder
+            {
+                data ((-180 0 1.1)(180 0 1.1));
+            }
+        }
+    }
+}
+
+// ************************************************************************* //
