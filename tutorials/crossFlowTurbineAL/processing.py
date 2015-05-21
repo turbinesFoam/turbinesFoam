@@ -46,7 +46,6 @@ class WakeMap(object):
     
 def loadwake(time):
     """Loads wake data and returns y/R and statistics."""
-    print("Loading wake data from time", time)
     # Figure out if time is an int or float
     if not isinstance(time, str):
         if time % 1 == 0:
@@ -101,7 +100,7 @@ def calcwake(t1=0.0):
             "z/H" : z_H}
     
 def plotwake(plotlist=["meanu"], save=False, savepath="", savetype=".pdf"):
-    data = calcwake(t1=2.0)
+    data = calcwake(t1=3.0)
     y_R = data["y/R"]
     z_H = data["z/H"]
     u = data["meanu"]
@@ -186,14 +185,15 @@ def plotwake(plotlist=["meanu"], save=False, savepath="", savetype=".pdf"):
         cb.set_label(r'$U/U_{\infty}$')
         plt.hold(True)
         # Make quiver plot of v and w velocities
-        Q = plt.quiver(y_R, z_H, v, w, angles='xy', width=0.0022)
+        Q = plt.quiver(y_R, z_H, v, w, angles='xy', width=0.0022,
+                       edgecolor="none")
         plt.xlabel(r'$y/R$')
         plt.ylabel(r'$z/H$')
         #plt.ylim(-0.2, 0.78)
         #plt.xlim(-3.2, 3.2)
         plt.xlim(-3.66, 3.66)
         plt.ylim(-1.22, 1.22)
-        plt.quiverkey(Q, 0.8, 0.22, 0.1, r'$0.1 U_\infty$',
+        plt.quiverkey(Q, 0.8, 0.28, 0.1, r'$0.1 U_\infty$',
                    labelpos='E',
                    coordinates='figure',
                    fontproperties={'size': 'small'})
@@ -252,7 +252,6 @@ def main():
     plt.close("all")
     
     plotwake(plotlist=["meancomboquiv"], save=False, savepath=p)
-    plot_blade_perf()
     plt.show()
 
 if __name__ == "__main__":
