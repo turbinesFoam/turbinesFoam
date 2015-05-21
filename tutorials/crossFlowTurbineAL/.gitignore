@@ -5,3 +5,4 @@ constant/polyMesh
 !constant/polyMesh/blockMeshDict
 log.*
 *.pyc
+!0.org
