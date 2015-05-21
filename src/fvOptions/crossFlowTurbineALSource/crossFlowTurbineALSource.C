@@ -593,6 +593,8 @@ void Foam::fv::crossFlowTurbineALSource::rotate()
         {
             struts_[i].rotate(origin_, axis_, radians);
             struts_[i].setSpeed(origin_, axis_, omega_);
+            // Disable flow curvature correction for struts
+            struts_[i].setOmega(0.0);
         }
     }
     
