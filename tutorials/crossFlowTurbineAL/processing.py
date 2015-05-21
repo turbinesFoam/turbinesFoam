@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Processing for OpenFOAM actuatorSurface simulation.
-
-by Pete Bachant (petebachant@gmail.com)
-
+Processing functions for crossFlowTurbineAL tutorial.
 """
 from __future__ import division, print_function
 import matplotlib.pyplot as plt
@@ -19,7 +16,7 @@ import pandas as pd
 # Some constants
 R = 0.5
 U = 1.0
-H = 0.05
+H = 1.0
 D = 1.0
 A = H*D
 rho = 1000.0
@@ -38,12 +35,13 @@ class WakeMap(object):
     def __init__(self):
         self.load()
         
-    def load_single_time(time):
+    def load_single_time(self, time):
         """
         Loads data from a single time step.
         """
         timedir = "postProcessing/sets/{}".format(time)
-    
+
+
 def loadwake(time):
     """Loads wake data and returns y/R and statistics."""
     # Figure out if time is an int or float
@@ -209,29 +207,6 @@ def plotwake(plotlist=["meanu"], save=False, savepath="", savetype=".pdf"):
         ax.set_aspect(2.0)
         if save:
             plt.savefig(savepath+"\\meancomboquiv_AD"+savetype)
-        
-def plotexpwake(Re_D, quantity, z_H=0.0, save=False, savepath="", 
-                savetype=".pdf", newfig=True, marker="--ok",
-                fill="none", figsize=(10, 5)):
-    """Plots the transverse wake profile of some quantity. These can be
-      * meanu
-      * meanv
-      * meanw
-      * stdu
-    """
-    U = Re_D/1e6
-    label = "Exp."
-    folder = exp_path + "/Wake/U_" + str(U) + "/Processed/"
-    z_H_arr = np.load(folder + "z_H.npy")
-    i = np.where(z_H_arr==z_H)
-    q = np.load(folder + quantity + ".npy")[i]
-    y_R = np.load(folder + "y_R.npy")[i]
-    if newfig:
-        plt.figure(figsize=figsize)
-    plt.plot(y_R, q/U, marker, markerfacecolor=fill, label=label)
-    plt.xlabel(r"$y/R$")
-    plt.ylabel(ylabels[quantity])
-    plt.grid(True)
     
 def plot_blade_perf():
     df_turb = pd.read_csv("postProcessing/turbines/0/turbine.csv")
