@@ -23,15 +23,11 @@ internalField   uniform $turbulentEpsilon;
 
 boundaryField
 {
-    // #include "include/ABLConditions"
-
-    //- Set patchGroups for constraint patches
-    #include "${WM_PROJECT_DIR}/etc/caseDicts/setConstraintTypes"
 
     inlet
     {
         type            fixedValue;
-        value           uniform 14.855;
+        value           uniform $turbulentEpsilon;
     }
 
     outlet
@@ -44,38 +40,21 @@ boundaryField
     walls
     {
         type            epsilonWallFunction;
-        value           uniform 14.855;
+        value           uniform $turbulentEpsilon;
     }
 
     top
     {
         type            epsilonWallFunction;
-        value           uniform 14.855;
+        value           uniform $turbulentEpsilon;
     }
 
     bottom
     {
         type            epsilonWallFunction;
-        value           uniform 14.855;
-    }
-/*
-    inlet
-    {
-        type            atmBoundaryLayerInletEpsilon;
-        Uref            $Uref;
-        Href            $Href;
-        z               $zDirection;
-        z0              $z0;
-        value           $internalField;
-        zGround         $zGround;
+        value           uniform $turbulentEpsilon;
     }
 
-    ground
-    {
-        type            zeroGradient;
-    }
-*/
-    #include "include/sideAndTopPatches"
 }
 
 

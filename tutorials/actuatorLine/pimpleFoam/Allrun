@@ -5,7 +5,7 @@ cd ${0%/*} || exit 1    # run from this directory
 . $WM_PROJECT_DIR/bin/tools/RunFunctions
 
 # Copy initial conditions
-cp -rf 0.org 0
+cp -rf ../simpleFoam/0.org 0
 
 runApplication blockMesh
 runApplication snappyHexMesh -overwrite
