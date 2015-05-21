@@ -184,7 +184,7 @@ def plotwake(plotlist=["meanu"], save=False, savepath="", savetype=".pdf"):
         plt.hold(True)
         # Make quiver plot of v and w velocities
         Q = plt.quiver(y_R, z_H, v, w, angles='xy', width=0.0022,
-                       edgecolor="none")
+                       edgecolor="none", scale=3.0)
         plt.xlabel(r'$y/R$')
         plt.ylabel(r'$z/H$')
         #plt.ylim(-0.2, 0.78)
