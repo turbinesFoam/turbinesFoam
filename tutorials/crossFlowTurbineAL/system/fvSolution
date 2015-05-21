@@ -16,16 +16,24 @@ FoamFile
 
 solvers
 {
+    pcorr
+    {
+        solver          GAMG;
+        tolerance       1e-4;
+        relTol          0;
+        smoother        DICGaussSeidel;
+        cacheAgglomeration no;
+        nCellsInCoarsestLevel 10;
+        agglomerator    faceAreaPair;
+        mergeLevels     1;
+        maxIter         50;
+    }
+
     p
     {
-        solver           GAMG;
-        tolerance        1e-5;
-        relTol           0.01;
-        smoother         DICGaussSeidel;
-        cacheAgglomeration true;
-        nCellsInCoarsestLevel 10;
-        agglomerator     faceAreaPair;
-        mergeLevels      1;
+        $pcorr;
+        tolerance       1e-6;
+        relTol          0.01;
     }
 
     pFinal
@@ -35,7 +43,7 @@ solvers
         relTol          0;
     }
 
-    "(U|k|epsilon)"
+    "(U|k|epsilon|nuTilda)"
     {
         solver          smoothSolver;
         smoother        symGaussSeidel;
@@ -43,7 +51,7 @@ solvers
         relTol          0.1;
     }
 
-    "(U|k|epsilon)Final"
+    "(U|k|epsilon|nuTilda)Final"
     {
         $U;
         relTol          0;
@@ -52,40 +60,38 @@ solvers
 
 PIMPLE
 {
-    correctPhi          no;
-    nOuterCorrectors    100;
-    nCorrectors         2;
-    nNonOrthogonalCorrectors 1;
-
-    residualControl
-    {
-        U
-        {
-            tolerance 1e-2;
-            relTol 0;
-        }
-
-        p
-        {
-            tolerance 1e-2;
-            relTol 0;
-        }
-    }
+    //~ correctPhi          no;
+    //~ nOuterCorrectors    100;
+    //~ nCorrectors         1;
+    //~ nNonOrthogonalCorrectors 1;
+//~ 
+    //~ residualControl
+    //~ {
+        //~ U
+        //~ {
+            //~ tolerance 1e-6;
+            //~ relTol 0;
+        //~ }
+        //~ p
+        //~ {
+            //~ tolerance 5e-4;
+            //~ relTol 0;
+        //~ }
+    //~ }
 }
 
-relaxationFactors
-{
-    fields
-    {
-        p               1;
-    }
-    equations
-    {
-        U               1;
-        k               1;
-        epsilon         1;
-    }
-}
+//~ relaxationFactors
+//~ {
+    //~ fields
+    //~ {
+        //~ p   1;
+    //~ }
+    //~ equations
+    //~ {
+        //~ "(U|k|epsilon)"      1;
+        //~ "(U|k|epsilon)Final" 1;
+    //~ }
+//~ }
 
 cache
 {
