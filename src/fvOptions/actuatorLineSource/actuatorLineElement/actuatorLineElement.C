@@ -160,6 +160,10 @@ Foam::scalar Foam::fv::actuatorLineElement::interpolate
     }
     else
     {
+        if (debug)
+        {
+            Info<< "    Interpolation failed" << endl;
+        }
         return 0.0;
     }
 }
@@ -259,6 +263,7 @@ void Foam::fv::actuatorLineElement::calculate
     {
         Info<< "Calculating force contribution from actuatorLineElement " 
             << name_ << endl;
+        Info<< "    position: " << position_ << endl;
         Info<< "    chordDirection: " << chordDirection_ << endl;
         Info<< "    spanDirection: " << spanDirection_ << endl;
         Info<< "    elementVelocity: " << velocity_ << endl;
