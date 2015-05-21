@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Processing for OpenFOAM actuatorSurface simulation.
-
-by Pete Bachant (petebachant@gmail.com)
-
+Processing for OpenFOAM actuatorLine simulation.
 """
 from __future__ import division, print_function
 import matplotlib.pyplot as plt
@@ -16,8 +13,6 @@ import sys
 import foampy
 import fdiff
     
-exp_path = "/media/pete/External 2/Research/Experiments/2014 Spring RVAT Re dep"
-
 # Some constants
 R = 0.5
 U = 1.0
