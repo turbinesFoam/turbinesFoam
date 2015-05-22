@@ -11,7 +11,7 @@ runApplication blockMesh
 runApplication snappyHexMesh -overwrite
 
 runApplication topoSet
-runApplication `getApplication`
+pimpleFoam | tee log.pimpleFoam
 
 runApplication vorticity
 #runApplication R
