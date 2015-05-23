@@ -2,8 +2,10 @@
 
 startDir=$PWD
 
+echo "Cleaning turbinesFoam"
+
 cd src/fvOptions
-wmake libso
+wclean
 cd $startDir/src/turbulenceModels
-wmake libso
+wclean
 cd $startDir
