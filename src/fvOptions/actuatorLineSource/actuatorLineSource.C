@@ -443,7 +443,7 @@ Foam::volVectorField& Foam::fv::actuatorLineSource::forceField()
 
 Foam::vector Foam::fv::actuatorLineSource::moment(vector point)
 {
-    vector moment(0, 0, 0);
+    vector moment(vector::zero);
     forAll(elements_, i)
     {
         moment += elements_[i].moment(point);
