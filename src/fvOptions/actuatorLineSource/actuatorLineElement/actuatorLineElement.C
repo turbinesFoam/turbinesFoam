@@ -631,6 +631,9 @@ void Foam::fv::actuatorLineElement::addTurbulence
     scalar epsilon = calcProjectionEpsilon();
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
     
+    // Calculate TKE injection rate
+    scalar k = 0.1*mag(dragCoefficient_);
+    
     // Add turbulence to the cells within the element's sphere of influence
     scalar sphereRadius = chordLength_ + projectionRadius;
     forAll(mesh_.cells(), cellI)
@@ -643,11 +646,12 @@ void Foam::fv::actuatorLineElement::addTurbulence
                           * Foam::pow(Foam::constant::mathematical::pi, 1.5));
             if (fieldName == "k")
             {
-                turbulence[cellI] = factor*0.2*mag(dragCoefficient_);
+                turbulence[cellI] = factor*k;
             }
             else if (fieldName == "epsilon")
             {
-                turbulence[cellI] = factor*20*mag(dragCoefficient_);
+                turbulence[cellI] = factor*Foam::pow(k, 1.5)
+                                  * 0.09/(chordLength_/10.0);
             }
         }
     }
