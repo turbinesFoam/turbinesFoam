@@ -574,8 +574,8 @@ void Foam::fv::crossFlowTurbineALSource::rotate()
 {
     // Update tip speed ratio and omega
     scalar t = time_.value();
-    tipSpeedRatio_ = meanTSR_ 
-                   + tsrAmplitude_*cos(nBlades_*(meanTSR_*t - tsrPhase_));
+    tipSpeedRatio_ = meanTSR_ + tsrAmplitude_
+                   *cos(nBlades_/rotorRadius_*(meanTSR_*t - tsrPhase_));
     omega_ = tipSpeedRatio_*mag(freeStreamVelocity_)/rotorRadius_;
 
     scalar deltaT = time_.deltaT().value();
