@@ -186,6 +186,24 @@ void Foam::fv::actuatorLineElement::lookupCoefficients()
 }
 
 
+Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
+{
+    const scalarField& V = mesh_.V();
+    label posCellI = mesh_.findCell(position_);
+    // Projection width based on local cell size (from Troldborg (2008))
+    scalar epsilon = 2*Foam::cbrt(V[posCellI]);
+    
+    if (epsilon > (chordLength_/2.0))
+    {
+        return epsilon;
+    }
+    else
+    {
+        return chordLength_/2.0;
+    }
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::fv::actuatorLineElement::actuatorLineElement
@@ -338,13 +356,8 @@ void Foam::fv::actuatorLineElement::calculate
     vector dragDirection = relativeVelocity_/mag(relativeVelocity_);
     forceVector_ = lift*liftDirection + drag*dragDirection;
     
-    // Calculate force field
-    const scalarField& V = mesh_.V();
-    label posCellI = mesh_.findCell(position_);
-    // Projection width (epsilon) based on chord length
-    //~ scalar epsilon = chordLength_;
-    // Projection width based on local cell size (from Troldborg (2008))
-    scalar epsilon = 2*Foam::cbrt(V[posCellI]);
+    // Calculate projection width
+    scalar epsilon = calcProjectionEpsilon();
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
     
     // Apply force to the cells within the element's sphere of influence
@@ -615,12 +628,7 @@ void Foam::fv::actuatorLineElement::addTurbulence
     );
     
     // Calculate projection radius
-    const scalarField& V = mesh_.V();
-    label posCellI = mesh_.findCell(position_);
-    // Projection width (epsilon) based on chord length
-    //~ scalar epsilon = chordLength_;
-    // Projection width based on local cell size (from Troldborg (2008))
-    scalar epsilon = 2*Foam::cbrt(V[posCellI]);
+    scalar epsilon = calcProjectionEpsilon();
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
     
     // Add turbulence to the cells within the element's sphere of influence

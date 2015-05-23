@@ -159,6 +159,9 @@ protected:
         
         //- Lookup force coefficients
         void lookupCoefficients();
+        
+        //- Calculate projection width epsilon
+        scalar calcProjectionEpsilon();
 
 
 public:
