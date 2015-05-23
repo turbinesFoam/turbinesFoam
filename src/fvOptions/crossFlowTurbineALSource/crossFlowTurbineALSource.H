@@ -303,20 +303,28 @@ public:
             //- Return torque
             scalar& torque();
 
+
         // Source term addition
 
-            //- Source term to momentum equation
+            //- Add source term to momentum equation
             virtual void addSup
             (
                 fvMatrix<vector>& eqn,
                 const label fieldI
             );
 
-            //- Source term to compressible momentum equation
+            //- Add source term to compressible momentum equation
             virtual void addSup
             (
                 const volScalarField& rho,
                 fvMatrix<vector>& eqn,
+                const label fieldI
+            );
+            
+            //- Add source term to turbulence model equation
+            virtual void addSup
+            (
+                fvMatrix<scalar>& eqn,
                 const label fieldI
             );
 

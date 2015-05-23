@@ -725,6 +725,41 @@ void Foam::fv::crossFlowTurbineALSource::addSup
 }
 
 
+void Foam::fv::crossFlowTurbineALSource::addSup
+(
+    fvMatrix<scalar>& eqn,
+    const label fieldI
+)
+{
+    // Rotate the turbine if time value has changed
+    if (time_.value() != lastRotationTime_)
+    {
+        rotate();
+    }
+
+    // Add scalar source term from blades
+    forAll(blades_, i)
+    {
+        blades_[i].addSup(eqn, fieldI);
+    }
+    
+    if (hasStruts_)
+    {
+        // Add source for strut actuator lines
+        forAll(struts_, i)
+        {
+            struts_[i].addSup(eqn, fieldI);
+        }
+    }
+    
+    if (hasShaft_)
+    {
+        // Add source for shaft actuator line
+        shaft_->addSup(eqn, fieldI);
+    }
+}
+
+
 void Foam::fv::crossFlowTurbineALSource::printCoeffs() const
 {
     Info<< "Number of blades: " << nBlades_ << endl;
