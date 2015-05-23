@@ -614,11 +614,17 @@ void Foam::fv::actuatorLineElement::addTurbulence
         )
     );
     
-    scalar epsilon = chordLength_/2;
+    // Calculate projection radius
+    const scalarField& V = mesh_.V();
+    label posCellI = mesh_.findCell(position_);
+    // Projection width (epsilon) based on chord length
+    //~ scalar epsilon = chordLength_;
+    // Projection width based on local cell size (from Troldborg (2008))
+    scalar epsilon = 2*Foam::cbrt(V[posCellI]);
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
     
     // Add turbulence to the cells within the element's sphere of influence
-    scalar sphereRadius = chordLength_/2 + projectionRadius;
+    scalar sphereRadius = chordLength_ + projectionRadius;
     forAll(mesh_.cells(), cellI)
     {
         scalar dis = mag(mesh_.C()[cellI] - position_);
@@ -629,11 +635,11 @@ void Foam::fv::actuatorLineElement::addTurbulence
                           * Foam::pow(Foam::constant::mathematical::pi, 1.5));
             if (fieldName == "k")
             {
-                turbulence[cellI] = factor*0.2*angleOfAttack_/12.0;
+                turbulence[cellI] = factor*0.2*mag(dragCoefficient_);
             }
             else if (fieldName == "epsilon")
             {
-                turbulence[cellI] = factor*20*angleOfAttack_/12.0;
+                turbulence[cellI] = factor*20*mag(dragCoefficient_);
             }
         }
     }
