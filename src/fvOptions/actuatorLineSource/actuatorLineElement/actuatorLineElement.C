@@ -338,8 +338,13 @@ void Foam::fv::actuatorLineElement::calculate
     vector dragDirection = relativeVelocity_/mag(relativeVelocity_);
     forceVector_ = lift*liftDirection + drag*dragDirection;
     
-    // Calculate force field 
-    scalar epsilon = chordLength_;
+    // Calculate force field
+    const scalarField& V = mesh_.V();
+    label posCellI = mesh_.findCell(position_);
+    // Projection width (epsilon) based on chord length
+    //~ scalar epsilon = chordLength_;
+    // Projection width based on local cell size (from Troldborg (2008))
+    scalar epsilon = 2*Foam::cbrt(V[posCellI]);
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
     
     // Apply force to the cells within the element's sphere of influence
@@ -360,6 +365,7 @@ void Foam::fv::actuatorLineElement::calculate
     
     if (debug)
     {
+        Info<< "    epsilon: " << epsilon << endl;
         Info<< "    sphereRadius: " << sphereRadius << endl;
         Info<< "    force (per unit density): " << forceVector_ << endl 
             << endl;
