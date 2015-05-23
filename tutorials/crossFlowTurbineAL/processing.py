@@ -208,19 +208,26 @@ def plotwake(plotlist=["meanu"], save=False, savepath="", savetype=".pdf"):
         if save:
             plt.savefig(savepath+"\\meancomboquiv_AD"+savetype)
     
-def plot_blade_perf():
+def plot_al_perf(name="blade1"):
     df_turb = pd.read_csv("postProcessing/turbines/0/turbine.csv")
     df_turb = df_turb.drop_duplicates("time", take_last=True)
-    df = pd.read_csv("postProcessing/actuatorLines/0/blade1.csv")
+    df = pd.read_csv("postProcessing/actuatorLines/0/{}.csv".format(name))
     df = df.drop_duplicates("time", take_last=True)
+    df["angle_deg"] = df_turb.angle_deg
     plt.figure()
-    plt.plot(df_turb.angle_deg, df.alpha_deg)
+    plt.plot(df.angle_deg, df.alpha_deg)
     plt.xlabel("Azimuthal angle (degrees)")
     plt.ylabel("Angle of attack (degrees)")
     plt.figure()
-    plt.plot(df_turb.angle_deg, df.rel_vel_mag)
+    plt.plot(df.angle_deg, df.rel_vel_mag)
     plt.xlabel("Azimuthal angle (degrees)")
     plt.ylabel("Relative velocity (m/s)")
+    
+def plot_blade_perf():
+    plot_al_perf("blade1")
+    
+def plot_strut_perf():
+    plot_al_perf("strut1")
 
 def main():
     p = "figures"
