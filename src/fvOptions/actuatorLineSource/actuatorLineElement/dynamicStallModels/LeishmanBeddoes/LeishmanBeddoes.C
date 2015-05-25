@@ -77,10 +77,12 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
     }
     
     // Calculate lift slope CNAlpha
-    scalar cn0 = interpolate(0.0, alphaDegList, cnList);
-    scalar cn5 = interpolate(5.0, alphaDegList, cnList);
-    scalar dAlpha = 5.0/180.0*pi;
-    CNAlpha_ = (cn5 - cn0)/dAlpha;
+    scalar alphaLow = 0.0;
+    scalar alphaHigh = 2.0;
+    scalar cnLow = interpolate(alphaLow, alphaDegList, cnList);
+    scalar cnHigh = interpolate(alphaHigh, alphaDegList, cnList);
+    scalar dAlpha = (alphaHigh - alphaLow)/180.0*pi;
+    CNAlpha_ = (cnHigh - cnLow)/dAlpha;
     
     // Calculate critical normal force coefficient CN1, where the slope of the
     // curve slope first breaks 0.02 per degree
