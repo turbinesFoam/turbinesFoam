@@ -159,20 +159,6 @@ Foam::fv::turbineALSource::turbineALSource
     ),
     frontalArea_(0.0)
 {
-    read(dict);
-    createCoordinateSystem();
-    createBlades();
-    lastRotationTime_ = time_.value();
-    createOutputFile();
-    torqueCoefficient_ = 0.0;
-    dragCoefficient_ = 0.0;
-    powerCoefficient_ = 0.0;
-    
-    if (debug)
-    {
-        Info<< "turbineALSource created at time = " << time_.value()
-            << endl;
-    }
 }
 
 
@@ -204,29 +190,6 @@ Foam::scalar& Foam::fv::turbineALSource::torque()
 
 void Foam::fv::turbineALSource::rotate()
 {
-    // Update tip speed ratio and omega
-    scalar t = time_.value();
-    tipSpeedRatio_ = meanTSR_ + tsrAmplitude_
-                   *cos(nBlades_/rotorRadius_*(meanTSR_*t - tsrPhase_));
-    omega_ = tipSpeedRatio_*mag(freeStreamVelocity_)/rotorRadius_;
-
-    scalar deltaT = time_.deltaT().value();
-    scalar radians = omega_*deltaT;
-    
-    forAll(blades_, i)
-    {
-        blades_[i].rotate(origin_, axis_, radians);
-        blades_[i].setSpeed(origin_, axis_, omega_);
-    }
-    
-    angleDeg_ += radians*180.0/Foam::constant::mathematical::pi;
-    lastRotationTime_ = time_.value();
-    
-    if (debug)
-    {
-        Info<< "Rotating " << name_ << " " << radians << " radians" 
-            << endl << endl;
-    }
 }
 
 
@@ -264,56 +227,6 @@ void Foam::fv::turbineALSource::addSup
 void Foam::fv::turbineALSource::printCoeffs() const
 {
     Info<< "Number of blades: " << nBlades_ << endl;
-}
-
-
-bool Foam::fv::turbineALSource::read(const dictionary& dict)
-{
-    if (option::read(dict))
-    {
-        coeffs_.lookup("fieldNames") >> fieldNames_;
-        applied_.setSize(fieldNames_.size(), false);
-
-        // Read coordinate system/geometry invariant properties
-        coeffs_.lookup("origin") >> origin_;
-        coeffs_.lookup("axis") >> axis_;
-        coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
-        coeffs_.lookup("tipSpeedRatio") >> meanTSR_;
-        coeffs_.lookup("rotorRadius") >> rotorRadius_;
-        coeffs_.lookup("tipEffect") >> tipEffect_;
-        tsrAmplitude_ = coeffs_.lookupOrDefault("tsrAmplitude", 0.0);
-        tsrPhase_ = coeffs_.lookupOrDefault("tsrPhase", 0.0);
-
-        // Get blade information
-        bladesDict_ = coeffs_.subDict("blades");
-        nBlades_ = bladesDict_.keys().size();
-        bladeNames_ = bladesDict_.toc();
-        
-        // Set tip speed ratio and omega
-        scalar t = time_.value();
-        tipSpeedRatio_ = meanTSR_ 
-                       + tsrAmplitude_*cos(nBlades_*(meanTSR_*t - tsrPhase_));
-        omega_ = tipSpeedRatio_*mag(freeStreamVelocity_)/rotorRadius_;
-        
-        // Get dynamic stall subdict
-        dynamicStallDict_ = coeffs_.subOrEmptyDict("dynamicStall");
-        
-        // Get profiles information
-        profilesDict_ = coeffs_.subDict("profiles");
-        
-        if (debug)
-        {
-            Info<< "Debugging on" << endl;
-            Info<< "Turbine properties:" << endl;
-            printCoeffs();
-        }
-
-        return true;
-    }
-    else
-    {
-        return false;
-    }
 }
 
 

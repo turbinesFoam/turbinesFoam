@@ -50,39 +50,6 @@ namespace fv
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
-void Foam::fv::crossFlowTurbineALSource::rotateVector
-(
-    vector& vectorToRotate,
-    vector rotationPoint, 
-    vector axis,
-    scalar radians
-)
-{
-    // Declare and define the rotation matrix (from SOWFA)
-    tensor RM;
-    scalar angle = radians;
-    RM.xx() = Foam::sqr(axis.x()) + (1.0 - Foam::sqr(axis.x())) * Foam::cos(angle); 
-    RM.xy() = axis.x() * axis.y() * (1.0 - Foam::cos(angle)) - axis.z() * Foam::sin(angle); 
-    RM.xz() = axis.x() * axis.z() * (1.0 - Foam::cos(angle)) + axis.y() * Foam::sin(angle);
-    RM.yx() = axis.x() * axis.y() * (1.0 - Foam::cos(angle)) + axis.z() * Foam::sin(angle); 
-    RM.yy() = Foam::sqr(axis.y()) + (1.0 - Foam::sqr(axis.y())) * Foam::cos(angle);
-    RM.yz() = axis.y() * axis.z() * (1.0 - Foam::cos(angle)) - axis.x() * Foam::sin(angle);
-    RM.zx() = axis.x() * axis.z() * (1.0 - Foam::cos(angle)) - axis.y() * Foam::sin(angle);
-    RM.zy() = axis.y() * axis.z() * (1.0 - Foam::cos(angle)) + axis.x() * Foam::sin(angle);
-    RM.zz() = Foam::sqr(axis.z()) + (1.0 - Foam::sqr(axis.z())) * Foam::cos(angle);
-    
-    // Rotation matrices make a rotation about the origin, so need to subtract 
-    // rotation point off the point to be rotated.
-    vectorToRotate -= rotationPoint;
-
-    // Perform the rotation.
-    vectorToRotate = RM & vectorToRotate;
-
-    // Return the rotated point to its new location relative to the rotation point.
-    vectorToRotate += rotationPoint;
-}
-
-
 void Foam::fv::crossFlowTurbineALSource::createCoordinateSystem()
 {
     // Construct the local rotor coordinate system
@@ -91,15 +58,6 @@ void Foam::fv::crossFlowTurbineALSource::createCoordinateSystem()
     radialDirection_ = radialDirection_/mag(radialDirection_);
     // Make sure axis is a unit vector
     axis_ /= mag(axis_);
-}
-
-
-Foam::tmp<Foam::vectorField> Foam::fv::crossFlowTurbineALSource::inflowVelocity
-(
-    const volVectorField& U
-) const
-{
-    return U.internalField();
 }
 
 
@@ -495,35 +453,9 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     const fvMesh& mesh
 )
 :
-    option(name, modelType, dict, mesh),
-    time_(mesh.time()),
-    rhoRef_(1.0),
-    omega_(0.0),
-    angleDeg_(0.0),
-    nBlades_(0),
+    turbineALSource(name, modelType, dict, mesh),
     hasStruts_(false),
-    hasShaft_(false),
-    freeStreamVelocity_(vector::zero),
-    tipEffect_(1.0),
-    forceField_
-    (
-        IOobject
-        (
-            "force." + name_,
-            mesh_.time().timeName(),
-            mesh_,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mesh_,
-        dimensionedVector
-        (
-            "force", 
-            dimForce/dimVolume/dimDensity, 
-            vector::zero
-        )
-    ),
-    frontalArea_(0.0)
+    hasShaft_(false)
 {
     read(dict);
     createCoordinateSystem();
@@ -551,24 +483,6 @@ Foam::fv::crossFlowTurbineALSource::~crossFlowTurbineALSource()
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-Foam::vector& Foam::fv::crossFlowTurbineALSource::force()
-{
-    return force_;
-}
-
-
-Foam::volVectorField& Foam::fv::crossFlowTurbineALSource::forceField()
-{
-    return forceField_;
-}
-
-
-Foam::scalar& Foam::fv::crossFlowTurbineALSource::torque()
-{
-    return torque_;
-}
-
 
 void Foam::fv::crossFlowTurbineALSource::rotate()
 {
@@ -821,20 +735,6 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
     {
         return false;
     }
-}
-
-
-void Foam::fv::crossFlowTurbineALSource::writePerf()
-{
-    *outputFile_<< time_.value() << "," << angleDeg_ << "," 
-                << tipSpeedRatio_ << "," << powerCoefficient_ << "," 
-                << dragCoefficient_ << "," << torqueCoefficient_ << endl;
-}
-
-void Foam::fv::crossFlowTurbineALSource::writeData(Ostream& os) const
-{
-    os  << indent << name_ << endl;
-    dict_.write(os);
 }
 
 
