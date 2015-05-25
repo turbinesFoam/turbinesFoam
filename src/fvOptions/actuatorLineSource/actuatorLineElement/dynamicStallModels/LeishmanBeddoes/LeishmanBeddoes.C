@@ -74,6 +74,8 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
         alphaRadList[i] = alphaDegList[i]/180*pi;
         cnList[i] = clList[i]*cos(alphaRadList[i]) 
                   - cdList[i]*sin(alphaRadList[i]);
+        ctList[i] = clList[i]*sin(alphaRadList[i])
+                  - cdList[i]*cos(alphaRadList[i]);
     }
     
     // Calculate lift slope CNAlpha
@@ -90,7 +92,7 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
     forAll(alphaDegList, i)
     {
         alpha = alphaDegList[i];
-        if (alpha > 4 && alpha < 25)
+        if (alpha > 2 && alpha < 30)
         {
             cd1 = interpolate(alpha + 1.0, alphaDegList, cdList);
             cd0 = interpolate(alpha, alphaDegList, cdList);
@@ -98,26 +100,27 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
             slope = (cd1 - cd0)/dAlpha;
             if (slope > 0.02)
             {
-                CN1_ = cnList[i];
+                alphaSS_ = alpha/180.0*pi;
                 break;
             }
         }
     }
+    
+    // Calculate CN1 using normal coefficient slope and critical f value
+    scalar f = 0.7;
+    alpha1_ = alphaSS_;
+    CN1_ = CNAlpha_*alpha1_*pow((1 + sqrt(f))/2.0, 2);
     
     if (debug)
     {
         Info<< endl << "Evaluating static foil data" << endl;
         scalar cn = CNAlpha_*alpha_;
         Info<< "    Static stall angle (deg): " << alpha << endl;
+        Info<< "    Critical normal force coefficient: " << CN1_ << endl;
         Info<< "    Normal coefficient slope: " << CNAlpha_ << endl;
         Info<< "    Normal coefficient from slope: " << cn << endl;
     }
-    
-    // Calculate alpha1
-    scalar f = 0.7;
-    alpha1_ = CN1_/CNAlpha_/pow((1 + sqrt(f))/2, 2);
-    alphaSS_ = alpha/180.0*pi;
-    
+
     // Calculate CD0
     CD0_ = interpolate(0, alphaDegList, cdList);
     
