@@ -23,17 +23,17 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "crossFlowTurbineALSource.H"
+#include "turbineALSource.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-Foam::scalar Foam::fv::crossFlowTurbineALSource::rhoRef() const
+Foam::scalar Foam::fv::turbineALSource::rhoRef() const
 {
     return rhoRef_;
 }
 
 
-Foam::scalar Foam::fv::crossFlowTurbineALSource::omega() const
+Foam::scalar Foam::fv::turbineALSource::omega() const
 {
     return omega_;
 }

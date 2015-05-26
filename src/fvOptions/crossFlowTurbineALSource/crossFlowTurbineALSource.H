@@ -35,13 +35,7 @@ SourceFiles
 #ifndef crossFlowTurbineALSource_H
 #define crossFlowTurbineALSource_H
 
-#include "fvOption.H"
-#include "cylindricalCS.H"
-#include "localAxesRotation.H"
-#include "NamedEnum.H"
-#include "actuatorLineSource.H"
-#include "volFieldsFwd.H"
-#include "OFstream.H"
+#include "turbineALSource.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -56,7 +50,7 @@ namespace fv
 
 class crossFlowTurbineALSource
 :
-    public option
+    public turbineALSource
 {
 public:
 
@@ -64,62 +58,12 @@ public:
 protected:
 
     // Protected data
-    
-        //- Runtime pointer
-        const Time& time_;
-        
-        //- Time value used to determine whether to rotate
-        scalar lastRotationTime_;
-        
-        //- Origin of turbine coordinate system
-        vector origin_;
-        
-        //- Turbine axis of rotation
-        vector axis_;
-
-        //- Reference density for incompressible case
-        scalar rhoRef_;
-
-        //- Rotational speed in rad/s
-        //  Positive anti-clockwise when looking along axis direction
-        scalar omega_;
-        
-        //- Azimuthal angle in degrees (does not reset each rotation)
-        scalar angleDeg_;
-
-        //- Number of blades
-        label nBlades_;
         
         //- Switch for struts
         bool hasStruts_;
         
         //- Switch for shaft
         bool hasShaft_;
-
-        //- Inlet velocity for specified inflow
-        vector freeStreamVelocity_;
-        
-        //- Free stream velocity direction
-        vector freeStreamDirection_;
-        
-        //- Radial direction
-        vector radialDirection_;
-        
-        //- Upstream point to determine free stream velocity
-        vector upstreamPoint_;
-        
-        //- Rotor tip speed ratio
-        scalar tipSpeedRatio_;
-        
-        //- Rotor radius for calculating tip speed ratio
-        scalar rotorRadius_;
-
-        //- Tip effect [0-1]
-        //  Ratio of blade radius beyond which lift=0
-        scalar tipEffect_;
-
-        //- List of actuator lines as blades
-        PtrList<actuatorLineSource> blades_;
         
         //- List of actuator lines as struts
         PtrList<actuatorLineSource> struts_;
@@ -127,71 +71,17 @@ protected:
         //- Actuator line for shaft
         autoPtr<actuatorLineSource> shaft_;
         
-        //- Blade definitions dictionary
-        dictionary bladesDict_;
-        
-        //- List of blade names
-        wordList bladeNames_;
-        
         //- Strut definitions dictionary
         dictionary strutsDict_;
         
         //- Shaft dictionary
         dictionary shaftDict_;
-        
-        //- Dictionary for profile coefficient data
-        dictionary profilesDict_;
-        
-        //- Force vector
-        vector force_;
-        
-        //- Force field (per unit density)
-        volVectorField forceField_;
-        
-        //- Torque about the axis
-        scalar torque_;
-        
-        //- Frontal area in m^2
-        scalar frontalArea_;
-        
-        //- Nondimensional power coefficient
-        scalar powerCoefficient_;
-        
-        //- Nondimensional drag coefficient
-        scalar dragCoefficient_;
-        
-        //- Nondimensional torque coefficient
-        scalar torqueCoefficient_;
-        
-        //- Output file stream
-        OFstream* outputFile_;
-        
-        //- Dynamic stall dictionary
-        dictionary dynamicStallDict_;
-        
-        //- Amplitude of prescribed TSR oscillation
-        scalar tsrAmplitude_;
-        
-        //- Angle of first peak in TSR oscillation (rad)
-        scalar tsrPhase_;
-        
-        //- Mean tip speed ratio
-        scalar meanTSR_;
 
 
     // Protected Member Functions
-    
-        //- Rotate a vector
-        void rotateVector
-        (
-            vector& vectorToRotate,
-            vector rotationPoint,
-            vector axis,
-            scalar radians
-        );
         
         //- Create actuator lines for blades
-        void createBlades();
+        virtual void createBlades();
         
         //- Create actuator lines for struts
         void createStruts();
@@ -200,13 +90,10 @@ protected:
         void createShaft();
 
         //- Create the co-ordinate system
-        void createCoordinateSystem();
-
-        //- Return the inlet flow field
-        tmp<vectorField> inflowVelocity(const volVectorField& U) const;
+        virtual void createCoordinateSystem();
         
         //- Rotate the turbine
-        void rotate();
+        virtual void rotate();
 
 
 public:
@@ -234,24 +121,6 @@ public:
     // Member Functions
 
         // Access
-        
-            //- Return const access to runTime
-            inline const Time& time() const;
-
-            //- Return the reference density for incompressible case
-            inline scalar rhoRef() const;
-
-            //- Return the rotational speed (rad/s)
-            inline scalar omega() const;
-            
-            //- Return force vector
-            vector& force();
-            
-            //- Return force field
-            volVectorField& forceField();
-            
-            //- Return torque
-            scalar& torque();
 
 
         // Source term addition
@@ -280,15 +149,6 @@ public:
 
 
         // I-O
-        
-            //- Create the turbine output file
-            virtual void createOutputFile();
-
-            //- Write the turbine performance to file
-            virtual void writePerf();
-            
-            //- Write the source properties
-            virtual void writeData(Ostream&) const;
 
             //- Read source dictionary
             virtual bool read(const dictionary& dict);
@@ -302,10 +162,6 @@ public:
 
 } // End namespace fv
 } // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#include "crossFlowTurbineALSourceI.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
