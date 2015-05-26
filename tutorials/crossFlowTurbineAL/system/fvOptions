@@ -31,8 +31,8 @@ turbine
 
         freeStreamVelocity  (1 0 0);
         tipSpeedRatio       1.9;
-        //~ tsrAmplitude        0.19;       // Amplitude for TSR oscillation
-        //~ tsrPhase            0.70;       // Angle of first peak (rad)
+        tsrAmplitude        0.19;       // Amplitude for TSR oscillation
+        tsrPhase            0.70;       // Angle of first peak (rad)
 
         origin              (0 0 0);
         axis                (0 0 1);    // Negative for opposite rotation
@@ -42,6 +42,18 @@ turbine
         {
             active              on;
             dynamicStallModel   LeishmanBeddoes;
+            LeishmanBeddoesCoeffs
+            {
+                A1          0.3;        // Default = 0.3
+                A2          0.7;        // Default = 0.7
+                b1          0.14;       // Default = 0.14
+                b2          0.53;       // Default = 0.53
+                eta         0.95;       // Default = 0.95
+                Tp          1.7;        // Default = 1.7
+                Tf          3.0;        // Default = 3.0
+                Tv          6.0;        // Default = 6.0
+                Tvl         10.0;       // Default = 7.0
+            }
         }
 
         blades
@@ -83,39 +95,40 @@ turbine
         {
             strut1
             {
-                nElements   5;
+                writePerf   true;
+                nElements   6;
                 profile     NACA0020;
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
-                    (0.0 0.07 0.0 0.14 0.3 0.0)
-                    (0.0 0.43 0.0 0.14 0.3 0.0)
+                    (0.0 0.05 0.0 0.14 0.3 0.0)
+                    (0.0 0.65 0.0 0.14 0.3 0.0)
                 );
             }
             strut2
             {
-                nElements   5;
+                nElements   6;
                 profile     NACA0020;
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
-                    (0.0 0.07 120.0 0.14 0.3 0.0)
-                    (0.0 0.43 120.0 0.14 0.3 0.0)
+                    (0.0 0.05 120.0 0.14 0.3 0.0)
+                    (0.0 0.65 120.0 0.14 0.3 0.0)
                 );
             }
             strut3
             {
-                nElements   5;
+                nElements   6;
                 profile     NACA0020;
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
-                    (0.0 0.07 240.0 0.14 0.3 0.0)
-                    (0.0 0.43 240.0 0.14 0.3 0.0)
+                    (0.0 0.05 240.0 0.14 0.3 0.0)
+                    (0.0 0.65 240.0 0.14 0.3 0.0)
                 );
             }
         }
         
         shaft
         { 
-            nElements   29;
+            nElements   20;
             profile     cylinder;
             elementData
             ( // axialDistance, diameter

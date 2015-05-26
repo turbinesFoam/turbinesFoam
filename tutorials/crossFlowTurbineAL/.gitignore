@@ -6,3 +6,4 @@ constant/polyMesh
 log.*
 *.pyc
 !0.org
+system/sampleDict

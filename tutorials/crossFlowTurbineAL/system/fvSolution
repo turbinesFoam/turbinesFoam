@@ -60,11 +60,12 @@ solvers
 
 PIMPLE
 {
-    //~ correctPhi          no;
-    //~ nOuterCorrectors    100;
-    //~ nCorrectors         1;
-    //~ nNonOrthogonalCorrectors 1;
-//~ 
+    correctPhi          no;
+    nOuterCorrectors    1;
+    nCorrectors         2;
+    nNonOrthogonalCorrectors 0;
+    turbOnFinalIterOnly true;
+
     //~ residualControl
     //~ {
         //~ U

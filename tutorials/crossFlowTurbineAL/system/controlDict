@@ -30,11 +30,11 @@ writeControl    runTime;
 
 writeInterval   0.05;
 
-writeFormat     ascii;
+writeFormat     binary;
 
 writePrecision  12;
 
-writeCompression uncompressed;
+writeCompression compressed;
 
 timeFormat      general;
 
@@ -58,7 +58,7 @@ DebugSwitches
 {
     crossFlowTurbineALSource 0;
     actuatorLineSource  0;
-    actuatorLineElement 1;
+    actuatorLineElement 0;
     LeishmanBeddoes 0;
 }
 

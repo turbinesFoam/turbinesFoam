@@ -14,11 +14,11 @@ setformat = "raw"
 interpscheme = "cellPoint"
 fields = ["U", "vorticity"]
 x = 1.0
-ymax = 1.83
-ymin = -1.83
+ymax = 1.82
+ymin = -1.82
 ny = 41
-zmax = 1.22
-zmin = -1.22
+zmax = 1.21
+zmin = -1.21
 nz = 21
 
 header = r"""/*--------------------------------*- C++ -*----------------------------------*\
