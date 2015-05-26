@@ -61,15 +61,24 @@ void Foam::fv::turbineALSource::rotateVector
     // Declare and define the rotation matrix (from SOWFA)
     tensor RM;
     scalar angle = radians;
-    RM.xx() = Foam::sqr(axis.x()) + (1.0 - Foam::sqr(axis.x())) * Foam::cos(angle); 
-    RM.xy() = axis.x() * axis.y() * (1.0 - Foam::cos(angle)) - axis.z() * Foam::sin(angle); 
-    RM.xz() = axis.x() * axis.z() * (1.0 - Foam::cos(angle)) + axis.y() * Foam::sin(angle);
-    RM.yx() = axis.x() * axis.y() * (1.0 - Foam::cos(angle)) + axis.z() * Foam::sin(angle); 
-    RM.yy() = Foam::sqr(axis.y()) + (1.0 - Foam::sqr(axis.y())) * Foam::cos(angle);
-    RM.yz() = axis.y() * axis.z() * (1.0 - Foam::cos(angle)) - axis.x() * Foam::sin(angle);
-    RM.zx() = axis.x() * axis.z() * (1.0 - Foam::cos(angle)) - axis.y() * Foam::sin(angle);
-    RM.zy() = axis.y() * axis.z() * (1.0 - Foam::cos(angle)) + axis.x() * Foam::sin(angle);
-    RM.zz() = Foam::sqr(axis.z()) + (1.0 - Foam::sqr(axis.z())) * Foam::cos(angle);
+    RM.xx() = Foam::sqr(axis.x()) 
+            + (1.0 - Foam::sqr(axis.x())) * Foam::cos(angle); 
+    RM.xy() = axis.x() * axis.y() 
+            * (1.0 - Foam::cos(angle)) - axis.z() * Foam::sin(angle); 
+    RM.xz() = axis.x() * axis.z() 
+            * (1.0 - Foam::cos(angle)) + axis.y() * Foam::sin(angle);
+    RM.yx() = axis.x() * axis.y() 
+            * (1.0 - Foam::cos(angle)) + axis.z() * Foam::sin(angle); 
+    RM.yy() = Foam::sqr(axis.y()) 
+            + (1.0 - Foam::sqr(axis.y())) * Foam::cos(angle);
+    RM.yz() = axis.y() * axis.z() 
+            * (1.0 - Foam::cos(angle)) - axis.x() * Foam::sin(angle);
+    RM.zx() = axis.x() * axis.z() 
+            * (1.0 - Foam::cos(angle)) - axis.y() * Foam::sin(angle);
+    RM.zy() = axis.y() * axis.z() 
+            * (1.0 - Foam::cos(angle)) + axis.x() * Foam::sin(angle);
+    RM.zz() = Foam::sqr(axis.z()) 
+            + (1.0 - Foam::sqr(axis.z())) * Foam::cos(angle);
     
     // Rotation matrices make a rotation about the origin, so need to subtract 
     // rotation point off the point to be rotated.
@@ -78,7 +87,8 @@ void Foam::fv::turbineALSource::rotateVector
     // Perform the rotation.
     vectorToRotate = RM & vectorToRotate;
 
-    // Return the rotated point to its new location relative to the rotation point.
+    // Return the rotated point to its new location relative to the rotation 
+    // point
     vectorToRotate += rotationPoint;
 }
 

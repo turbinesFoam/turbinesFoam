@@ -400,15 +400,24 @@ void Foam::fv::actuatorLineElement::rotate
     // Declare and define the rotation matrix (from SOWFA)
     tensor RM;
     scalar angle = radians;
-    RM.xx() = Foam::sqr(axis.x()) + (1.0 - Foam::sqr(axis.x())) * Foam::cos(angle); 
-    RM.xy() = axis.x() * axis.y() * (1.0 - Foam::cos(angle)) - axis.z() * Foam::sin(angle); 
-    RM.xz() = axis.x() * axis.z() * (1.0 - Foam::cos(angle)) + axis.y() * Foam::sin(angle);
-    RM.yx() = axis.x() * axis.y() * (1.0 - Foam::cos(angle)) + axis.z() * Foam::sin(angle); 
-    RM.yy() = Foam::sqr(axis.y()) + (1.0 - Foam::sqr(axis.y())) * Foam::cos(angle);
-    RM.yz() = axis.y() * axis.z() * (1.0 - Foam::cos(angle)) - axis.x() * Foam::sin(angle);
-    RM.zx() = axis.x() * axis.z() * (1.0 - Foam::cos(angle)) - axis.y() * Foam::sin(angle);
-    RM.zy() = axis.y() * axis.z() * (1.0 - Foam::cos(angle)) + axis.x() * Foam::sin(angle);
-    RM.zz() = Foam::sqr(axis.z()) + (1.0 - Foam::sqr(axis.z())) * Foam::cos(angle);
+    RM.xx() = Foam::sqr(axis.x()) 
+            + (1.0 - Foam::sqr(axis.x())) * Foam::cos(angle); 
+    RM.xy() = axis.x() * axis.y() 
+            * (1.0 - Foam::cos(angle)) - axis.z() * Foam::sin(angle); 
+    RM.xz() = axis.x() * axis.z() 
+            * (1.0 - Foam::cos(angle)) + axis.y() * Foam::sin(angle);
+    RM.yx() = axis.x() * axis.y() 
+            * (1.0 - Foam::cos(angle)) + axis.z() * Foam::sin(angle); 
+    RM.yy() = Foam::sqr(axis.y()) 
+            + (1.0 - Foam::sqr(axis.y())) * Foam::cos(angle);
+    RM.yz() = axis.y() * axis.z() 
+            * (1.0 - Foam::cos(angle)) - axis.x() * Foam::sin(angle);
+    RM.zx() = axis.x() * axis.z() 
+            * (1.0 - Foam::cos(angle)) - axis.y() * Foam::sin(angle);
+    RM.zy() = axis.y() * axis.z() 
+            * (1.0 - Foam::cos(angle)) + axis.x() * Foam::sin(angle);
+    RM.zz() = Foam::sqr(axis.z()) 
+            + (1.0 - Foam::sqr(axis.z())) * Foam::cos(angle);
     
     if (debug)
     {
@@ -431,7 +440,8 @@ void Foam::fv::actuatorLineElement::rotate
     // Perform the rotation.
     point = RM & point;
 
-    // Return the rotated point to its new location relative to the rotation point.
+    // Return the rotated point to its new location relative to the rotation 
+    // point
     point += rotationPoint;
     
     // Set the position of the element
