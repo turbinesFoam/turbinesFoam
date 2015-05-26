@@ -133,6 +133,7 @@ Foam::fv::turbineALSource::turbineALSource
 :
     option(name, modelType, dict, mesh),
     time_(mesh.time()),
+    lastRotationTime_(time_.value()),
     rhoRef_(1.0),
     omega_(0.0),
     angleDeg_(0.0),
@@ -157,7 +158,10 @@ Foam::fv::turbineALSource::turbineALSource
             vector::zero
         )
     ),
-    frontalArea_(0.0)
+    frontalArea_(0.0),
+    powerCoefficient_(0.0),
+    dragCoefficient_(0.0),
+    torqueCoefficient_(0.0)
 {
 }
 
@@ -237,11 +241,24 @@ void Foam::fv::turbineALSource::writePerf()
                 << dragCoefficient_ << "," << torqueCoefficient_ << endl;
 }
 
+
 void Foam::fv::turbineALSource::writeData(Ostream& os) const
 {
     os  << indent << name_ << endl;
     dict_.write(os);
 }
 
+
+bool Foam::fv::turbineALSource::read(const dictionary& dict)
+{
+    if (option::read(dict))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 
 // ************************************************************************* //

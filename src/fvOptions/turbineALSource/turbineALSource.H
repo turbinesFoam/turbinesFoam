@@ -58,8 +58,6 @@ class turbineALSource
 :
     public option
 {
-public:
-
 
 protected:
 
@@ -96,7 +94,7 @@ protected:
         //- Free stream velocity direction
         vector freeStreamDirection_;
         
-        //- Radial direction
+        //- (Initial) radial direction
         vector radialDirection_;
         
         //- Upstream point to determine free stream velocity

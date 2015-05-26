@@ -417,32 +417,6 @@ void Foam::fv::crossFlowTurbineALSource::createShaft()
 }
 
 
-void Foam::fv::crossFlowTurbineALSource::createOutputFile()
-{
-    fileName dir;
-    
-    if (Pstream::parRun())
-    {
-        dir = time_.path()/"../postProcessing/turbines"
-            / time_.timeName();
-    }
-    else
-    {
-        dir = time_.path()/"postProcessing/turbines"
-            / time_.timeName();
-    }
-    
-    if (!isDir(dir))
-    {
-        mkDir(dir);
-    }
-
-    outputFile_ = new OFstream(dir/name_ + ".csv");
-    
-    *outputFile_<< "time,angle_deg,tsr,cp,cd,ct" << endl;
-}
-
-
 // * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
 Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
@@ -462,11 +436,7 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     createBlades();
     if (hasStruts_) createStruts();
     if (hasShaft_) createShaft();
-    lastRotationTime_ = time_.value();
     createOutputFile();
-    torqueCoefficient_ = 0.0;
-    dragCoefficient_ = 0.0;
-    powerCoefficient_ = 0.0;
     
     if (debug)
     {

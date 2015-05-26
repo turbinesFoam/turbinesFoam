@@ -50,7 +50,7 @@ namespace fv
 
 class crossFlowTurbineALSource
 :
-    public option, turbineALSource
+    public turbineALSource
 {
 public:
 
@@ -59,70 +59,17 @@ protected:
 
     // Protected data
         
-        //- Time value used to determine whether to rotate
-        scalar lastRotationTime_;
-        
-        //- Origin of turbine coordinate system
-        vector origin_;
-        
-        //- Turbine axis of rotation
-        vector axis_;
-
-        //- Reference density for incompressible case
-        scalar rhoRef_;
-
-        //- Rotational speed in rad/s
-        //  Positive anti-clockwise when looking along axis direction
-        scalar omega_;
-        
-        //- Azimuthal angle in degrees (does not reset each rotation)
-        scalar angleDeg_;
-
-        //- Number of blades
-        label nBlades_;
-        
         //- Switch for struts
         bool hasStruts_;
         
         //- Switch for shaft
         bool hasShaft_;
-
-        //- Inlet velocity for specified inflow
-        vector freeStreamVelocity_;
-        
-        //- Free stream velocity direction
-        vector freeStreamDirection_;
-        
-        //- Radial direction
-        vector radialDirection_;
-        
-        //- Upstream point to determine free stream velocity
-        vector upstreamPoint_;
-        
-        //- Rotor tip speed ratio
-        scalar tipSpeedRatio_;
-        
-        //- Rotor radius for calculating tip speed ratio
-        scalar rotorRadius_;
-
-        //- Tip effect [0-1]
-        //  Ratio of blade radius beyond which lift=0
-        scalar tipEffect_;
-
-        //- List of actuator lines as blades
-        PtrList<actuatorLineSource> blades_;
         
         //- List of actuator lines as struts
         PtrList<actuatorLineSource> struts_;
         
         //- Actuator line for shaft
         autoPtr<actuatorLineSource> shaft_;
-        
-        //- Blade definitions dictionary
-        dictionary bladesDict_;
-        
-        //- List of blade names
-        wordList bladeNames_;
         
         //- Strut definitions dictionary
         dictionary strutsDict_;
@@ -211,15 +158,6 @@ public:
 
 
         // I-O
-        
-            //- Create the turbine output file
-            virtual void createOutputFile();
-
-            //- Write the turbine performance to file
-            virtual void writePerf();
-            
-            //- Write the source properties
-            virtual void writeData(Ostream&) const;
 
             //- Read source dictionary
             virtual bool read(const dictionary& dict);
