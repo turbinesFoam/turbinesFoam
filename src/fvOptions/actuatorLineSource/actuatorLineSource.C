@@ -497,24 +497,7 @@ void Foam::fv::actuatorLineSource::addSup
     const label fieldI
 )
 {
-    volVectorField dummyField
-    (
-        IOobject
-        (
-            "none",
-            mesh_.time().timeName(),
-            mesh_,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        mesh_,
-        dimensionedVector
-        (
-            "force", 
-            dimForce/dimVolume/dimDensity, 
-            vector::zero
-        )
-    );
+    forceField_ *= 0.0;
     
     const volVectorField& U = mesh_.lookupObject<volVectorField>("U");
     
@@ -523,8 +506,7 @@ void Foam::fv::actuatorLineSource::addSup
     Info<< endl << "Adding " << fieldName << " from " << name_ << endl << endl;
     forAll(elements_, i)
     {
-        elements_[i].setDynamicStallActive(false);
-        elements_[i].calculate(U, dummyField);
+        elements_[i].calculate(U, forceField_);
         elements_[i].addTurbulence(eqn, fieldName);
     }
 }
