@@ -263,6 +263,36 @@ bool Foam::fv::turbineALSource::read(const dictionary& dict)
 {
     if (option::read(dict))
     {
+        coeffs_.lookup("fieldNames") >> fieldNames_;
+        applied_.setSize(fieldNames_.size(), false);
+
+        // Read coordinate system/geometry invariant properties
+        coeffs_.lookup("origin") >> origin_;
+        coeffs_.lookup("axis") >> axis_;
+        coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
+        coeffs_.lookup("tipSpeedRatio") >> meanTSR_;
+        coeffs_.lookup("rotorRadius") >> rotorRadius_;
+        coeffs_.lookup("tipEffect") >> tipEffect_;
+        tsrAmplitude_ = coeffs_.lookupOrDefault("tsrAmplitude", 0.0);
+        tsrPhase_ = coeffs_.lookupOrDefault("tsrPhase", 0.0);
+
+        // Get blade information
+        bladesDict_ = coeffs_.subDict("blades");
+        nBlades_ = bladesDict_.keys().size();
+        bladeNames_ = bladesDict_.toc();
+        
+        // Set tip speed ratio and omega
+        scalar t = time_.value();
+        tipSpeedRatio_ = meanTSR_ 
+                       + tsrAmplitude_*cos(nBlades_*(meanTSR_*t - tsrPhase_));
+        omega_ = tipSpeedRatio_*mag(freeStreamVelocity_)/rotorRadius_;
+        
+        // Get dynamic stall subdict
+        dynamicStallDict_ = coeffs_.subOrEmptyDict("dynamicStall");
+        
+        // Get profiles information
+        profilesDict_ = coeffs_.subDict("profiles");
+        
         return true;
     }
     else
