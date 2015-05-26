@@ -263,7 +263,7 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
         + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf));
     fDoublePrime_ = mag(fPrime_ - DF_);
     
-    // Calculate normal force coefficient for dynamic separation point
+    // Calculate normal force coefficient including dynamic separation point
     CNF_ = CNAlpha_*alphaEquiv_*pow(((1 + sqrt(fDoublePrime_))/2), 2) + CNI_;
     
     // Calculate tangential force coefficient
@@ -277,51 +277,49 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     }
     
     // Compute vortex shedding process if stalled
-    if (stalled_)
+    // Evaluate vortex tracking time
+    if (not stalledPrev_) tau_ = 0.0;
+    else 
     {
-        // Evaluate vortex tracking time
-        if (not stalledPrev_) tau_ = 0.0;
-        else 
+        if (tau_ == tauPrev_)
         {
-            if (tau_ == tauPrev_)
-            {
-                tau_ = tauPrev_ + deltaS_;
-            }
+            tau_ = tauPrev_ + deltaS_;
         }
-        
-        // Calculate Strouhal number time constant and set tau to zero to 
-        // allow multiple vortex shedding
-        scalar Tst = 2*(1 - fDoublePrime_)/0.19;
-        if (tau_ > (Tvl_ + Tst)) tau_ = 0.0;
-        
-        // Evaluate vortex lift contributions, which are only nonzero if angle
-        // of attack increased in magnitude
-        if (mag(alpha_) > mag(alphaPrev_))
+    }
+    
+    // Calculate Strouhal number time constant and set tau to zero to 
+    // allow multiple vortex shedding
+    scalar Tst = 2*(1 - fDoublePrime_)/0.19;
+    if (tau_ > (Tvl_ + Tst)) tau_ = 0.0;
+    
+    // Evaluate vortex lift contributions, which are only nonzero if angle
+    // of attack increased in magnitude
+    if (mag(alpha_) > mag(alphaPrev_) and mag(alpha_ - alphaPrev_) > 0.01)
+    {
+        scalar Tv = Tv_;
+        if (tau_ < Tvl_)
         {
-            scalar Tv = Tv_;
-            if (tau_ < Tvl_)
-            {
-                // Halve Tv if dAlpha/dt changes sign
-                if (sign(deltaAlpha_) != sign(deltaAlphaPrev_)) Tv = 0.5*Tv_;
-                CV_ = CNC_*(1 - pow(((1 + sqrt(fDoublePrime_))/2), 2));
-                CNV_ = CNVPrev_*exp(-deltaS_/Tv) 
-                     + (CV_ - CVPrev_)*exp(-deltaS_/(2*Tv));
-            }
-            else
-            {
-                Tv = 0.5*Tv_;
-                CNV_ = CNVPrev_*exp(-deltaS_/Tv);
-            }
+            // Halve Tv if dAlpha/dt changes sign
+            if (sign(deltaAlpha_) != sign(deltaAlphaPrev_)) Tv = 0.5*Tv_;
+            CV_ = CNC_*(1 - pow(((1 + sqrt(fDoublePrime_))/2), 2));
+            CNV_ = CNVPrev_*exp(-deltaS_/Tv) 
+                 + (CV_ - CVPrev_)*exp(-deltaS_/(2*Tv));
         }
         else
         {
-            CNV_ = 0.0;
+            Tv = 0.5*Tv_;
+            CNV_ = CNVPrev_*exp(-deltaS_/Tv);
         }
     }
     else
     {
-        tau_ = 0.0;
+        CNV_ = 0.0;
     }
+
+    // Total normal force coefficient is the combination of that from
+    // circulatory effects, impulsive effects, dynamic separation, and vortex 
+    // lift
+    CN_ = CNF_ + CNV_;
 }
 
 
@@ -465,15 +463,6 @@ void Foam::fv::LeishmanBeddoes::correct
     calcUnsteady();
     calcS1S2(alphaDegList, clList, cdList);
     calcSeparated();
-    
-    if (stalled_)
-    {
-        CN_ = CNF_ + CNV_;
-    }
-    else
-    {
-        CN_ = CNP_;
-    }
     
     // Modify lift and drag coefficients based on new normal force coefficient
     cl = CN_*cos(alpha_) + CT_*sin(alpha_);
