@@ -288,7 +288,8 @@ void Foam::fv::actuatorLineElement::calculate
     }
     
     // Find local wind velocity upstream
-    scalar upstreamDistance = chordLength_*0.7;
+    //~ scalar upstreamDistance = chordLength_*0.7;
+    scalar upstreamDistance = mag(velocity_)*mesh_.time().deltaT().value();
     vector upstreamPoint = position_ - upstreamDistance*freeStreamDirection_;
     label upstreamCellI = mesh_.findCell(upstreamPoint);
     vector inflowVelocity = Uin[upstreamCellI];
@@ -305,6 +306,8 @@ void Foam::fv::actuatorLineElement::calculate
     
     if (debug)
     {
+        Info<< "    Relative upstream point: " << (upstreamPoint - position_)
+            << endl;
         Info<< "    relativeVelocity: " << relativeVelocity_ << endl;
         Info<< "    Reynolds number: " << Re_ << endl;
     }
