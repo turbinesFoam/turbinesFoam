@@ -28,6 +28,7 @@ foil
         tipEffect           0.95; 
         freeStreamVelocity  (1 0 0);
         nElements           14;
+        writePerf           true;
 
         elementGeometry // Will be interpolated linearly per nElements
         ( // point spanDir chordLength chordRefDir pitch (from chordRefDir) 
