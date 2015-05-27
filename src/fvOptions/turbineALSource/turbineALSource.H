@@ -97,9 +97,6 @@ protected:
         //- (Initial) radial direction
         vector radialDirection_;
         
-        //- Upstream point to determine free stream velocity
-        vector upstreamPoint_;
-        
         //- Rotor tip speed ratio
         scalar tipSpeedRatio_;
         
