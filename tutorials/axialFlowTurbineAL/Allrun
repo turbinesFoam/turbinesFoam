@@ -1,0 +1,20 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# Copy initial conditions
+cp -rf 0.org 0
+
+runApplication blockMesh
+runApplication snappyHexMesh -overwrite
+
+runApplication topoSet
+pimpleFoam | tee log.pimpleFoam
+
+runApplication vorticity
+#runApplication R
+
+./gensampledict.py
+runApplication sample
