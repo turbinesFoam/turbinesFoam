@@ -45,7 +45,7 @@ Foam::fv::dynamicStallModel::New
 (
     const dictionary& dict, 
     const word& modelName,
-    const scalar startTime
+    const Time& time
 )
 {
     
@@ -62,7 +62,7 @@ Foam::fv::dynamicStallModel::New
             << exit(FatalError);
     }
 
-    return autoPtr<dynamicStallModel>(cstrIter()(dict, modelName, startTime));
+    return autoPtr<dynamicStallModel>(cstrIter()(dict, modelName, time));
 }
 
 
@@ -146,13 +146,14 @@ Foam::fv::dynamicStallModel::dynamicStallModel
 (
     const dictionary& dict,
     const word& modelName,
-    const scalar startTime
+    const Time& time
 )
 :
     dict_(dict),
     modelName_(modelName),
+    time_(time),
     coeffs_(dict.subOrEmptyDict(modelName + "Coeffs")),
-    startTime_(startTime)
+    startTime_(time.value())
 {
     if (debug)
     {
@@ -160,14 +161,6 @@ Foam::fv::dynamicStallModel::dynamicStallModel
             << "    Coeffs:" << endl << coeffs_ << endl;
     }
 }
-
-
-Foam::fv::dynamicStallModel::dynamicStallModel()
-{}
-
-
-Foam::fv::dynamicStallModel::dynamicStallModel(const dynamicStallModel&)
-{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -179,12 +172,10 @@ Foam::fv::dynamicStallModel::~dynamicStallModel()
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
 void Foam::fv::dynamicStallModel::correct(scalar alpha, scalar& cl, scalar& cd)
-{
-}
+{}
 
 void Foam::fv::dynamicStallModel::correct
 (
-    scalar time,
     scalar magU,
     scalar alphaDeg,
     scalar& cl,

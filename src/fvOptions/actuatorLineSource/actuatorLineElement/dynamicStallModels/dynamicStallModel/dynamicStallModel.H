@@ -64,6 +64,9 @@ protected:
         //- Model name
         const word modelName_;
         
+        //- Runtime reference
+        const Time& time_;
+        
         //- Coefficients subdict
         const dictionary coeffs_;
         
@@ -96,26 +99,20 @@ public:
             (
                 const dictionary& dict,
                 const word& modelName,
-                const scalar startTime
+                const Time& time
             ),
-            (dict, modelName, startTime)
+            (dict, modelName, time)
         );
 
     // Constructors
-    
-        //- Default contructor
-        dynamicStallModel();
 
         //- Construct from components
         dynamicStallModel
         (
             const dictionary&, 
             const word& modelName,
-            const scalar startTime
+            const Time& time
         );
-
-        //- Construct as copy
-        dynamicStallModel(const dynamicStallModel&);
 
 
     // Selectors
@@ -125,7 +122,7 @@ public:
         (
             const dictionary& dict, 
             const word& modelName,
-            const scalar startTime
+            const Time& time
         );
 
 
@@ -149,7 +146,6 @@ public:
             // Correct lift and drag coefficients
             virtual void correct
             (
-                scalar time,
                 scalar magU,
                 scalar alphaDeg,
                 scalar& cl,

@@ -325,7 +325,7 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
 
 void Foam::fv::LeishmanBeddoes::update()
 {
-    timePrev_ = time_;
+    timePrev_ = time_.value();
     alphaPrev_ = alpha_;
     XPrev_ = X_;
     YPrev_ = Y_;
@@ -348,38 +348,37 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
 (
     const dictionary& dict,
     const word& modelName,
-    const scalar startTime
+    const Time& time
 )
 :
-    dynamicStallModel(dict, modelName, startTime),
-    
+    dynamicStallModel(dict, modelName, time),
+
+    X_(0.0),
+    Y_(0.0),
     A1_(coeffs_.lookupOrDefault("A1", 0.3)),
     A2_(coeffs_.lookupOrDefault("A2", 0.7)),
     b1_(coeffs_.lookupOrDefault("b1", 0.14)),
     b2_(coeffs_.lookupOrDefault("b2", 0.53)),
+    deltaAlpha_(0.0),
     a_(coeffs_.lookupOrDefault("speedOfSound", 1e12)),
+    timePrev_(startTime_),
+    D_(0.0),
+    DP_(0.0),
+    CNP_(0.0),
+    fPrime_(1.0),
+    DF_(0.0),
+    CV_(0.0),
+    CNV_(0.0),
     eta_(coeffs_.lookupOrDefault("eta", 0.95)),
+    stalledPrev_(false),
     Tp_(coeffs_.lookupOrDefault("Tp", 1.7)),
     Tf_(coeffs_.lookupOrDefault("Tf", 3.0)),
     Tv_(coeffs_.lookupOrDefault("Tv", 6.0)),
-    Tvl_(coeffs_.lookupOrDefault("Tvl", 7.0))
+    Tvl_(coeffs_.lookupOrDefault("Tvl", 7.0)),
+    tau_(0.0),
+    nNewTimes_(0)
 {
     dict_.lookup("chordLength") >> c_;
-    time_ = startTime;
-    timePrev_ = startTime;
-    X_ = 0.0;
-    Y_ = 0.0;
-    nNewTimes_ = 0;
-    deltaAlpha_ = 0.0;
-    D_ = 0.0;
-    DP_ = 0.0;
-    CNP_ = 0.0;
-    DF_ = 0.0;
-    fPrime_ = 1.0;
-    CV_ = 0.0;
-    CNV_ = 0.0;
-    stalledPrev_ = false;
-    tau_ = 0.0;
     
     if (debug)
     {
@@ -399,16 +398,6 @@ Foam::fv::LeishmanBeddoes::~LeishmanBeddoes()
 
 void Foam::fv::LeishmanBeddoes::correct
 (
-    scalar alphaDeg, 
-    scalar& cl, 
-    scalar& cd
-)
-{
-}
-
-void Foam::fv::LeishmanBeddoes::correct
-(
-    scalar time,
     scalar magU,
     scalar alphaDeg,
     scalar& cl,
@@ -419,13 +408,13 @@ void Foam::fv::LeishmanBeddoes::correct
 )
 {
     scalar pi = Foam::constant::mathematical::pi;
-    time_ = time;
+    scalar time = time_.value();
+    deltaT_ = time_.deltaT().value();
     
-    // Only calculate deltaT if time has changed
+    // Update previous values if time has changed
     if (time != timePrev_)
     {
         nNewTimes_++;
-        deltaT_ = time_ - timePrev_;
         if (nNewTimes_ > 1) 
         {
             update();
@@ -448,7 +437,7 @@ void Foam::fv::LeishmanBeddoes::correct
         scalar cn0 = cl*cos(alpha_) - cd*sin(alpha_);
         Info<< "Leishman-Beddoes dynamic stall model correcting" << endl;
         Info<< "    New times: " << nNewTimes_ << endl;
-        Info<< "    Time: " << time_ << endl;
+        Info<< "    Time: " << time << endl;
         Info<< "    deltaT: " << deltaT_ << endl;
         Info<< "    deltaS: " << deltaS_ << endl;
         Info<< "    Angle of attack (deg): " << alphaDeg << endl;

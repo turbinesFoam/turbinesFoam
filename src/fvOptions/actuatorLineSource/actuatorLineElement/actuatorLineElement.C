@@ -74,7 +74,7 @@ void Foam::fv::actuatorLineElement::read()
         (
             dsDict, 
             dsName, 
-            mesh_.time().value()
+            mesh_.time()
         );
         dsDict.lookup("active") >> dynamicStallActive_;
     }
@@ -288,9 +288,9 @@ void Foam::fv::actuatorLineElement::calculate
     }
     
     // Find local wind velocity upstream
-    //~ scalar upstreamDistance = chordLength_*0.7;
-    scalar upstreamDistance = mag(velocity_)*mesh_.time().deltaT().value();
+    scalar upstreamDistance = chordLength_*0.25;
     vector upstreamPoint = position_ - upstreamDistance*freeStreamDirection_;
+    upstreamPoint += velocity_*mesh_.time().deltaT().value();
     label upstreamCellI = mesh_.findCell(upstreamPoint);
     vector inflowVelocity = Uin[upstreamCellI];
     
@@ -338,7 +338,6 @@ void Foam::fv::actuatorLineElement::calculate
     {
         dynamicStall_->correct
         (
-            mesh_.time().value(),
             mag(relativeVelocity_),
             angleOfAttack_,
             liftCoefficient_,

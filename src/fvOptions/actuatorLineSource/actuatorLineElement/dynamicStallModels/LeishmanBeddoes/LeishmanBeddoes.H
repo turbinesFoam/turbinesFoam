@@ -120,9 +120,6 @@ protected:
         //- Speed of sound (m/s)
         scalar a_;
         
-        //- Current time value
-        scalar time_;
-        
         //- Previous time value
         scalar timePrev_;
         
@@ -281,11 +278,8 @@ public:
         (
             const dictionary& dict, 
             const word& modelName,
-            const scalar startTime
+            const Time& time
         );
-
-        //- Construct as copy
-        LeishmanBeddoes(const LeishmanBeddoes&);
 
 
     // Selectors
@@ -295,7 +289,7 @@ public:
         (
             const dictionary& dict,
             const word& modelName,
-            const scalar startTime
+            const Time& time
         );
 
 
@@ -314,14 +308,10 @@ public:
         // Write
         
         // Evaluation
-        
-            // Correct lift and drag coefficients
-            virtual void correct(scalar alphaDeg, scalar& cl, scalar& cd);
             
             // Correct lift and drag coefficients
             virtual void correct
             (
-                scalar time,
                 scalar magU,
                 scalar alphaDeg,
                 scalar& cl,
