@@ -170,39 +170,45 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
     // Calculate trailing-edge separation point
     if (mag(alphaPrime_) < alpha1_)
     {
-        fPrime_ = 1.0 - 0.3*exp((mag(alphaPrime_) - alpha1_)/S1_);
+        fPrime_ = 1.0 - 0.4*exp((mag(alphaPrime_) - alpha1_)/S1_);
     }
     else
     {
-        fPrime_ = 0.04 + 0.66*exp((alpha1_ - mag(alphaPrime_))/S2_);
+        fPrime_ = 0.02 + 0.58*exp((alpha1_ - mag(alphaPrime_))/S2_);
     }
     
     // Modify Tf time constant if necessary
     scalar Tf = Tf_;
-    if (tau_ > 0 and tau_ <= Tvl_) Tf = 0.5*Tf_;
-    else if (tau_ > Tvl_ and tau_ <= 2*Tvl_) Tf = 4*Tf_;
-    if (mag(alpha_) < mag(alphaPrev_) and mag(CNPrime_) < CN1_)
-    {
-        Tf = 0.5*Tf_;
-    }
+    if (tau_ > Tvl_) Tf = 0.5*Tf_;
     
     // Calculate dynamic separation point
+    scalar pi = Foam::constant::mathematical::pi;
     DF_ = DFPrev_*exp(-deltaS_/Tf) 
         + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf));
     fDoublePrime_ = mag(fPrime_ - DF_);
+    if (tau_ > 0 and tau_ <= Tvl_)
+    {
+        Vx_ = pow((sin(pi*tau_/(2.0*Tvl_))), 1.5);
+    }
+    else if (tau_ > Tvl_)
+    {
+        Vx_ = pow((cos(pi*(tau_ - Tvl_)/Tv_)), 2);
+    }
+    if (mag(alpha_) < mag(alphaPrev_)) Vx_ = 0.0;
+    f3G_ = mag(fDoublePrime_ - DF_*Vx_);
     
     // Calculate normal force coefficient including dynamic separation point
-    CNF_ = CNAlpha_*alphaEquiv_*pow(((1.0 + sqrt(fDoublePrime_))/2.0), 2) 
+    CNF_ = CNAlpha_*alphaEquiv_*pow(((1.0 + sqrt(f3G_))/2.0), 2) 
          + CNI_;
     
     // Calculate tangential force coefficient
-    if (fDoublePrime_ < 0.7)
+    if (fDoublePrime_ < fCrit_)
     {
-        CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*sqrt(fDoublePrime_);
+        CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*pow(fDoublePrime_, 1.5);
     }
     else
     {
-        CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*pow(fDoublePrime_, 1.5);
+        CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*sqrt(fDoublePrime_);
     }
     
     // Compute vortex shedding process if stalled
@@ -228,15 +234,12 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
         scalar Tv = Tv_;
         if (tau_ < Tvl_)
         {
-            // Halve Tv if dAlpha/dt changes sign
-            if (sign(deltaAlpha_) != sign(deltaAlphaPrev_)) Tv = 0.5*Tv_;
             CV_ = CNC_*(1.0 - pow(((1.0 + sqrt(fDoublePrime_))/2.0), 2));
             CNV_ = CNVPrev_*exp(-deltaS_/Tv) 
                  + (CV_ - CVPrev_)*exp(-deltaS_/(2.0*Tv));
         }
         else
         {
-            Tv = 0.5*Tv_;
             CNV_ = CNVPrev_*exp(-deltaS_/Tv);
         }
     }
