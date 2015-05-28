@@ -58,6 +58,36 @@ protected:
 
     // Protected data
     
+        //- Additional deficiency function for equivalent angle of attack
+        scalar Z_;
+        
+        //- Previous value of Z
+        scalar ZPrev_;
+        
+        //- Circulatory forcing term associated with pitching motion
+        scalar etaL_;
+        
+        //- Previous value of etaL
+        scalar etaLPrev_;
+        
+        //- Constant in Z calculation
+        scalar A3_;
+        
+        //- Time constant in Z calculation
+        scalar T1_;
+        
+        //- Time constant in Z calculation
+        scalar T2_;
+        
+        //- Time constant in Z calculation
+        scalar T3_;
+        
+        //- Deficiency function for the impulsive normal coefficient
+        scalar H_;
+        
+        //- Previous value of H
+        scalar HPrev_;
+        
         
     // Protected member functions
     

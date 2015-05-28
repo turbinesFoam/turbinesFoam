@@ -352,8 +352,9 @@ Foam::fv::LeishmanBeddoes3G::LeishmanBeddoes3G
 )
 :
     LeishmanBeddoes(dict, modelName, time)
-
 {
+    fCrit_ = 0.6;
+    
     if (debug)
     {
         Info<< modelName << " dynamic stall model created" << endl

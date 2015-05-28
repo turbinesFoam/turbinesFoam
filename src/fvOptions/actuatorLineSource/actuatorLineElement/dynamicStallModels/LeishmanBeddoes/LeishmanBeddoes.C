@@ -352,7 +352,6 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
 )
 :
     dynamicStallModel(dict, modelName, time),
-
     X_(0.0),
     Y_(0.0),
     A1_(coeffs_.lookupOrDefault("A1", 0.3)),
