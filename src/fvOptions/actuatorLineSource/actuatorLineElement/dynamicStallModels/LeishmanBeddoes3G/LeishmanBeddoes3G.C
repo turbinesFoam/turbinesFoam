@@ -67,13 +67,11 @@ void Foam::fv::LeishmanBeddoes3G::calcUnsteady()
     
     // Calculate the impulsive normal force coefficient
     scalar pi = Foam::constant::mathematical::pi;
-    scalar kAlpha = 0.75
-                  / (1.0 - M_ + pi*(1.0 - M_*M_)*M_*M_*(A1_*b1_ + A2_*b2_));
-    TI_ = c_/a_;
-    D_ = DPrev_*exp(-deltaT_/(kAlpha*TI_)) 
-       - ((deltaAlpha_ - deltaAlphaPrev_)/deltaT_)
-       *exp(-deltaT_/(2*kAlpha*TI_));
-    CNI_ = 4*kAlpha*TI_/M_*(deltaAlpha_/deltaT_ - D_);
+    lambdaL_ = (pi/4.0)*(alpha_ + c_/(4.0*magU_)*deltaAlpha_/deltaT_);
+    TI_ = c_/a_*(1.0 + 3.0*M_)/4.0;
+    H_ = HPrev_*exp(-deltaT_/TI_) 
+       + (lambdaL_ - lambdaLPrev_)*exp(-deltaT_/(2.0*TI_));
+    CNI_ = 4.0/M_*H_;
     
     // Calculate total normal force coefficient
     CNP_ = CNC_ + CNI_;
