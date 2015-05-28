@@ -347,6 +347,8 @@ Foam::fv::LeishmanBeddoes3G::LeishmanBeddoes3G
     H_(0.0)
 {
     fCrit_ = 0.6;
+    Tv_ = coeffs_.lookupOrDefault("Tv", 10.0);
+    Tvl_ = coeffs_.lookupOrDefault("Tvl", 8.0);
     
     if (debug)
     {
