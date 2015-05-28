@@ -110,6 +110,7 @@ Foam::fv::actuatorLineSource::actuatorLineSource
     read(dict_);
     createElements();
     if (writePerf_) createOutputFile();
+    forceField_.write();
 }
 
 
