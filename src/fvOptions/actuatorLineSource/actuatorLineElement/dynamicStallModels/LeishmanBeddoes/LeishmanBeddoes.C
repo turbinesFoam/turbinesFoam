@@ -272,11 +272,11 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     // Calculate tangential force coefficient
     if (fDoublePrime_ < fCrit_)
     {
-        CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*sqrt(fDoublePrime_);
+        CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*pow(fDoublePrime_, 1.5);
     }
     else
     {
-        CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*pow(fDoublePrime_, 1.5);
+        CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*sqrt(fDoublePrime_);
     }
     
     // Compute vortex shedding process if stalled
