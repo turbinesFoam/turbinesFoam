@@ -235,6 +235,9 @@ protected:
         //- Critical trailing edge separation point
         scalar fCrit_;
         
+        //- Magnitude of the relative velocity
+        scalar magU_;
+        
         
     // Protected member functions
     

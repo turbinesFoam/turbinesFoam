@@ -427,6 +427,7 @@ void Foam::fv::LeishmanBeddoes::correct
         alphaPrev_ = alpha_;
     }
     
+    magU_ = magU;
     alpha_ = alphaDeg/180*pi;
     M_ = magU/a_;
     deltaAlpha_ = alpha_ - alphaPrev_;

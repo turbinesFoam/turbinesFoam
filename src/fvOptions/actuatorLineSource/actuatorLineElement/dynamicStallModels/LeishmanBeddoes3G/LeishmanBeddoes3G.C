@@ -47,12 +47,16 @@ namespace fv
 
 void Foam::fv::LeishmanBeddoes3G::calcAlphaEquiv()
 {
+    T3_ = 1.25*M_;
     scalar beta = 1 - M_*M_;
-    X_ = XPrev_*exp(-b1_*beta*deltaS_) 
-       + A1_*deltaAlpha_*exp(b1_*beta*deltaS_/2);
-    Y_ = YPrev_*exp(-b2_*beta*deltaS_) 
-       + A2_*deltaAlpha_*exp(b2_*beta*deltaS_/2);
-    alphaEquiv_ = alpha_ - X_ - Y_;
+    X_ = XPrev_*exp(-beta*deltaS_/T1_) 
+       + A1_*(etaL_ - etaLPrev_)*exp(-beta*deltaS_/(2.0*T1_));
+    Y_ = YPrev_*exp(-beta*deltaS_/T2_) 
+       + A2_*(etaL_ - etaLPrev_)*exp(-beta*deltaS_/(2.0*T2_));
+    Z_ = ZPrev_*exp(-beta*deltaS_/T3_) 
+       + A1_*(etaL_ - etaLPrev_)*exp(-beta*deltaS_/(2.0*T3_));
+    etaL_ = alpha_ + c_/(2.0*magU_)*deltaAlpha_/deltaT_;
+    alphaEquiv_ = etaL_ - X_ - Y_ - Z_;
 }
 
 
@@ -344,6 +348,9 @@ Foam::fv::LeishmanBeddoes3G::LeishmanBeddoes3G
     LeishmanBeddoes(dict, modelName, time),
     Z_(0.0),
     etaL_(0.0),
+    A3_(coeffs_.lookupOrDefault("A3", 0.5)),
+    T1_(coeffs_.lookupOrDefault("T1", 20.0)),
+    T2_(coeffs_.lookupOrDefault("T2", 4.5)),
     H_(0.0)
 {
     fCrit_ = 0.6;
