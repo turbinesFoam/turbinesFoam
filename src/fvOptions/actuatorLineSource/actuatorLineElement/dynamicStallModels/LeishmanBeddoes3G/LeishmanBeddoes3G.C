@@ -333,6 +333,7 @@ void Foam::fv::LeishmanBeddoes3G::update()
     ZPrev_ = Z_;
     etaLPrev_ = etaL_;
     HPrev_ = H_;
+    lambdaLPrev_ = lambdaL_;
 }
 
 
@@ -351,7 +352,8 @@ Foam::fv::LeishmanBeddoes3G::LeishmanBeddoes3G
     A3_(coeffs_.lookupOrDefault("A3", 0.5)),
     T1_(coeffs_.lookupOrDefault("T1", 20.0)),
     T2_(coeffs_.lookupOrDefault("T2", 4.5)),
-    H_(0.0)
+    H_(0.0),
+    lambdaL_(0.0)
 {
     fCrit_ = 0.6;
     Tv_ = coeffs_.lookupOrDefault("Tv", 10.0);

@@ -88,6 +88,12 @@ protected:
         //- Previous value of H
         scalar HPrev_;
         
+        //- Impulsive forcing term for pitching around quarter axis
+        scalar lambdaL_;
+        
+        //- Previous value of lambdaL
+        scalar lambdaLPrev_;
+        
         //- Modified trailing edge separation point
         scalar f3G_;
         
