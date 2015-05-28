@@ -167,18 +167,6 @@ public:
         // Write
         
         // Evaluation
-            
-            // Correct lift and drag coefficients
-            virtual void correct
-            (
-                scalar magU,
-                scalar alphaDeg,
-                scalar& cl,
-                scalar& cd,
-                List<scalar> alphaDegList,
-                List<scalar> clList,
-                List<scalar> cdList
-            );
 
 };
 
