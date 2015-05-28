@@ -222,7 +222,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     angleOfAttack_(0.0),
     dynamicStallActive_(false),
     omega_(0.0),
-    chordMount_(0.5)
+    chordMount_(0.25)
 {
     read();
 }
@@ -463,16 +463,14 @@ void Foam::fv::actuatorLineElement::rotate
 }
 
 
-void Foam::fv::actuatorLineElement::pitch(scalar radians)
-{
-    rotate(position_, spanDirection_, radians, false);
-}
-
-
-void Foam::fv::actuatorLineElement::pitch(scalar radians, scalar chordFraction)
+void Foam::fv::actuatorLineElement::pitch
+(
+    scalar radians, 
+    scalar chordFraction
+)
 {
     vector rotationPoint = position_;
-    rotationPoint += chordDirection_*(0.5 - chordFraction);
+    rotationPoint += chordDirection_*(chordMount_ - chordFraction);
     rotate(rotationPoint, spanDirection_, radians, false);
 }
 
