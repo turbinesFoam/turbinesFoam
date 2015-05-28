@@ -105,15 +105,6 @@ protected:
     
         // Calculate the equivalent angle of attack
         virtual void calcAlphaEquiv();
-    
-        // Evaluate the static foil data, i.e., calculate CNAlpha, CN1, 
-        // alpha1, and CD0
-        virtual void evalStaticData
-        (
-            List<scalar> alphaDegList,
-            List<scalar> clList,
-            List<scalar> cdList
-        );
         
         // Calculate unsteady quantities
         virtual void calcUnsteady();
