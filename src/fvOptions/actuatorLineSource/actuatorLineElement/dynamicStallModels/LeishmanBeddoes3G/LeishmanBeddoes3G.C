@@ -200,12 +200,12 @@ void Foam::fv::LeishmanBeddoes3G::calcS1S2
             if (mag(alphaPrime_) < alpha1_) 
             {
                 x = mag(alphaRad) - alpha1_;
-                y = (f - 1)/(-0.3);
+                y = (f - 1)/(-0.4);
             }
             else 
             {
                 x = alpha1_ - mag(alphaRad);
-                y = (f - 0.04)/0.66;
+                y = (f - 0.02)/0.58;
             }
             if (f > 0 and f < 1 and y > 0)
             {
