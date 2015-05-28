@@ -325,20 +325,10 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
 
 void Foam::fv::LeishmanBeddoes3G::update()
 {
-    timePrev_ = time_.value();
-    alphaPrev_ = alpha_;
-    XPrev_ = X_;
-    YPrev_ = Y_;
-    deltaAlphaPrev_ = deltaAlpha_;
-    DPrev_ = D_;
-    DPPrev_ = DP_;
-    CNPPrev_ = CNP_;
-    DFPrev_ = DF_;
-    fPrimePrev_ = fPrime_;
-    CVPrev_ = CV_;
-    CNVPrev_ = CNV_;
-    stalledPrev_ = stalled_;
-    tauPrev_ = tau_;
+    LeishmanBeddoes::update();
+    ZPrev_ = Z_;
+    etaLPrev_ = etaL_;
+    HPrev_ = H_;
 }
 
 
@@ -351,7 +341,10 @@ Foam::fv::LeishmanBeddoes3G::LeishmanBeddoes3G
     const Time& time
 )
 :
-    LeishmanBeddoes(dict, modelName, time)
+    LeishmanBeddoes(dict, modelName, time),
+    Z_(0.0),
+    etaL_(0.0),
+    H_(0.0)
 {
     fCrit_ = 0.6;
     
