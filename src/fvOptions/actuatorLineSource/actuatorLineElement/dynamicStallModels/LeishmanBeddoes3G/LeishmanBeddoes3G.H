@@ -88,6 +88,12 @@ protected:
         //- Previous value of H
         scalar HPrev_;
         
+        //- Modified trailing edge separation point
+        scalar f3G_;
+        
+        //- Modulation parameter for the f3G deficiency function
+        scalar Vx_;
+        
         
     // Protected member functions
     
