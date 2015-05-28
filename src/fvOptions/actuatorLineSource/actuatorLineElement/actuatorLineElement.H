@@ -252,6 +252,9 @@ public:
             //- Pitch the element about its half chord
             void pitch(scalar radians);
             
+            //- Pitch the element about some fraction of the chord
+            void pitch(scalar radians, scalar chordFraction);
+            
             //- Set velocity of element
             void setVelocity(vector velocity);
             

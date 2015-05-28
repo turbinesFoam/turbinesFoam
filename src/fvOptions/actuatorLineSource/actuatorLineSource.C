@@ -388,6 +388,15 @@ void Foam::fv::actuatorLineSource::pitch(scalar radians)
 }
 
 
+void Foam::fv::actuatorLineSource::pitch(scalar radians, scalar chordFraction)
+{
+    forAll(elements_, i)
+    {
+        elements_[i].pitch(radians, chordFraction);
+    }
+}
+
+
 void Foam::fv::actuatorLineSource::translate(vector translationVector)
 {
     forAll(elements_, i)

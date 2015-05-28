@@ -161,6 +161,9 @@ public:
             //- Pitch the blade about its half chord
             void pitch(scalar radians);
             
+            //- Pitch the blade about some fraction of the chord
+            void pitch(scalar radians, scalar chordFraction);
+            
             //- Scale the velocity of all elements
             void scaleVelocity(scalar scale);
             

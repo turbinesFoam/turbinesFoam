@@ -469,6 +469,14 @@ void Foam::fv::actuatorLineElement::pitch(scalar radians)
 }
 
 
+void Foam::fv::actuatorLineElement::pitch(scalar radians, scalar chordFraction)
+{
+    vector rotationPoint = position_;
+    rotationPoint += chordDirection_*(0.5 - chordFraction);
+    rotate(rotationPoint, spanDirection_, radians, false);
+}
+
+
 void Foam::fv::actuatorLineElement::translate(vector translationVector)
 {
     position_ += translationVector;
