@@ -124,19 +124,20 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             }
             
             // Set sizes for actuatorLineSource elementGeometry lists
-            elementGeometry[j].setSize(5);
+            elementGeometry[j].setSize(6);
             elementGeometry[j][0].setSize(3);
             elementGeometry[j][1].setSize(3);
             elementGeometry[j][2].setSize(1);
             elementGeometry[j][3].setSize(3);
             elementGeometry[j][4].setSize(1);
+            elementGeometry[j][5].setSize(1);
             
             // Create geometry point for AL source at origin
             vector point = origin_;
             // Move along axis
             point += axialDistance*axis_;
-            scalar chordDisplacement = (0.5 - chordMount)*chordLength;
-            point += chordDisplacement*freeStreamDirection_;
+            scalar chordDisplacement = (chordMount - 0.25)*chordLength;
+            point -= chordDisplacement*freeStreamDirection_;
             point += radius*radialDirection_;
             initialVelocities[j] = -freeStreamDirection_*omega_*radius;
             // Rotate according to azimuth value
@@ -159,11 +160,14 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             rotateVector(chordDirection, origin_, axis_, azimuthRadians);
             elementGeometry[j][3][0] = chordDirection.x(); 
             elementGeometry[j][3][1] = chordDirection.y(); 
-            elementGeometry[j][3][2] = chordDirection.z(); 
+            elementGeometry[j][3][2] = chordDirection.z();
+            
+            // Set chord mount
+            elementGeometry[j][4][0] = chordMount;
             
             // Set pitch
             scalar pitch = elementData[j][5];
-            elementGeometry[j][4][0] = pitch;
+            elementGeometry[j][5][0] = pitch;
         }
         
         // Add frontal area to list
@@ -259,19 +263,20 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
             scalar chordMount = elementData[j][4];
             
             // Set sizes for actuatorLineSource elementGeometry lists
-            elementGeometry[j].setSize(5);
+            elementGeometry[j].setSize(6);
             elementGeometry[j][0].setSize(3);
             elementGeometry[j][1].setSize(3);
             elementGeometry[j][2].setSize(1);
             elementGeometry[j][3].setSize(3);
             elementGeometry[j][4].setSize(1);
+            elementGeometry[j][5].setSize(1);
             
             // Create geometry point for AL source at origin
             vector point = origin_;
             // Move along axis
             point += axialDistance*axis_;
-            scalar chordDisplacement = (0.5 - chordMount)*chordLength;
-            point += chordDisplacement*freeStreamDirection_;
+            scalar chordDisplacement = (chordMount - 0.25)*chordLength;
+            point -= chordDisplacement*freeStreamDirection_;
             point += radius*radialDirection_;
             initialVelocities[j] = -freeStreamDirection_*omega_*radius;
             // Rotate according to azimuth value
@@ -296,11 +301,14 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
             rotateVector(chordDirection, origin_, axis_, azimuthRadians);
             elementGeometry[j][3][0] = chordDirection.x(); 
             elementGeometry[j][3][1] = chordDirection.y(); 
-            elementGeometry[j][3][2] = chordDirection.z(); 
+            elementGeometry[j][3][2] = chordDirection.z();
+            
+            // Set chord mount
+            elementGeometry[j][4][0] = chordMount;
             
             // Set pitch
             scalar pitch = elementData[j][5];
-            elementGeometry[j][4][0] = pitch;
+            elementGeometry[j][5][0] = pitch;
         }
 
         if (debug)
@@ -357,12 +365,13 @@ void Foam::fv::crossFlowTurbineALSource::createShaft()
         scalar diameter = elementData[j][1];
         
         // Set sizes for actuatorLineSource elementGeometry lists
-        elementGeometry[j].setSize(5);
+        elementGeometry[j].setSize(6);
         elementGeometry[j][0].setSize(3);
         elementGeometry[j][1].setSize(3);
         elementGeometry[j][2].setSize(1);
         elementGeometry[j][3].setSize(3);
         elementGeometry[j][4].setSize(1);
+        elementGeometry[j][5].setSize(1);
         
         // Create geometry point for AL source at origin
         vector point = origin_;
@@ -386,8 +395,11 @@ void Foam::fv::crossFlowTurbineALSource::createShaft()
         elementGeometry[j][3][1] = freeStreamDirection_.y();
         elementGeometry[j][3][2] = freeStreamDirection_.z();
         
+        // Set chord mount
+        elementGeometry[j][4][0] = 0.25;
+        
         // Set pitch
-        elementGeometry[j][4][0] = 0.0;
+        elementGeometry[j][5][0] = 0.0;
     }
     
     shaftSubDict.add("elementGeometry", elementGeometry);
