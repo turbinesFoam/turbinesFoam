@@ -67,7 +67,8 @@ void Foam::fv::LeishmanBeddoes3G::calcUnsteady()
     
     // Calculate the impulsive normal force coefficient
     scalar pi = Foam::constant::mathematical::pi;
-    scalar kAlpha = 0.75/(1 - M_ + pi*(1 - M_*M_)*M_*M_*(A1_*b1_ + A2_*b2_));
+    scalar kAlpha = 0.75
+                  / (1.0 - M_ + pi*(1.0 - M_*M_)*M_*M_*(A1_*b1_ + A2_*b2_));
     TI_ = c_/a_;
     D_ = DPrev_*exp(-deltaT_/(kAlpha*TI_)) 
        - ((deltaAlpha_ - deltaAlphaPrev_)/deltaT_)
@@ -78,7 +79,8 @@ void Foam::fv::LeishmanBeddoes3G::calcUnsteady()
     CNP_ = CNC_ + CNI_;
     
     // Apply first-order lag to normal force coefficient
-    DP_ = DPPrev_*exp(-deltaS_/Tp_) + (CNP_ - CNPPrev_)*exp(-deltaS_/(2*Tp_));
+    DP_ = DPPrev_*exp(-deltaS_/Tp_) 
+        + (CNP_ - CNPPrev_)*exp(-deltaS_/(2.0*Tp_));
     CNPrime_ = CNP_ - DP_;
     
     // Calculate lagged angle of attack
@@ -112,17 +114,17 @@ void Foam::fv::LeishmanBeddoes3G::calcS1S2
     else
     {
         alphaLowerLimit = alpha1_ - 1e-3;
-        alphaUpperLimit = pi/6;
+        alphaUpperLimit = pi/6.0;
     }
     forAll(alphaDegList, i)
     {
-        scalar alphaRad = alphaDegList[i]/180*pi;
+        scalar alphaRad = alphaDegList[i]/180.0*pi;
         scalar cn = clList[i]*cos(alphaRad) - cdList[i]*sin(alphaRad);
-        scalar f = 1;
+        scalar f = 1.0;
         if (alphaRad > alphaLowerLimit and alphaRad < alphaUpperLimit)
         {
             f = pow((sqrt(mag(cn)/CNAlpha_/mag(alphaRad))
-                    *2 - 1), 2);
+                    *2.0 - 1.0), 2);
             scalar x;
             scalar y;
             if (mag(alphaPrime_) < alpha1_) 
@@ -148,13 +150,13 @@ void Foam::fv::LeishmanBeddoes3G::calcS1S2
     scalar b = (sumY*sumXYLnY - sumXY*sumYLnY)/(sumY*sumX2Y - sumXY*sumXY);
     if (mag(alphaPrime_) < alpha1_)
     {
-        S1_ = 1/b;
+        S1_ = 1.0/b;
         S2_ = 0.0;
     }
     else
     {
         S1_ = 0.0;
-        S2_ = 1/b;
+        S2_ = 1.0/b;
     }
     
     if (debug)
@@ -192,7 +194,8 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
     fDoublePrime_ = mag(fPrime_ - DF_);
     
     // Calculate normal force coefficient including dynamic separation point
-    CNF_ = CNAlpha_*alphaEquiv_*pow(((1 + sqrt(fDoublePrime_))/2), 2) + CNI_;
+    CNF_ = CNAlpha_*alphaEquiv_*pow(((1.0 + sqrt(fDoublePrime_))/2.0), 2) 
+         + CNI_;
     
     // Calculate tangential force coefficient
     if (fDoublePrime_ < 0.7)
@@ -217,7 +220,7 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
     
     // Calculate Strouhal number time constant and set tau to zero to 
     // allow multiple vortex shedding
-    scalar Tst = 2*(1 - fDoublePrime_)/0.19;
+    scalar Tst = 2.0*(1.0 - fDoublePrime_)/0.19;
     if (tau_ > (Tvl_ + Tst)) tau_ = 0.0;
     
     // Evaluate vortex lift contributions, which are only nonzero if angle
@@ -229,9 +232,9 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
         {
             // Halve Tv if dAlpha/dt changes sign
             if (sign(deltaAlpha_) != sign(deltaAlphaPrev_)) Tv = 0.5*Tv_;
-            CV_ = CNC_*(1 - pow(((1 + sqrt(fDoublePrime_))/2), 2));
+            CV_ = CNC_*(1.0 - pow(((1.0 + sqrt(fDoublePrime_))/2.0), 2));
             CNV_ = CNVPrev_*exp(-deltaS_/Tv) 
-                 + (CV_ - CVPrev_)*exp(-deltaS_/(2*Tv));
+                 + (CV_ - CVPrev_)*exp(-deltaS_/(2.0*Tv));
         }
         else
         {
@@ -326,14 +329,14 @@ void Foam::fv::LeishmanBeddoes3G::correct
     
     if (nNewTimes_ <= 1)
     {
-        alpha_ = alphaDeg/180*pi;
+        alpha_ = alphaDeg/180.0*pi;
         alphaPrev_ = alpha_;
     }
     
     alpha_ = alphaDeg/180*pi;
     M_ = magU/a_;
     deltaAlpha_ = alpha_ - alphaPrev_;
-    deltaS_ = 2*magU*deltaT_/c_;
+    deltaS_ = 2.0*magU*deltaT_/c_;
     
     if (debug)
     {
