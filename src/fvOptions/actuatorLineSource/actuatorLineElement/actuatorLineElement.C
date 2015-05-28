@@ -49,6 +49,7 @@ void Foam::fv::actuatorLineElement::read()
     dict_.lookup("position") >> position_;
     dict_.lookup("chordLength") >> chordLength_;
     dict_.lookup("chordDirection") >> chordDirection_;
+    dict_.lookup("chordMount") >> chordMount_;
     dict_.lookup("spanLength") >> spanLength_;
     dict_.lookup("spanDirection") >> spanDirection_;
     dict_.lookup("coefficientData") >> coefficientData_;
