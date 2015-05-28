@@ -278,6 +278,7 @@ void Foam::fv::actuatorLineElement::calculate
     volVectorField& forceField
 )
 {
+    scalar pi = Foam::constant::mathematical::pi;
     if (debug)
     {
         Info<< "Calculating force contribution from actuatorLineElement " 
@@ -289,9 +290,8 @@ void Foam::fv::actuatorLineElement::calculate
     }
     
     // Find local wind velocity upstream
-    scalar upstreamDistance = chordLength_*0.25;
+    scalar upstreamDistance = chordLength_*0.0;
     vector upstreamPoint = position_ - upstreamDistance*freeStreamDirection_;
-    upstreamPoint += velocity_*mesh_.time().deltaT().value();
     label upstreamCellI = mesh_.findCell(upstreamPoint);
     vector inflowVelocity = Uin[upstreamCellI];
     
@@ -320,15 +320,24 @@ void Foam::fv::actuatorLineElement::calculate
     // Calculate angle of attack (radians)
     scalar angleOfAttackRad = asin((planformNormal & relativeVelocity_)
                             / (mag(planformNormal)*mag(relativeVelocity_)));
-    angleOfAttack_ = angleOfAttackRad/Foam::constant::mathematical::pi*180.0;
+                            
+    if (debug)
+    {
+        Info<< "    Angle of attack (uncorrected, degrees): " 
+            << angleOfAttackRad/pi*180.0 << endl;
+    }
     
     // Apply flow curvature correction to angle of attack
-    angleOfAttack_ -= omega_*chordMount_*chordLength_/mag(relativeVelocity_);
-    angleOfAttack_ -= omega_*chordLength_/(4*mag(relativeVelocity_));
+    angleOfAttackRad -= omega_*chordMount_*chordLength_/mag(relativeVelocity_);
+    angleOfAttackRad -= omega_*chordLength_/(4*mag(relativeVelocity_));
+    
+    // Calculate angle of attack in degrees
+    angleOfAttack_ = angleOfAttackRad/pi*180.0;
     
     if (debug)
     {
-        Info<< "    angleOfAttack (degrees): " << angleOfAttack_ << endl;
+        Info<< "    Angle of attack (corrected, degrees): " 
+            << angleOfAttack_ << endl;
     }
     
     // Lookup lift and drag coefficients
