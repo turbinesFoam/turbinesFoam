@@ -107,7 +107,7 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
     }
     
     // Calculate CN1 using normal coefficient slope and critical f value
-    scalar f = 0.7;
+    scalar f = fCrit_;
     alpha1_ = alphaSS_;
     CN1_ = CNAlpha_*alpha1_*pow((1 + sqrt(f))/2.0, 2);
     
@@ -267,7 +267,7 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     CNF_ = CNAlpha_*alphaEquiv_*pow(((1 + sqrt(fDoublePrime_))/2), 2) + CNI_;
     
     // Calculate tangential force coefficient
-    if (fDoublePrime_ < 0.7)
+    if (fDoublePrime_ < fCrit_)
     {
         CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*sqrt(fDoublePrime_);
     }
@@ -376,7 +376,8 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     Tv_(coeffs_.lookupOrDefault("Tv", 6.0)),
     Tvl_(coeffs_.lookupOrDefault("Tvl", 7.0)),
     tau_(0.0),
-    nNewTimes_(0)
+    nNewTimes_(0),
+    fCrit_(0.7)
 {
     dict_.lookup("chordLength") >> c_;
     

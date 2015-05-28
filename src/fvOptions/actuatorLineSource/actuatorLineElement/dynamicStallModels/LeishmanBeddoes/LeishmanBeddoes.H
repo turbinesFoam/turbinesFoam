@@ -232,6 +232,9 @@ protected:
         //- Static stall angle (radians)
         scalar alphaSS_;
         
+        //- Critical trailing edge separation point
+        scalar fCrit_;
+        
         
     // Protected member functions
     
