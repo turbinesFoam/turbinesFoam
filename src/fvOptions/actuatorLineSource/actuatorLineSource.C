@@ -133,6 +133,7 @@ void Foam::fv::actuatorLineSource::createElements()
     List<scalar> chordLengths(nGeometryPoints);
     List<vector> chordRefDirs(nGeometryPoints);
     List<scalar> pitches(nGeometryPoints);
+    List<scalar> chordMounts(nGeometryPoints);
     totalLength_ = 0.0;
     
     for (int i = 0; i < nGeometryPoints; i++)
@@ -155,8 +156,10 @@ void Foam::fv::actuatorLineSource::createElements()
         y = elementGeometry_[i][3][1];
         z = elementGeometry_[i][3][2];
         chordRefDirs[i] = vector(x, y, z);
+        // Read chord mount
+        chordMounts[i] = elementGeometry_[i][4][0];
         // Read pitch
-        pitches[i] = elementGeometry_[i][4][0];
+        pitches[i] = elementGeometry_[i][5][0];
     }
     
     // Calculate span length of each element
@@ -191,6 +194,7 @@ void Foam::fv::actuatorLineSource::createElements()
         vector chordDirection;
         vector spanDirection;
         scalar pitch;
+        scalar chordMount;
         vector initialVelocity;
         
         // Linearly interpolate position
@@ -225,6 +229,13 @@ void Foam::fv::actuatorLineSource::createElements()
               + deltaPitchTotal/nElementsPerSegment*pointIndex
               + deltaPitchTotal/nElementsPerSegment/2;
               
+        // Linearly interpolate chord mount
+        scalar cm1 = chordMounts[geometrySegmentIndex];
+        scalar cm2 = chordMounts[geometrySegmentIndex + 1];
+        scalar deltaCmTotal = cm2 - cm1;
+        chordMount = cm1 + deltaCmTotal/nElementsPerSegment*pointIndex
+                   + deltaCmTotal/nElementsPerSegment/2;
+              
         // Linearly interpolate element velocity
         vector vel1 = initialVelocities[geometrySegmentIndex];
         vector vel2 = initialVelocities[geometrySegmentIndex + 1];
@@ -251,6 +262,7 @@ void Foam::fv::actuatorLineSource::createElements()
         dict.add("spanLength", spanLength);
         dict.add("spanDirection", spanDirection);
         dict.add("freeStreamDirection", freeStreamDirection_);
+        dict.add("chordMount", chordMount);
         if (coeffs_.found("dynamicStall"))
         {
             dictionary dsDict = coeffs_.subDict("dynamicStall");
@@ -384,6 +396,15 @@ void Foam::fv::actuatorLineSource::pitch(scalar radians)
     forAll(elements_, i)
     {
         elements_[i].pitch(radians);
+    }
+}
+
+
+void Foam::fv::actuatorLineSource::pitch(scalar radians, scalar chordFraction)
+{
+    forAll(elements_, i)
+    {
+        elements_[i].pitch(radians, chordFraction);
     }
 }
 

@@ -143,7 +143,7 @@ protected:
         //- Angular velocity for flow curvature correction
         scalar omega_;
         
-        //- Nondimensional chord mount distance for flow curvature correction
+        //- Nondimensional chord mount distance
         scalar chordMount_;
 
 
@@ -249,8 +249,8 @@ public:
                 scalar radians
             );
             
-            //- Pitch the element about its half chord
-            void pitch(scalar radians);
+            //- Pitch the element about some fraction of the chord
+            void pitch(scalar radians, scalar chordFraction=0.25);
             
             //- Set velocity of element
             void setVelocity(vector velocity);

@@ -49,6 +49,7 @@ void Foam::fv::actuatorLineElement::read()
     dict_.lookup("position") >> position_;
     dict_.lookup("chordLength") >> chordLength_;
     dict_.lookup("chordDirection") >> chordDirection_;
+    dict_.lookup("chordMount") >> chordMount_;
     dict_.lookup("spanLength") >> spanLength_;
     dict_.lookup("spanDirection") >> spanDirection_;
     dict_.lookup("coefficientData") >> coefficientData_;
@@ -222,7 +223,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     angleOfAttack_(0.0),
     dynamicStallActive_(false),
     omega_(0.0),
-    chordMount_(0.5)
+    chordMount_(0.25)
 {
     read();
 }
@@ -463,9 +464,15 @@ void Foam::fv::actuatorLineElement::rotate
 }
 
 
-void Foam::fv::actuatorLineElement::pitch(scalar radians)
+void Foam::fv::actuatorLineElement::pitch
+(
+    scalar radians, 
+    scalar chordFraction
+)
 {
-    rotate(position_, spanDirection_, radians, false);
+    vector rotationPoint = position_;
+    rotationPoint += chordDirection_*(chordMount_ - chordFraction);
+    rotate(rotationPoint, spanDirection_, radians, false);
 }
 
 

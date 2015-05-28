@@ -232,15 +232,21 @@ protected:
         //- Static stall angle (radians)
         scalar alphaSS_;
         
+        //- Critical trailing edge separation point
+        scalar fCrit_;
+        
+        //- Magnitude of the relative velocity
+        scalar magU_;
+        
         
     // Protected member functions
     
         // Calculate the equivalent angle of attack
-        void calcAlphaEquiv();
+        virtual void calcAlphaEquiv();
     
         // Evaluate the static foil data, i.e., calculate CNAlpha, CN1, 
         // alpha1, and CD0
-        void evalStaticData
+        virtual void evalStaticData
         (
             List<scalar> alphaDegList,
             List<scalar> clList,
@@ -248,10 +254,10 @@ protected:
         );
         
         // Calculate unsteady quantities
-        void calcUnsteady();
+        virtual void calcUnsteady();
         
         // Calculate S1 and S2 constants
-        void calcS1S2
+        virtual void calcS1S2
         (
             List<scalar> alphaDegList,
             List<scalar> clList,
@@ -259,10 +265,10 @@ protected:
         );
         
         // Calculate separated flow quantities
-        void calcSeparated();
+        virtual void calcSeparated();
     
         // Update previous time step values
-        void update();
+        virtual void update();
 
 
 public:

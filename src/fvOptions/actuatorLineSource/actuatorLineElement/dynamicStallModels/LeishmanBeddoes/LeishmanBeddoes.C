@@ -47,11 +47,11 @@ namespace fv
 
 void Foam::fv::LeishmanBeddoes::calcAlphaEquiv()
 {
-    scalar beta = 1 - M_*M_;
+    scalar beta = 1.0 - M_*M_;
     X_ = XPrev_*exp(-b1_*beta*deltaS_) 
-       + A1_*deltaAlpha_*exp(b1_*beta*deltaS_/2);
+       + A1_*deltaAlpha_*exp(b1_*beta*deltaS_/2.0);
     Y_ = YPrev_*exp(-b2_*beta*deltaS_) 
-       + A2_*deltaAlpha_*exp(b2_*beta*deltaS_/2);
+       + A2_*deltaAlpha_*exp(b2_*beta*deltaS_/2.0);
     alphaEquiv_ = alpha_ - X_ - Y_;
 }
 
@@ -71,7 +71,7 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
     
     forAll(alphaDegList, i)
     {
-        alphaRadList[i] = alphaDegList[i]/180*pi;
+        alphaRadList[i] = alphaDegList[i]/180.0*pi;
         cnList[i] = clList[i]*cos(alphaRadList[i]) 
                   - cdList[i]*sin(alphaRadList[i]);
         ctList[i] = clList[i]*sin(alphaRadList[i])
@@ -107,9 +107,9 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
     }
     
     // Calculate CN1 using normal coefficient slope and critical f value
-    scalar f = 0.7;
+    scalar f = fCrit_;
     alpha1_ = alphaSS_;
-    CN1_ = CNAlpha_*alpha1_*pow((1 + sqrt(f))/2.0, 2);
+    CN1_ = CNAlpha_*alpha1_*pow((1.0 + sqrt(f))/2.0, 2);
     
     if (debug)
     {
@@ -139,18 +139,20 @@ void Foam::fv::LeishmanBeddoes::calcUnsteady()
     
     // Calculate the impulsive normal force coefficient
     scalar pi = Foam::constant::mathematical::pi;
-    scalar kAlpha = 0.75/(1 - M_ + pi*(1 - M_*M_)*M_*M_*(A1_*b1_ + A2_*b2_));
+    scalar kAlpha = 0.75
+                  / (1.0 - M_ + pi*(1.0 - M_*M_)*M_*M_*(A1_*b1_ + A2_*b2_));
     TI_ = c_/a_;
     D_ = DPrev_*exp(-deltaT_/(kAlpha*TI_)) 
        - ((deltaAlpha_ - deltaAlphaPrev_)/deltaT_)
-       *exp(-deltaT_/(2*kAlpha*TI_));
-    CNI_ = 4*kAlpha*TI_/M_*(deltaAlpha_/deltaT_ - D_);
+       *exp(-deltaT_/(2.0*kAlpha*TI_));
+    CNI_ = 4.0*kAlpha*TI_/M_*(deltaAlpha_/deltaT_ - D_);
     
     // Calculate total normal force coefficient
     CNP_ = CNC_ + CNI_;
     
     // Apply first-order lag to normal force coefficient
-    DP_ = DPPrev_*exp(-deltaS_/Tp_) + (CNP_ - CNPPrev_)*exp(-deltaS_/(2*Tp_));
+    DP_ = DPPrev_*exp(-deltaS_/Tp_) 
+        + (CNP_ - CNPPrev_)*exp(-deltaS_/(2.0*Tp_));
     CNPrime_ = CNP_ - DP_;
     
     // Calculate lagged angle of attack
@@ -184,17 +186,17 @@ void Foam::fv::LeishmanBeddoes::calcS1S2
     else
     {
         alphaLowerLimit = alpha1_ - 1e-3;
-        alphaUpperLimit = pi/6;
+        alphaUpperLimit = pi/6.0;
     }
     forAll(alphaDegList, i)
     {
-        scalar alphaRad = alphaDegList[i]/180*pi;
+        scalar alphaRad = alphaDegList[i]/180.0*pi;
         scalar cn = clList[i]*cos(alphaRad) - cdList[i]*sin(alphaRad);
-        scalar f = 1;
+        scalar f = 1.0;
         if (alphaRad > alphaLowerLimit and alphaRad < alphaUpperLimit)
         {
             f = pow((sqrt(mag(cn)/CNAlpha_/mag(alphaRad))
-                    *2 - 1), 2);
+                    *2.0 - 1.0), 2);
             scalar x;
             scalar y;
             if (mag(alphaPrime_) < alpha1_) 
@@ -220,13 +222,13 @@ void Foam::fv::LeishmanBeddoes::calcS1S2
     scalar b = (sumY*sumXYLnY - sumXY*sumYLnY)/(sumY*sumX2Y - sumXY*sumXY);
     if (mag(alphaPrime_) < alpha1_)
     {
-        S1_ = 1/b;
+        S1_ = 1.0/b;
         S2_ = 0.0;
     }
     else
     {
         S1_ = 0.0;
-        S2_ = 1/b;
+        S2_ = 1.0/b;
     }
     
     if (debug)
@@ -252,7 +254,7 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     // Modify Tf time constant if necessary
     scalar Tf = Tf_;
     if (tau_ > 0 and tau_ <= Tvl_) Tf = 0.5*Tf_;
-    else if (tau_ > Tvl_ and tau_ <= 2*Tvl_) Tf = 4*Tf_;
+    else if (tau_ > Tvl_ and tau_ <= 2.0*Tvl_) Tf = 4.0*Tf_;
     if (mag(alpha_) < mag(alphaPrev_) and mag(CNPrime_) < CN1_)
     {
         Tf = 0.5*Tf_;
@@ -260,20 +262,21 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     
     // Calculate dynamic separation point
     DF_ = DFPrev_*exp(-deltaS_/Tf) 
-        + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf));
+        + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2.0*Tf));
     fDoublePrime_ = mag(fPrime_ - DF_);
     
     // Calculate normal force coefficient including dynamic separation point
-    CNF_ = CNAlpha_*alphaEquiv_*pow(((1 + sqrt(fDoublePrime_))/2), 2) + CNI_;
+    CNF_ = CNAlpha_*alphaEquiv_*pow(((1.0 + sqrt(fDoublePrime_))/2.0), 2.0) 
+         + CNI_;
     
     // Calculate tangential force coefficient
-    if (fDoublePrime_ < 0.7)
+    if (fDoublePrime_ < fCrit_)
     {
-        CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*sqrt(fDoublePrime_);
+        CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*pow(fDoublePrime_, 1.5);
     }
     else
     {
-        CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*pow(fDoublePrime_, 1.5);
+        CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*sqrt(fDoublePrime_);
     }
     
     // Compute vortex shedding process if stalled
@@ -289,7 +292,7 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     
     // Calculate Strouhal number time constant and set tau to zero to 
     // allow multiple vortex shedding
-    scalar Tst = 2*(1 - fDoublePrime_)/0.19;
+    scalar Tst = 2.0*(1.0 - fDoublePrime_)/0.19;
     if (tau_ > (Tvl_ + Tst)) tau_ = 0.0;
     
     // Evaluate vortex lift contributions, which are only nonzero if angle
@@ -301,9 +304,9 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
         {
             // Halve Tv if dAlpha/dt changes sign
             if (sign(deltaAlpha_) != sign(deltaAlphaPrev_)) Tv = 0.5*Tv_;
-            CV_ = CNC_*(1 - pow(((1 + sqrt(fDoublePrime_))/2), 2));
+            CV_ = CNC_*(1.0 - pow(((1.0 + sqrt(fDoublePrime_))/2.0), 2));
             CNV_ = CNVPrev_*exp(-deltaS_/Tv) 
-                 + (CV_ - CVPrev_)*exp(-deltaS_/(2*Tv));
+                 + (CV_ - CVPrev_)*exp(-deltaS_/(2.0*Tv));
         }
         else
         {
@@ -352,7 +355,6 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
 )
 :
     dynamicStallModel(dict, modelName, time),
-
     X_(0.0),
     Y_(0.0),
     A1_(coeffs_.lookupOrDefault("A1", 0.3)),
@@ -376,7 +378,8 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     Tv_(coeffs_.lookupOrDefault("Tv", 6.0)),
     Tvl_(coeffs_.lookupOrDefault("Tvl", 7.0)),
     tau_(0.0),
-    nNewTimes_(0)
+    nNewTimes_(0),
+    fCrit_(0.7)
 {
     dict_.lookup("chordLength") >> c_;
     
@@ -423,11 +426,12 @@ void Foam::fv::LeishmanBeddoes::correct
     
     if (nNewTimes_ <= 1)
     {
-        alpha_ = alphaDeg/180*pi;
+        alpha_ = alphaDeg/180.0*pi;
         alphaPrev_ = alpha_;
     }
     
-    alpha_ = alphaDeg/180*pi;
+    magU_ = magU;
+    alpha_ = alphaDeg/180.0*pi;
     M_ = magU/a_;
     deltaAlpha_ = alpha_ - alphaPrev_;
     deltaS_ = 2*magU*deltaT_/c_;
