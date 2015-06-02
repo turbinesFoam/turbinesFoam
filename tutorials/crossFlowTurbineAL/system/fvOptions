@@ -101,7 +101,7 @@ turbine
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
                     (0.0 0.05 0.0 0.14 0.3 0.0)
-                    (0.0 0.65 0.0 0.14 0.3 0.0)
+                    (0.0 0.5 0.0 0.14 0.3 0.0)
                 );
             }
             strut2
@@ -111,7 +111,7 @@ turbine
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
                     (0.0 0.05 120.0 0.14 0.3 0.0)
-                    (0.0 0.65 120.0 0.14 0.3 0.0)
+                    (0.0 0.5 120.0 0.14 0.3 0.0)
                 );
             }
             strut3
@@ -121,7 +121,7 @@ turbine
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
                     (0.0 0.05 240.0 0.14 0.3 0.0)
-                    (0.0 0.65 240.0 0.14 0.3 0.0)
+                    (0.0 0.5 240.0 0.14 0.3 0.0)
                 );
             }
         }
