@@ -328,7 +328,7 @@ void Foam::fv::actuatorLineElement::calculate
     }
     
     // Apply flow curvature correction to angle of attack
-    angleOfAttackRad += omega_*(0.5 - chordMount_)*chordLength_/mag(relativeVelocity_);
+    angleOfAttackRad += omega_*(chordMount_ - 0.25)*chordLength_/mag(relativeVelocity_);
     angleOfAttackRad += omega_*chordLength_/(4*mag(relativeVelocity_));
     
     // Calculate angle of attack in degrees
