@@ -68,6 +68,25 @@ void Foam::fv::LeishmanBeddoesSGC::calcUnsteady()
     scalar DAlpha = alphaPrimePrev_*exp(-deltaS_/TAlpha_) 
                   + (alpha_ - alphaPrev_)*exp(-deltaS_/(2.0*TAlpha_));
     alphaPrime_ = alpha_ - DAlpha;
+    
+    // Calculate reduced pitch rate
+    r_ = deltaAlpha_/deltaT_*c_/(2.0*magU_);
+    
+    // Calculate alphaDS0
+    scalar pi = Foam::constant::mathematical::pi;
+    scalar dAlphaDS = alphaDS0DiffDeg_/180.0*pi;
+    alphaDS0_ = alphaSS_ + dAlphaDS;
+    
+    if (r_ >= r0_)
+    {
+        alphaCrit_ = alphaDS0_;
+    }
+    else
+    {
+        alphaCrit_ = alphaSS_ + (alphaDS0_ - alphaSS_)*r_/r0_;
+    }
+    
+    stalled_ = (mag(alphaPrime_) > alphaCrit_);
 }
 
 
@@ -257,7 +276,8 @@ Foam::fv::LeishmanBeddoesSGC::LeishmanBeddoesSGC
     TAlpha_(coeffs_.lookupOrDefault("TAlpha", 6.30)),
     r0_(coeffs_.lookupOrDefault("r0", 0.01)),
     B1_(coeffs_.lookupOrDefault("B1", 0.5)),
-    E0_(coeffs_.lookupOrDefault("E0", 0.15))
+    E0_(coeffs_.lookupOrDefault("E0", 0.15)),
+    alphaDS0DiffDeg_(coeffs_.lookupOrDefault("alphaDS0DiffDeg", 3.6))
 {
     Tv_ = coeffs_.lookupOrDefault("Tv", 11.0);
     Tvl_ = coeffs_.lookupOrDefault("Tvl", 9.0);

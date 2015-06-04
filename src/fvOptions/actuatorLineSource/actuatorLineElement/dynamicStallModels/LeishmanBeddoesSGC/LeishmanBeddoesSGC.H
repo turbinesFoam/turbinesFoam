@@ -80,6 +80,9 @@ protected:
         
         //- Constant associated with the tangential force
         scalar E0_;
+        
+        //- Difference between alphaDS0 and alphaSS (degrees)
+        scalar alphaDS0DiffDeg_;
 
         
     // Protected member functions
