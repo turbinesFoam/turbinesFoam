@@ -102,14 +102,10 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
         fPrime_ = 0.02 + 0.58*exp((alpha1_ - mag(alphaPrime_))/S2_);
     }
     
-    // Modify Tf time constant if necessary
-    scalar Tf = Tf_;
-    if (tau_ > Tvl_) Tf = 0.5*Tf_;
-    
     // Calculate dynamic separation point
     scalar pi = Foam::constant::mathematical::pi;
-    DF_ = DFPrev_*exp(-deltaS_/Tf) 
-        + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf));
+    DF_ = DFPrev_*exp(-deltaS_/Tf_) 
+        + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf_));
     fDoublePrime_ = mag(fPrime_ - DF_);
     if (tau_ > 0 and tau_ <= Tvl_)
     {
