@@ -56,6 +56,30 @@ class LeishmanBeddoesSGC
 protected:
 
     // Protected data
+    
+        //- Time constant associated with delayed angle of attack
+        scalar TAlpha_;
+        
+        //- Previous value of alphaPrime
+        scalar alphaPrimePrev_;
+        
+        //- Critical angle of attack
+        scalar alphaCrit_;
+        
+        //- Dynamic stall angle of attack for high pitch rate
+        scalar alphaDS0_;
+        
+        //- Reduced pitch rate
+        scalar r_;
+        
+        //- Threshold value of reduced pitch rate
+        scalar r0_;
+        
+        //- Constant associated with vortex lift
+        scalar B1_;
+        
+        //- Constant associated with the tangential force
+        scalar E0_;
 
         
     // Protected member functions
