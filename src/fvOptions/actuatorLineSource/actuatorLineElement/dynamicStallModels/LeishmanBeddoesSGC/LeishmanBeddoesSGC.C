@@ -62,32 +62,12 @@ void Foam::fv::LeishmanBeddoesSGC::calcAlphaEquiv()
 
 void Foam::fv::LeishmanBeddoesSGC::calcUnsteady()
 {
-    // Calculate the circulatory normal force coefficient
-    CNC_ = CNAlpha_*alphaEquiv_;
-    
-    // Calculate the impulsive normal force coefficient
-    scalar pi = Foam::constant::mathematical::pi;
-    lambdaL_ = (pi/4.0)*(alpha_ + c_/(4.0*magU_)*deltaAlpha_/deltaT_);
-    TI_ = c_/a_*(1.0 + 3.0*M_)/4.0;
-    H_ = HPrev_*exp(-deltaT_/TI_) 
-       + (lambdaL_ - lambdaLPrev_)*exp(-deltaT_/(2.0*TI_));
-    CNI_ = 4.0/M_*H_;
-    
-    // Calculate total normal force coefficient
-    CNP_ = CNC_ + CNI_;
-    
-    // Apply first-order lag to normal force coefficient
-    DP_ = DPPrev_*exp(-deltaS_/Tp_) 
-        + (CNP_ - CNPPrev_)*exp(-deltaS_/(2.0*Tp_));
-    CNPrime_ = CNP_ - DP_;
+    LeishmanBeddoes3G::calcUnsteady();
     
     // Calculate lagged angle of attack
     scalar DAlpha = alphaPrimePrev_*exp(-deltaS_/TAlpha_) 
                   + (alpha_ - alphaPrev_)*exp(-deltaS_/(2.0*TAlpha_));
     alphaPrime_ = alpha_ - DAlpha;
-    
-    // Set stalled switch
-    stalled_ = (mag(CNPrime_) > CN1_);
 }
 
 
