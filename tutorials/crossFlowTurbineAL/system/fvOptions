@@ -40,7 +40,7 @@ turbine
         dynamicStall
         {
             active              on;
-            dynamicStallModel   LeishmanBeddoes;
+            dynamicStallModel   LeishmanBeddoesSGC;
             LeishmanBeddoesCoeffs
             {
                 A1          0.3;        // Default = 0.3
