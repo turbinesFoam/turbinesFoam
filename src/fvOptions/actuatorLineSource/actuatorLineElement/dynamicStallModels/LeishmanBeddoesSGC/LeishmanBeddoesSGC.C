@@ -253,8 +253,17 @@ Foam::fv::LeishmanBeddoesSGC::LeishmanBeddoesSGC
     const Time& time
 )
 :
-    LeishmanBeddoes3G(dict, modelName, time)
+    LeishmanBeddoes3G(dict, modelName, time),
+    TAlpha_(coeffs_.lookupOrDefault("TAlpha", 6.30)),
+    r0_(coeffs_.lookupOrDefault("r0", 0.01)),
+    B1_(coeffs_.lookupOrDefault("B1", 0.5)),
+    E0_(coeffs_.lookupOrDefault("E0", 0.15))
 {
+    Tv_ = coeffs_.lookupOrDefault("Tv", 11.0);
+    Tvl_ = coeffs_.lookupOrDefault("Tvl", 9.0);
+    eta_ = coeffs_.lookupOrDefault("eta", 0.975);
+    
+    
     if (debug)
     {
         Info<< modelName << " dynamic stall model created" << endl
