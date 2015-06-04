@@ -183,6 +183,16 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
         fPrime_ = 0.02 + 0.58*exp((alpha1_ - mag(alphaPrime_))/S2_);
     }
     
+    // Evaluate vortex tracking time
+    if (not stalledPrev_) tau_ = 0.0;
+    else 
+    {
+        if (tau_ == tauPrev_)
+        {
+            tau_ = tauPrev_ + deltaS_;
+        }
+    }
+    
     // Modify Tf time constant if necessary
     scalar Tf = Tf_;
     if (tau_ > Tvl_) Tf = 0.5*Tf_;
@@ -200,8 +210,15 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
     {
         Vx_ = pow((cos(pi*(tau_ - Tvl_)/Tv_)), 2);
     }
-    if (mag(alpha_) < mag(alphaPrev_)) Vx_ = 0.0;
-    f3G_ = mag(fDoublePrime_ - DF_*Vx_);
+    if ((mag(alpha_) - mag(alphaPrev_)) < 0.1) 
+    {
+        Vx_ = 0.0;
+    }
+
+    // Calculate the separation point and limit to [0, 1]
+    f3G_ = fDoublePrime_ - DF_*Vx_;
+    if (f3G_ < 0) f3G_ = 0.0;
+    else if (f3G_ > 1) f3G_ = 1.0;
     
     // Calculate normal force coefficient including dynamic separation point
     CNF_ = CNAlpha_*alphaEquiv_*pow(((1.0 + sqrt(f3G_))/2.0), 2) 
@@ -216,48 +233,10 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
     {
         CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*sqrt(fDoublePrime_);
     }
-    
-    // Compute vortex shedding process if stalled
-    // Evaluate vortex tracking time
-    if (not stalledPrev_) tau_ = 0.0;
-    else 
-    {
-        if (tau_ == tauPrev_)
-        {
-            tau_ = tauPrev_ + deltaS_;
-        }
-    }
-    
-    // Calculate Strouhal number time constant and set tau to zero to 
-    // allow multiple vortex shedding
-    scalar Tst = 2.0*(1.0 - fDoublePrime_)/0.19;
-    if (tau_ > (Tvl_ + Tst)) tau_ = 0.0;
-    
-    // Evaluate vortex lift contributions, which are only nonzero if angle
-    // of attack increased in magnitude
-    if (mag(alpha_) > mag(alphaPrev_) and mag(alpha_ - alphaPrev_) > 0.01)
-    {
-        scalar Tv = Tv_;
-        if (tau_ < Tvl_)
-        {
-            CV_ = CNC_*(1.0 - pow(((1.0 + sqrt(fDoublePrime_))/2.0), 2));
-            CNV_ = CNVPrev_*exp(-deltaS_/Tv) 
-                 + (CV_ - CVPrev_)*exp(-deltaS_/(2.0*Tv));
-        }
-        else
-        {
-            CNV_ = CNVPrev_*exp(-deltaS_/Tv);
-        }
-    }
-    else
-    {
-        CNV_ = 0.0;
-    }
 
-    // Total normal force coefficient is the combination of that from
-    // circulatory effects, impulsive effects, dynamic separation, and vortex 
-    // lift
-    CN_ = CNF_ + CNV_;
+    // Total normal force coefficient is does not have CNV contribution
+    // since this is included in the Vx term
+    CN_ = CNF_;
 }
 
 

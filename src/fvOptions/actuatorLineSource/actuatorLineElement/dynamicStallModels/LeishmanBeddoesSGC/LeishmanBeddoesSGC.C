@@ -132,7 +132,10 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
     {
         Vx_ = pow((cos(pi*(tau_ - Tvl_)/Tv_)), 2);
     }
-    if (mag(alpha_) < mag(alphaPrev_)) Vx_ = 0.0;
+    if ((mag(alpha_) - mag(alphaPrev_)) < 0.1) 
+    {
+        Vx_ = 0.0;
+    }
     
     // Calculate the separation point and limit to [0, 1]
     f3G_ = fDoublePrime_ - DF_*Vx_;
