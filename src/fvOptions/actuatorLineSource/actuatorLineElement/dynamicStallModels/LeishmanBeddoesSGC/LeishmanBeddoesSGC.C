@@ -82,7 +82,9 @@ void Foam::fv::LeishmanBeddoesSGC::calcUnsteady()
     CNPrime_ = CNP_ - DP_;
     
     // Calculate lagged angle of attack
-    alphaPrime_ = CNPrime_/CNAlpha_;
+    scalar DAlpha = alphaPrimePrev_*exp(-deltaS_/TAlpha_) 
+                  + (alpha_ - alphaPrev_)*exp(-deltaS_/(2.0*TAlpha_));
+    alphaPrime_ = alpha_ - DAlpha;
     
     // Set stalled switch
     stalled_ = (mag(CNPrime_) > CN1_);
@@ -258,6 +260,7 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
 void Foam::fv::LeishmanBeddoesSGC::update()
 {
     LeishmanBeddoes3G::update();
+    alphaPrimePrev_ = alphaPrime_;
 }
 
 
