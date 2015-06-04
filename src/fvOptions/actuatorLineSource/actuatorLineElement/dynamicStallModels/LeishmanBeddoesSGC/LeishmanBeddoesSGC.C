@@ -140,7 +140,7 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
     else if (f3G_ > 1) f3G_ = 1.0;
     
     // Calculate normal force coefficient including dynamic separation point
-    CNF_ = CNAlpha_*alphaEquiv_*pow(((1.0 + sqrt(f3G_))/2.0), 2) 
+    CNF_ = CNAlpha_*alphaEquiv_*pow(((1.0 + sqrt(fDoublePrime_))/2.0), 2) 
          + CNI_;
     
     // Calculate tangential force coefficient
