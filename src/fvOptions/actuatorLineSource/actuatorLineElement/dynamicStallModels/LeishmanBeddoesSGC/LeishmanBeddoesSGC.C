@@ -263,7 +263,6 @@ Foam::fv::LeishmanBeddoesSGC::LeishmanBeddoesSGC
     Tvl_ = coeffs_.lookupOrDefault("Tvl", 9.0);
     eta_ = coeffs_.lookupOrDefault("eta", 0.975);
     
-    
     if (debug)
     {
         Info<< modelName << " dynamic stall model created" << endl
