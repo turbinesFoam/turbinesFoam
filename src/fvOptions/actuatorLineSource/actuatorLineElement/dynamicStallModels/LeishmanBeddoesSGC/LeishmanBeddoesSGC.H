@@ -93,14 +93,6 @@ protected:
         // Calculate unsteady quantities
         virtual void calcUnsteady();
         
-        // Calculate S1 and S2 constants
-        virtual void calcS1S2
-        (
-            List<scalar> alphaDegList,
-            List<scalar> clList,
-            List<scalar> cdList
-        );
-        
         // Calculate separated flow quantities
         virtual void calcSeparated();
     
