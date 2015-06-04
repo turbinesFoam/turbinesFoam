@@ -92,7 +92,7 @@ void Foam::fv::LeishmanBeddoesSGC::calcUnsteady()
 
 void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
 {
-    // Calculate trailing-edge separation point
+    // Calculate lagged trailing-edge separation point
     if (mag(alphaPrime_) < alpha1_)
     {
         fPrime_ = 1.0 - 0.4*exp((mag(alphaPrime_) - alpha1_)/S1_);
@@ -101,38 +101,7 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
     {
         fPrime_ = 0.02 + 0.58*exp((alpha1_ - mag(alphaPrime_))/S2_);
     }
-    
-    // Calculate dynamic separation point
-    scalar pi = Foam::constant::mathematical::pi;
-    DF_ = DFPrev_*exp(-deltaS_/Tf_) 
-        + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf_));
-    fDoublePrime_ = mag(fPrime_ - DF_);
-    if (tau_ > 0 and tau_ <= Tvl_)
-    {
-        Vx_ = pow((sin(pi*tau_/(2.0*Tvl_))), 1.5);
-    }
-    else if (tau_ > Tvl_)
-    {
-        Vx_ = pow((cos(pi*(tau_ - Tvl_)/Tv_)), 2);
-    }
-    if (mag(alpha_) < mag(alphaPrev_)) Vx_ = 0.0;
-    f3G_ = mag(fDoublePrime_ - DF_*Vx_);
-    
-    // Calculate normal force coefficient including dynamic separation point
-    CNF_ = CNAlpha_*alphaEquiv_*pow(((1.0 + sqrt(f3G_))/2.0), 2) 
-         + CNI_;
-    
-    // Calculate tangential force coefficient
-    if (fDoublePrime_ < fCrit_)
-    {
-        CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*pow(fDoublePrime_, 1.5);
-    }
-    else
-    {
-        CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*sqrt(fDoublePrime_);
-    }
-    
-    // Compute vortex shedding process if stalled
+
     // Evaluate vortex tracking time
     if (not stalledPrev_) tau_ = 0.0;
     else 
@@ -143,31 +112,53 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
         }
     }
     
+    // Calculate dynamic separation point
+    scalar pi = Foam::constant::mathematical::pi;
+    DF_ = DFPrev_*exp(-deltaS_/Tf_) 
+        + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf_));
+    fDoublePrime_ = mag(fPrime_ - DF_);
+    
     // Calculate Strouhal number time constant and set tau to zero to 
     // allow multiple vortex shedding
     scalar Tst = 2.0*(1.0 - fDoublePrime_)/0.19;
     if (tau_ > (Tvl_ + Tst)) tau_ = 0.0;
     
-    // Evaluate vortex lift contributions, which are only nonzero if angle
-    // of attack increased in magnitude
-    if (mag(alpha_) > mag(alphaPrev_) and mag(alpha_ - alphaPrev_) > 0.01)
+    // Calculate vortex modulation parameter
+    if (tau_ > 0 and tau_ <= Tvl_)
     {
-        scalar Tv = Tv_;
-        if (tau_ < Tvl_)
-        {
-            CV_ = CNC_*(1.0 - pow(((1.0 + sqrt(fDoublePrime_))/2.0), 2));
-            CNV_ = CNVPrev_*exp(-deltaS_/Tv) 
-                 + (CV_ - CVPrev_)*exp(-deltaS_/(2.0*Tv));
-        }
-        else
-        {
-            CNV_ = CNVPrev_*exp(-deltaS_/Tv);
-        }
+        Vx_ = pow((sin(pi*tau_/(2.0*Tvl_))), 1.5);
+    }
+    else if (tau_ > Tvl_)
+    {
+        Vx_ = pow((cos(pi*(tau_ - Tvl_)/Tv_)), 2);
+    }
+    if (mag(alpha_) < mag(alphaPrev_)) Vx_ = 0.0;
+    
+    // Calculate the separation point and limit to [0, 1]
+    f3G_ = fDoublePrime_ - DF_*Vx_;
+    if (f3G_ < 0) f3G_ = 0.0;
+    else if (f3G_ > 1) f3G_ = 1.0;
+    
+    // Calculate normal force coefficient including dynamic separation point
+    CNF_ = CNAlpha_*alphaEquiv_*pow(((1.0 + sqrt(f3G_))/2.0), 2) 
+         + CNI_;
+    
+    // Calculate tangential force coefficient
+    CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*(sqrt(fDoublePrime_) - E0_);
+    
+    // Calculate static trailing-edge separation point
+    scalar f;
+    if (mag(alpha_) < alpha1_)
+    {
+        f = 1.0 - 0.4*exp((mag(alpha_) - alpha1_)/S1_);
     }
     else
     {
-        CNV_ = 0.0;
+        f = 0.02 + 0.58*exp((alpha1_ - mag(alpha_))/S2_);
     }
+    
+    // Evaluate vortex lift contributions
+    CNV_ = B1_*(fDoublePrime_ - f)*Vx_;
 
     // Total normal force coefficient is the combination of that from
     // circulatory effects, impulsive effects, dynamic separation, and vortex 
