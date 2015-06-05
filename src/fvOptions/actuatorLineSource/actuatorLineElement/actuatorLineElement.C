@@ -290,7 +290,7 @@ void Foam::fv::actuatorLineElement::calculate
     }
     
     // Find local wind velocity upstream
-    scalar upstreamDistance = chordLength_*0.0;
+    scalar upstreamDistance = chordLength_*0.5;
     vector upstreamPoint = position_ - upstreamDistance*freeStreamDirection_;
     label upstreamCellI = mesh_.findCell(upstreamPoint);
     vector inflowVelocity = Uin[upstreamCellI];
@@ -328,7 +328,8 @@ void Foam::fv::actuatorLineElement::calculate
     }
     
     // Apply flow curvature correction to angle of attack
-    angleOfAttackRad += omega_*(chordMount_ - 0.25)*chordLength_/mag(relativeVelocity_);
+    angleOfAttackRad += omega_*(chordMount_ - 0.25)
+                      * chordLength_/mag(relativeVelocity_);
     angleOfAttackRad += omega_*chordLength_/(4*mag(relativeVelocity_));
     
     // Calculate angle of attack in degrees
