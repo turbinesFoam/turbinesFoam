@@ -9,56 +9,46 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    object      fvSolution;
+    class       volScalarField;
+    object      p;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-solvers
+#include        "include/initialConditions"
+
+dimensions      [0 2 -2 0 0 0 0];
+
+internalField   uniform $pressure;
+
+boundaryField
 {
-    p
+
+    inlet
     {
-        solver           GAMG;
-        tolerance        1e-6;
-        relTol           0.01;
-        smoother         DICGaussSeidel;
-        cacheAgglomeration true;
-        nCellsInCoarsestLevel 10;
-        agglomerator     faceAreaPair;
-        mergeLevels      1;
+        type            zeroGradient;
     }
 
-    pFinal
+    outlet
     {
-        $p;
-        relTol          0;
+        type            fixedValue;
+        value           $internalField;
     }
 
-    "(U|k|epsilon)"
+    walls
     {
-        solver          smoothSolver;
-        smoother        symGaussSeidel;
-        tolerance       1e-7;
-        relTol          0.1;
+        type            zeroGradient;
     }
 
-    "(U|k|epsilon)Final"
+    top
     {
-        $U;
-        relTol          0;
+        type            zeroGradient;
     }
-}
 
-PIMPLE
-{
-    nNonOrthogonalCorrectors 1;
-    nOuterCorrectors    1;
-    nCorrectors         2;
-}
+    bottom
+    {
+        type            zeroGradient;
+    }
 
-cache
-{
-    grad(U);
 }
 
 // ************************************************************************* //

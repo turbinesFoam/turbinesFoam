@@ -105,7 +105,8 @@ Foam::fv::actuatorLineSource::actuatorLineSource
             vector::zero
         )
     ),
-    writePerf_(coeffs_.lookupOrDefault("writePerf", false))
+    writePerf_(coeffs_.lookupOrDefault("writePerf", false)),
+    lastMotionTime_(mesh.time().value())
 {
     read(dict_);
     createElements();
@@ -136,6 +137,7 @@ void Foam::fv::actuatorLineSource::createElements()
     List<scalar> pitches(nGeometryPoints);
     List<scalar> chordMounts(nGeometryPoints);
     totalLength_ = 0.0;
+    chordLength_ = 0.0;
     
     for (int i = 0; i < nGeometryPoints; i++)
     {
@@ -152,6 +154,7 @@ void Foam::fv::actuatorLineSource::createElements()
         spanDirs[i] = vector(x, y, z);
         // Read chord length
         chordLengths[i] = elementGeometry_[i][2][0];
+        chordLength_ += chordLengths[i];
         // Read chord ref dir
         x = elementGeometry_[i][3][0];
         y = elementGeometry_[i][3][1];
@@ -162,6 +165,9 @@ void Foam::fv::actuatorLineSource::createElements()
         // Read pitch
         pitches[i] = elementGeometry_[i][5][0];
     }
+    
+    // Compute average chord length
+    chordLength_ /= nGeometryPoints;
     
     // Calculate span length of each element
     scalar spanLength = totalLength_/nElements_;
@@ -363,6 +369,12 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
         coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
         freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
         
+        // Read harmonic pitching parameters if present
+        dictionary pitchDict = coeffs_.subOrEmptyDict("harmonicPitching");
+        harmonicPitchingActive_ = pitchDict.lookupOrDefault("active", false);
+        reducedFreq_ = pitchDict.lookupOrDefault("reducedFreq", 0.0);
+        pitchAmplitude_ = pitchDict.lookupOrDefault("amplitude", 0.0);
+        
         if (debug)
         {
             Info<< "Debugging for actuatorLineSource on" << endl;
@@ -487,6 +499,19 @@ void Foam::fv::actuatorLineSource::addSup
     const label fieldI
 )
 {
+    // Pitch the actuator line if time has changed
+    scalar t = mesh_.time().value();
+    if (t != lastMotionTime_ and harmonicPitchingActive_)
+    {
+        scalar pi = Foam::constant::mathematical::pi;
+        scalar omega = reducedFreq_*2*mag(freeStreamVelocity_)/chordLength_;
+        scalar dt = mesh_.time().deltaT().value();
+        scalar dpdt = pitchAmplitude_/180.0*pi*omega*cos(omega*t);
+        scalar deltaPitch = dpdt*dt;
+        pitch(deltaPitch);
+        lastMotionTime_ = t;
+    }
+    
     // Zero out force field
     forceField_ *= 0;
 

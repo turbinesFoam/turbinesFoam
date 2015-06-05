@@ -98,6 +98,21 @@ protected:
         
         //- Output file stream
         OFstream* outputFile_;
+        
+        //- Switch for harmonic pitching
+        bool harmonicPitchingActive_;
+        
+        //- Reduced frequency of harmonic pitching = omega*c/(2*UInfty)
+        scalar reducedFreq_;
+        
+        //- Amplitude of harmonic pitching in degrees
+        scalar pitchAmplitude_;
+        
+        //- Time value to track whether to move
+        scalar lastMotionTime_;
+        
+        //- Mean chord length of all elements
+        scalar chordLength_;
 
 
     // Protected Member Functions
