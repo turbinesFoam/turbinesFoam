@@ -9,87 +9,53 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    object      blockMeshDict;
+    class       volScalarField;
+    location    "0";
+    object      epsilon;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-convertToMeters 1;
+dimensions      [0 2 -3 0 0 0 0];
 
-vertices
-(
-    ( 1.0 -0.1 -0.225) // 0
-    ( 1.0  0.1 -0.225) // 1
-    (-0.5  0.1 -0.225) // 2
-    (-0.5 -0.1 -0.225) // 3
-    ( 1.0 -0.1  0.225) // 4
-    ( 1.0  0.1  0.225) // 5
-    (-0.5  0.1  0.225) // 6
-    (-0.5 -0.1  0.225) // 7 
-);
+#include        "include/initialConditions"
 
-blocks
-(
-    hex (0 1 2 3 4 5 6 7)
-    (16 64 48)
-    simpleGrading (1 1 1)
-);
+internalField   uniform $turbulentEpsilon;
 
-boundary
-(
+boundaryField
+{
+
     inlet
     {
-        type patch;
-        faces
-        (
-            (2 6 7 3)
-        );
+        type            fixedValue;
+        value           uniform $turbulentEpsilon;
     }
 
     outlet
     {
-	type patch;
-	faces
-        (
-            (0 4 5 1)
-        );
+        type            inletOutlet;
+        inletValue      $internalField;
+        value           $internalField;
     }
 
     walls
     {
-	type wall;
-        faces
-        (
-            (1 5 6 2)
-            (4 0 3 7)
-        );
+        type            epsilonWallFunction;
+        value           uniform $turbulentEpsilon;
     }
 
     top
     {
-	type wall;
-	faces
-        (
-            (4 7 6 5)
-        );
+        type            epsilonWallFunction;
+        value           uniform $turbulentEpsilon;
     }
 
     bottom
     {
-	type wall;
-        faces
-        (
-            (0 1 2 3)
-        );
+        type            epsilonWallFunction;
+        value           uniform $turbulentEpsilon;
     }
-);
 
-edges
-(
-);
+}
 
-mergePatchPairs
-(
-);
 
 // ************************************************************************* //

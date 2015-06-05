@@ -24,17 +24,16 @@ foil
 
     actuatorLineSourceCoeffs
     {
-        fieldNames          (U k epsilon);
+        fieldNames          (U);
         tipEffect           0.95; 
         freeStreamVelocity  (1 0 0);
-        nElements           14;
+        nElements           3;
         writePerf           true;
 
         elementGeometry // Will be interpolated linearly per nElements
         ( // point spanDir chordLength chordRefDir chordMount pitch
-            ((0.0 0.0 -0.5) (0 0 1) (0.10) (-1 0 0) (0.25) (4.0))
-            ((0.0 0.0  0.0) (0 0 1) (0.20) (-1 0 0) (0.25) (4.0))
-            ((0.0 0.0  0.5) (0 0 1) (0.10) (-1 0 0) (0.25) (4.0))
+            ((0.0 -0.1 0.0) (0 1 0) (0.10) (-1 0 0) (0.25) (10.3))
+            ((0.0 0.1  0.0) (0 1 0) (0.10) (-1 0 0) (0.25) (10.3))
         );
         
         dynamicStall
@@ -43,13 +42,20 @@ foil
             dynamicStallModel   LeishmanBeddoes;
             LeishmanBeddoesCoeffs
             {
-                speedOfSound    343;
+                speedOfSound    2.625; // To achieve M = 0.381
             }
+        }
+        
+        harmonicPitching
+        {
+            active          on;
+            reducedFreq     0.075; // omega*c/(2*UInfty) about chordMount
+            amplitude       8.1; // Degrees
         }
         
         coefficientData
         ( // alpha C_l C_d
-            #include "../../../resources/foilData/NACA0021_1.6e5"
+            #include "../../../resources/foilData/NACA0012_5e6"
 		);
     }
 }
