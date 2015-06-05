@@ -161,9 +161,11 @@ def plotperf():
     df = pd.read_csv("postProcessing/actuatorLines/0/foil.csv")
     df = df.drop_duplicates("time", take_last=True)
     plt.figure()
-    plt.plot(df.time, df.alpha_deg)
+    plt.plot(df.time, df.alpha_geom_deg, label="Geometric")
+    plt.plot(df.time, df.alpha_deg, label="Actual")
     plt.xlabel("Time (s)")
     plt.ylabel("Angle of attack (deg)")
+    plt.legend(loc="best")
     plt.show()
 
 def main():
