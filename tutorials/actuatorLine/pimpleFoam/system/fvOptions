@@ -26,14 +26,14 @@ foil
     {
         fieldNames          (U);
         tipEffect           0.95; 
-        freeStreamVelocity  (1 0 0);
-        nElements           3;
+        freeStreamVelocity  (29.9 0 0); // M = 0.381
+        nElements           4;
         writePerf           true;
 
         elementGeometry // Will be interpolated linearly per nElements
         ( // point spanDir chordLength chordRefDir chordMount pitch
-            ((0.0 -0.1 0.0) (0 1 0) (0.10) (-1 0 0) (0.25) (10.3))
-            ((0.0 0.1  0.0) (0 1 0) (0.10) (-1 0 0) (0.25) (10.3))
+            ((0.0 0.0 0.0) (0 0 1) (1.22) (-1 0 0) (0.25) (15))
+            ((0.0 0.0 1.98) (0 0 1) (1.22) (-1 0 0) (0.25) (15))
         );
         
         dynamicStall
@@ -42,15 +42,15 @@ foil
             dynamicStallModel   LeishmanBeddoes;
             LeishmanBeddoesCoeffs
             {
-                speedOfSound    2.625; // To achieve M = 0.381
+                speedOfSound    343;
             }
         }
         
         harmonicPitching
         {
             active          on;
-            reducedFreq     0.075; // omega*c/(2*UInfty) about chordMount
-            amplitude       8.1; // Degrees
+            reducedFreq     0.15; // omega*c/(2*UInfty) about chordMount
+            amplitude       10.0; // Degrees
         }
         
         coefficientData
