@@ -72,7 +72,8 @@ void Foam::fv::actuatorLineSource::createOutputFile()
 
     outputFile_ = new OFstream(dir/name_ + ".csv");
     
-    *outputFile_<< "time,x,y,z,rel_vel_mag,alpha_deg,cl,cd" << endl;
+    *outputFile_<< "time,x,y,z,rel_vel_mag,alpha_deg,alpha_geom_deg,cl,cd" 
+                << endl;
 }
 
 
@@ -268,7 +269,7 @@ void Foam::fv::actuatorLineSource::createElements()
         dict.add("chordDirection", chordDirection);
         dict.add("spanLength", spanLength);
         dict.add("spanDirection", spanDirection);
-        dict.add("freeStreamDirection", freeStreamDirection_);
+        dict.add("freeStreamVelocity", freeStreamVelocity_);
         dict.add("chordMount", chordMount);
         if (coeffs_.found("dynamicStall"))
         {
@@ -310,6 +311,7 @@ void Foam::fv::actuatorLineSource::writePerf()
     scalar z = 0.0;
     scalar relVelMag = 0.0;
     scalar alphaDeg = 0.0;
+    scalar alphaGeom = 0.0;
     scalar cl = 0.0;
     scalar cd = 0.0;
     
@@ -319,6 +321,7 @@ void Foam::fv::actuatorLineSource::writePerf()
         x += pos[0]; y += pos[1]; z += pos[2];
         relVelMag += mag(elements_[i].relativeVelocity());
         alphaDeg += elements_[i].angleOfAttack();
+        alphaGeom += elements_[i].angleOfAttackGeom();
         cl += elements_[i].liftCoefficient();
         cd += elements_[i].dragCoefficient();
     }
@@ -326,11 +329,13 @@ void Foam::fv::actuatorLineSource::writePerf()
     x /= nElements_; y /= nElements_; z /= nElements_;
     relVelMag /= nElements_;
     alphaDeg /= nElements_;
+    alphaGeom /= nElements_;
     cl /= nElements_; cd /= nElements_;
  
-    // write time,x,y,z,rel_vel_mag,alpha_deg,cl,cd
+    // write time,x,y,z,rel_vel_mag,alpha_deg,alpha_geom_deg,cl,cd
     *outputFile_<< time << "," << x << "," << y << "," << z << "," << relVelMag
-                << "," << alphaDeg << "," << cl << "," << cd << endl;
+                << "," << alphaDeg << "," << alphaGeom << "," << cl << "," 
+                << cd << endl;
 }
 
 

@@ -91,8 +91,8 @@ protected:
         //- Velocity of the element
         vector velocity_;
         
-        //- Fluid velocity near the element
-        vector fluidVelocity_;
+        //- Free stream velocity
+        vector freeStreamVelocity_;
         
         //- Free stream direction
         vector freeStreamDirection_;
@@ -145,6 +145,9 @@ protected:
         
         //- Nondimensional chord mount distance
         scalar chordMount_;
+        
+        //- Geometric angle of attack (degrees, no flow curvature correction)
+        scalar angleOfAttackGeom_;
 
 
     // Protected Member Functions
@@ -221,6 +224,9 @@ public:
             
             //- Return element angle of attack in degrees
             scalar& angleOfAttack();
+            
+            //- Return element geometric angle of attack in degrees
+            scalar& angleOfAttackGeom();
             
             //- Return lift coefficient
             scalar& liftCoefficient();

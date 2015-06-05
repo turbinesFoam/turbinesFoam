@@ -53,7 +53,8 @@ void Foam::fv::actuatorLineElement::read()
     dict_.lookup("spanLength") >> spanLength_;
     dict_.lookup("spanDirection") >> spanDirection_;
     dict_.lookup("coefficientData") >> coefficientData_;
-    dict_.lookup("freeStreamDirection") >> freeStreamDirection_;
+    dict_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
+    freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
     
     // Create lists from coefficient data
     angleOfAttackList_.setSize(coefficientData_.size());
@@ -260,6 +261,12 @@ Foam::scalar& Foam::fv::actuatorLineElement::angleOfAttack()
 }
 
 
+Foam::scalar& Foam::fv::actuatorLineElement::angleOfAttackGeom()
+{
+    return angleOfAttackGeom_;
+}
+
+
 Foam::scalar& Foam::fv::actuatorLineElement::liftCoefficient()
 {
     return liftCoefficient_;
@@ -320,11 +327,17 @@ void Foam::fv::actuatorLineElement::calculate
     // Calculate angle of attack (radians)
     scalar angleOfAttackRad = asin((planformNormal & relativeVelocity_)
                             / (mag(planformNormal)*mag(relativeVelocity_)));
+    vector relVelGeom = freeStreamVelocity_ - velocity_;
+    angleOfAttackGeom_ = asin((planformNormal & relVelGeom)
+                       / (mag(planformNormal)*mag(relVelGeom)));
+    angleOfAttackGeom_ *= 180.0/pi;
                             
     if (debug)
     {
         Info<< "    Angle of attack (uncorrected, degrees): " 
             << angleOfAttackRad/pi*180.0 << endl;
+        Info<< "    Geometric angle of attack (degrees): "
+            << angleOfAttackGeom_ << endl;
     }
     
     // Apply flow curvature correction to angle of attack
