@@ -78,17 +78,9 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
                   - cdList[i]*cos(alphaRadList[i]);
     }
     
-    // Calculate lift slope CNAlpha
-    scalar alphaLow = 0.0;
-    scalar alphaHigh = 2.0;
-    scalar cnLow = interpolate(alphaLow, alphaDegList, cnList);
-    scalar cnHigh = interpolate(alphaHigh, alphaDegList, cnList);
-    scalar dAlpha = (alphaHigh - alphaLow)/180.0*pi;
-    CNAlpha_ = (cnHigh - cnLow)/dAlpha;
-    
     // Calculate critical normal force coefficient CN1, where the slope of the
     // curve slope first breaks 0.02 per degree
-    scalar alpha=GREAT, cd0, cd1, slope;
+    scalar alpha=GREAT, cd0, cd1, slope, dAlpha;
     forAll(alphaDegList, i)
     {
         alpha = alphaDegList[i];
@@ -106,9 +98,19 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
         }
     }
     
+    // Calculate lift slope CNAlpha using a line that intersects at 70% of
+    // the static stall angle
+    scalar alphaLow = 0.0;
+    scalar alphaHigh = 0.7*alphaSS_/pi*180.0;
+    scalar cnLow = interpolate(alphaLow, alphaDegList, cnList);
+    scalar cnHigh = interpolate(alphaHigh, alphaDegList, cnList);
+    dAlpha = (alphaHigh - alphaLow)/180.0*pi;
+    CNAlpha_ = (cnHigh - cnLow)/dAlpha;
+    
     // Calculate CN1 using normal coefficient slope and critical f value
+    // alpha1 is 90% of the static stall angle
     scalar f = fCrit_;
-    alpha1_ = alphaSS_;
+    alpha1_ = alphaSS_*0.9;
     CN1_ = CNAlpha_*alpha1_*pow((1.0 + sqrt(f))/2.0, 2);
     
     if (debug)
