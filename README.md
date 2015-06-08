@@ -4,7 +4,7 @@ turbinesFoam
 ============
 
 `turbinesFoam` is a library for simulating wind and marine 
-hydrokinetic turbines in OpenFOAM (2.3.x).
+hydrokinetic turbines in OpenFOAM (2.4.x).
 
 Status
 ------

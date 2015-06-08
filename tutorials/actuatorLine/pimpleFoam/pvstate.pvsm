@@ -2390,7 +2390,7 @@
     </Proxy>
     <Proxy group="sources" type="PV4FoamReader" id="3442" servers="1">
       <Property name="FileName" id="3442.FileName" number_of_elements="1">
-        <Element index="0" value="/home/pete/OpenFOAM/pete-2.3.x/turbinesFoam/tutorials/actuatorLine/pimpleFoam/pimpleFoam.OpenFOAM"/>
+        <Element index="0" value="/home/pete/OpenFOAM/pete-2.4.x/turbinesFoam/tutorials/actuatorLine/pimpleFoam/pimpleFoam.OpenFOAM"/>
         <Domain name="files" id="3442.FileName.files"/>
       </Property>
       <Property name="LagrangianFieldArrayStatus" id="3442.LagrangianFieldArrayStatus"/>
