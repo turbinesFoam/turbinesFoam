@@ -115,7 +115,7 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
     
     if (debug)
     {
-        Info<< endl << "Evaluating static foil data" << endl;
+        Info<< "    Evaluating static foil data" << endl;
         scalar cn = CNAlpha_*alpha_;
         Info<< "    Static stall angle (deg): " << alpha << endl;
         Info<< "    Critical normal force coefficient: " << CN1_ << endl;
@@ -145,7 +145,7 @@ void Foam::fv::LeishmanBeddoes::calcUnsteady()
                   / (1.0 - M_ + pi*(1.0 - M_*M_)*M_*M_*(A1_*b1_ + A2_*b2_));
     TI_ = c_/a_;
     D_ = DPrev_*exp(-deltaT_/(kAlpha*TI_)) 
-       - ((deltaAlpha_ - deltaAlphaPrev_)/deltaT_)
+       + ((deltaAlpha_ - deltaAlphaPrev_)/deltaT_)
        *exp(-deltaT_/(2.0*kAlpha*TI_));
     CNI_ = 4.0*kAlpha*TI_/M_*(deltaAlpha_/deltaT_ - D_);
     
@@ -162,6 +162,15 @@ void Foam::fv::LeishmanBeddoes::calcUnsteady()
     
     // Set stalled switch
     stalled_ = (mag(CNPrime_) > CN1_);
+    
+    if (debug)
+    {
+        Info<< "    CNP: " << CNP_ << endl;
+        Info<< "    CNPrime: " << CNPrime_ << endl;
+        Info<< "    TI: " << TI_ << endl;
+        Info<< "    D: " << D_ << endl;
+        Info<< "    KAlpha: " << kAlpha << endl;
+    }
 }
 
 
@@ -265,11 +274,24 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     // Calculate dynamic separation point
     DF_ = DFPrev_*exp(-deltaS_/Tf) 
         + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2.0*Tf));
-    fDoublePrime_ = mag(fPrime_ - DF_);
+    fDoublePrime_ = fPrime_ - DF_;
+    if (fDoublePrime_ < 0)
+    {
+        fDoublePrime_ = 0.0;
+    }
+    else if (fDoublePrime_ > 1)
+    {
+        fDoublePrime_ = 1.0;
+    }
     
     // Calculate normal force coefficient including dynamic separation point
     CNF_ = CNAlpha_*alphaEquiv_*pow(((1.0 + sqrt(fDoublePrime_))/2.0), 2.0) 
          + CNI_;
+    
+    if (debug)
+    {
+        Info<< "    CNF: " << CNF_ << endl;
+    }
     
     // Calculate tangential force coefficient
     if (fDoublePrime_ < fCrit_)
@@ -297,34 +319,35 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     scalar Tst = 2.0*(1.0 - fDoublePrime_)/0.19;
     if (tau_ > (Tvl_ + Tst)) tau_ = 0.0;
     
-    // Evaluate vortex lift contributions, which are only nonzero if angle
-    // of attack increased in magnitude
-    if (mag(alpha_) - mag(alphaPrev_) > 0.1)
+    // Evaluate vortex lift contributions, which are only increasing if angle
+    // of attack increased in magnitude beyond a threshold
+    scalar Tv = Tv_;
+    if (tau_ < Tvl_ and (mag(alpha_) - mag(alphaPrev_) > 0.1))
     {
-        scalar Tv = Tv_;
-        if (tau_ < Tvl_)
-        {
-            // Halve Tv if dAlpha/dt changes sign
-            if (sign(deltaAlpha_) != sign(deltaAlphaPrev_)) Tv = 0.5*Tv_;
-            CV_ = CNC_*(1.0 - pow(((1.0 + sqrt(fDoublePrime_))/2.0), 2));
-            CNV_ = CNVPrev_*exp(-deltaS_/Tv) 
-                 + (CV_ - CVPrev_)*exp(-deltaS_/(2.0*Tv));
-        }
-        else
-        {
-            Tv = 0.5*Tv_;
-            CNV_ = CNVPrev_*exp(-deltaS_/Tv);
-        }
+        // Halve Tv if dAlpha/dt changes sign
+        if (sign(deltaAlpha_) != sign(deltaAlphaPrev_)) Tv = 0.5*Tv_;
+        scalar KN = magSqr((1.0 + sqrt(fDoublePrime_)))/4.0;
+        CV_ = CNC_*(1.0 - KN);
+        CNV_ = CNVPrev_*exp(-deltaS_/Tv) 
+             + (CV_ - CVPrev_)*exp(-deltaS_/(2.0*Tv));
     }
     else
     {
-        CNV_ = 0.0;
+        Tv = 0.5*Tv_;
+        CV_ = 0.0;
+        CNV_ = CNVPrev_*exp(-deltaS_/Tv);
     }
 
     // Total normal force coefficient is the combination of that from
     // circulatory effects, impulsive effects, dynamic separation, and vortex 
     // lift
     CN_ = CNF_ + CNV_;
+    
+    if (debug)
+    {
+        Info<< "    CV: " << CV_ << endl;
+        Info<< "    CNV: " << CNV_ << endl;
+    }
 }
 
 
@@ -358,21 +381,31 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
 :
     dynamicStallModel(dict, modelName, time),
     X_(0.0),
+    XPrev_(0.0),
     Y_(0.0),
+    YPrev_(0.0),
     A1_(coeffs_.lookupOrDefault("A1", 0.3)),
     A2_(coeffs_.lookupOrDefault("A2", 0.7)),
     b1_(coeffs_.lookupOrDefault("b1", 0.14)),
     b2_(coeffs_.lookupOrDefault("b2", 0.53)),
+    alpha_(0.0),
     deltaAlpha_(0.0),
+    deltaAlphaPrev_(0.0),
     a_(coeffs_.lookupOrDefault("speedOfSound", 1e12)),
     timePrev_(startTime_),
     D_(0.0),
+    DPrev_(0.0),
     DP_(0.0),
+    DPPrev_(0.0),
     CNP_(0.0),
+    CNPPrev_(0.0),
     fPrime_(1.0),
+    fPrimePrev_(1.0),
     DF_(0.0),
     CV_(0.0),
+    CVPrev_(0.0),
     CNV_(0.0),
+    CNVPrev_(0.0),
     eta_(coeffs_.lookupOrDefault("eta", 0.95)),
     stalledPrev_(false),
     Tp_(coeffs_.lookupOrDefault("Tp", 1.7)),
@@ -380,6 +413,7 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     Tv_(coeffs_.lookupOrDefault("Tv", 6.0)),
     Tvl_(coeffs_.lookupOrDefault("Tvl", 7.0)),
     tau_(0.0),
+    tauPrev_(0.0),
     nNewTimes_(0),
     fCrit_(0.7)
 {
@@ -441,7 +475,8 @@ void Foam::fv::LeishmanBeddoes::correct
     if (debug)
     {
         scalar cn0 = cl*cos(alpha_) - cd*sin(alpha_);
-        Info<< "Leishman-Beddoes dynamic stall model correcting" << endl;
+        Info<< endl << "Leishman-Beddoes dynamic stall model correcting" 
+            << endl;
         Info<< "    New times: " << nNewTimes_ << endl;
         Info<< "    Time: " << time << endl;
         Info<< "    deltaT: " << deltaT_ << endl;
