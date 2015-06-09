@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+plt.style.use("ggplot")
+
 def loadperf():
     df = pd.read_csv("postProcessing/actuatorLines/0/foil.csv")
     df = df.drop_duplicates("time", take_last=True)
@@ -26,13 +28,15 @@ def plot_alpha():
     plt.legend(loc="best")
     plt.show()
     
-def plot_cn(t0=1.0):
+def plot_cn(t0=0.3):
     df = loadperf()
     plt.figure()
     ind = df.time >= t0
-    plt.plot(df.alpha_geom_deg[ind], df.cn[ind], "-o")
+    plt.plot(df.alpha_geom_deg[ind], df.cn[ind])
     plt.xlabel(r"$\alpha$ (geometric, degrees)")
     plt.ylabel(r"$C_N$")
+    plt.xlim((0, None))
+    plt.ylim((0, None))
     plt.show()
 
 if __name__ == "__main__":
