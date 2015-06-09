@@ -32,9 +32,9 @@ geometry
     foil
     {
         type searchableCylinder;
-        point1 (0 -0.1 0);
-        point2 (0 0.1 0);
-        radius 0.1;       
+        point1 (0 0 0);
+        point2 (0 0 2.8);
+        radius 1.0;       
     }
 };
 
