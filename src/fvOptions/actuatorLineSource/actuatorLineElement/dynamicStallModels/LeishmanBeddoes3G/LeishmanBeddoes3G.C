@@ -86,6 +86,14 @@ void Foam::fv::LeishmanBeddoes3G::calcUnsteady()
     
     // Set stalled switch
     stalled_ = (mag(CNPrime_) > CN1_);
+    
+    if (debug)
+    {
+        Info<< "    lambdaL: " << lambdaL_ << endl;
+        Info<< "    lambdaLPrev: " << lambdaLPrev_ << endl;
+        Info<< "    TI: " << TI_ << endl;
+        Info<< "    H: " << H_ << endl;
+    }
 }
 
 
@@ -261,12 +269,16 @@ Foam::fv::LeishmanBeddoes3G::LeishmanBeddoes3G
 :
     LeishmanBeddoes(dict, modelName, time),
     Z_(0.0),
+    ZPrev_(0.0),
     etaL_(0.0),
+    etaLPrev_(0.0),
     A3_(coeffs_.lookupOrDefault("A3", 0.5)),
     T1_(coeffs_.lookupOrDefault("T1", 20.0)),
     T2_(coeffs_.lookupOrDefault("T2", 4.5)),
     H_(0.0),
-    lambdaL_(0.0)
+    HPrev_(0.0),
+    lambdaL_(0.0),
+    lambdaLPrev_(0.0)
 {
     fCrit_ = 0.6;
     Tv_ = coeffs_.lookupOrDefault("Tv", 10.0);
