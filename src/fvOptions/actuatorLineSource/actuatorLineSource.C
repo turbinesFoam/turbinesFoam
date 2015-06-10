@@ -175,6 +175,7 @@ void Foam::fv::actuatorLineSource::createElements()
     
     // Lookup initial element velocities if present
     List<vector> initialVelocities(nGeometryPoints, vector::zero);
+    coeffs_.readIfPresent("initialVelocities", initialVelocities);
     
     if (debug)
     {

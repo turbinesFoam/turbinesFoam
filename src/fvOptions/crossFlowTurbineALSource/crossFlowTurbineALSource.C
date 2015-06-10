@@ -102,7 +102,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         // Convert element data into actuator line element geometry
         label nGeomPoints = elementData.size();
         List<List<List<scalar> > > elementGeometry(nGeomPoints);
-        List<vector> initialVelocities(nGeomPoints, vector::one);
+        List<vector> initialVelocities(nGeomPoints, vector::zero);
         // Frontal area for this blade
         scalar frontalArea = 0.0;
         forAll(elementData, j)
