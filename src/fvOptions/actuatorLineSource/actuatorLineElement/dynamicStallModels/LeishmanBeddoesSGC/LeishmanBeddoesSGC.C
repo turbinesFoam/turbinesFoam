@@ -77,13 +77,13 @@ void Foam::fv::LeishmanBeddoesSGC::calcUnsteady()
     scalar dAlphaDS = alphaDS0DiffDeg_/180.0*pi;
     alphaDS0_ = alphaSS_ + dAlphaDS;
     
-    if (r_ >= r0_)
+    if (mag(r_) >= r0_)
     {
         alphaCrit_ = alphaDS0_;
     }
     else
     {
-        alphaCrit_ = alphaSS_ + (alphaDS0_ - alphaSS_)*r_/r0_;
+        alphaCrit_ = alphaSS_ + (alphaDS0_ - alphaSS_)*mag(r_)/r0_;
     }
     
     stalled_ = (mag(alphaPrime_) > alphaCrit_);
