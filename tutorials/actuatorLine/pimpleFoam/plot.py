@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-plt.style.use("ggplot")
+plt.style.use("fivethirtyeight")
 
 def loadperf():
     df = pd.read_csv("postProcessing/actuatorLines/0/foil.csv")
@@ -26,7 +26,7 @@ def plot_alpha():
     plt.xlabel("Time (s)")
     plt.ylabel("Angle of attack (deg)")
     plt.legend(loc="best")
-    plt.show()
+    plt.tight_layout()
     
 def plot_cn(t0=0.3):
     df = loadperf()
@@ -37,8 +37,9 @@ def plot_cn(t0=0.3):
     plt.ylabel(r"$C_N$")
     plt.xlim((0, None))
     plt.ylim((0, None))
-    plt.show()
+    plt.tight_layout()
 
 if __name__ == "__main__":
     plot_alpha()
     plot_cn()
+    plt.show()

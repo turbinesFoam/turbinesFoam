@@ -10,7 +10,7 @@ import os
 import sys
 from modules.processing import *
 
-plt.style.use("ggplot")
+plt.style.use("fivethirtyeight")
 
 def plot_cp(angle0=540.0):
     df = pd.read_csv("postProcessing/turbines/0/turbine.csv")
@@ -25,6 +25,7 @@ def plot_cp(angle0=540.0):
     plt.plot(df.angle_deg, df.cp)
     plt.xlabel("Azimuthal angle (degrees)")
     plt.ylabel("$C_P$")
+    plt.tight_layout()
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
