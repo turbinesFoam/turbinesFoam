@@ -116,7 +116,7 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
     scalar pi = Foam::constant::mathematical::pi;
     DF_ = DFPrev_*exp(-deltaS_/Tf_) 
         + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf_));
-    fDoublePrime_ = mag(fPrime_ - DF_);
+    fDoublePrime_ = fPrime_ - DF_;
     if (fDoublePrime_ < 0) 
     {
         fDoublePrime_ = 0.0;
@@ -135,7 +135,7 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
     {
         Vx_ = pow((cos(pi*(tau_ - Tvl_)/Tv_)), 2);
     }
-    if ((mag(alpha_) - mag(alphaPrev_)) < 0.1) 
+    if (mag(alpha_) < mag(alphaPrev_)) 
     {
         Vx_ = 0.0;
     }

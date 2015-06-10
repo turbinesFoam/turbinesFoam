@@ -209,7 +209,16 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
     scalar pi = Foam::constant::mathematical::pi;
     DF_ = DFPrev_*exp(-deltaS_/Tf) 
         + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf));
-    fDoublePrime_ = mag(fPrime_ - DF_);
+    fDoublePrime_ = fPrime_ - DF_;
+    if (fDoublePrime_ < 0) 
+    {
+        fDoublePrime_ = 0.0;
+    }
+    else if (fDoublePrime_ > 1) 
+    {
+        fDoublePrime_ = 1.0;
+    }
+    
     if (tau_ > 0 and tau_ <= Tvl_)
     {
         Vx_ = pow((sin(pi*tau_/(2.0*Tvl_))), 1.5);
@@ -218,7 +227,7 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
     {
         Vx_ = pow((cos(pi*(tau_ - Tvl_)/Tv_)), 2);
     }
-    if ((mag(alpha_) - mag(alphaPrev_)) < 0.1) 
+    if (mag(alpha_) < mag(alphaPrev_)) 
     {
         Vx_ = 0.0;
     }

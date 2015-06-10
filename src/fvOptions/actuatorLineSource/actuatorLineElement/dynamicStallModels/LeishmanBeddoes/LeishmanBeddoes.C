@@ -322,7 +322,7 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     // Evaluate vortex lift contributions, which are only increasing if angle
     // of attack increased in magnitude beyond a threshold
     scalar Tv = Tv_;
-    if (tau_ < Tvl_ and (mag(alpha_) - mag(alphaPrev_) > 0.1))
+    if (tau_ < Tvl_ and (mag(alpha_) > mag(alphaPrev_)))
     {
         // Halve Tv if dAlpha/dt changes sign
         if (sign(deltaAlpha_) != sign(deltaAlphaPrev_)) Tv = 0.5*Tv_;
