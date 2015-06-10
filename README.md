@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/4234/turbinesFoam/turbinesFoam.svg)](http://dx.doi.org/10.5281/zenodo.17285)
+[![DOI](https://zenodo.org/badge/4234/turbinesFoam/turbinesFoam.svg)](http://dx.doi.org/10.5281/zenodo.18423)
 [![Stories in Ready](https://badge.waffle.io/turbinesfoam/turbinesfoam.png?label=ready&title=Ready)](https://waffle.io/turbinesfoam/turbinesfoam)
 turbinesFoam
 ============
