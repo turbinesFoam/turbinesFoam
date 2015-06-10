@@ -69,7 +69,6 @@ def plot_cp(angle0=540.0):
     plt.plot(df.angle_deg, df.cp)
     plt.xlabel("Azimuthal angle (degrees)")
     plt.ylabel("$C_P$")
-    plt.ylim((0, 2))
     plt.tight_layout()
 
 if __name__ == "__main__":
