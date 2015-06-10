@@ -173,7 +173,7 @@ def plotwake(plotlist=["meanu"], save=False, savepath="", savetype=".pdf"):
         plt.yticks([0,0.13,0.25,0.38,0.5,0.63])
         if save:
             plt.savefig(savepath+'/xvorticity_AD'+savetype)
-    if "meancomboquiv" in plotlist or "all" in plotlist:
+    if "meancontquiv" in plotlist or "all" in plotlist:
         plt.figure(figsize=(9, 8))
         # Add contours of mean velocity
         cs = plt.contourf(y_R, z_H, u, 20, cmap=plt.cm.coolwarm)
@@ -206,7 +206,7 @@ def plotwake(plotlist=["meanu"], save=False, savepath="", savetype=".pdf"):
         ax = plt.axes()
         ax.set_aspect(2.0)
         if save:
-            plt.savefig(savepath+"\\meancomboquiv_AD"+savetype)
+            plt.savefig(savepath+"\\meancontquiv_AD"+savetype)
     
 def plot_al_perf(name="blade1"):
     df_turb = pd.read_csv("postProcessing/turbines/0/turbine.csv")
@@ -233,7 +233,7 @@ def main():
     p = "figures"
     plt.close("all")
     
-    plotwake(plotlist=["meancomboquiv"], save=False, savepath=p)
+    plotwake(plotlist=["meancontquiv"], save=False, savepath=p)
     plt.show()
 
 if __name__ == "__main__":
