@@ -104,13 +104,17 @@ def plot_al_perf(name="blade1"):
     df = df.drop_duplicates("time", take_last=True)
     df["angle_deg"] = df_turb.angle_deg
     plt.figure()
-    plt.plot(df.angle_deg, df.alpha_deg)
+    plt.plot(df.angle_deg, df.alpha_deg, label="Actual")
+    plt.plot(df.angle_deg, df.alpha_geom_deg, label="Geometric")
     plt.xlabel("Azimuthal angle (degrees)")
     plt.ylabel("Angle of attack (degrees)")
+    plt.legend(loc="best")
+    plt.tight_layout()
     plt.figure()
     plt.plot(df.angle_deg, df.rel_vel_mag)
     plt.xlabel("Azimuthal angle (degrees)")
     plt.ylabel("Relative velocity (m/s)")
+    plt.tight_layout()
     
 def plot_blade_perf():
     plot_al_perf("blade1")

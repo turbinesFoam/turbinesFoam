@@ -77,6 +77,10 @@ if __name__ == "__main__":
             plot_meancontquiv()
         elif sys.argv[1] == "perf":
             plot_cp()
+        elif sys.argv[1] == "blade":
+            plot_blade_perf()
+        elif sys.argv[1] == "strut":
+            plot_strut_perf()
     else:
         plot_cp()
     plt.show()
