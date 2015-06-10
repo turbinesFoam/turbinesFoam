@@ -28,6 +28,7 @@ License
 #include "geometricOneField.H"
 #include "fvMatrices.H"
 #include "syncTools.H"
+#include "interpolationCellPoint.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -281,7 +282,7 @@ Foam::scalar& Foam::fv::actuatorLineElement::dragCoefficient()
 
 void Foam::fv::actuatorLineElement::calculate
 (
-    vectorField Uin,
+    const volVectorField& Uin,
     volVectorField& forceField
 )
 {
@@ -296,11 +297,16 @@ void Foam::fv::actuatorLineElement::calculate
         Info<< "    elementVelocity: " << velocity_ << endl;
     }
     
-    // Find local wind velocity upstream
-    scalar upstreamDistance = chordLength_*0.1;
+    // Find local flow velocity upstream
+    scalar upstreamDistance = chordLength_*0.0;
     vector upstreamPoint = position_ - upstreamDistance*freeStreamDirection_;
+    interpolationCellPoint<vector> UInterp(Uin);
     label upstreamCellI = mesh_.findCell(upstreamPoint);
-    vector inflowVelocity = Uin[upstreamCellI];
+    vector inflowVelocity = UInterp.interpolate
+    (
+        upstreamPoint, 
+        upstreamCellI
+    );
     
     if (debug)
     {
@@ -604,7 +610,7 @@ void Foam::fv::actuatorLineElement::addSup
     // Read the reference density for incompressible flow
     //coeffs_.lookup("rhoRef") >> rhoRef_;
 
-    const vectorField Uin(eqn.psi());
+    const volVectorField& Uin(eqn.psi());
     calculate(Uin, forceI);
 
     // Add source to rhs of eqn
@@ -636,7 +642,7 @@ void Foam::fv::actuatorLineElement::addSup
         )
     );
 
-    const vectorField Uin(eqn.psi());
+    const volVectorField& Uin(eqn.psi());
     calculate(Uin, forceI);
 
     // Add force to total actuator line force

@@ -195,11 +195,11 @@ public:
 
     //- Constructor
     actuatorLineElement
-	(
-		const word& name,
-		const dictionary& dict,
+    (
+        const word& name,
+        const dictionary& dict,
         const fvMesh& mesh
-	);
+    );
 
 
     //- Destructor
@@ -280,7 +280,11 @@ public:
         // Evaluation
             
             //- Calculate forces
-            void calculate(vectorField Uin, volVectorField& forceField);
+            void calculate
+            (
+                const volVectorField& Uin, 
+                volVectorField& forceField
+            );
             
             //- Read coefficient data
             void read();
