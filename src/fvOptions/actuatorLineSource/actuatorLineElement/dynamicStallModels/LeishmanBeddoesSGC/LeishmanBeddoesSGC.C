@@ -188,6 +188,9 @@ Foam::fv::LeishmanBeddoesSGC::LeishmanBeddoesSGC
 :
     LeishmanBeddoes3G(dict, modelName, time),
     TAlpha_(coeffs_.lookupOrDefault("TAlpha", 6.30)),
+    alphaPrimePrev_(0.0),
+    alphaCrit_(17.0),
+    r_(0.0),
     r0_(coeffs_.lookupOrDefault("r0", 0.01)),
     B1_(coeffs_.lookupOrDefault("B1", 0.5)),
     E0_(coeffs_.lookupOrDefault("E0", 0.15)),
