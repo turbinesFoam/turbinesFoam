@@ -297,21 +297,13 @@ void Foam::fv::actuatorLineElement::calculate
         Info<< "    elementVelocity: " << velocity_ << endl;
     }
     
-    // Find local flow velocity upstream
-    scalar upstreamDistance = chordLength_*0.0;
-    vector upstreamPoint = position_ - upstreamDistance*freeStreamDirection_;
+    // Find local flow velocity by interpolating to element location
     interpolationCellPoint<vector> UInterp(Uin);
-    label upstreamCellI = mesh_.findCell(upstreamPoint);
     vector inflowVelocity = UInterp.interpolate
     (
-        upstreamPoint, 
-        upstreamCellI
+        position_, 
+        mesh_.findCell(position_)
     );
-    
-    if (debug)
-    {
-        Info<< "    inflowVelocity: " << inflowVelocity << endl;
-    }
     
     // Calculate relative velocity (note these are not projected onto a
     // plane perpendicular to the chord and span direction)
@@ -320,8 +312,7 @@ void Foam::fv::actuatorLineElement::calculate
     
     if (debug)
     {
-        Info<< "    Relative upstream point: " << (upstreamPoint - position_)
-            << endl;
+        Info<< "    inflowVelocity: " << inflowVelocity << endl;
         Info<< "    relativeVelocity: " << relativeVelocity_ << endl;
         Info<< "    Reynolds number: " << Re_ << endl;
     }
