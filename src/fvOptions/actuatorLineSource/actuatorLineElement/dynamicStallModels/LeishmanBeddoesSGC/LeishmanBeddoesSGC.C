@@ -118,11 +118,6 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
         + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf_));
     fDoublePrime_ = mag(fPrime_ - DF_);
     
-    // Calculate Strouhal number time constant and set tau to zero to 
-    // allow multiple vortex shedding
-    scalar Tst = 2.0*(1.0 - fDoublePrime_)/0.19;
-    if (tau_ > (Tvl_ + Tst)) tau_ = 0.0;
-    
     // Calculate vortex modulation parameter
     if (tau_ > 0 and tau_ <= Tvl_)
     {
