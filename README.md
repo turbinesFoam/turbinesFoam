@@ -26,10 +26,10 @@ to any solver or turbulence model
 that accepts these (e.g. `simpleFoam`, `pimpleFoam`, `interFoam`). 
 
 
-Compiling
----------
+Installation
+------------
 
-```
+```bash
 cd $WM_PROJECT_USER_DIR
 git clone https://github.com/turbinesFoam/turbinesFoam.git
 cd turbinesFoam
