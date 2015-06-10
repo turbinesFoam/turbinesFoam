@@ -117,6 +117,14 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
     DF_ = DFPrev_*exp(-deltaS_/Tf_) 
         + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf_));
     fDoublePrime_ = mag(fPrime_ - DF_);
+    if (fDoublePrime_ < 0) 
+    {
+        fDoublePrime_ = 0.0;
+    }
+    else if (fDoublePrime_ > 1) 
+    {
+        fDoublePrime_ = 1.0;
+    }
     
     // Calculate vortex modulation parameter
     if (tau_ > 0 and tau_ <= Tvl_)
@@ -134,8 +142,14 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
     
     // Calculate the separation point and limit to [0, 1]
     f3G_ = fDoublePrime_ - DF_*Vx_;
-    if (f3G_ < 0) f3G_ = 0.0;
-    else if (f3G_ > 1) f3G_ = 1.0;
+    if (f3G_ < 0) 
+    {
+        f3G_ = 0.0;
+    }
+    else if (f3G_ > 1) 
+    {
+        f3G_ = 1.0;
+    }
     
     // Calculate normal force coefficient including dynamic separation point
     CNF_ = CNAlpha_*alphaEquiv_*pow(((1.0 + sqrt(fDoublePrime_))/2.0), 2) 
