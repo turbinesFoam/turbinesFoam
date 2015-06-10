@@ -6,6 +6,7 @@ turbinesFoam
 `turbinesFoam` is a library for simulating wind and marine 
 hydrokinetic turbines in OpenFOAM (2.4.x).
 
+
 Status
 ------
 
@@ -16,6 +17,7 @@ Pull requests are encouraged!
 
 Also be sure to check out the 
 [development snapshot videos on YouTube](https://www.youtube.com/playlist?list=PLOlLyh5gytG8n8D3V1lDeZ3e9fJf9ux-e).
+
 
 Features
 --------
@@ -34,9 +36,25 @@ cd turbinesFoam
 ./Allwmake
 ```
 
+
 Usage
 -----
 There are tutorials located in `turbinesFoam/tutorials`
+
+
+How to cite
+-----------
+```bibtex
+@misc{Bachant2015-turbinesFoam,
+  author       = {Peter Bachant},
+  title        = {turbinesFoam: v0.0.2},
+  month        = June,
+  year         = 2015,
+  doi          = {10.5281/zenodo.18423},
+  url          = {http://dx.doi.org/10.5281/zenodo.18423}
+}
+```
+
 
 License
 -------
