@@ -140,17 +140,6 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
         Vx_ = 0.0;
     }
     
-    // Calculate the separation point and limit to [0, 1]
-    f3G_ = fDoublePrime_ - DF_*Vx_;
-    if (f3G_ < 0) 
-    {
-        f3G_ = 0.0;
-    }
-    else if (f3G_ > 1) 
-    {
-        f3G_ = 1.0;
-    }
-    
     // Calculate normal force coefficient including dynamic separation point
     CNF_ = CNAlpha_*alphaEquiv_*pow(((1.0 + sqrt(fDoublePrime_))/2.0), 2) 
          + CNI_;
