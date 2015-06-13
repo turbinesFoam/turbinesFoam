@@ -28,7 +28,7 @@ def plot_alpha():
     plt.legend(loc="best")
     plt.tight_layout()
     
-def plot_cn(t0=0.3):
+def plot_cn(t0=0.5):
     df = loadperf()
     plt.figure()
     ind = df.time >= t0
