@@ -24,7 +24,7 @@ stopAt          endTime;
 
 endTime         3;
 
-deltaT          0.01;
+deltaT          0.025;
 
 writeControl    runTime;
 
@@ -59,6 +59,8 @@ DebugSwitches
     actuatorLineSource  1;
     actuatorLineElement 1;
     LeishmanBeddoes     1;
+    LeishmanBeddoes3G   1;
+    LeishmanBeddoesSGC  1;
 }
 
 // ************************************************************************* //
