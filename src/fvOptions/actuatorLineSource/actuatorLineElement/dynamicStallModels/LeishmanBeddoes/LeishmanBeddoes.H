@@ -261,7 +261,10 @@ protected:
         (
             List<scalar> alphaDegList,
             List<scalar> clList,
-            List<scalar> cdList
+            List<scalar> cdList,
+            scalar B=0.3,
+            scalar C=0.04,
+            scalar D=0.66
         );
         
         // Calculate separated flow quantities

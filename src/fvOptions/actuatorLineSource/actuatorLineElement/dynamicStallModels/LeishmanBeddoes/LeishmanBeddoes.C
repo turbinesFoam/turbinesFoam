@@ -131,6 +131,9 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
         Info<< "    Cd_0: " << CD0_ << endl;
         Info<< "    alpha1: " << alpha1_ << endl;
     }
+    
+    // Calculate S1 and S2 constants for the separation point curve
+    calcS1S2(alphaDegList, clList, cdList);
 }
 
 
@@ -178,7 +181,10 @@ void Foam::fv::LeishmanBeddoes::calcS1S2
 (
     List<scalar> alphaDegList,
     List<scalar> clList,
-    List<scalar> cdList
+    List<scalar> cdList,
+    scalar B,
+    scalar C,
+    scalar D
 )
 {
     scalar pi = Foam::constant::mathematical::pi;
@@ -187,39 +193,23 @@ void Foam::fv::LeishmanBeddoes::calcS1S2
     scalar sumXY = 0.0;
     scalar sumYLnY = 0.0;
     scalar sumX2Y = 0.0;
-    scalar alphaLowerLimit;
-    scalar alphaUpperLimit;
-    if (mag(alphaPrime_) < alpha1_)
-    {
-        alphaLowerLimit = 0.0;
-        alphaUpperLimit = alpha1_;
-    }
-    else
-    {
-        alphaLowerLimit = alpha1_ - 1e-3;
-        alphaUpperLimit = pi/6.0;
-    }
+    scalar alphaLowerLimit = 0.0;
+    scalar alphaUpperLimit = alpha1_;
+    scalar x;
+    scalar y;
+    scalar f = 1.0;
+
+    // Calculate S1
     forAll(alphaDegList, i)
     {
         scalar alphaRad = alphaDegList[i]/180.0*pi;
         scalar cn = clList[i]*cos(alphaRad) - cdList[i]*sin(alphaRad);
-        scalar f = 1.0;
         if (alphaRad > alphaLowerLimit and alphaRad < alphaUpperLimit)
         {
             f = pow((sqrt(mag(cn)/CNAlpha_/mag(alphaRad))
                     *2.0 - 1.0), 2);
-            scalar x;
-            scalar y;
-            if (mag(alphaPrime_) < alpha1_) 
-            {
-                x = mag(alphaRad) - alpha1_;
-                y = (f - 1)/(-0.3);
-            }
-            else 
-            {
-                x = alpha1_ - mag(alphaRad);
-                y = (f - 0.04)/0.66;
-            }
+            x = mag(alphaRad) - alpha1_;
+            y = (f - 1)/(-B);
             if (f > 0 and f < 1 and y > 0)
             {
                 sumY += y;
@@ -231,16 +221,38 @@ void Foam::fv::LeishmanBeddoes::calcS1S2
         }
     }
     scalar b = (sumY*sumXYLnY - sumXY*sumYLnY)/(sumY*sumX2Y - sumXY*sumXY);
-    if (mag(alphaPrime_) < alpha1_)
+    S1_ = 1.0/b;
+    
+    // Calculate S2
+    sumY = 0.0;
+    sumXYLnY = 0.0;
+    sumXY = 0.0;
+    sumYLnY = 0.0;
+    sumX2Y = 0.0;
+    alphaLowerLimit = alpha1_ - 1e-3;
+    alphaUpperLimit = pi/6.0;
+    forAll(alphaDegList, i)
     {
-        S1_ = 1.0/b;
-        S2_ = 0.0;
+        scalar alphaRad = alphaDegList[i]/180.0*pi;
+        scalar cn = clList[i]*cos(alphaRad) - cdList[i]*sin(alphaRad);
+        if (alphaRad > alphaLowerLimit and alphaRad < alphaUpperLimit)
+        {
+            f = pow((sqrt(mag(cn)/CNAlpha_/mag(alphaRad))
+                    *2.0 - 1.0), 2);
+            x = alpha1_ - mag(alphaRad);
+            y = (f - C)/D;
+            if (f > 0 and f < 1 and y > 0)
+            {
+                sumY += y;
+                sumXYLnY += x*y*log(y);
+                sumXY += x*y;
+                sumYLnY += y*log(y);
+                sumX2Y += x*x*y;
+            }
+        }
     }
-    else
-    {
-        S1_ = 0.0;
-        S2_ = 1.0/b;
-    }
+    b = (sumY*sumXYLnY - sumXY*sumYLnY)/(sumY*sumX2Y - sumXY*sumXY);
+    S2_ = 1.0/b;
     
     if (debug)
     {
@@ -492,7 +504,6 @@ void Foam::fv::LeishmanBeddoes::correct
     calcAlphaEquiv();
     evalStaticData(alphaDegList, clList, cdList);
     calcUnsteady();
-    calcS1S2(alphaDegList, clList, cdList);
     calcSeparated();
     
     // Modify lift and drag coefficients based on new normal force coefficient
