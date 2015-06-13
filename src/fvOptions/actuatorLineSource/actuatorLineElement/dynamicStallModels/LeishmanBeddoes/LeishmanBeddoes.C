@@ -494,6 +494,7 @@ void Foam::fv::LeishmanBeddoes::correct
         Info<< "    deltaT: " << deltaT_ << endl;
         Info<< "    deltaS: " << deltaS_ << endl;
         Info<< "    Angle of attack (deg): " << alphaDeg << endl;
+        Info<< "    alpha (rad): " << alpha_ << endl;
         Info<< "    deltaAlpha: " << deltaAlpha_ << endl;
         Info<< "    Mach number: " << M_ << endl;
         Info<< "    Initial normal force coefficient: " << cn0 << endl;
