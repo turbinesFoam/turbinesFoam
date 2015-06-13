@@ -65,9 +65,9 @@ void Foam::fv::LeishmanBeddoesSGC::calcUnsteady()
     LeishmanBeddoes3G::calcUnsteady();
     
     // Calculate lagged angle of attack
-    scalar DAlpha = alphaPrimePrev_*exp(-deltaS_/TAlpha_) 
-                  + (alpha_ - alphaPrev_)*exp(-deltaS_/(2.0*TAlpha_));
-    alphaPrime_ = alpha_ - DAlpha;
+    DAlpha_ = DAlphaPrev_*exp(-deltaS_/TAlpha_) 
+            + (alpha_ - alphaPrev_)*exp(-deltaS_/(2.0*TAlpha_));
+    alphaPrime_ = alpha_ - DAlpha_;
     
     // Calculate reduced pitch rate
     r_ = deltaAlpha_/deltaT_*c_/(2.0*magU_);
@@ -87,6 +87,12 @@ void Foam::fv::LeishmanBeddoesSGC::calcUnsteady()
     }
     
     stalled_ = (mag(alphaPrime_) > alphaCrit_);
+    
+    if (debug)
+    {
+        Info<< "    Reduced pitch rate: " << r_ << endl;
+        Info<< "    alphaCrit: " << alphaCrit_ << endl;
+    }
 }
 
 
@@ -165,6 +171,12 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
     // circulatory effects, impulsive effects, dynamic separation, and vortex 
     // lift
     CN_ = CNF_ + CNV_;
+    
+    if (debug)
+    {
+        Info<< "    Vx: " << Vx_ << endl;
+        Info<< "    f: " << f << endl;
+    }
 }
 
 
@@ -172,6 +184,7 @@ void Foam::fv::LeishmanBeddoesSGC::update()
 {
     LeishmanBeddoes3G::update();
     alphaPrimePrev_ = alphaPrime_;
+    DAlphaPrev_ = DAlpha_;
 }
 
 
@@ -192,7 +205,9 @@ Foam::fv::LeishmanBeddoesSGC::LeishmanBeddoesSGC
     r0_(coeffs_.lookupOrDefault("r0", 0.01)),
     B1_(coeffs_.lookupOrDefault("B1", 0.5)),
     E0_(coeffs_.lookupOrDefault("E0", 0.15)),
-    alphaDS0DiffDeg_(coeffs_.lookupOrDefault("alphaDS0DiffDeg", 3.6))
+    alphaDS0DiffDeg_(coeffs_.lookupOrDefault("alphaDS0DiffDeg", 3.6)),
+    DAlpha_(0.0),
+    DAlphaPrev_(0.0)
 {
     Tv_ = coeffs_.lookupOrDefault("Tv", 11.0);
     Tvl_ = coeffs_.lookupOrDefault("Tvl", 9.0);

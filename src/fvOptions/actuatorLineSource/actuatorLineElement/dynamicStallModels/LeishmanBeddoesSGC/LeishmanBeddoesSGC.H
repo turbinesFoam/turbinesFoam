@@ -83,6 +83,12 @@ protected:
         
         //- Difference between alphaDS0 and alphaSS (degrees)
         scalar alphaDS0DiffDeg_;
+        
+        //- Deficiency function for alphaPrime
+        scalar DAlpha_;
+        
+        //- Previous value of DAlpha
+        scalar DAlphaPrev_;
 
         
     // Protected member functions
