@@ -142,14 +142,6 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
     DF_ = DFPrev_*exp(-deltaS_/Tf) 
         + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf));
     fDoublePrime_ = fPrime_ - DF_;
-    if (fDoublePrime_ < 0) 
-    {
-        fDoublePrime_ = 0.0;
-    }
-    else if (fDoublePrime_ > 1) 
-    {
-        fDoublePrime_ = 1.0;
-    }
     
     if (tau_ > 0 and tau_ <= Tvl_)
     {
