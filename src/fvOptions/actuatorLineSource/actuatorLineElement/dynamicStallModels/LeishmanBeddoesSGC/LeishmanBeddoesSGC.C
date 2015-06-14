@@ -110,7 +110,7 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
     fDoublePrime_ = fPrime_ - DF_;
     
     // Calculate vortex modulation parameter
-    if (tau_ > 0 and tau_ <= Tvl_)
+    if (tau_ >= 0 and tau_ <= Tvl_)
     {
         Vx_ = pow((sin(pi*tau_/(2.0*Tvl_))), 1.5);
     }

@@ -143,7 +143,7 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
         + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf));
     fDoublePrime_ = fPrime_ - DF_;
     
-    if (tau_ > 0 and tau_ <= Tvl_)
+    if (tau_ >= 0 and tau_ <= Tvl_)
     {
         Vx_ = pow((sin(pi*tau_/(2.0*Tvl_))), 1.5);
     }
