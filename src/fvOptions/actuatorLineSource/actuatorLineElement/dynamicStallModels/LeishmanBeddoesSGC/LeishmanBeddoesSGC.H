@@ -92,9 +92,6 @@ protected:
 
         
     // Protected member functions
-    
-        // Calculate the equivalent angle of attack
-        virtual void calcAlphaEquiv();
         
         // Calculate unsteady quantities
         virtual void calcUnsteady();

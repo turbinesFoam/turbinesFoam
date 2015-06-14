@@ -45,21 +45,6 @@ namespace fv
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
-void Foam::fv::LeishmanBeddoesSGC::calcAlphaEquiv()
-{
-    T3_ = 1.25*M_;
-    scalar beta = 1 - M_*M_;
-    X_ = XPrev_*exp(-beta*deltaS_/T1_) 
-       + A1_*(etaL_ - etaLPrev_)*exp(-beta*deltaS_/(2.0*T1_));
-    Y_ = YPrev_*exp(-beta*deltaS_/T2_) 
-       + A2_*(etaL_ - etaLPrev_)*exp(-beta*deltaS_/(2.0*T2_));
-    Z_ = ZPrev_*exp(-beta*deltaS_/T3_) 
-       + A1_*(etaL_ - etaLPrev_)*exp(-beta*deltaS_/(2.0*T3_));
-    etaL_ = alpha_ + c_/(2.0*magU_)*deltaAlpha_/deltaT_;
-    alphaEquiv_ = etaL_ - X_ - Y_ - Z_;
-}
-
-
 void Foam::fv::LeishmanBeddoesSGC::calcUnsteady()
 {
     LeishmanBeddoes3G::calcUnsteady();
@@ -123,14 +108,6 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
     DF_ = DFPrev_*exp(-deltaS_/Tf_) 
         + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf_));
     fDoublePrime_ = fPrime_ - DF_;
-    if (fDoublePrime_ < 0) 
-    {
-        fDoublePrime_ = 0.0;
-    }
-    else if (fDoublePrime_ > 1) 
-    {
-        fDoublePrime_ = 1.0;
-    }
     
     // Calculate vortex modulation parameter
     if (tau_ > 0 and tau_ <= Tvl_)
