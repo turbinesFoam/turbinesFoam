@@ -54,6 +54,12 @@ turbine
                 Tvl         10.0;       // Default = 7.0
             }
         }
+        
+        flowCurvature
+        {
+            active              on;
+            flowCurvatureModel  Goude;
+        }
 
         blades
         {

@@ -82,6 +82,14 @@ void Foam::fv::actuatorLineElement::read()
         dsDict.lookup("active") >> dynamicStallActive_;
     }
     
+    // Read flow curvature correction subdictionary
+    if (dict_.found("flowCurvature"))
+    {
+        dictionary fcDict = dict_.subDict("flowCurvature");
+        fcDict.lookup("active") >> flowCurvatureActive_;
+        fcDict.lookup("flowCurvatureModel") >> flowCurvatureModelName_;
+    }
+    
     // Read nu from object registry
     const dictionary& transportProperties = mesh_.lookupObject<IOdictionary>
     (
@@ -212,9 +220,12 @@ void Foam::fv::actuatorLineElement::correctFlowCurvature
     scalar& angleOfAttackRad
 )
 {
-    angleOfAttackRad += omega_*(chordMount_ - 0.25)
-                      * chordLength_/mag(relativeVelocity_);
-    angleOfAttackRad += omega_*chordLength_/(4*mag(relativeVelocity_));
+    if (flowCurvatureModelName_ == "Goude")
+    {
+        angleOfAttackRad += omega_*(chordMount_ - 0.25)
+                          * chordLength_/mag(relativeVelocity_);
+        angleOfAttackRad += omega_*chordLength_/(4*mag(relativeVelocity_));
+    }
 }
 
 
