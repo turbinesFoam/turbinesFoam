@@ -236,7 +236,9 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     angleOfAttack_(0.0),
     dynamicStallActive_(false),
     omega_(0.0),
-    chordMount_(0.25)
+    chordMount_(0.25),
+    flowCurvatureActive_(false),
+    flowCurvatureModelName_("none")
 {
     read();
 }
@@ -349,7 +351,10 @@ void Foam::fv::actuatorLineElement::calculate
     }
     
     // Apply flow curvature correction to angle of attack
-    correctFlowCurvature(angleOfAttackRad);
+    if (flowCurvatureActive_)
+    {
+        correctFlowCurvature(angleOfAttackRad);
+    }
     
     // Calculate angle of attack in degrees
     angleOfAttack_ = angleOfAttackRad/pi*180.0;
