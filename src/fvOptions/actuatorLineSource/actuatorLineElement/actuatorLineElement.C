@@ -86,8 +86,13 @@ void Foam::fv::actuatorLineElement::read()
     if (dict_.found("flowCurvature"))
     {
         dictionary fcDict = dict_.subDict("flowCurvature");
-        fcDict.lookup("active") >> flowCurvatureActive_;
-        fcDict.lookup("flowCurvatureModel") >> flowCurvatureModelName_;
+        flowCurvatureActive_ = fcDict.lookupOrDefault("active", false);
+        word defaultName = "none";
+        flowCurvatureModelName_ = fcDict.lookupOrDefault
+        (
+            "flowCurvatureModel",
+            defaultName
+        );
     }
     
     // Read nu from object registry
@@ -220,6 +225,14 @@ void Foam::fv::actuatorLineElement::correctFlowCurvature
     scalar& angleOfAttackRad
 )
 {
+    if (debug)
+    {
+        Info<< "    Correcting for flow curvature with "
+            << flowCurvatureModelName_ << " model" << endl;
+        Info<< "    Initial angle of attack (degrees): " 
+            << angleOfAttackRad/Foam::constant::mathematical::pi*180.0 << endl;
+    }
+    
     if (flowCurvatureModelName_ == "Goude")
     {
         angleOfAttackRad += omega_*(chordMount_ - 0.25)

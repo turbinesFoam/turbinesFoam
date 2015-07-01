@@ -203,7 +203,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         bladeSubDict.add("dynamicStall", dynamicStallDict_);
         
         // Lookup or create flowCurvature subDict
-        dictionary fcDict = dict_.subOrEmptyDict("flowCurvature");
+        dictionary fcDict = coeffs_.subOrEmptyDict("flowCurvature");
         fcDict.lookupOrAddDefault("active", true);
         word defaultFCModel = "Goude";
         fcDict.lookupOrAddDefault
