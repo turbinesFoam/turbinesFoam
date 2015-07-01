@@ -104,6 +104,9 @@ protected:
         //- Reference density for incompressible case
         scalar rhoRef_;
         
+        //- Inflow velocity
+        vector inflowVelocity_;
+        
         //- Relative flow velocity
         vector relativeVelocity_;
         

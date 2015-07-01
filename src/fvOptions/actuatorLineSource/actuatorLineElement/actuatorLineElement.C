@@ -280,6 +280,26 @@ void Foam::fv::actuatorLineElement::correctFlowCurvature
                           * chordLength_/mag(relativeVelocity_);
         angleOfAttackRad += omega_*chordLength_/(4*mag(relativeVelocity_));
     }
+    else if (flowCurvatureModelName_ == "MandalBurton")
+    {
+        // Calculate relative velocity at leading and trailing edge
+        vector relativeVelocityLE = inflowVelocity_ - velocityLE_;
+        vector relativeVelocityTE = inflowVelocity_ - velocityTE_;
+    
+        // Calculate vector normal to chord--span plane
+        vector planformNormal = -chordDirection_ ^ spanDirection_;
+        planformNormal /= mag(planformNormal);
+    
+        // Calculate angle of attack at leading and trailing edge
+        scalar alphaLE = asin((planformNormal & relativeVelocityLE)
+                       / (mag(planformNormal)*mag(relativeVelocityLE)));
+        scalar alphaTE = asin((planformNormal & relativeVelocityTE)
+                       / (mag(planformNormal)*mag(relativeVelocityTE)));
+                       
+        scalar beta = alphaTE - alphaLE;
+        
+        angleOfAttackRad += atan2((1.0 - cos(beta/2.0)), sin(beta/2.0));
+    }
 }
 
 
@@ -379,7 +399,7 @@ void Foam::fv::actuatorLineElement::calculate
     
     // Find local flow velocity by interpolating to element location
     interpolationCellPoint<vector> UInterp(Uin);
-    vector inflowVelocity = UInterp.interpolate
+    inflowVelocity_ = UInterp.interpolate
     (
         position_, 
         mesh_.findCell(position_)
@@ -387,12 +407,12 @@ void Foam::fv::actuatorLineElement::calculate
     
     // Calculate relative velocity (note these are not projected onto a
     // plane perpendicular to the chord and span direction)
-    relativeVelocity_ = inflowVelocity - velocity_;
+    relativeVelocity_ = inflowVelocity_ - velocity_;
     Re_ = mag(relativeVelocity_)*chordLength_/nu_;
     
     if (debug)
     {
-        Info<< "    inflowVelocity: " << inflowVelocity << endl;
+        Info<< "    inflowVelocity: " << inflowVelocity_ << endl;
         Info<< "    relativeVelocity: " << relativeVelocity_ << endl;
         Info<< "    Reynolds number: " << Re_ << endl;
     }
