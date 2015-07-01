@@ -151,6 +151,9 @@ protected:
         
         //- Switch for applying flow curvature correction
         bool flowCurvatureActive_;
+        
+        //- Flow curvature model name
+        word flowCurvatureModelName_;
 
 
     // Protected Member Functions
@@ -168,6 +171,9 @@ protected:
         
         //- Calculate projection width epsilon
         scalar calcProjectionEpsilon();
+        
+        //- Correct for flow curvatue
+        void correctFlowCurvature(scalar& angleOfAttackRad);
 
 
 public:

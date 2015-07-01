@@ -207,6 +207,17 @@ Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
 }
 
 
+void Foam::fv::actuatorLineElement::correctFlowCurvature
+(
+    scalar& angleOfAttackRad
+)
+{
+    angleOfAttackRad += omega_*(chordMount_ - 0.25)
+                      * chordLength_/mag(relativeVelocity_);
+    angleOfAttackRad += omega_*chordLength_/(4*mag(relativeVelocity_));
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::fv::actuatorLineElement::actuatorLineElement
@@ -338,9 +349,7 @@ void Foam::fv::actuatorLineElement::calculate
     }
     
     // Apply flow curvature correction to angle of attack
-    angleOfAttackRad += omega_*(chordMount_ - 0.25)
-                      * chordLength_/mag(relativeVelocity_);
-    angleOfAttackRad += omega_*chordLength_/(4*mag(relativeVelocity_));
+    correctFlowCurvature(angleOfAttackRad);
     
     // Calculate angle of attack in degrees
     angleOfAttack_ = angleOfAttackRad/pi*180.0;
