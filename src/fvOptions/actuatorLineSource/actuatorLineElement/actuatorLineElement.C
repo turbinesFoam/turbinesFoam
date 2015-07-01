@@ -229,8 +229,6 @@ void Foam::fv::actuatorLineElement::correctFlowCurvature
     {
         Info<< "    Correcting for flow curvature with "
             << flowCurvatureModelName_ << " model" << endl;
-        Info<< "    Initial angle of attack (degrees): " 
-            << angleOfAttackRad/Foam::constant::mathematical::pi*180.0 << endl;
     }
     
     if (flowCurvatureModelName_ == "Goude")
