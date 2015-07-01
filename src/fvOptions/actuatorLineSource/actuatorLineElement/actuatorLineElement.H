@@ -131,7 +131,7 @@ protected:
         //- Dynamic stall model
         autoPtr<dynamicStallModel> dynamicStall_;
         
-        //- Switch for existence of dynamic stall model
+        //- Switch for applying dynamic stall model
         bool dynamicStallActive_;
         
         //- Kinematic viscosity (for calculating Re)
