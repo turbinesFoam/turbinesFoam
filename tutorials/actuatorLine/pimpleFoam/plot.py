@@ -15,7 +15,7 @@ def loadperf():
     df = df.drop_duplicates("time", take_last=True)
     df["alpha_rad"] = df.alpha_deg/180.0*np.pi
     df["cn"] =  df.cl*np.cos(df.alpha_rad) - df.cd*np.sin(df.alpha_rad)
-    df["ct"] = df.cl*np.sin(df.alpha_rad) - df.cd*np.cos(df.alpha_rad)
+    df["cc"] = df.cl*np.sin(df.alpha_rad) - df.cd*np.cos(df.alpha_rad)
     return df
     
 def plot_alpha():
@@ -38,8 +38,18 @@ def plot_cn(t0=0.5):
     plt.xlim((0, None))
     plt.ylim((0, None))
     plt.tight_layout()
+    
+def plot_cc(t0=0.5):
+    df = loadperf()
+    plt.figure()
+    ind = df.time >= t0
+    plt.plot(df.alpha_geom_deg[ind], df.cc[ind])
+    plt.xlabel(r"$\alpha$ (geometric, degrees)")
+    plt.ylabel(r"$C_C$")
+    plt.tight_layout()
 
 if __name__ == "__main__":
     plot_alpha()
     plot_cn()
+    plot_cc()
     plt.show()
