@@ -154,9 +154,24 @@ protected:
         
         //- Flow curvature model name
         word flowCurvatureModelName_;
+        
+        //- Leading edge velocity vector
+        vector velocityLE_;
+        
+        //- Trailing edge velocity vector
+        vector velocityTE_;
 
 
     // Protected Member Functions
+    
+        //- Rotate a vector
+        void rotateVector
+        (
+            vector& vectorToRotate,
+            vector rotationPoint,
+            vector axis,
+            scalar radians
+        );
     
         //- Interpolate a scalar value
         scalar interpolate

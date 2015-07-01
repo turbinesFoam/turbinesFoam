@@ -117,6 +117,49 @@ void Foam::fv::actuatorLineElement::read()
 }
 
 
+void Foam::fv::actuatorLineElement::rotateVector
+(
+    vector& vectorToRotate,
+    vector rotationPoint, 
+    vector axis,
+    scalar radians
+)
+{
+    // Declare and define the rotation matrix (from SOWFA)
+    tensor RM;
+    scalar angle = radians;
+    RM.xx() = Foam::sqr(axis.x()) 
+            + (1.0 - Foam::sqr(axis.x())) * Foam::cos(angle); 
+    RM.xy() = axis.x() * axis.y() 
+            * (1.0 - Foam::cos(angle)) - axis.z() * Foam::sin(angle); 
+    RM.xz() = axis.x() * axis.z() 
+            * (1.0 - Foam::cos(angle)) + axis.y() * Foam::sin(angle);
+    RM.yx() = axis.x() * axis.y() 
+            * (1.0 - Foam::cos(angle)) + axis.z() * Foam::sin(angle); 
+    RM.yy() = Foam::sqr(axis.y()) 
+            + (1.0 - Foam::sqr(axis.y())) * Foam::cos(angle);
+    RM.yz() = axis.y() * axis.z() 
+            * (1.0 - Foam::cos(angle)) - axis.x() * Foam::sin(angle);
+    RM.zx() = axis.x() * axis.z() 
+            * (1.0 - Foam::cos(angle)) - axis.y() * Foam::sin(angle);
+    RM.zy() = axis.y() * axis.z() 
+            * (1.0 - Foam::cos(angle)) + axis.x() * Foam::sin(angle);
+    RM.zz() = Foam::sqr(axis.z()) 
+            + (1.0 - Foam::sqr(axis.z())) * Foam::cos(angle);
+    
+    // Rotation matrices make a rotation about the origin, so need to subtract 
+    // rotation point off the point to be rotated.
+    vectorToRotate -= rotationPoint;
+
+    // Perform the rotation.
+    vectorToRotate = RM & vectorToRotate;
+
+    // Return the rotated point to its new location relative to the rotation 
+    // point
+    vectorToRotate += rotationPoint;
+}
+
+
 Foam::scalar Foam::fv::actuatorLineElement::interpolate
 (
     scalar xNew, 
@@ -260,7 +303,9 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     omega_(0.0),
     chordMount_(0.25),
     flowCurvatureActive_(false),
-    flowCurvatureModelName_("none")
+    flowCurvatureModelName_("none"),
+    velocityLE_(vector::zero),
+    velocityTE_(vector::zero)
 {
     read();
 }
@@ -578,6 +623,24 @@ void Foam::fv::actuatorLineElement::setSpeed
                   / mag(point2 - point);
     scalar speed = omega*radius;
     setSpeed(speed);
+    
+    scalar angleLE = 0.0;
+    scalar angleTE = 0.0;
+    if (radius > 0.0)
+    {
+        // Set velocity at leading edge
+        scalar radiusLE = sqrt(magSqr(0.25*chordLength_) + magSqr(radius));
+        angleLE = atan2(0.25*chordLength_, radius);
+        velocityLE_ = velocity_*radiusLE/radius;
+        rotateVector(velocityLE_, vector::zero, spanDirection_, angleLE);
+        
+        // Set velocity at trailing edge
+        scalar radiusTE = sqrt(magSqr(0.75*chordLength_) + magSqr(radius));
+        angleTE = atan2(-0.75*chordLength_, radius);
+        velocityTE_ = velocity_*radiusTE/radius;
+        rotateVector(velocityTE_, vector::zero, spanDirection_, angleTE);
+    }
+    
     // Also set omega for flow curvature correction
     setOmega(omega);
     
@@ -585,6 +648,12 @@ void Foam::fv::actuatorLineElement::setSpeed
     {
         Info<< "    Radius: " << radius << endl;
         Info<< "    Final velocity: " << velocity_ << endl;
+        Info<< "    Leading edge velocity: " << velocityLE_ << endl;
+        Info<< "    Trailing edge velocity: " << velocityTE_ << endl;
+        Info<< "    Leading edge velocity angle (radians): " 
+            << angleLE << endl;
+        Info<< "    Trailing edge velocity angle (radians): " 
+            << angleTE << endl;
     }
 }
 
