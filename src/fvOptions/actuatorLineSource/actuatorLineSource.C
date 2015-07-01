@@ -277,6 +277,8 @@ void Foam::fv::actuatorLineSource::createElements()
             dsDict.add("chordLength", chordLength);
             dict.add("dynamicStall", dsDict);
         }
+        dictionary fcDict = dict_.subOrEmptyDict("flowCurvature");
+        dict.add("flowCurvature", fcDict);
         
         if (debug)
         {
