@@ -148,6 +148,9 @@ protected:
         
         //- Geometric angle of attack (degrees, no flow curvature correction)
         scalar angleOfAttackGeom_;
+        
+        //- Switch for applying flow curvature correction
+        bool flowCurvatureActive_;
 
 
     // Protected Member Functions
