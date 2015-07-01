@@ -434,7 +434,6 @@ void Foam::fv::actuatorLineElement::calculate
         }
     }
     
-    
     if (debug)
     {
         Info<< "    epsilon: " << epsilon << endl;
