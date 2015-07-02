@@ -165,7 +165,7 @@ turbine
             );
         }
         
-        nacelle
+        hub
         {
             nElements   1;
             profile     cylinder;
