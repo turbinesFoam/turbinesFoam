@@ -237,165 +237,17 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
 }
 
 
-void Foam::fv::axialFlowTurbineALSource::createStruts()
-{
-    int nStruts = strutsDict_.keys().size();
-    struts_.setSize(nStruts);
-    int nElements;
-    word profileName;
-    List<List<scalar> > elementData;
-    List<List<scalar> > profileData;
-    word modelType = "actuatorLineSource";
-    List<word> strutNames = strutsDict_.toc();
-    
-    for (int i = 0; i < nStruts; i++)
-    {
-        word& strutName = strutNames[i];
-        // Create dictionary items for this strut
-        dictionary strutSubDict;
-        strutSubDict = strutsDict_.subDict(strutName);
-        strutSubDict.lookup("nElements") >> nElements;
-        strutSubDict.lookup("profile") >> profileName;
-        strutSubDict.lookup("elementData") >> elementData;
-        profilesDict_.subDict(profileName).lookup("data") >> profileData;
-        
-        strutSubDict.add("freeStreamVelocity", freeStreamVelocity_);
-        strutSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
-        strutSubDict.add("coefficientData", profileData);
-        strutSubDict.add("tipEffect", tipEffect_);
-        
-        if (debug)
-        {
-            Info<< "Creating actuator line strut " << strutName << endl;
-            Info<< "Strut has " << nElements << " elements" << endl;
-            Info<< "Strut profile: " << profileName << endl;
-            Info<< "Element data:" << endl;
-            Info<< elementData << endl << endl;
-            Info<< "Profile sectional coefficient data:" << endl;
-            Info<< profileData << endl << endl;
-        }
-        
-        // Convert element data into actuator line element geometry
-        label nGeomPoints = elementData.size();
-        List<List<List<scalar> > > elementGeometry(nGeomPoints);
-        List<vector> initialVelocities(nGeomPoints, vector::one);
-
-        forAll(elementData, j)
-        {
-            // Read CFTAL dict data
-            scalar axialDistance = elementData[j][0];
-            scalar radius = elementData[j][1];
-            scalar azimuthDegrees = elementData[j][2];
-            scalar azimuthRadians = azimuthDegrees/180.0*mathematical::pi;
-            scalar chordLength = elementData[j][3];
-            scalar chordMount = elementData[j][4];
-            
-            // Set sizes for actuatorLineSource elementGeometry lists
-            elementGeometry[j].setSize(6);
-            elementGeometry[j][0].setSize(3);
-            elementGeometry[j][1].setSize(3);
-            elementGeometry[j][2].setSize(1);
-            elementGeometry[j][3].setSize(3);
-            elementGeometry[j][4].setSize(1);
-            elementGeometry[j][5].setSize(1);
-            
-            // Create geometry point for AL source at origin
-            vector point = origin_;
-            // Move along axis
-            point += axialDistance*axis_;
-            // Move along chord according to chordMount
-            scalar chordDisplacement = (chordMount - 0.25)*chordLength;
-            point -= chordDisplacement*freeStreamDirection_;
-            // Move along radial direction
-            point += radius*radialDirection_;
-            // Set initial velocity of quarter chord
-            scalar radiusCorr = sqrt(magSqr(chordMount - 0.25)*chordLength
-                                     + magSqr(radius));
-            vector initialVelocity = -freeStreamDirection_*omega_*radiusCorr;
-            scalar velAngle = atan2(((chordMount - 0.25)*chordLength), radius);
-            vector velOrigin(vector::zero);
-            rotateVector(initialVelocity, velOrigin, axis_, velAngle);
-            initialVelocities[j] = initialVelocity;
-            // Rotate point and initial velocity according to azimuth value
-            rotateVector(point, origin_, axis_, azimuthRadians);
-            rotateVector
-            (
-                initialVelocities[j], 
-                velOrigin, 
-                axis_, 
-                azimuthRadians
-            );
-            
-            // Set point coordinates for AL source
-            elementGeometry[j][0][0] = point.x(); // x location of geom point
-            elementGeometry[j][0][1] = point.y(); // y location of geom point
-            elementGeometry[j][0][2] = point.z(); // z location of geom point
-            
-            // Set span directions for AL source (in radial direction)
-            vector spanDirection = radialDirection_;
-            rotateVector(spanDirection, velOrigin, axis_, azimuthRadians);
-            elementGeometry[j][1][0] = spanDirection.x(); 
-            elementGeometry[j][1][1] = spanDirection.y(); 
-            elementGeometry[j][1][2] = spanDirection.z(); 
-            
-            // Set chord length
-            elementGeometry[j][2][0] = chordLength;
-            
-            // Set chord reference direction
-            vector chordDirection = -freeStreamDirection_;
-            rotateVector(chordDirection, velOrigin, axis_, azimuthRadians);
-            elementGeometry[j][3][0] = chordDirection.x(); 
-            elementGeometry[j][3][1] = chordDirection.y(); 
-            elementGeometry[j][3][2] = chordDirection.z();
-            
-            // Set chord mount
-            elementGeometry[j][4][0] = chordMount;
-            
-            // Set pitch
-            scalar pitch = elementData[j][5];
-            elementGeometry[j][5][0] = pitch;
-        }
-
-        if (debug)
-        {
-            Info<< "Converted element geometry:" << endl << elementGeometry 
-                << endl;
-        }
-        
-        strutSubDict.add("elementGeometry", elementGeometry);
-        strutSubDict.add("initialVelocities", initialVelocities);
-        
-        dictionary dict;
-        dict.add("actuatorLineSourceCoeffs", strutSubDict);
-        dict.add("type", "actuatorLineSource");
-        dict.add("active", dict_.lookup("active"));
-        dict.add("selectionMode", dict_.lookup("selectionMode"));
-        dict.add("cellSet", dict_.lookup("cellSet"));
-        
-        actuatorLineSource* strut = new actuatorLineSource
-        (
-            strutName, 
-            modelType, 
-            dict, 
-            mesh_
-        );
-        
-        struts_.set(i, strut);
-    }
-}
-
-
-void Foam::fv::axialFlowTurbineALSource::createShaft()
+void Foam::fv::axialFlowTurbineALSource::createTower()
 {
     int nElements;
     word profileName;
     List<List<scalar> > elementData;
     List<List<scalar> > profileData;
-    dictionary shaftSubDict;
+    dictionary towerSubDict;
     
-    shaftDict_.lookup("nElements") >> nElements;
-    shaftDict_.lookup("profile") >> profileName;
-    shaftDict_.lookup("elementData") >> elementData;
+    towerDict_.lookup("nElements") >> nElements;
+    towerDict_.lookup("profile") >> profileName;
+    towerDict_.lookup("elementData") >> elementData;
     profilesDict_.subDict(profileName).lookup("data") >> profileData;
     
     // Convert element data into actuator line element geometry
@@ -405,7 +257,7 @@ void Foam::fv::axialFlowTurbineALSource::createShaft()
 
     forAll(elementData, j)
     {
-        // Read shaft element data
+        // Read tower element data
         scalar axialDistance = elementData[j][0];
         scalar diameter = elementData[j][1];
         
@@ -447,30 +299,30 @@ void Foam::fv::axialFlowTurbineALSource::createShaft()
         elementGeometry[j][5][0] = 0.0;
     }
     
-    shaftSubDict.add("elementGeometry", elementGeometry);
-    shaftSubDict.add("initialVelocities", initialVelocities);
-    shaftSubDict.add("nElements", nElements);
-    shaftSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
-    shaftSubDict.add("coefficientData", profileData);
-    shaftSubDict.add("tipEffect", tipEffect_);
-    shaftSubDict.add("freeStreamVelocity", freeStreamVelocity_);
+    towerSubDict.add("elementGeometry", elementGeometry);
+    towerSubDict.add("initialVelocities", initialVelocities);
+    towerSubDict.add("nElements", nElements);
+    towerSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
+    towerSubDict.add("coefficientData", profileData);
+    towerSubDict.add("tipEffect", tipEffect_);
+    towerSubDict.add("freeStreamVelocity", freeStreamVelocity_);
         
     dictionary dict;
-    dict.add("actuatorLineSourceCoeffs", shaftSubDict);
+    dict.add("actuatorLineSourceCoeffs", towerSubDict);
     dict.add("type", "actuatorLineSource");
     dict.add("active", dict_.lookup("active"));
     dict.add("selectionMode", dict_.lookup("selectionMode"));
     dict.add("cellSet", dict_.lookup("cellSet"));
     
-    actuatorLineSource* shaft = new actuatorLineSource
+    actuatorLineSource* tower = new actuatorLineSource
     (
-        "shaft", 
+        "tower", 
         "actuatorLineSource", 
         dict, 
         mesh_
     );
     
-    shaft_.set(shaft);
+    tower_.set(tower);
 }
 
 
@@ -485,14 +337,16 @@ Foam::fv::axialFlowTurbineALSource::axialFlowTurbineALSource
 )
 :
     turbineALSource(name, modelType, dict, mesh),
-    hasStruts_(false),
-    hasShaft_(false)
+    hasHub_(false),
+    hasTower_(false),
+    hasNacelle_(false)
 {
     read(dict);
     createCoordinateSystem();
     createBlades();
-    if (hasStruts_) createStruts();
-    if (hasShaft_) createShaft();
+    if (hasHub_) createHub();
+    if (hasTower_) createTower();
+    if (hasNacelle_) createNacelle();
     createOutputFile();
     
     if (debug)
@@ -528,19 +382,10 @@ void Foam::fv::axialFlowTurbineALSource::rotate()
         blades_[i].setSpeed(origin_, axis_, omega_);
     }
     
-    if (hasStruts_)
+    if (hasHub_)
     {
-        forAll(struts_, i)
-        {
-            struts_[i].rotate(origin_, axis_, radians);
-            struts_[i].setSpeed(origin_, axis_, omega_);
-        }
-    }
-    
-    if (hasShaft_)
-    {
-        shaft_->rotate(origin_, axis_, radians);
-        shaft_->setSpeed(origin_, axis_, omega_);
+        hub_->rotate(origin_, axis_, radians);
+        hub_->setSpeed(origin_, axis_, omega_);
     }
     
     if (debug)
@@ -584,25 +429,31 @@ void Foam::fv::axialFlowTurbineALSource::addSup
         moment += blades_[i].moment(origin_);
     }
     
-    if (hasStruts_)
+    if (hasHub_)
     {
-        // Add source for strut actuator lines
-        forAll(struts_, i)
-        {
-            struts_[i].addSup(eqn, fieldI);
-            forceField_ += struts_[i].forceField();
-            force_ += struts_[i].force();
-            moment += struts_[i].moment(origin_);
-        }
+        // Add source for hub actuator line
+        hub_->addSup(eqn, fieldI);
+        forceField_ += hub_->forceField();
+        force_ += hub_->force();
+        moment += hub_->moment(origin_);
     }
     
-    if (hasShaft_)
+    if (hasTower_)
     {
-        // Add source for shaft actuator line
-        shaft_->addSup(eqn, fieldI);
-        forceField_ += shaft_->forceField();
-        force_ += shaft_->force();
-        moment += shaft_->moment(origin_);
+        // Add source for tower actuator line
+        tower_->addSup(eqn, fieldI);
+        forceField_ += tower_->forceField();
+        force_ += tower_->force();
+        moment += tower_->moment(origin_);
+    }
+    
+    if (hasNacelle_)
+    {
+        // Add source for tower actuator line
+        nacelle_->addSup(eqn, fieldI);
+        forceField_ += nacelle_->forceField();
+        force_ += nacelle_->force();
+        moment += nacelle_->moment(origin_);
     }
     
     // Torque is the projection of the moment from all blades on the axis
@@ -682,19 +533,22 @@ void Foam::fv::axialFlowTurbineALSource::addSup
         blades_[i].addSup(eqn, fieldI);
     }
     
-    if (hasStruts_)
+    if (hasHub_)
     {
-        // Add source for strut actuator lines
-        forAll(struts_, i)
-        {
-            struts_[i].addSup(eqn, fieldI);
-        }
+        // Add source for hub actuator line
+        hub_->addSup(eqn, fieldI);
     }
     
-    if (hasShaft_)
+    if (hasTower_)
     {
-        // Add source for shaft actuator line
-        shaft_->addSup(eqn, fieldI);
+        // Add source for tower actuator line
+        tower_->addSup(eqn, fieldI);
+    }
+    
+    if (hasNacelle_)
+    {
+        // Add source for nacelle actuator line
+        nacelle_->addSup(eqn, fieldI);
     }
 }
 
@@ -711,13 +565,17 @@ bool Foam::fv::axialFlowTurbineALSource::read(const dictionary& dict)
     {
         turbineALSource::read(dict);
         
-        // Get struts information
-        strutsDict_ = coeffs_.subOrEmptyDict("struts");
-        if (strutsDict_.keys().size() > 0) hasStruts_ = true;
+        // Get hub information
+        hubDict_ = coeffs_.subOrEmptyDict("hub");
+        if (hubDict_.keys().size() > 0) hasHub_ = true;
         
-        // Get shaft information
-        shaftDict_ = coeffs_.subOrEmptyDict("shaft");
-        if (shaftDict_.keys().size() > 0) hasShaft_ = true;
+        // Get tower information
+        towerDict_ = coeffs_.subOrEmptyDict("tower");
+        if (towerDict_.keys().size() > 0) hasTower_ = true;
+        
+        // Get nacelle information
+        nacelleDict_ = coeffs_.subOrEmptyDict("nacelle");
+        if (nacelleDict_.keys().size() > 0) hasNacelle_ = true;
         
         if (debug)
         {

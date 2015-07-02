@@ -58,39 +58,51 @@ public:
 protected:
 
     // Protected data
+    
+        //- Switch for hub present
+        bool hasHub_;
         
-        //- Switch for struts
-        bool hasStruts_;
+        //- Switch for tower present
+        bool hasTower_;
         
-        //- Switch for shaft
-        bool hasShaft_;
+        //- Switch for nacelle present
+        bool hasNacelle_;
         
-        //- List of actuator lines as struts
-        PtrList<actuatorLineSource> struts_;
+        //- Actuator line for hub
+        autoPtr<actuatorLineSource> hub_;
         
-        //- Actuator line for shaft
-        autoPtr<actuatorLineSource> shaft_;
+        //- Actuator line for tower
+        autoPtr<actuatorLineSource> tower_;
         
-        //- Strut definitions dictionary
-        dictionary strutsDict_;
+        //- Actuator line for nacelle
+        autoPtr<actuatorLineSource> nacelle_;
         
-        //- Shaft dictionary
-        dictionary shaftDict_;
+        //- Hub dictionary
+        dictionary hubDict_;
+        
+        //- Tower definitions dictionary
+        dictionary towerDict_;
+        
+        //- Nacelle dictionary
+        dictionary nacelleDict_;
 
 
     // Protected Member Functions
+    
+        //- Create the co-ordinate system
+        virtual void createCoordinateSystem();
         
         //- Create actuator lines for blades
         virtual void createBlades();
         
-        //- Create actuator lines for struts
-        void createStruts();
+        //- Create actuator line for hub
+        void createHub();
         
-        //- Create actuator line for shaft
-        void createShaft();
-
-        //- Create the co-ordinate system
-        virtual void createCoordinateSystem();
+        //- Create actuator line for tower
+        void createTower();
+        
+        //- Create actuator line for nacelle
+        void createNacelle();
         
         //- Rotate the turbine
         virtual void rotate();
