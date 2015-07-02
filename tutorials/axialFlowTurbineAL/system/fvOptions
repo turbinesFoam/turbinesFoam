@@ -158,8 +158,10 @@ turbine
             profile     cylinder;
             elementData
             ( // axial distance, height, diameter
-                (0.1 -1.22 0.09)
-                (0.1  0.00 0.06)
+                (0.14 -0.82 0.09)
+                (0.14 -0.66 0.08)
+                (0.14 -0.42 0.06)
+                (0.14  0.00 0.05)
             );
         }
         
