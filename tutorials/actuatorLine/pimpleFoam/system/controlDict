@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.3.x                                 |
+|  \\    /   O peration     | Version:  2.4.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -22,13 +22,13 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         1;
+endTime         3;
 
-deltaT          0.001;
+deltaT          0.025;
 
-writeControl    timeStep;
+writeControl    runTime;
 
-writeInterval   10;
+writeInterval   0.05;
 
 writeFormat     ascii;
 
@@ -59,6 +59,8 @@ DebugSwitches
     actuatorLineSource  1;
     actuatorLineElement 1;
     LeishmanBeddoes     1;
+    LeishmanBeddoes3G   1;
+    LeishmanBeddoesSGC  1;
 }
 
 // ************************************************************************* //

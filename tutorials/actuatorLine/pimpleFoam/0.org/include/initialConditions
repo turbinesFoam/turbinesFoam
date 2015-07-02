@@ -1,29 +1,14 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.3.x                                 |
+|  \\    /   O peration     | Version:  2.4.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
-FoamFile
-{
-    version     2.0;
-    format      ascii;
-    class       dictionary;
-    object      decomposeParDict;
-}
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-numberOfSubdomains 2;
-
-method          hierarchical;
-
-hierarchicalCoeffs
-{
-    n           (1 1 2);
-    delta       0.001;
-    order       xyz;
-}
+flowVelocity         (29.9 0 0);
+pressure             0;
+turbulentKE          2e-2; // Was 2e-4
+turbulentEpsilon     3e-2; // Was 0.01; Guess ~ 0.09*k**(3/2)/l
 
 // ************************************************************************* //

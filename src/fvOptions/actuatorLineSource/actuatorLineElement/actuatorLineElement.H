@@ -91,8 +91,8 @@ protected:
         //- Velocity of the element
         vector velocity_;
         
-        //- Fluid velocity near the element
-        vector fluidVelocity_;
+        //- Free stream velocity
+        vector freeStreamVelocity_;
         
         //- Free stream direction
         vector freeStreamDirection_;
@@ -103,6 +103,9 @@ protected:
         
         //- Reference density for incompressible case
         scalar rhoRef_;
+        
+        //- Inflow velocity
+        vector inflowVelocity_;
         
         //- Relative flow velocity
         vector relativeVelocity_;
@@ -131,7 +134,7 @@ protected:
         //- Dynamic stall model
         autoPtr<dynamicStallModel> dynamicStall_;
         
-        //- Switch for existence of dynamic stall model
+        //- Switch for applying dynamic stall model
         bool dynamicStallActive_;
         
         //- Kinematic viscosity (for calculating Re)
@@ -145,9 +148,33 @@ protected:
         
         //- Nondimensional chord mount distance
         scalar chordMount_;
+        
+        //- Geometric angle of attack (degrees, no flow curvature correction)
+        scalar angleOfAttackGeom_;
+        
+        //- Switch for applying flow curvature correction
+        bool flowCurvatureActive_;
+        
+        //- Flow curvature model name
+        word flowCurvatureModelName_;
+        
+        //- Leading edge velocity vector
+        vector velocityLE_;
+        
+        //- Trailing edge velocity vector
+        vector velocityTE_;
 
 
     // Protected Member Functions
+    
+        //- Rotate a vector
+        void rotateVector
+        (
+            vector& vectorToRotate,
+            vector rotationPoint,
+            vector axis,
+            scalar radians
+        );
     
         //- Interpolate a scalar value
         scalar interpolate
@@ -162,6 +189,9 @@ protected:
         
         //- Calculate projection width epsilon
         scalar calcProjectionEpsilon();
+        
+        //- Correct for flow curvatue
+        void correctFlowCurvature(scalar& angleOfAttackRad);
 
 
 public:
@@ -192,11 +222,11 @@ public:
 
     //- Constructor
     actuatorLineElement
-	(
-		const word& name,
-		const dictionary& dict,
+    (
+        const word& name,
+        const dictionary& dict,
         const fvMesh& mesh
-	);
+    );
 
 
     //- Destructor
@@ -221,6 +251,9 @@ public:
             
             //- Return element angle of attack in degrees
             scalar& angleOfAttack();
+            
+            //- Return element geometric angle of attack in degrees
+            scalar& angleOfAttackGeom();
             
             //- Return lift coefficient
             scalar& liftCoefficient();
@@ -274,7 +307,11 @@ public:
         // Evaluation
             
             //- Calculate forces
-            void calculate(vectorField Uin, volVectorField& forceField);
+            void calculate
+            (
+                const volVectorField& Uin, 
+                volVectorField& forceField
+            );
             
             //- Read coefficient data
             void read();

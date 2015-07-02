@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.3.x                                 |
+|  \\    /   O peration     | Version:  2.4.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -26,7 +26,6 @@ turbine
     crossFlowTurbineALSourceCoeffs
     {
         fieldNames          (U);
-        nBlades             3;
         tipEffect           0.95; 
 
         freeStreamVelocity  (1 0 0);
@@ -41,7 +40,7 @@ turbine
         dynamicStall
         {
             active              on;
-            dynamicStallModel   LeishmanBeddoes;
+            dynamicStallModel   LeishmanBeddoes3G;
             LeishmanBeddoesCoeffs
             {
                 A1          0.3;        // Default = 0.3
@@ -54,6 +53,12 @@ turbine
                 Tv          6.0;        // Default = 6.0
                 Tvl         10.0;       // Default = 7.0
             }
+        }
+        
+        flowCurvature
+        {
+            active              on;
+            flowCurvatureModel  Goude;
         }
 
         blades
@@ -101,7 +106,7 @@ turbine
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
                     (0.0 0.05 0.0 0.14 0.3 0.0)
-                    (0.0 0.65 0.0 0.14 0.3 0.0)
+                    (0.0 0.5 0.0 0.14 0.3 0.0)
                 );
             }
             strut2
@@ -111,7 +116,7 @@ turbine
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
                     (0.0 0.05 120.0 0.14 0.3 0.0)
-                    (0.0 0.65 120.0 0.14 0.3 0.0)
+                    (0.0 0.5 120.0 0.14 0.3 0.0)
                 );
             }
             strut3
@@ -121,7 +126,7 @@ turbine
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
                     (0.0 0.05 240.0 0.14 0.3 0.0)
-                    (0.0 0.65 240.0 0.14 0.3 0.0)
+                    (0.0 0.5 240.0 0.14 0.3 0.0)
                 );
             }
         }

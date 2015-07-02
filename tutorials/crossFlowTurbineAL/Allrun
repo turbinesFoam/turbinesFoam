@@ -14,7 +14,6 @@ runApplication topoSet
 pimpleFoam | tee log.pimpleFoam
 
 runApplication vorticity
-#runApplication R
 
 ./gensampledict.py
 runApplication sample

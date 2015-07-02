@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.3.x                                 |
+|  \\    /   O peration     | Version:  2.4.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -24,32 +24,55 @@ foil
 
     actuatorLineSourceCoeffs
     {
-        fieldNames          (U k epsilon);
+        fieldNames          (U);
         tipEffect           0.95; 
-        freeStreamVelocity  (1 0 0);
-        nElements           14;
+        freeStreamVelocity  (29.9 0 0); // M = 0.381
+        nElements           4;
         writePerf           true;
 
         elementGeometry // Will be interpolated linearly per nElements
         ( // point spanDir chordLength chordRefDir chordMount pitch
-            ((0.0 0.0 -0.5) (0 0 1) (0.10) (-1 0 0) (0.25) (4.0))
-            ((0.0 0.0  0.0) (0 0 1) (0.20) (-1 0 0) (0.25) (4.0))
-            ((0.0 0.0  0.5) (0 0 1) (0.10) (-1 0 0) (0.25) (4.0))
+            ((0.0 0.0 0.0) (0 0 1) (1.22) (-1 0 0) (0.25) (15))
+            ((0.0 0.0 1.98) (0 0 1) (1.22) (-1 0 0) (0.25) (15))
         );
         
         dynamicStall
         {
             active              on;
-            dynamicStallModel   LeishmanBeddoes;
+            dynamicStallModel   LeishmanBeddoesSGC;
+            speedOfSound        343;
+            
             LeishmanBeddoesCoeffs
             {
-                speedOfSound    343;
+                speedOfSound    $speedOfSound;
             }
+            
+            LeishmanBeddoes3GCoeffs
+            {
+                speedOfSound    $speedOfSound;
+            }
+            
+            LeishmanBeddoesSGCCoeffs
+            {
+                speedOfSound    $speedOfSound;
+                TAlpha          3.9;
+                alphaDS0DiffDeg 3.78;
+                B1              0.75;
+                eta             1;
+                E0              0.25;
+            }
+        }
+        
+        harmonicPitching
+        {
+            active          on;
+            reducedFreq     0.124; // omega*c/(2*UInfty) about chordMount
+            amplitude       10.0; // Degrees
         }
         
         coefficientData
         ( // alpha C_l C_d
-            #include "../../../resources/foilData/NACA0021_1.6e5"
+            #include "../../../resources/foilData/NACA0012_2e6"
 		);
     }
 }

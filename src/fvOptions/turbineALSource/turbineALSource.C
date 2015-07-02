@@ -173,6 +173,7 @@ Foam::fv::turbineALSource::turbineALSource
     dragCoefficient_(0.0),
     torqueCoefficient_(0.0)
 {
+    forceField_.write();
 }
 
 

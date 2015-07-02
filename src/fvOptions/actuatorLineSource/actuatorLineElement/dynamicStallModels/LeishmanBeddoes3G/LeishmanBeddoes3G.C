@@ -86,6 +86,14 @@ void Foam::fv::LeishmanBeddoes3G::calcUnsteady()
     
     // Set stalled switch
     stalled_ = (mag(CNPrime_) > CN1_);
+    
+    if (debug)
+    {
+        Info<< "    lambdaL: " << lambdaL_ << endl;
+        Info<< "    lambdaLPrev: " << lambdaLPrev_ << endl;
+        Info<< "    TI: " << TI_ << endl;
+        Info<< "    H: " << H_ << endl;
+    }
 }
 
 
@@ -93,75 +101,13 @@ void Foam::fv::LeishmanBeddoes3G::calcS1S2
 (
     List<scalar> alphaDegList,
     List<scalar> clList,
-    List<scalar> cdList
+    List<scalar> cdList,
+    scalar B,
+    scalar C,
+    scalar D
 )
 {
-    scalar pi = Foam::constant::mathematical::pi;
-    scalar sumY = 0.0;
-    scalar sumXYLnY = 0.0;
-    scalar sumXY = 0.0;
-    scalar sumYLnY = 0.0;
-    scalar sumX2Y = 0.0;
-    scalar alphaLowerLimit;
-    scalar alphaUpperLimit;
-    if (mag(alphaPrime_) < alpha1_)
-    {
-        alphaLowerLimit = 0.0;
-        alphaUpperLimit = alpha1_;
-    }
-    else
-    {
-        alphaLowerLimit = alpha1_ - 1e-3;
-        alphaUpperLimit = pi/6.0;
-    }
-    forAll(alphaDegList, i)
-    {
-        scalar alphaRad = alphaDegList[i]/180.0*pi;
-        scalar cn = clList[i]*cos(alphaRad) - cdList[i]*sin(alphaRad);
-        scalar f = 1.0;
-        if (alphaRad > alphaLowerLimit and alphaRad < alphaUpperLimit)
-        {
-            f = pow((sqrt(mag(cn)/CNAlpha_/mag(alphaRad))
-                    *2.0 - 1.0), 2);
-            scalar x;
-            scalar y;
-            if (mag(alphaPrime_) < alpha1_) 
-            {
-                x = mag(alphaRad) - alpha1_;
-                y = (f - 1)/(-0.4);
-            }
-            else 
-            {
-                x = alpha1_ - mag(alphaRad);
-                y = (f - 0.02)/0.58;
-            }
-            if (f > 0 and f < 1 and y > 0)
-            {
-                sumY += y;
-                sumXYLnY += x*y*log(y);
-                sumXY += x*y;
-                sumYLnY += y*log(y);
-                sumX2Y += x*x*y;
-            }
-        }
-    }
-    scalar b = (sumY*sumXYLnY - sumXY*sumYLnY)/(sumY*sumX2Y - sumXY*sumXY);
-    if (mag(alphaPrime_) < alpha1_)
-    {
-        S1_ = 1.0/b;
-        S2_ = 0.0;
-    }
-    else
-    {
-        S1_ = 0.0;
-        S2_ = 1.0/b;
-    }
-    
-    if (debug)
-    {
-        Info<< "    S1: " << S1_ << endl;
-        Info<< "    S2: " << S2_ << endl;
-    }
+    LeishmanBeddoes::calcS1S2(alphaDegList, clList, cdList, B, C, D);
 }
 
 
@@ -177,6 +123,16 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
         fPrime_ = 0.02 + 0.58*exp((alpha1_ - mag(alphaPrime_))/S2_);
     }
     
+    // Evaluate vortex tracking time
+    if (not stalledPrev_) tau_ = 0.0;
+    else 
+    {
+        if (tau_ == tauPrev_)
+        {
+            tau_ = tauPrev_ + deltaS_;
+        }
+    }
+    
     // Modify Tf time constant if necessary
     scalar Tf = Tf_;
     if (tau_ > Tvl_) Tf = 0.5*Tf_;
@@ -185,8 +141,9 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
     scalar pi = Foam::constant::mathematical::pi;
     DF_ = DFPrev_*exp(-deltaS_/Tf) 
         + (fPrime_ - fPrimePrev_)*exp(-deltaS_/(2*Tf));
-    fDoublePrime_ = mag(fPrime_ - DF_);
-    if (tau_ > 0 and tau_ <= Tvl_)
+    fDoublePrime_ = fPrime_ - DF_;
+    
+    if (tau_ >= 0 and tau_ <= Tvl_)
     {
         Vx_ = pow((sin(pi*tau_/(2.0*Tvl_))), 1.5);
     }
@@ -194,8 +151,15 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
     {
         Vx_ = pow((cos(pi*(tau_ - Tvl_)/Tv_)), 2);
     }
-    if (mag(alpha_) < mag(alphaPrev_)) Vx_ = 0.0;
-    f3G_ = mag(fDoublePrime_ - DF_*Vx_);
+    if (mag(alpha_) < mag(alphaPrev_)) 
+    {
+        Vx_ = 0.0;
+    }
+
+    // Calculate the separation point and limit to [0, 1]
+    f3G_ = fDoublePrime_ - DF_*Vx_;
+    if (f3G_ < 0) f3G_ = 0.0;
+    else if (f3G_ > 1) f3G_ = 1.0;
     
     // Calculate normal force coefficient including dynamic separation point
     CNF_ = CNAlpha_*alphaEquiv_*pow(((1.0 + sqrt(f3G_))/2.0), 2) 
@@ -210,48 +174,10 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
     {
         CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*sqrt(fDoublePrime_);
     }
-    
-    // Compute vortex shedding process if stalled
-    // Evaluate vortex tracking time
-    if (not stalledPrev_) tau_ = 0.0;
-    else 
-    {
-        if (tau_ == tauPrev_)
-        {
-            tau_ = tauPrev_ + deltaS_;
-        }
-    }
-    
-    // Calculate Strouhal number time constant and set tau to zero to 
-    // allow multiple vortex shedding
-    scalar Tst = 2.0*(1.0 - fDoublePrime_)/0.19;
-    if (tau_ > (Tvl_ + Tst)) tau_ = 0.0;
-    
-    // Evaluate vortex lift contributions, which are only nonzero if angle
-    // of attack increased in magnitude
-    if (mag(alpha_) > mag(alphaPrev_) and mag(alpha_ - alphaPrev_) > 0.01)
-    {
-        scalar Tv = Tv_;
-        if (tau_ < Tvl_)
-        {
-            CV_ = CNC_*(1.0 - pow(((1.0 + sqrt(fDoublePrime_))/2.0), 2));
-            CNV_ = CNVPrev_*exp(-deltaS_/Tv) 
-                 + (CV_ - CVPrev_)*exp(-deltaS_/(2.0*Tv));
-        }
-        else
-        {
-            CNV_ = CNVPrev_*exp(-deltaS_/Tv);
-        }
-    }
-    else
-    {
-        CNV_ = 0.0;
-    }
 
-    // Total normal force coefficient is the combination of that from
-    // circulatory effects, impulsive effects, dynamic separation, and vortex 
-    // lift
-    CN_ = CNF_ + CNV_;
+    // Total normal force coefficient is does not have CNV contribution
+    // since this is included in the Vx term
+    CN_ = CNF_;
 }
 
 
@@ -276,12 +202,16 @@ Foam::fv::LeishmanBeddoes3G::LeishmanBeddoes3G
 :
     LeishmanBeddoes(dict, modelName, time),
     Z_(0.0),
+    ZPrev_(0.0),
     etaL_(0.0),
+    etaLPrev_(0.0),
     A3_(coeffs_.lookupOrDefault("A3", 0.5)),
     T1_(coeffs_.lookupOrDefault("T1", 20.0)),
     T2_(coeffs_.lookupOrDefault("T2", 4.5)),
     H_(0.0),
-    lambdaL_(0.0)
+    HPrev_(0.0),
+    lambdaL_(0.0),
+    lambdaLPrev_(0.0)
 {
     fCrit_ = 0.6;
     Tv_ = coeffs_.lookupOrDefault("Tv", 10.0);

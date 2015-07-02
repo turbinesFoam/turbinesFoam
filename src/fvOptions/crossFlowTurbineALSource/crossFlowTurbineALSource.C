@@ -102,7 +102,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         // Convert element data into actuator line element geometry
         label nGeomPoints = elementData.size();
         List<List<List<scalar> > > elementGeometry(nGeomPoints);
-        List<vector> initialVelocities(nGeomPoints, vector::one);
+        List<vector> initialVelocities(nGeomPoints, vector::zero);
         // Frontal area for this blade
         scalar frontalArea = 0.0;
         forAll(elementData, j)
@@ -136,21 +136,38 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             vector point = origin_;
             // Move along axis
             point += axialDistance*axis_;
+            // Move along chord according to chordMount
             scalar chordDisplacement = (chordMount - 0.25)*chordLength;
             point -= chordDisplacement*freeStreamDirection_;
+            // Move along radial direction
             point += radius*radialDirection_;
-            initialVelocities[j] = -freeStreamDirection_*omega_*radius;
-            // Rotate according to azimuth value
+            // Set initial velocity of quarter chord
+            scalar radiusCorr = sqrt(magSqr(chordMount - 0.25)*chordLength
+                                     + magSqr(radius));
+            vector initialVelocity = -freeStreamDirection_*omega_*radiusCorr;
+            scalar velAngle = atan2(((chordMount - 0.25)*chordLength), radius);
+            vector velOrigin(vector::zero);
+            rotateVector(initialVelocity, velOrigin, axis_, velAngle);
+            initialVelocities[j] = initialVelocity;
+            // Rotate point and initial velocity according to azimuth value
             rotateVector(point, origin_, axis_, azimuthRadians);
-            rotateVector(initialVelocities[j], origin_, axis_, azimuthRadians);
+            rotateVector
+            (
+                initialVelocities[j], 
+                velOrigin, 
+                axis_, 
+                azimuthRadians
+            );
+            
+            // Set point coordinates for AL source
             elementGeometry[j][0][0] = point.x(); // x location of geom point
             elementGeometry[j][0][1] = point.y(); // y location of geom point
             elementGeometry[j][0][2] = point.z(); // z location of geom point
             
             // Set span directions for AL source
-            elementGeometry[j][1][0] = axis_.x(); // x component of span direction
-            elementGeometry[j][1][1] = axis_.y(); // y component of span direction
-            elementGeometry[j][1][2] = axis_.z(); // z component of span direction
+            elementGeometry[j][1][0] = axis_.x(); // x component of span dir
+            elementGeometry[j][1][1] = axis_.y(); // y component of span dir
+            elementGeometry[j][1][2] = axis_.z(); // z component of span dir
             
             // Set chord length
             elementGeometry[j][2][0] = chordLength;
@@ -184,6 +201,17 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         bladeSubDict.add("elementGeometry", elementGeometry);
         bladeSubDict.add("initialVelocities", initialVelocities);
         bladeSubDict.add("dynamicStall", dynamicStallDict_);
+        
+        // Lookup or create flowCurvature subDict
+        dictionary fcDict = coeffs_.subOrEmptyDict("flowCurvature");
+        fcDict.lookupOrAddDefault("active", true);
+        word defaultFCModel = "Goude";
+        fcDict.lookupOrAddDefault
+        (
+            "flowCurvatureModel", 
+            defaultFCModel
+        );
+        bladeSubDict.add("flowCurvature", fcDict);
         
         dictionary dict;
         dict.add("actuatorLineSourceCoeffs", bladeSubDict);
@@ -275,20 +303,37 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
             vector point = origin_;
             // Move along axis
             point += axialDistance*axis_;
+            // Move along chord according to chordMount
             scalar chordDisplacement = (chordMount - 0.25)*chordLength;
             point -= chordDisplacement*freeStreamDirection_;
+            // Move along radial direction
             point += radius*radialDirection_;
-            initialVelocities[j] = -freeStreamDirection_*omega_*radius;
-            // Rotate according to azimuth value
+            // Set initial velocity of quarter chord
+            scalar radiusCorr = sqrt(magSqr(chordMount - 0.25)*chordLength
+                                     + magSqr(radius));
+            vector initialVelocity = -freeStreamDirection_*omega_*radiusCorr;
+            scalar velAngle = atan2(((chordMount - 0.25)*chordLength), radius);
+            vector velOrigin(vector::zero);
+            rotateVector(initialVelocity, velOrigin, axis_, velAngle);
+            initialVelocities[j] = initialVelocity;
+            // Rotate point and initial velocity according to azimuth value
             rotateVector(point, origin_, axis_, azimuthRadians);
-            rotateVector(initialVelocities[j], origin_, axis_, azimuthRadians);
+            rotateVector
+            (
+                initialVelocities[j], 
+                velOrigin, 
+                axis_, 
+                azimuthRadians
+            );
+            
+            // Set point coordinates for AL source
             elementGeometry[j][0][0] = point.x(); // x location of geom point
             elementGeometry[j][0][1] = point.y(); // y location of geom point
             elementGeometry[j][0][2] = point.z(); // z location of geom point
             
             // Set span directions for AL source (in radial direction)
             vector spanDirection = radialDirection_;
-            rotateVector(spanDirection, origin_, axis_, azimuthRadians);
+            rotateVector(spanDirection, velOrigin, axis_, azimuthRadians);
             elementGeometry[j][1][0] = spanDirection.x(); 
             elementGeometry[j][1][1] = spanDirection.y(); 
             elementGeometry[j][1][2] = spanDirection.z(); 
@@ -298,7 +343,7 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
             
             // Set chord reference direction
             vector chordDirection = -freeStreamDirection_;
-            rotateVector(chordDirection, origin_, axis_, azimuthRadians);
+            rotateVector(chordDirection, velOrigin, axis_, azimuthRadians);
             elementGeometry[j][3][0] = chordDirection.x(); 
             elementGeometry[j][3][1] = chordDirection.y(); 
             elementGeometry[j][3][2] = chordDirection.z();
@@ -489,8 +534,6 @@ void Foam::fv::crossFlowTurbineALSource::rotate()
         {
             struts_[i].rotate(origin_, axis_, radians);
             struts_[i].setSpeed(origin_, axis_, omega_);
-            // Disable flow curvature correction for struts
-            struts_[i].setOmega(0.0);
         }
     }
     

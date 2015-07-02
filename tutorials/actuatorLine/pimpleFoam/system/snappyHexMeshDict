@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.3.x                                 |
+|  \\    /   O peration     | Version:  2.4.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -29,23 +29,13 @@ addLayers       false;
 // - to 'snap' the mesh boundary to the surface
 geometry
 {
-/*
-    turbine
-    {
-        type searchableBox;
-        min (-0.5 -0.5 -0.5);
-        max (0.5 0.5 0.5);
-    }
-*/
-
-    turbine
+    foil
     {
         type searchableCylinder;
-        point1 (0 0 -0.5);
-        point2 (0 0 0.5);
-        radius 0.5;       
+        point1 (0 0 0);
+        point2 (0 0 2.8);
+        radius 1.0;       
     }
-
 };
 
 
@@ -135,7 +125,7 @@ castellatedMeshControls
 
     refinementRegions
     {
-        turbine
+        foil
         {
             mode inside;
             levels ((1 1));
