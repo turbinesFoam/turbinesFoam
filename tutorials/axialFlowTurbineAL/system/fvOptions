@@ -29,8 +29,8 @@ turbine
         nBlades             3;
         tipEffect           0.95; 
 
-        freeStreamVelocity  (1 0 0);
-        tipSpeedRatio       6.1;
+        freeStreamVelocity  (10 0 0);
+        tipSpeedRatio       6.0;
 
         origin              (0 0 0);
         axis                (1 0 0);
@@ -170,7 +170,7 @@ turbine
             S826
             {
                 data ( // alpha C_l C_d
-                    #include "../../resources/S826"
+                    #include "../../resources/foilData/S826_1e5_upstroke"
                 );
             }
             cylinder
