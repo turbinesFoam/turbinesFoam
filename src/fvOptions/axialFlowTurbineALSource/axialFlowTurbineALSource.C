@@ -347,7 +347,8 @@ void Foam::fv::axialFlowTurbineALSource::createTower()
     {
         // Read tower element data
         scalar axialDistance = elementData[j][0];
-        scalar diameter = elementData[j][1];
+        scalar height = elementData[j][1];
+        scalar diameter = elementData[j][2];
         
         // Set sizes for actuatorLineSource elementGeometry lists
         elementGeometry[j].setSize(6);
@@ -360,8 +361,10 @@ void Foam::fv::axialFlowTurbineALSource::createTower()
         
         // Create geometry point for AL source at origin
         vector point = origin_;
-        // Move along axis
+        // Move along turbine axis
         point += axialDistance*axis_;
+        // Move along tower axis according to height
+        point += height*towerAxis;
         
         elementGeometry[j][0][0] = point.x(); // x location of geom point
         elementGeometry[j][0][1] = point.y(); // y location of geom point
