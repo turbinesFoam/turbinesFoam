@@ -239,12 +239,14 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
 
 void Foam::fv::axialFlowTurbineALSource::createTower()
 {
+    vector towerAxis;
     int nElements;
     word profileName;
     List<List<scalar> > elementData;
     List<List<scalar> > profileData;
     dictionary towerSubDict;
     
+    towerDict_.lookup("axis") >> towerAxis;
     towerDict_.lookup("nElements") >> nElements;
     towerDict_.lookup("profile") >> profileName;
     towerDict_.lookup("elementData") >> elementData;
@@ -280,9 +282,9 @@ void Foam::fv::axialFlowTurbineALSource::createTower()
         elementGeometry[j][0][2] = point.z(); // z location of geom point
         
         // Set span directions
-        elementGeometry[j][1][0] = axis_.x(); // x component of span direction
-        elementGeometry[j][1][1] = axis_.y(); // y component of span direction
-        elementGeometry[j][1][2] = axis_.z(); // z component of span direction
+        elementGeometry[j][1][0] = towerAxis.x(); // x component of span
+        elementGeometry[j][1][1] = towerAxis.y(); // y component of span
+        elementGeometry[j][1][2] = towerAxis.z(); // z component of span
         
         // Set chord length
         elementGeometry[j][2][0] = diameter;
