@@ -85,6 +85,9 @@ protected:
         
         //- Nacelle dictionary
         dictionary nacelleDict_;
+        
+        //- Vertical direction (inferred from tower axis if present)
+        vector verticalDirection_;
 
 
     // Protected Member Functions

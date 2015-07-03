@@ -239,14 +239,13 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
 
 void Foam::fv::axialFlowTurbineALSource::createTower()
 {
-    vector towerAxis;
+    vector towerAxis = verticalDirection_;
     int nElements;
     word profileName;
     List<List<scalar> > elementData;
     List<List<scalar> > profileData;
     dictionary towerSubDict;
     
-    towerDict_.lookup("axis") >> towerAxis;
     towerDict_.lookup("nElements") >> nElements;
     towerDict_.lookup("profile") >> profileName;
     towerDict_.lookup("elementData") >> elementData;
@@ -341,7 +340,11 @@ Foam::fv::axialFlowTurbineALSource::axialFlowTurbineALSource
     turbineALSource(name, modelType, dict, mesh),
     hasHub_(false),
     hasTower_(false),
-    hasNacelle_(false)
+    hasNacelle_(false),
+    verticalDirection_
+    (
+        coeffs_.lookupOrDefault("verticalDirection", vector(0, 0, 1))
+    )
 {
     read(dict);
     createCoordinateSystem();

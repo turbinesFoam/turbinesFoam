@@ -28,6 +28,7 @@ turbine
         fieldNames          (U);
         origin              (0 0 0);
         axis                (1 0 0);
+        verticalDirection   (0 0 1);
         freeStreamVelocity  (10 0 0);
         tipSpeedRatio       6.0;
         rotorRadius         0.45;        // For tip speed ratio calculation
@@ -151,7 +152,6 @@ turbine
         
         tower
         {
-            axis        (0 0 1);
             nElements   8;
             profile     cylinder;
             elementData
