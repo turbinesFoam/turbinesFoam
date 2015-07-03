@@ -112,22 +112,20 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
         List<vector> initialVelocities(nGeomPoints, vector::zero);
         // Frontal area for this blade
         scalar frontalArea = 0.0;
+        scalar maxRadius = 0.0;
         forAll(elementData, j)
         {
-            // Read CFTAL dict data
-            scalar axialDistance = elementData[j][0];
-            scalar radius = elementData[j][1];
-            scalar azimuthDegrees = elementData[j][2];
+            // Read AFTAL dict element data
+            scalar radius = elementData[j][0];
+            scalar azimuthDegrees = elementData[j][1];
             scalar azimuthRadians = azimuthDegrees/180.0*mathematical::pi;
-            scalar chordLength = elementData[j][3];
-            scalar chordMount = elementData[j][4];
+            scalar chordLength = elementData[j][2];
+            scalar chordMount = elementData[j][3];
             
-            // Compute frontal area contribution from this geometry segment
-            if (j > 0)
+            // Find max radius for calculating frontal area
+            if (radius > maxRadius)
             {
-                scalar deltaAxial = axialDistance - elementData[j-1][0];
-                scalar meanRadius = (radius + elementData[j-1][1])/2;
-                frontalArea += mag(deltaAxial*meanRadius);
+                maxRadius = radius;
             }
             
             // Set sizes for actuatorLineSource elementGeometry lists
@@ -141,17 +139,15 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
             
             // Create geometry point for AL source at origin
             vector point = origin_;
-            // Move along axis
-            point += axialDistance*axis_;
-            // Move along chord according to chordMount
-            scalar chordDisplacement = (chordMount - 0.25)*chordLength;
-            point -= chordDisplacement*freeStreamDirection_;
             // Move along radial direction
             point += radius*radialDirection_;
+            // Move along chord according to chordMount
+            scalar chordDisplacement = (chordMount - 0.25)*chordLength;
+            point -= chordDisplacement*azimuthalDirection_;
             // Set initial velocity of quarter chord
             scalar radiusCorr = sqrt(magSqr(chordMount - 0.25)*chordLength
                                      + magSqr(radius));
-            vector initialVelocity = -freeStreamDirection_*omega_*radiusCorr;
+            vector initialVelocity = azimuthalDirection_*omega_*radiusCorr;
             scalar velAngle = atan2(((chordMount - 0.25)*chordLength), radius);
             vector velOrigin(vector::zero);
             rotateVector(initialVelocity, velOrigin, axis_, velAngle);
@@ -172,15 +168,17 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
             elementGeometry[j][0][2] = point.z(); // z location of geom point
             
             // Set span directions for AL source
-            elementGeometry[j][1][0] = axis_.x(); // x component of span dir
-            elementGeometry[j][1][1] = axis_.y(); // y component of span dir
-            elementGeometry[j][1][2] = axis_.z(); // z component of span dir
+            vector spanDirection = verticalDirection_;
+            rotateVector(spanDirection, origin_, axis_, azimuthRadians);
+            elementGeometry[j][1][0] = spanDirection.x();
+            elementGeometry[j][1][1] = spanDirection.y();
+            elementGeometry[j][1][2] = spanDirection.z();
             
             // Set chord length
             elementGeometry[j][2][0] = chordLength;
             
             // Set chord reference direction
-            vector chordDirection = -freeStreamDirection_;
+            vector chordDirection = azimuthalDirection_;
             rotateVector(chordDirection, origin_, axis_, azimuthRadians);
             elementGeometry[j][3][0] = chordDirection.x(); 
             elementGeometry[j][3][1] = chordDirection.y(); 
@@ -195,6 +193,7 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
         }
         
         // Add frontal area to list
+        frontalArea = mathematical::pi*magSqr(maxRadius);
         frontalAreas[i] = frontalArea;
         
         if (debug)
@@ -208,17 +207,6 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
         bladeSubDict.add("elementGeometry", elementGeometry);
         bladeSubDict.add("initialVelocities", initialVelocities);
         bladeSubDict.add("dynamicStall", dynamicStallDict_);
-        
-        // Lookup or create flowCurvature subDict
-        dictionary fcDict = coeffs_.subOrEmptyDict("flowCurvature");
-        fcDict.lookupOrAddDefault("active", true);
-        word defaultFCModel = "Goude";
-        fcDict.lookupOrAddDefault
-        (
-            "flowCurvatureModel", 
-            defaultFCModel
-        );
-        bladeSubDict.add("flowCurvature", fcDict);
         
         dictionary dict;
         dict.add("actuatorLineSourceCoeffs", bladeSubDict);
@@ -239,7 +227,7 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
     }
     
     // Frontal area is twice the maximum blade frontal area
-    frontalArea_ = 2*max(frontalAreas);
+    frontalArea_ = max(frontalAreas);
     Info<< "Frontal area of " << name_ << ": " << frontalArea_ << endl;
 }
 
