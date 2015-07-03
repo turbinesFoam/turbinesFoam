@@ -45,7 +45,7 @@ turbine
             blade1
             {
                 writePerf   true;
-                nElements   27;
+                nElements   26;
                 profile     S826;
                 elementData
                 ( // radius, azimuth, chord, chordMount, pitch
@@ -80,7 +80,7 @@ turbine
             }
             blade2
             {
-                nElements   27;
+                nElements   26;
                 profile     S826;
                 elementData
                 ( // radius, azimuth, chord, chordMount, pitch
@@ -115,7 +115,7 @@ turbine
             }
             blade3
             {
-                nElements   27;
+                nElements   26;
                 profile     S826;
                 elementData
                 ( // radius, azimuth, chord, chordMount, pitch
