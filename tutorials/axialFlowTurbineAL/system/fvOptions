@@ -152,7 +152,7 @@ turbine
         
         tower
         {
-            nElements   8;
+            nElements   6;
             profile     cylinder;
             elementData
             ( // axial distance (turbine axis), height, diameter
@@ -169,7 +169,8 @@ turbine
             profile     cylinder;
             elementData
             ( // axial distance, height, diameter
-                (0 0 0.09)
+                (0 0.09 0.09)
+                (0 -0.09 0.09)
             );
         }
         

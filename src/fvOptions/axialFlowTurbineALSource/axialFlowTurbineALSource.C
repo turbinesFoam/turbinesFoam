@@ -232,6 +232,98 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
 }
 
 
+void Foam::fv::axialFlowTurbineALSource::createHub()
+{
+    int nElements;
+    word profileName;
+    List<List<scalar> > elementData;
+    List<List<scalar> > profileData;
+    dictionary hubSubDict;
+    
+    hubDict_.lookup("nElements") >> nElements;
+    hubDict_.lookup("profile") >> profileName;
+    hubDict_.lookup("elementData") >> elementData;
+    profilesDict_.subDict(profileName).lookup("data") >> profileData;
+    
+    // Convert element data into actuator line element geometry
+    label nGeomPoints = elementData.size();
+    List<List<List<scalar> > > elementGeometry(nGeomPoints);
+    List<vector> initialVelocities(nGeomPoints, vector::zero);
+
+    forAll(elementData, j)
+    {
+        // Read hub element data
+        scalar axialDistance = elementData[j][0];
+        scalar height = elementData[j][1];
+        scalar diameter = elementData[j][2];
+        
+        // Set sizes for actuatorLineSource elementGeometry lists
+        elementGeometry[j].setSize(6);
+        elementGeometry[j][0].setSize(3);
+        elementGeometry[j][1].setSize(3);
+        elementGeometry[j][2].setSize(1);
+        elementGeometry[j][3].setSize(3);
+        elementGeometry[j][4].setSize(1);
+        elementGeometry[j][5].setSize(1);
+        
+        // Create geometry point for AL source at origin
+        vector point = origin_;
+        // Move along axis
+        point += axialDistance*axis_;
+        // Move along vertical direction
+        point += height*verticalDirection_;
+        
+        elementGeometry[j][0][0] = point.x(); // x location of geom point
+        elementGeometry[j][0][1] = point.y(); // y location of geom point
+        elementGeometry[j][0][2] = point.z(); // z location of geom point
+        
+        // Set span directions
+        elementGeometry[j][1][0] = verticalDirection_.x();
+        elementGeometry[j][1][1] = verticalDirection_.y();
+        elementGeometry[j][1][2] = verticalDirection_.z();
+        
+        // Set chord length
+        elementGeometry[j][2][0] = diameter;
+        
+        // Set chord reference direction
+        elementGeometry[j][3][0] = freeStreamDirection_.x();
+        elementGeometry[j][3][1] = freeStreamDirection_.y();
+        elementGeometry[j][3][2] = freeStreamDirection_.z();
+        
+        // Set chord mount
+        elementGeometry[j][4][0] = 0.25;
+        
+        // Set pitch
+        elementGeometry[j][5][0] = 0.0;
+    }
+    
+    hubSubDict.add("elementGeometry", elementGeometry);
+    hubSubDict.add("initialVelocities", initialVelocities);
+    hubSubDict.add("nElements", nElements);
+    hubSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
+    hubSubDict.add("coefficientData", profileData);
+    hubSubDict.add("tipEffect", tipEffect_);
+    hubSubDict.add("freeStreamVelocity", freeStreamVelocity_);
+        
+    dictionary dict;
+    dict.add("actuatorLineSourceCoeffs", hubSubDict);
+    dict.add("type", "actuatorLineSource");
+    dict.add("active", dict_.lookup("active"));
+    dict.add("selectionMode", dict_.lookup("selectionMode"));
+    dict.add("cellSet", dict_.lookup("cellSet"));
+    
+    actuatorLineSource* hub = new actuatorLineSource
+    (
+        "hub", 
+        "actuatorLineSource", 
+        dict, 
+        mesh_
+    );
+    
+    hub_.set(hub);
+}
+
+
 void Foam::fv::axialFlowTurbineALSource::createTower()
 {
     vector towerAxis = verticalDirection_;
