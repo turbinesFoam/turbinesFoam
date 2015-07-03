@@ -27,7 +27,7 @@ turbine
     {
         fieldNames          (U);
         origin              (0 0 0);
-        axis                (1 0 0);
+        axis                (-1 0 0);
         verticalDirection   (0 0 1);
         freeStreamVelocity  (10 0 0);
         tipSpeedRatio       6.0;
@@ -156,10 +156,10 @@ turbine
             profile     cylinder;
             elementData
             ( // axial distance (turbine axis), height, diameter
-                (0.14 -0.82 0.09)
-                (0.14 -0.66 0.08)
-                (0.14 -0.42 0.06)
-                (0.14  0.00 0.05)
+                (-0.14 -0.82 0.09)
+                (-0.14 -0.66 0.08)
+                (-0.14 -0.42 0.06)
+                (-0.14  0.00 0.05)
             );
         }
         
