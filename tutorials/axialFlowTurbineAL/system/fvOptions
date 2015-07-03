@@ -26,15 +26,12 @@ turbine
     axialFlowTurbineALSourceCoeffs
     {
         fieldNames          (U);
-        nBlades             3;
-        tipEffect           0.95; 
-
-        freeStreamVelocity  (10 0 0);
-        tipSpeedRatio       6.0;
-
         origin              (0 0 0);
         axis                (1 0 0);
+        freeStreamVelocity  (10 0 0);
+        tipSpeedRatio       6.0;
         rotorRadius         0.45;        // For tip speed ratio calculation
+        tipEffect           0.95;
         
         dynamicStall
         {
