@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.3.x                                 |
+|  \\    /   O peration     | Version:  2.4.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -36,11 +36,19 @@ geometry
         point2 (0.25 0 0);
         radius 0.75;       
     }
+
+    tower
+    {
+        type searchableCylinder;
+        point1 (0 0 -0.82);
+        point2 (0 0 0);
+        radius 0.1;
+    }
     
     turb_zone
     {
         type searchableBox;
-        min (-0.9 -0.9 -0.8);
+        min (-0.9 -0.9 -0.82);
         max (1.3 0.9 0.8);
     }
 };

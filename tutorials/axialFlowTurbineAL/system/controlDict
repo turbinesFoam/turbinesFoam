@@ -22,9 +22,9 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         6;
+endTime         1;
 
-deltaT          0.01;
+deltaT          0.001;
 
 writeControl    runTime;
 
@@ -56,7 +56,7 @@ libs
 
 DebugSwitches
 {
-    crossFlowTurbineALSource 0;
+    axialFlowTurbineALSource 1;
     actuatorLineSource  0;
     actuatorLineElement 0;
     LeishmanBeddoes 0;
