@@ -52,12 +52,19 @@ namespace fv
 
 void Foam::fv::axialFlowTurbineALSource::createCoordinateSystem()
 {
-    // Construct the local rotor coordinate system
-    freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
-    radialDirection_ = axis_^freeStreamDirection_;
-    radialDirection_ = radialDirection_/mag(radialDirection_);
     // Make sure axis is a unit vector
     axis_ /= mag(axis_);
+    
+    // Free stream direction is a unit vector
+    freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
+    
+    // Radial direction is vertical direction
+    verticalDirection_ /= mag(verticalDirection_);
+    radialDirection_ = verticalDirection_;
+    
+    // Calculate initial azimuthal or tangential direction
+    azimuthalDirection_ = axis_ ^ verticalDirection_;
+    azimuthalDirection_ /= mag(azimuthalDirection_);
 }
 
 
