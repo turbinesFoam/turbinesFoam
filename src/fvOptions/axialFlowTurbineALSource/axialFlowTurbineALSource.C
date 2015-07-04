@@ -168,7 +168,8 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
             elementGeometry[j][0][2] = point.z(); // z location of geom point
             
             // Set span directions for AL source
-            vector spanDirection = verticalDirection_;
+            scalar spanSign = axis_ & freeStreamDirection_;
+            vector spanDirection = spanSign*verticalDirection_;
             rotateVector(spanDirection, origin_, axis_, azimuthRadians);
             elementGeometry[j][1][0] = spanDirection.x();
             elementGeometry[j][1][1] = spanDirection.y();
