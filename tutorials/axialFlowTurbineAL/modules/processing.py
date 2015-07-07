@@ -14,11 +14,10 @@ from pxl import fdiff
 import pandas as pd
 
 # Some constants
-R = 0.5
-U = 1.0
-H = 1.0
-D = 1.0
-A = H*D
+R = 0.45
+U = 10.0
+D = R*2
+A = np.pi*R**2
 rho = 1000.0
 
 ylabels = {"meanu" : r"$U/U_\infty$",

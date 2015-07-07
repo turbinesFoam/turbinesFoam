@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-This script plots mean power coefficient from the turbinesFoam cross-flow
+This script plots mean power coefficient from the turbinesFoam axial-flow
 turbine actuator line tutorial.
 """
 
@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import os
 from pxl.timeseries import smooth
 
-plt.style.use("ggplot")
+plt.style.use("fivethirtyeight")
 savefig = False
 
 def plot_cp(angle0=540.0):
@@ -32,4 +32,15 @@ def plot_cp(angle0=540.0):
     plt.show()
 
 if __name__ == "__main__":
-    plot_cp()
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "wake":
+            plot_meancontquiv()
+        elif sys.argv[1] == "perf":
+            plot_cp()
+        elif sys.argv[1] == "blade":
+            plot_blade_perf()
+        elif sys.argv[1] == "strut":
+            plot_strut_perf()
+    else:
+        plot_cp()
+    plt.show()
