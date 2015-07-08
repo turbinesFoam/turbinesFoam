@@ -20,10 +20,6 @@ def plot_meancontquiv():
     v = data["meanv"]
     w = data["meanw"]
     xvorticity = data["xvorticity"]
-    def turb_lines():
-        plt.hlines(0.5, -1, 1, linestyles='solid', linewidth=2)
-        plt.vlines(-1, 0, 0.5, linestyles='solid', linewidth=2)
-        plt.vlines(1, 0, 0.5, linestyles='solid', linewidth=2)
     plt.figure(figsize=(7, 6.8))
     # Add contours of mean velocity
     cs = plt.contourf(y_R, z_H, u, 20, cmap=plt.cm.coolwarm)
