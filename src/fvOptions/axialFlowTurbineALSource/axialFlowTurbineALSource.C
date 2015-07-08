@@ -540,7 +540,6 @@ void Foam::fv::axialFlowTurbineALSource::addSup
         tower_->addSup(eqn, fieldI);
         forceField_ += tower_->forceField();
         force_ += tower_->force();
-        moment += tower_->moment(origin_);
     }
     
     if (hasNacelle_)
@@ -549,7 +548,6 @@ void Foam::fv::axialFlowTurbineALSource::addSup
         nacelle_->addSup(eqn, fieldI);
         forceField_ += nacelle_->forceField();
         force_ += nacelle_->force();
-        moment += nacelle_->moment(origin_);
     }
     
     // Torque is the projection of the moment from all blades on the axis
