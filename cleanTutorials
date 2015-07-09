@@ -5,6 +5,9 @@ startDir=$PWD
 cd $startDir/tutorials/crossFlowTurbineAL
 ./Allclean
 
+cd $startDir/tutorials/axialFlowTurbineAL
+./Allclean
+
 cd $startDir/tutorials/actuatorLine/simpleFoam
 ./Allclean
 
