@@ -179,7 +179,7 @@ turbine
             S826
             {
                 data ( // alpha C_l C_d
-                    #include "../../resources/foilData/S826_1e5_upstroke"
+                    #include "../../resources/foilData/S826_1e5_Ostavan"
                 );
             }
             cylinder
