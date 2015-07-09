@@ -31,7 +31,7 @@ turbine
         verticalDirection   (0 0 1);
         freeStreamVelocity  (10 0 0);
         tipSpeedRatio       6.0;
-        rotorRadius         0.45;        // For tip speed ratio calculation
+        rotorRadius         0.45;
         tipEffect           0.95;
         
         dynamicStall
