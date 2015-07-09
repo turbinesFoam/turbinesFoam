@@ -227,8 +227,9 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
         blades_.set(i, blade);
     }
     
-    // Frontal area is twice the maximum blade frontal area
-    frontalArea_ = max(frontalAreas);
+    // Frontal area is calculated using defined rotorRadius rather than
+    // detected from elementData
+    frontalArea_ = mathematical::pi*magSqr(rotorRadius_);
     Info<< "Frontal area of " << name_ << ": " << frontalArea_ << endl;
 }
 
