@@ -539,7 +539,7 @@ void Foam::fv::axialFlowTurbineALSource::addSup
         // Add source for tower actuator line
         tower_->addSup(eqn, fieldI);
         forceField_ += tower_->forceField();
-        force_ += tower_->force();
+        if (includeTowerDrag_) force_ += tower_->force();
     }
     
     if (hasNacelle_)
@@ -547,7 +547,7 @@ void Foam::fv::axialFlowTurbineALSource::addSup
         // Add source for tower actuator line
         nacelle_->addSup(eqn, fieldI);
         forceField_ += nacelle_->forceField();
-        force_ += nacelle_->force();
+        if (includeNacelleDrag_) force_ += nacelle_->force();
     }
     
     // Torque is the projection of the moment from all blades on the axis
@@ -666,10 +666,20 @@ bool Foam::fv::axialFlowTurbineALSource::read(const dictionary& dict)
         // Get tower information
         towerDict_ = coeffs_.subOrEmptyDict("tower");
         if (towerDict_.keys().size() > 0) hasTower_ = true;
+        includeTowerDrag_ = towerDict_.lookupOrDefault
+        (
+            "includeInTotalDrag",
+            false
+        );
         
         // Get nacelle information
         nacelleDict_ = coeffs_.subOrEmptyDict("nacelle");
         if (nacelleDict_.keys().size() > 0) hasNacelle_ = true;
+        includeNacelleDrag_ = nacelleDict_.lookupOrDefault
+        (
+            "includeInTotalDrag",
+            false
+        );
         
         if (debug)
         {

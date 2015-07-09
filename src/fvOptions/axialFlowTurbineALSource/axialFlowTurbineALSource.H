@@ -91,6 +91,12 @@ protected:
         
         //- Initial azimuthal direction
         vector azimuthalDirection_;
+        
+        //- Switch to include tower drag in turbine drag coefficient
+        bool includeTowerDrag_;
+        
+        //- Switch to include nacelle drag in turbine drag coefficient
+        bool includeNacelleDrag_;
 
 
     // Protected Member Functions

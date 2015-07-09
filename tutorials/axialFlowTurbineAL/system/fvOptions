@@ -152,6 +152,7 @@ turbine
         
         tower
         {
+            includeInTotalDrag  false; // default is false
             nElements   6;
             profile     cylinder;
             elementData
