@@ -43,7 +43,7 @@ def plot_meancontquiv():
     ax.add_patch(circ)
     plt.tight_layout()
 
-def plot_cp(angle0=540.0):
+def plot_cp(angle0=2160.0):
     df = pd.read_csv("postProcessing/turbines/0/turbine.csv")
     df = df.drop_duplicates("time", take_last=True)
     if df.angle_deg.max() < angle0:
