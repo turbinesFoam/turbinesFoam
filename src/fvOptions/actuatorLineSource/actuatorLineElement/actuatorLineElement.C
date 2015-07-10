@@ -397,16 +397,29 @@ void Foam::fv::actuatorLineElement::calculate
         Info<< "    elementVelocity: " << velocity_ << endl;
     }
     
+    // Calculate vector normal to chord--span plane
+    vector planformNormal = -chordDirection_ ^ spanDirection_;
+    planformNormal /= mag(planformNormal);
+    
     // Find local flow velocity by interpolating to element location
+    vector inflowVelocityPoint = position_;
+    inflowVelocityPoint -= freeStreamDirection_*0.15*chordLength_;
+    inflowVelocityPoint += chordDirection_*0.1*chordLength_;
+    inflowVelocityPoint -= planformNormal*0.75*chordLength_;
     interpolationCellPoint<vector> UInterp(Uin);
     inflowVelocity_ = UInterp.interpolate
     (
-        position_, 
-        mesh_.findCell(position_)
+        inflowVelocityPoint, 
+        mesh_.findCell(inflowVelocityPoint)
     );
     
-    // Calculate relative velocity (note these are not projected onto a
-    // plane perpendicular to the chord and span direction)
+    // Subtract spanwise component of inflow velocity
+    vector spanwiseVelocity = spanDirection_
+                            * (inflowVelocity_ & spanDirection_)
+                            / magSqr(spanDirection_);
+    inflowVelocity_ -= spanwiseVelocity;
+    
+    // Calculate relative velocity and Reynolds number
     relativeVelocity_ = inflowVelocity_ - velocity_;
     Re_ = mag(relativeVelocity_)*chordLength_/nu_;
     
@@ -416,10 +429,6 @@ void Foam::fv::actuatorLineElement::calculate
         Info<< "    relativeVelocity: " << relativeVelocity_ << endl;
         Info<< "    Reynolds number: " << Re_ << endl;
     }
-    
-    // Calculate vector normal to chord--span plane
-    vector planformNormal = -chordDirection_ ^ spanDirection_;
-    planformNormal /= mag(planformNormal);
     
     // Calculate angle of attack (radians)
     scalar angleOfAttackRad = asin((planformNormal & relativeVelocity_)
