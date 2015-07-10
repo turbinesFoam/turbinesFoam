@@ -116,7 +116,7 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
     }
     else if (tau_ > Tvl_)
     {
-        Vx_ = pow((cos(pi*(tau_ - Tv_)/Tvl_)), 2);
+        Vx_ = pow((cos(pi*(tau_ - Tvl_)/Tv_)), 2);
     }
     if (mag(alpha_) < mag(alphaPrev_)) 
     {
