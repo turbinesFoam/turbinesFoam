@@ -9,6 +9,8 @@ cp -rf 0.org 0
 
 runApplication blockMesh
 runApplication snappyHexMesh -overwrite
-
 runApplication topoSet
+
 simpleFoam | tee log.simpleFoam
+
+vorticity | tee log.vorticity
