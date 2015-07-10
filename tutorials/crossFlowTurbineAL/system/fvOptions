@@ -26,21 +26,19 @@ turbine
     crossFlowTurbineALSourceCoeffs
     {
         fieldNames          (U);
+        origin              (0 0 0);
+        axis                (0 0 1);    // Negative for opposite rotation
+        rotorRadius         0.5;
         tipEffect           0.95; 
-
         freeStreamVelocity  (1 0 0);
         tipSpeedRatio       1.9;
         tsrAmplitude        0.19;       // Amplitude for TSR oscillation
         tsrPhase            0.70;       // Angle of first peak (rad)
-
-        origin              (0 0 0);
-        axis                (0 0 1);    // Negative for opposite rotation
-        rotorRadius         0.5;        // For tip speed ratio calculation
         
         dynamicStall
         {
             active              on;
-            dynamicStallModel   LeishmanBeddoes3G;
+            dynamicStallModel   LeishmanBeddoesSGC;
             LeishmanBeddoesCoeffs
             {
                 A1          0.3;        // Default = 0.3
@@ -51,14 +49,40 @@ turbine
                 Tp          1.7;        // Default = 1.7
                 Tf          3.0;        // Default = 3.0
                 Tv          6.0;        // Default = 6.0
-                Tvl         10.0;       // Default = 7.0
+                Tvl         7.0;        // Default = 7.0
+            }
+            LeishmanBeddoes3GCoeffs
+            {
+                Tp          1.7;        // Default = 1.7
+                Tf          3.0;        // Default = 3.0
+                T1          20;         // Default = 20
+                T2          4.5;        // Default = 4.5
+                Tv          10.0;       // Default = 10.0
+                Tvl         8.0;        // Default = 8.0
+                A1          0.165;      // Default = 0.165
+                A2          0.335;      // Default = 0.335
+                A3          0.5;        // Default = 0.5
+                eta         0.95;       // Default = 0.95
+            }
+            LeishmanBeddoesSGCCoeffs
+            {
+                Tp          1.7;        // Default = 1.7
+                Tf          3.0;        // Default = 3.0
+                TAlpha      6.25;
+                alphaDS0DiffDeg 3.8;
+                r0          0.01;
+                Tv          11;
+                Tvl         8.7;
+                B1          0.5;
+                eta         0.98;
+                E0          0.16;
             }
         }
         
         flowCurvature
         {
             active              on;
-            flowCurvatureModel  Goude;
+            flowCurvatureModel  Goude; // Goude || MandalBurton
         }
 
         blades
@@ -148,7 +172,7 @@ turbine
             {
                 data 
                 (   // alpha C_l C_d
-                    #include "../../resources/foilData/NACA0021_3.6e5"
+                    #include "../../resources/foilData/NACA0021_1.6e5"
                 );
             }
             cylinder
