@@ -28,7 +28,6 @@ License
 #include "geometricOneField.H"
 #include "fvMatrices.H"
 #include "syncTools.H"
-#include "interpolationCellPoint.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -315,6 +314,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     dict_(dict),
     name_(name),
     mesh_(mesh),
+    UInterp_(mesh_.lookupObject<volVectorField>("U")),
     velocity_(vector::zero),
     forceVector_(vector::zero),
     relativeVelocity_(vector::zero),
@@ -387,6 +387,10 @@ void Foam::fv::actuatorLineElement::calculate
 )
 {
     scalar pi = Foam::constant::mathematical::pi;
+    scalar angleOfAttackUncorrected = VGREAT;
+    scalar epsilon = VGREAT;
+    scalar sphereRadius = VGREAT;
+    
     if (debug)
     {
         Info<< "Calculating force contribution from actuatorLineElement " 
@@ -402,114 +406,144 @@ void Foam::fv::actuatorLineElement::calculate
     planformNormal /= mag(planformNormal);
     
     // Find local flow velocity by interpolating to element location
+    inflowVelocity_ = vector(VGREAT, VGREAT, VGREAT);
     vector inflowVelocityPoint = position_;
     inflowVelocityPoint -= freeStreamDirection_*0.15*chordLength_;
     inflowVelocityPoint += chordDirection_*0.1*chordLength_;
     inflowVelocityPoint -= planformNormal*0.75*chordLength_;
-    interpolationCellPoint<vector> UInterp(Uin);
-    inflowVelocity_ = UInterp.interpolate
-    (
-        inflowVelocityPoint, 
-        mesh_.findCell(inflowVelocityPoint)
-    );
+    label inflowCellI = mesh_.findCell(inflowVelocityPoint);
+    if (inflowCellI >= 0)
+    {
+        inflowVelocity_ = UInterp_.interpolate
+        (
+            inflowVelocityPoint, 
+            inflowCellI
+        );
+        
+        // Subtract spanwise component of inflow velocity
+        vector spanwiseVelocity = spanDirection_
+                                * (inflowVelocity_ & spanDirection_)
+                                / magSqr(spanDirection_);
+        inflowVelocity_ -= spanwiseVelocity;
+        
+        // Calculate relative velocity and Reynolds number
+        relativeVelocity_ = inflowVelocity_ - velocity_;
+        Re_ = mag(relativeVelocity_)*chordLength_/nu_;
+        
+        // Calculate angle of attack (radians)
+        scalar angleOfAttackRad = asin((planformNormal & relativeVelocity_)
+                                / (mag(planformNormal)
+                                *  mag(relativeVelocity_)));
+        angleOfAttackUncorrected = radToDeg(angleOfAttackRad);
+        vector relVelGeom = freeStreamVelocity_ - velocity_;
+        angleOfAttackGeom_ = asin((planformNormal & relVelGeom)
+                           / (mag(planformNormal)*mag(relVelGeom)));
+        angleOfAttackGeom_ *= 180.0/pi;
+        
+        // Apply flow curvature correction to angle of attack
+        if (flowCurvatureActive_)
+        {
+            correctFlowCurvature(angleOfAttackRad);
+        }
+        
+        // Calculate angle of attack in degrees
+        angleOfAttack_ = radToDeg(angleOfAttackRad);
+        
+        // Lookup lift and drag coefficients
+        lookupCoefficients();
+        
+        // Correct coefficients with dynamic stall model
+        if (dynamicStallActive_)
+        {
+            dynamicStall_->correct
+            (
+                mag(relativeVelocity_),
+                angleOfAttack_,
+                liftCoefficient_,
+                dragCoefficient_,
+                angleOfAttackList_,
+                liftCoefficientList_,
+                dragCoefficientList_
+            );
+        }
+        
+        // Calculate force per unit density
+        scalar area = chordLength_*spanLength_;
+        scalar magSqrU = magSqr(relativeVelocity_);
+        scalar lift = 0.5*area*liftCoefficient_*magSqrU;
+        scalar drag = 0.5*area*dragCoefficient_*magSqrU;
+        vector liftDirection = relativeVelocity_ ^ spanDirection_;
+        liftDirection /= mag(liftDirection);
+        vector dragDirection = relativeVelocity_/mag(relativeVelocity_);
+        forceVector_ = lift*liftDirection + drag*dragDirection;
+        
+        // Calculate projection width
+        epsilon = calcProjectionEpsilon();
+        scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
+        
+        // Apply force to the cells within the element's sphere of influence
+        sphereRadius = chordLength_ + projectionRadius;
+        forAll(mesh_.cells(), cellI)
+        {
+            scalar dis = mag(mesh_.C()[cellI] - position_);
+            if (dis <= sphereRadius)
+            {
+                scalar factor = Foam::exp(-Foam::sqr(dis/epsilon))
+                              / (Foam::pow(epsilon, 3)
+                              * Foam::pow(Foam::constant::mathematical::pi, 1.5));
+                // forceField is opposite forceVector
+                forceField[cellI] += -forceVector_*factor;
+            }
+        }
+    }
+    else
+    {
+        // Inflow velocity point is not in the mesh, but set some data just
+        // so it exists
+        if (Pstream::parRun())
+        {
+            forceVector_ = vector(VGREAT, VGREAT, VGREAT);
+            relativeVelocity_ = vector(VGREAT, VGREAT, VGREAT);
+            Re_ = VGREAT;
+            angleOfAttack_ = VGREAT;
+            angleOfAttackGeom_ = VGREAT;
+            liftCoefficient_ = VGREAT;
+            dragCoefficient_ = VGREAT;
+        }
+        else
+        {
+            // Raise fatal error since inflow velocity cannot be detected
+            FatalErrorIn("void actuatorLineElement::calculate()")
+                << "Inflow velocity point for " << name_ 
+                << " not found in mesh" 
+                << abort(FatalError);
+        }
+    }
     
-    // Subtract spanwise component of inflow velocity
-    vector spanwiseVelocity = spanDirection_
-                            * (inflowVelocity_ & spanDirection_)
-                            / magSqr(spanDirection_);
-    inflowVelocity_ -= spanwiseVelocity;
-    
-    // Calculate relative velocity and Reynolds number
-    relativeVelocity_ = inflowVelocity_ - velocity_;
-    Re_ = mag(relativeVelocity_)*chordLength_/nu_;
+    // Reduce data for parallel running
+    reduce(forceVector_, minOp<vector>());
+    reduce(inflowVelocity_, minOp<vector>());
+    reduce(relativeVelocity_, minOp<vector>());
+    reduce(Re_, minOp<scalar>());
+    reduce(angleOfAttackUncorrected, minOp<scalar>());
+    reduce(angleOfAttack_, minOp<scalar>());
+    reduce(angleOfAttackGeom_, minOp<scalar>());
+    reduce(liftCoefficient_, minOp<scalar>());
+    reduce(dragCoefficient_, minOp<scalar>());
+    reduce(epsilon, minOp<scalar>());
+    reduce(sphereRadius, minOp<scalar>());
     
     if (debug)
     {
         Info<< "    inflowVelocity: " << inflowVelocity_ << endl;
         Info<< "    relativeVelocity: " << relativeVelocity_ << endl;
         Info<< "    Reynolds number: " << Re_ << endl;
-    }
-    
-    // Calculate angle of attack (radians)
-    scalar angleOfAttackRad = asin((planformNormal & relativeVelocity_)
-                            / (mag(planformNormal)*mag(relativeVelocity_)));
-    vector relVelGeom = freeStreamVelocity_ - velocity_;
-    angleOfAttackGeom_ = asin((planformNormal & relVelGeom)
-                       / (mag(planformNormal)*mag(relVelGeom)));
-    angleOfAttackGeom_ *= 180.0/pi;
-                            
-    if (debug)
-    {
-        Info<< "    Angle of attack (uncorrected, degrees): " 
-            << angleOfAttackRad/pi*180.0 << endl;
         Info<< "    Geometric angle of attack (degrees): "
             << angleOfAttackGeom_ << endl;
-    }
-    
-    // Apply flow curvature correction to angle of attack
-    if (flowCurvatureActive_)
-    {
-        correctFlowCurvature(angleOfAttackRad);
-    }
-    
-    // Calculate angle of attack in degrees
-    angleOfAttack_ = angleOfAttackRad/pi*180.0;
-    
-    if (debug)
-    {
+        Info<< "    Angle of attack (uncorrected, degrees): " 
+            << angleOfAttackUncorrected << endl;
         Info<< "    Angle of attack (corrected, degrees): " 
             << angleOfAttack_ << endl;
-    }
-    
-    // Lookup lift and drag coefficients
-    lookupCoefficients();
-    
-    // Correct coefficients with dynamic stall model
-    if (dynamicStallActive_)
-    {
-        dynamicStall_->correct
-        (
-            mag(relativeVelocity_),
-            angleOfAttack_,
-            liftCoefficient_,
-            dragCoefficient_,
-            angleOfAttackList_,
-            liftCoefficientList_,
-            dragCoefficientList_
-        );
-    }
-    
-    // Calculate force per unit density
-    scalar area = chordLength_*spanLength_;
-    scalar magSqrU = magSqr(relativeVelocity_);
-    scalar lift = 0.5*area*liftCoefficient_*magSqrU;
-    scalar drag = 0.5*area*dragCoefficient_*magSqrU;
-    vector liftDirection = relativeVelocity_ ^ spanDirection_;
-    liftDirection /= mag(liftDirection);
-    vector dragDirection = relativeVelocity_/mag(relativeVelocity_);
-    forceVector_ = lift*liftDirection + drag*dragDirection;
-    
-    // Calculate projection width
-    scalar epsilon = calcProjectionEpsilon();
-    scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
-    
-    // Apply force to the cells within the element's sphere of influence
-    scalar sphereRadius = chordLength_ + projectionRadius;
-    forAll(mesh_.cells(), cellI)
-    {
-        scalar dis = mag(mesh_.C()[cellI] - position_);
-        if (dis <= sphereRadius)
-        {
-            scalar factor = Foam::exp(-Foam::sqr(dis/epsilon))
-                          / (Foam::pow(epsilon, 3)
-                          * Foam::pow(Foam::constant::mathematical::pi, 1.5));
-            // forceField is opposite forceVector
-            forceField[cellI] += -forceVector_*factor;
-        }
-    }
-    
-    if (debug)
-    {
         Info<< "    epsilon: " << epsilon << endl;
         Info<< "    sphereRadius: " << sphereRadius << endl;
         Info<< "    force (per unit density): " << forceVector_ << endl 
