@@ -246,10 +246,15 @@ void Foam::fv::actuatorLineElement::lookupCoefficients()
 
 Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
 {
+    scalar epsilon = 0;
     const scalarField& V = mesh_.V();
     label posCellI = mesh_.findCell(position_);
-    // Projection width based on local cell size (from Troldborg (2008))
-    scalar epsilon = 2*Foam::cbrt(V[posCellI]);
+    
+    if (posCellI >= 0)
+    {
+        // Projection width based on local cell size (from Troldborg (2008))
+        epsilon = 2*Foam::cbrt(V[posCellI]);
+    }
     
     if (epsilon > (chordLength_/2.0))
     {
