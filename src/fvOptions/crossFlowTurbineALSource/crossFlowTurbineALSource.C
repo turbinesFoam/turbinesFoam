@@ -72,7 +72,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
     word modelType = "actuatorLineSource";
     List<scalar> frontalAreas(nBlades); // frontal area from each blade
     
-    for (int i = 0; i < nBlades_; i++)
+    forAll(blades_, i)
     {
         word& bladeName = bladeNames_[i];
         // Create dictionary items for this blade
@@ -248,7 +248,7 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
     word modelType = "actuatorLineSource";
     List<word> strutNames = strutsDict_.toc();
     
-    for (int i = 0; i < nStruts; i++)
+    forAll(struts_, i)
     {
         word& strutName = strutNames[i];
         // Create dictionary items for this strut
