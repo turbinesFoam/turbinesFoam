@@ -88,6 +88,7 @@ Foam::fv::actuatorLineSource::actuatorLineSource
 )
 :
     option(name, modelType, dict, mesh),
+    force_(vector::zero),
     forceField_
     (
         IOobject
@@ -140,7 +141,7 @@ void Foam::fv::actuatorLineSource::createElements()
     totalLength_ = 0.0;
     chordLength_ = 0.0;
     
-    for (int i = 0; i < nGeometryPoints; i++)
+    forAll(points, i)
     {
         // Extract geometry point
         scalar x = elementGeometry_[i][0][0];
@@ -187,7 +188,7 @@ void Foam::fv::actuatorLineSource::createElements()
         Info<< "Pitches:" << endl << pitches << endl;
     }
 	
-    for (label i = 0; i < nElements_; i++)
+    forAll(elements_, i)
     {
         std::stringstream ss;
         ss << i;
