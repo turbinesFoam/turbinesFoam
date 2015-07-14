@@ -74,9 +74,6 @@ protected:
         //- Reference to the mesh
         const fvMesh& mesh_;
         
-        //- Cell point interpolation for inflow velocity
-        interpolationCellPoint<vector> UInterp_;
-        
         //- Chord direction
         vector chordDirection_;
         

@@ -323,7 +323,6 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     dict_(dict),
     name_(name),
     mesh_(mesh),
-    UInterp_(mesh_.lookupObject<volVectorField>("U")),
     velocity_(vector::zero),
     forceVector_(vector::zero),
     relativeVelocity_(vector::zero),
@@ -420,10 +419,11 @@ void Foam::fv::actuatorLineElement::calculate
     inflowVelocityPoint -= freeStreamDirection_*0.15*chordLength_;
     inflowVelocityPoint += chordDirection_*0.1*chordLength_;
     inflowVelocityPoint -= planformNormal*0.75*chordLength_;
+    interpolationCellPoint<vector> UInterp(Uin);
     label inflowCellI = mesh_.findCell(inflowVelocityPoint);
     if (inflowCellI >= 0)
     {
-        inflowVelocity_ = UInterp_.interpolate
+        inflowVelocity_ = UInterp.interpolate
         (
             inflowVelocityPoint, 
             inflowCellI
@@ -477,6 +477,19 @@ void Foam::fv::actuatorLineElement::calculate
     // Lookup lift and drag coefficients
     lookupCoefficients();
     
+    if (debug)
+    {
+        Info<< "    inflowVelocity: " << inflowVelocity_ << endl;
+        Info<< "    relativeVelocity: " << relativeVelocity_ << endl;
+        Info<< "    Reynolds number: " << Re_ << endl;
+        Info<< "    Geometric angle of attack (degrees): "
+            << angleOfAttackGeom_ << endl;
+        Info<< "    Angle of attack (uncorrected, degrees): " 
+            << angleOfAttackUncorrected << endl;
+        Info<< "    Angle of attack (corrected, degrees): " 
+            << angleOfAttack_ << endl;
+    }
+    
     // Correct coefficients with dynamic stall model
     if (dynamicStallActive_)
     {
@@ -524,15 +537,6 @@ void Foam::fv::actuatorLineElement::calculate
     
     if (debug)
     {
-        Info<< "    inflowVelocity: " << inflowVelocity_ << endl;
-        Info<< "    relativeVelocity: " << relativeVelocity_ << endl;
-        Info<< "    Reynolds number: " << Re_ << endl;
-        Info<< "    Geometric angle of attack (degrees): "
-            << angleOfAttackGeom_ << endl;
-        Info<< "    Angle of attack (uncorrected, degrees): " 
-            << angleOfAttackUncorrected << endl;
-        Info<< "    Angle of attack (corrected, degrees): " 
-            << angleOfAttack_ << endl;
         Info<< "    epsilon: " << epsilon << endl;
         Info<< "    sphereRadius: " << sphereRadius << endl;
         Info<< "    force (per unit density): " << forceVector_ << endl 
