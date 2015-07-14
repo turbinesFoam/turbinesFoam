@@ -470,6 +470,10 @@ void Foam::fv::actuatorLineElement::calculate
                 liftCoefficientList_,
                 dragCoefficientList_
             );
+            if (Pstream::parRun())
+            {
+                dynamicStall_->reduceParallel(true);
+            }
         }
         
         // Calculate force per unit density
@@ -514,6 +518,10 @@ void Foam::fv::actuatorLineElement::calculate
             angleOfAttackGeom_ = VGREAT;
             liftCoefficient_ = VGREAT;
             dragCoefficient_ = VGREAT;
+            if (dynamicStallActive_)
+            {
+                dynamicStall_->reduceParallel(false);
+            }
         }
         else
         {
@@ -525,18 +533,21 @@ void Foam::fv::actuatorLineElement::calculate
         }
     }
     
-    // Reduce data for parallel running
-    reduce(forceVector_, minOp<vector>());
-    reduce(inflowVelocity_, minOp<vector>());
-    reduce(relativeVelocity_, minOp<vector>());
-    reduce(Re_, minOp<scalar>());
-    reduce(angleOfAttackUncorrected, minOp<scalar>());
-    reduce(angleOfAttack_, minOp<scalar>());
-    reduce(angleOfAttackGeom_, minOp<scalar>());
-    reduce(liftCoefficient_, minOp<scalar>());
-    reduce(dragCoefficient_, minOp<scalar>());
-    reduce(epsilon, minOp<scalar>());
-    reduce(sphereRadius, minOp<scalar>());
+    if (Pstream::parRun())
+    {
+        // Reduce data for parallel running
+        reduce(forceVector_, minOp<vector>());
+        reduce(inflowVelocity_, minOp<vector>());
+        reduce(relativeVelocity_, minOp<vector>());
+        reduce(Re_, minOp<scalar>());
+        reduce(angleOfAttackUncorrected, minOp<scalar>());
+        reduce(angleOfAttack_, minOp<scalar>());
+        reduce(angleOfAttackGeom_, minOp<scalar>());
+        reduce(liftCoefficient_, minOp<scalar>());
+        reduce(dragCoefficient_, minOp<scalar>());
+        reduce(epsilon, minOp<scalar>());
+        reduce(sphereRadius, minOp<scalar>());
+    }
     
     if (debug)
     {

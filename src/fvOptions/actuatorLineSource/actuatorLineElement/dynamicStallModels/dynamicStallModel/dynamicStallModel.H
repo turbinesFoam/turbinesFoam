@@ -90,7 +90,7 @@ public:
     //- Runtime type information
     TypeName("dynamicStallModel");
 
-        // Declare run-time constructor selection table
+        //- Declare run-time constructor selection table
         declareRunTimeSelectionTable
         (
             autoPtr,
@@ -140,10 +140,10 @@ public:
         
         // Evaluation
         
-            // Correct lift and drag coefficients
+            //- Correct lift and drag coefficients
             virtual void correct(scalar alphaDeg, scalar& cl, scalar& cd);
             
-            // Correct lift and drag coefficients
+            //- Correct lift and drag coefficients
             virtual void correct
             (
                 scalar magU,
@@ -156,6 +156,11 @@ public:
             );
 
         // Write
+        
+        // Parallel running
+        
+            //- Reduce to set values equal on all processors
+            virtual void reduceParallel(bool inMesh);
 
 
     // Member Operators

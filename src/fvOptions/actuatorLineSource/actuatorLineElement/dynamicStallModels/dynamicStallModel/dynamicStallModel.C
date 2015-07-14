@@ -187,4 +187,7 @@ void Foam::fv::dynamicStallModel::correct
 {}
 
 
+void Foam::fv::dynamicStallModel::reduceParallel(bool inMesh){}
+
+
 // ************************************************************************* //
