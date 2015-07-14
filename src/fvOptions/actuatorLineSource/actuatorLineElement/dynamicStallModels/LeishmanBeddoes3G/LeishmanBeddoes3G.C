@@ -175,8 +175,8 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
         CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*sqrt(fDoublePrime_);
     }
 
-    // Total normal force coefficient is does not have CNV contribution
-    // since this is included in the Vx term
+    // Total normal force coefficient does not have CNV contribution since 
+    // this is included in the Vx term
     CN_ = CNF_;
 }
 
