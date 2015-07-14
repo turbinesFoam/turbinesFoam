@@ -247,6 +247,9 @@ public:
             //- Return force vector from element
             vector& force();
             
+            //- Return force vector multiplied by local density
+            vector force(const volScalarField& rho);
+            
             //- Return relative velocity
             vector& relativeVelocity();
             
