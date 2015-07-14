@@ -395,9 +395,6 @@ void Foam::fv::actuatorLineElement::calculate
 )
 {
     scalar pi = Foam::constant::mathematical::pi;
-    scalar angleOfAttackUncorrected = VGREAT;
-    scalar epsilon = VGREAT;
-    scalar sphereRadius = VGREAT;
     
     if (debug)
     {
@@ -459,7 +456,7 @@ void Foam::fv::actuatorLineElement::calculate
     scalar angleOfAttackRad = asin((planformNormal & relativeVelocity_)
                             / (mag(planformNormal)
                             *  mag(relativeVelocity_)));
-    angleOfAttackUncorrected = radToDeg(angleOfAttackRad);
+    scalar angleOfAttackUncorrected = radToDeg(angleOfAttackRad);
     vector relVelGeom = freeStreamVelocity_ - velocity_;
     angleOfAttackGeom_ = asin((planformNormal & relVelGeom)
                        / (mag(planformNormal)*mag(relVelGeom)));
@@ -516,12 +513,12 @@ void Foam::fv::actuatorLineElement::calculate
     forceVector_ = lift*liftDirection + drag*dragDirection;
     
     // Calculate projection width
-    epsilon = calcProjectionEpsilon();
+    scalar epsilon = calcProjectionEpsilon();
     reduce(epsilon, minOp<scalar>());
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
     
     // Apply force to the cells within the element's sphere of influence
-    sphereRadius = chordLength_ + projectionRadius;
+    scalar sphereRadius = chordLength_ + projectionRadius;
     forAll(mesh_.cells(), cellI)
     {
         scalar dis = mag(mesh_.C()[cellI] - position_);
