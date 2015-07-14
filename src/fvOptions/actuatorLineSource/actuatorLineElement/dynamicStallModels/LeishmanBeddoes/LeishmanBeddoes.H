@@ -241,10 +241,10 @@ protected:
         
     // Protected member functions
     
-        // Calculate the equivalent angle of attack
+        //- Calculate the equivalent angle of attack
         virtual void calcAlphaEquiv();
     
-        // Evaluate the static foil data, i.e., calculate CNAlpha, CN1, 
+        //- Evaluate the static foil data, i.e., calculate CNAlpha, CN1, 
         // alpha1, and CD0
         virtual void evalStaticData
         (
@@ -253,10 +253,10 @@ protected:
             List<scalar> cdList
         );
         
-        // Calculate unsteady quantities
+        //- Calculate unsteady quantities
         virtual void calcUnsteady();
         
-        // Calculate S1 and S2 constants
+        //- Calculate S1 and S2 constants
         virtual void calcS1S2
         (
             List<scalar> alphaDegList,
@@ -267,10 +267,10 @@ protected:
             scalar D=0.66
         );
         
-        // Calculate separated flow quantities
+        //- Calculate separated flow quantities
         virtual void calcSeparated();
     
-        // Update previous time step values
+        //- Update previous time step values
         virtual void update();
 
 
@@ -318,7 +318,7 @@ public:
         
         // Evaluation
             
-            // Correct lift and drag coefficients
+            //- Correct lift and drag coefficients
             virtual void correct
             (
                 scalar magU,
@@ -329,6 +329,12 @@ public:
                 List<scalar> clList,
                 List<scalar> cdList
             );
+
+
+        // Parallel running
+        
+            //- Reduce to set data equal on all processors
+            virtual void reduceParallel(bool inMesh);
 
 };
 

@@ -103,13 +103,13 @@ protected:
         
     // Protected member functions
     
-        // Calculate the equivalent angle of attack
+        //- Calculate the equivalent angle of attack
         virtual void calcAlphaEquiv();
         
-        // Calculate unsteady quantities
+        //- Calculate unsteady quantities
         virtual void calcUnsteady();
         
-        // Calculate S1 and S2 constants
+        //- Calculate S1 and S2 constants
         virtual void calcS1S2
         (
             List<scalar> alphaDegList,
@@ -120,10 +120,10 @@ protected:
             scalar D=0.58
         );
         
-        // Calculate separated flow quantities
+        //- Calculate separated flow quantities
         virtual void calcSeparated();
     
-        // Update previous time step values
+        //- Update previous time step values
         virtual void update();
 
 

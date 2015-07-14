@@ -93,13 +93,13 @@ protected:
         
     // Protected member functions
         
-        // Calculate unsteady quantities
+        //- Calculate unsteady quantities
         virtual void calcUnsteady();
         
-        // Calculate separated flow quantities
+        //- Calculate separated flow quantities
         virtual void calcSeparated();
     
-        // Update previous time step values
+        //- Update previous time step values
         virtual void update();
 
 

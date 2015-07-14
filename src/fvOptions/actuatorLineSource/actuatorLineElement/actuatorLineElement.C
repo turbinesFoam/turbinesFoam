@@ -28,7 +28,6 @@ License
 #include "geometricOneField.H"
 #include "fvMatrices.H"
 #include "syncTools.H"
-#include "interpolationCellPoint.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -247,18 +246,27 @@ void Foam::fv::actuatorLineElement::lookupCoefficients()
 
 Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
 {
+    scalar epsilon = VGREAT;
     const scalarField& V = mesh_.V();
     label posCellI = mesh_.findCell(position_);
-    // Projection width based on local cell size (from Troldborg (2008))
-    scalar epsilon = 2*Foam::cbrt(V[posCellI]);
     
-    if (epsilon > (chordLength_/2.0))
+    if (posCellI >= 0)
     {
-        return epsilon;
+        // Projection width based on local cell size (from Troldborg (2008))
+        epsilon = 2*Foam::cbrt(V[posCellI]);
+        
+        if (epsilon > (chordLength_/2.0))
+        {
+            return epsilon;
+        }
+        else
+        {
+            return chordLength_/2.0;
+        }
     }
     else
     {
-        return chordLength_/2.0;
+        return epsilon;
     }
 }
 
@@ -387,6 +395,7 @@ void Foam::fv::actuatorLineElement::calculate
 )
 {
     scalar pi = Foam::constant::mathematical::pi;
+    
     if (debug)
     {
         Info<< "Calculating force contribution from actuatorLineElement " 
@@ -402,17 +411,37 @@ void Foam::fv::actuatorLineElement::calculate
     planformNormal /= mag(planformNormal);
     
     // Find local flow velocity by interpolating to element location
+    inflowVelocity_ = vector(VGREAT, VGREAT, VGREAT);
     vector inflowVelocityPoint = position_;
     inflowVelocityPoint -= freeStreamDirection_*0.15*chordLength_;
     inflowVelocityPoint += chordDirection_*0.1*chordLength_;
     inflowVelocityPoint -= planformNormal*0.75*chordLength_;
     interpolationCellPoint<vector> UInterp(Uin);
-    inflowVelocity_ = UInterp.interpolate
-    (
-        inflowVelocityPoint, 
-        mesh_.findCell(inflowVelocityPoint)
-    );
+    label inflowCellI = mesh_.findCell(inflowVelocityPoint);
+    if (inflowCellI >= 0)
+    {
+        inflowVelocity_ = UInterp.interpolate
+        (
+            inflowVelocityPoint, 
+            inflowCellI
+        );
+    }
+    else
+    {
+        // Inflow velocity point is not in the mesh
+        if (not Pstream::parRun())
+        {
+            // Raise fatal error since inflow velocity cannot be detected
+            FatalErrorIn("void actuatorLineElement::calculate()")
+                << "Inflow velocity point for " << name_ 
+                << " not found in mesh" 
+                << abort(FatalError);
+        }
+    }
     
+    // Reduce inflow velocity over all processors
+    reduce(inflowVelocity_, minOp<vector>());
+        
     // Subtract spanwise component of inflow velocity
     vector spanwiseVelocity = spanDirection_
                             * (inflowVelocity_ & spanDirection_)
@@ -423,28 +452,15 @@ void Foam::fv::actuatorLineElement::calculate
     relativeVelocity_ = inflowVelocity_ - velocity_;
     Re_ = mag(relativeVelocity_)*chordLength_/nu_;
     
-    if (debug)
-    {
-        Info<< "    inflowVelocity: " << inflowVelocity_ << endl;
-        Info<< "    relativeVelocity: " << relativeVelocity_ << endl;
-        Info<< "    Reynolds number: " << Re_ << endl;
-    }
-    
     // Calculate angle of attack (radians)
     scalar angleOfAttackRad = asin((planformNormal & relativeVelocity_)
-                            / (mag(planformNormal)*mag(relativeVelocity_)));
+                            / (mag(planformNormal)
+                            *  mag(relativeVelocity_)));
+    scalar angleOfAttackUncorrected = radToDeg(angleOfAttackRad);
     vector relVelGeom = freeStreamVelocity_ - velocity_;
     angleOfAttackGeom_ = asin((planformNormal & relVelGeom)
                        / (mag(planformNormal)*mag(relVelGeom)));
     angleOfAttackGeom_ *= 180.0/pi;
-                            
-    if (debug)
-    {
-        Info<< "    Angle of attack (uncorrected, degrees): " 
-            << angleOfAttackRad/pi*180.0 << endl;
-        Info<< "    Geometric angle of attack (degrees): "
-            << angleOfAttackGeom_ << endl;
-    }
     
     // Apply flow curvature correction to angle of attack
     if (flowCurvatureActive_)
@@ -453,16 +469,23 @@ void Foam::fv::actuatorLineElement::calculate
     }
     
     // Calculate angle of attack in degrees
-    angleOfAttack_ = angleOfAttackRad/pi*180.0;
-    
-    if (debug)
-    {
-        Info<< "    Angle of attack (corrected, degrees): " 
-            << angleOfAttack_ << endl;
-    }
+    angleOfAttack_ = radToDeg(angleOfAttackRad);
     
     // Lookup lift and drag coefficients
     lookupCoefficients();
+    
+    if (debug)
+    {
+        Info<< "    inflowVelocity: " << inflowVelocity_ << endl;
+        Info<< "    relativeVelocity: " << relativeVelocity_ << endl;
+        Info<< "    Reynolds number: " << Re_ << endl;
+        Info<< "    Geometric angle of attack (degrees): "
+            << angleOfAttackGeom_ << endl;
+        Info<< "    Angle of attack (uncorrected, degrees): " 
+            << angleOfAttackUncorrected << endl;
+        Info<< "    Angle of attack (corrected, degrees): " 
+            << angleOfAttack_ << endl;
+    }
     
     // Correct coefficients with dynamic stall model
     if (dynamicStallActive_)
@@ -491,6 +514,7 @@ void Foam::fv::actuatorLineElement::calculate
     
     // Calculate projection width
     scalar epsilon = calcProjectionEpsilon();
+    reduce(epsilon, minOp<scalar>());
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
     
     // Apply force to the cells within the element's sphere of influence

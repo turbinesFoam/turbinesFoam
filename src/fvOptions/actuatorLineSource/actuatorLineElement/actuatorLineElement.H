@@ -45,6 +45,7 @@ SourceFiles
 #include "fvMesh.H"
 #include "fvMatrices.H"
 #include "dynamicStallModel.H"
+#include "interpolationCellPoint.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

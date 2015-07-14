@@ -302,6 +302,7 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     
     if (debug)
     {
+        Info<< "    DF: " << DF_ << endl;
         Info<< "    CNF: " << CNF_ << endl;
     }
     
@@ -414,6 +415,7 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     fPrime_(1.0),
     fPrimePrev_(1.0),
     DF_(0.0),
+    DFPrev_(0.0),
     CV_(0.0),
     CVPrev_(0.0),
     CNV_(0.0),
@@ -487,12 +489,15 @@ void Foam::fv::LeishmanBeddoes::correct
     if (debug)
     {
         scalar cn0 = cl*cos(alpha_) - cd*sin(alpha_);
-        Info<< endl << "Leishman-Beddoes dynamic stall model correcting" 
+        Info<< "    -------------------------------------------------" << endl;
+        Info<< "    " << modelName_ << " dynamic stall model correcting" 
             << endl;
+        Info<< "    -------------------------------------------------" << endl;
         Info<< "    New times: " << nNewTimes_ << endl;
         Info<< "    Time: " << time << endl;
         Info<< "    deltaT: " << deltaT_ << endl;
         Info<< "    deltaS: " << deltaS_ << endl;
+        Info<< "    magU: " << magU << endl;
         Info<< "    Angle of attack (deg): " << alphaDeg << endl;
         Info<< "    alpha (rad): " << alpha_ << endl;
         Info<< "    deltaAlpha: " << deltaAlpha_ << endl;
@@ -526,8 +531,68 @@ void Foam::fv::LeishmanBeddoes::correct
         Info<< "    Vortex normal force coefficient: " << CNV_ << endl;
         Info<< "    Tangential force coefficient: " << CT_ << endl;
         Info<< "    Corrected lift coefficient: " << cl << endl;
-        Info<< "    Corrected drag coefficient: " << cd << endl << endl;
+        Info<< "    Corrected drag coefficient: " << cd << endl;
+        Info<< "    -------------------------------------------------" << endl;
     }
+}
+
+
+void Foam::fv::LeishmanBeddoes::reduceParallel(bool inMesh)
+{
+    if (not inMesh)
+    {
+        alpha_ = VGREAT;
+        alphaPrev_ = VGREAT;
+        timePrev_ = VGREAT;
+        X_ = VGREAT;
+        XPrev_ = VGREAT;
+        Y_ = VGREAT;
+        YPrev_ = VGREAT;
+        D_ = VGREAT;
+        DPrev_ = VGREAT;
+        DP_ = VGREAT;
+        DPPrev_ = VGREAT;
+        CNP_ = VGREAT;
+        CNPPrev_ = VGREAT;
+        DF_ = VGREAT;
+        DFPrev_ = VGREAT;
+        fPrime_ = VGREAT;
+        fPrimePrev_ = VGREAT;
+        CV_ = VGREAT;
+        CVPrev_ = VGREAT;
+        CNV_ = VGREAT;
+        CNVPrev_ = VGREAT;
+        stalled_ = false;
+        stalledPrev_ = false;
+        tau_ = VGREAT;
+        tauPrev_ = VGREAT;
+    }
+    
+    reduce(alpha_, minOp<scalar>());
+    reduce(alphaPrev_, minOp<scalar>());
+    reduce(timePrev_, minOp<scalar>());
+    reduce(X_, minOp<scalar>());
+    reduce(XPrev_, minOp<scalar>());
+    reduce(Y_, minOp<scalar>());
+    reduce(YPrev_, minOp<scalar>());
+    reduce(D_, minOp<scalar>());
+    reduce(DPrev_, minOp<scalar>());
+    reduce(DP_, minOp<scalar>());
+    reduce(DPPrev_, minOp<scalar>());
+    reduce(CNP_, minOp<scalar>());
+    reduce(CNPPrev_, minOp<scalar>());
+    reduce(DF_, minOp<scalar>());
+    reduce(DFPrev_, minOp<scalar>());
+    reduce(fPrime_, minOp<scalar>());
+    reduce(fPrimePrev_, minOp<scalar>());
+    reduce(CV_, minOp<scalar>());
+    reduce(CVPrev_, minOp<scalar>());
+    reduce(CNV_, minOp<scalar>());
+    reduce(CNVPrev_, minOp<scalar>());
+    reduce(stalled_, maxOp<bool>());
+    reduce(stalledPrev_, maxOp<bool>());
+    reduce(tau_, minOp<scalar>());
+    reduce(tauPrev_, minOp<scalar>());
 }
 
 // ************************************************************************* //
