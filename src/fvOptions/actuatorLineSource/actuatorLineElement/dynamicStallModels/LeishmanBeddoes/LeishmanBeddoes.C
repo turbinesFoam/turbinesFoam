@@ -489,8 +489,10 @@ void Foam::fv::LeishmanBeddoes::correct
     if (debug)
     {
         scalar cn0 = cl*cos(alpha_) - cd*sin(alpha_);
-        Info<< endl << "Leishman-Beddoes dynamic stall model correcting" 
+        Info<< "    -------------------------------------------------" << endl;
+        Info<< "    " << modelName_ << " dynamic stall model correcting" 
             << endl;
+        Info<< "    -------------------------------------------------" << endl;
         Info<< "    New times: " << nNewTimes_ << endl;
         Info<< "    Time: " << time << endl;
         Info<< "    deltaT: " << deltaT_ << endl;
@@ -529,7 +531,8 @@ void Foam::fv::LeishmanBeddoes::correct
         Info<< "    Vortex normal force coefficient: " << CNV_ << endl;
         Info<< "    Tangential force coefficient: " << CT_ << endl;
         Info<< "    Corrected lift coefficient: " << cl << endl;
-        Info<< "    Corrected drag coefficient: " << cd << endl << endl;
+        Info<< "    Corrected drag coefficient: " << cd << endl;
+        Info<< "    -------------------------------------------------" << endl;
     }
 }
 
