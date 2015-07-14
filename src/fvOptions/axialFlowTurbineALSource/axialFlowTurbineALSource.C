@@ -593,12 +593,38 @@ void Foam::fv::axialFlowTurbineALSource::addSup
     // Create local moment vector
     vector moment(vector::zero);
 
-    // Add source for all actuator lines
+    // Add source for blade actuator lines
     forAll(blades_, i)
     {
         blades_[i].addSup(rho, eqn, fieldI);
         forceField_ += blades_[i].forceField();
         force_ += blades_[i].force();
+        moment += blades_[i].moment(origin_);
+    }
+    
+    if (hasHub_)
+    {
+        // Add source for hub actuator line
+        hub_->addSup(rho, eqn, fieldI);
+        forceField_ += hub_->forceField();
+        force_ += hub_->force();
+        moment += hub_->moment(origin_);
+    }
+    
+    if (hasTower_)
+    {
+        // Add source for tower actuator line
+        tower_->addSup(rho, eqn, fieldI);
+        forceField_ += tower_->forceField();
+        if (includeTowerDrag_) force_ += tower_->force();
+    }
+    
+    if (hasNacelle_)
+    {
+        // Add source for tower actuator line
+        nacelle_->addSup(rho, eqn, fieldI);
+        forceField_ += nacelle_->forceField();
+        if (includeNacelleDrag_) force_ += nacelle_->force();
     }
     
     // Torque is the projection of the moment from all blades on the axis
@@ -606,7 +632,22 @@ void Foam::fv::axialFlowTurbineALSource::addSup
     Info<< "Azimuthal angle (degrees) of " << name_ << ": " << angleDeg_ 
         << endl;
     Info<< "Torque (per unit density) from " << name_ << ": " << torque_ 
+        << endl;
+    
+    scalar rhoRef;
+    coeffs_.lookup("rhoRef") >> rhoRef;
+    torqueCoefficient_ = torque_/(0.5*rhoRef*frontalArea_*rotorRadius_
+                       * magSqr(freeStreamVelocity_));
+    powerCoefficient_ = torqueCoefficient_*tipSpeedRatio_;
+    dragCoefficient_ = force_ & freeStreamDirection_
+                     / (0.5*rhoRef*frontalArea_*magSqr(freeStreamVelocity_));
+                             
+    Info<< "Power coefficient from " << name_ << ": " << powerCoefficient_
         << endl << endl;
+        
+    // Write performance data -- note this will write multiples if there are
+    // multiple PIMPLE loops
+    if (Pstream::master()) writePerf();
 }
 
 
