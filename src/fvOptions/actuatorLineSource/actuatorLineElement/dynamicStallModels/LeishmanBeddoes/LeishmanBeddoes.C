@@ -264,9 +264,6 @@ void Foam::fv::LeishmanBeddoes::calcS1S2
 
 void Foam::fv::LeishmanBeddoes::calcSeparated()
 {
-        Sout<< endl << endl << Pstream::myProcNo() << endl << endl;
-        
-        
     // Calculate trailing-edge separation point
     if (mag(alphaPrime_) < alpha1_)
     {
