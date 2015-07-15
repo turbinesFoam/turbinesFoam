@@ -631,7 +631,7 @@ void Foam::fv::axialFlowTurbineALSource::addSup
     torque_ = moment & axis_;
     Info<< "Azimuthal angle (degrees) of " << name_ << ": " << angleDeg_ 
         << endl;
-    Info<< "Torque (per unit density) from " << name_ << ": " << torque_ 
+    Info<< "Torque from " << name_ << ": " << torque_ 
         << endl;
     
     scalar rhoRef;
