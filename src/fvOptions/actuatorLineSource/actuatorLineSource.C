@@ -599,7 +599,7 @@ void Foam::fv::actuatorLineSource::addSup
     forAll(elements_, i)
     {
         elements_[i].addSup(rho, eqn, forceField_);
-        force_ += elements_[i].force(rho);
+        force_ += elements_[i].force();
     }
     
     Info<< "Force on " << name_ << ": " << endl << force_ << endl << endl;

@@ -805,6 +805,9 @@ void Foam::fv::actuatorLineElement::addSup
     const volVectorField& Uin(eqn.psi());
     calculate(Uin, forceI);
     
+    // Multiply force vector by local density
+    forceVector_ = actuatorLineElement::force(rho);
+    
     // Multiply this element's force field by density field
     forceI *= rho;
 
