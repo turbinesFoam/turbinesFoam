@@ -513,9 +513,6 @@ void Foam::fv::axialFlowTurbineALSource::addSup
     
     // Create local moment vector
     vector moment(vector::zero);
-    
-    // Read the reference density for incompressible flow
-    //coeffs_.lookup("rhoRef") >> rhoRef_;
 
     // Add source for blade actuator lines
     forAll(blades_, i)
