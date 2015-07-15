@@ -193,6 +193,9 @@ protected:
         
         //- Correct for flow curvatue
         void correctFlowCurvature(scalar& angleOfAttackRad);
+        
+        //- Multiply force vector by local density
+        void multiplyForceRho(const volScalarField& rho);
 
 
 public:
@@ -246,9 +249,6 @@ public:
             
             //- Return force vector from element
             vector& force();
-            
-            //- Return force vector multiplied by local density
-            vector force(const volScalarField& rho);
             
             //- Return relative velocity
             vector& relativeVelocity();

@@ -311,6 +311,24 @@ void Foam::fv::actuatorLineElement::correctFlowCurvature
 }
 
 
+void Foam::fv::actuatorLineElement::multiplyForceRho
+(
+    const volScalarField& rho
+)
+{
+    // Lookup local density
+    label cellI = mesh_.findCell(position_);
+    scalar localRho = VGREAT;
+    if (cellI >= 0)
+    {
+        localRho = rho[cellI];
+    }
+    
+    reduce(localRho, minOp<scalar>());
+    forceVector_ *= localRho;
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::fv::actuatorLineElement::actuatorLineElement
@@ -723,21 +741,6 @@ Foam::vector& Foam::fv::actuatorLineElement::force()
 }
 
 
-Foam::vector Foam::fv::actuatorLineElement::force(const volScalarField& rho)
-{
-    // Lookup local density
-    label cellI = mesh_.findCell(position_);
-    vector rhoForce(VGREAT, VGREAT, VGREAT);
-    if (cellI >= 0)
-    {
-        rhoForce = forceVector_*rho[cellI];
-    }
-    
-    reduce(rhoForce, minOp<vector>());
-    return rhoForce;
-}
-
-
 Foam::vector Foam::fv::actuatorLineElement::moment(vector point)
 {
     // Calculate radius vector
@@ -806,7 +809,7 @@ void Foam::fv::actuatorLineElement::addSup
     calculate(Uin, forceI);
     
     // Multiply force vector by local density
-    forceVector_ = actuatorLineElement::force(rho);
+    multiplyForceRho(rho);
     
     // Multiply this element's force field by density field
     forceI *= rho;
