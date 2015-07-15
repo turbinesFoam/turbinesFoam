@@ -311,6 +311,24 @@ void Foam::fv::actuatorLineElement::correctFlowCurvature
 }
 
 
+void Foam::fv::actuatorLineElement::multiplyForceRho
+(
+    const volScalarField& rho
+)
+{
+    // Lookup local density
+    label cellI = mesh_.findCell(position_);
+    scalar localRho = VGREAT;
+    if (cellI >= 0)
+    {
+        localRho = rho[cellI];
+    }
+    
+    reduce(localRho, minOp<scalar>());
+    forceVector_ *= localRho;
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::fv::actuatorLineElement::actuatorLineElement
@@ -755,13 +773,10 @@ void Foam::fv::actuatorLineElement::addSup
         )
     );
 
-    // Read the reference density for incompressible flow
-    //coeffs_.lookup("rhoRef") >> rhoRef_;
-
     const volVectorField& Uin(eqn.psi());
     calculate(Uin, forceI);
 
-    // Add source to rhs of eqn
+    // Add force to total actuator line force
     force += forceI;
 }
 
@@ -777,7 +792,7 @@ void Foam::fv::actuatorLineElement::addSup
     (
         IOobject
         (
-            name_ + "Force",
+            "force." + name_,
             mesh_.time().timeName(),
             mesh_
         ),
@@ -785,13 +800,19 @@ void Foam::fv::actuatorLineElement::addSup
         dimensionedVector
         (
             "zero",
-            eqn.dimensions()/dimVolume,
+            force.dimensions()/rho.dimensions(),
             vector::zero
         )
     );
 
     const volVectorField& Uin(eqn.psi());
     calculate(Uin, forceI);
+    
+    // Multiply force vector by local density
+    multiplyForceRho(rho);
+    
+    // Multiply this element's force field by density field
+    forceI *= rho;
 
     // Add force to total actuator line force
     force += forceI;

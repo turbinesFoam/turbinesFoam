@@ -571,9 +571,6 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     
     // Create local moment vector
     vector moment(vector::zero);
-    
-    // Read the reference density for incompressible flow
-    //coeffs_.lookup("rhoRef") >> rhoRef_;
 
     // Add source for blade actuator lines
     forAll(blades_, i)
@@ -640,6 +637,12 @@ void Foam::fv::crossFlowTurbineALSource::addSup
         rotate();
     }
 
+    // Check dimensions on force field and correct if necessary
+    if (forceField_.dimensions() != eqn.dimensions()/dimVolume)
+    {
+        forceField_.dimensions().reset(eqn.dimensions()/dimVolume);
+    }
+    
     // Zero out force vector and field
     forceField_ *= 0;
     force_ *= 0;
@@ -647,20 +650,57 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     // Create local moment vector
     vector moment(vector::zero);
 
-    // Add source for all actuator lines
+    // Add source for blade actuator lines
     forAll(blades_, i)
     {
         blades_[i].addSup(rho, eqn, fieldI);
         forceField_ += blades_[i].forceField();
         force_ += blades_[i].force();
+        moment += blades_[i].moment(origin_);
+    }
+    
+    if (hasStruts_)
+    {
+        // Add source for strut actuator lines
+        forAll(struts_, i)
+        {
+            struts_[i].addSup(rho, eqn, fieldI);
+            forceField_ += struts_[i].forceField();
+            force_ += struts_[i].force();
+            moment += struts_[i].moment(origin_);
+        }
+    }
+    
+    if (hasShaft_)
+    {
+        // Add source for shaft actuator line
+        shaft_->addSup(rho, eqn, fieldI);
+        forceField_ += shaft_->forceField();
+        force_ += shaft_->force();
+        moment += shaft_->moment(origin_);
     }
     
     // Torque is the projection of the moment from all blades on the axis
     torque_ = moment & axis_;
     Info<< "Azimuthal angle (degrees) of " << name_ << ": " << angleDeg_ 
         << endl;
-    Info<< "Torque (per unit density) from " << name_ << ": " << torque_ 
+    Info<< "Torque from " << name_ << ": " << torque_ 
+        << endl;
+    
+    scalar rhoRef;
+    coeffs_.lookup("rhoRef") >> rhoRef;
+    torqueCoefficient_ = torque_/(0.5*rhoRef*frontalArea_*rotorRadius_
+                       * magSqr(freeStreamVelocity_));
+    powerCoefficient_ = torqueCoefficient_*tipSpeedRatio_;
+    dragCoefficient_ = force_ & freeStreamDirection_
+                     / (0.5*rhoRef*frontalArea_*magSqr(freeStreamVelocity_));
+                             
+    Info<< "Power coefficient from " << name_ << ": " << powerCoefficient_
         << endl << endl;
+        
+    // Write performance data -- note this will write multiples if there are
+    // multiple PIMPLE loops
+    if (Pstream::master()) writePerf();
 }
 
 

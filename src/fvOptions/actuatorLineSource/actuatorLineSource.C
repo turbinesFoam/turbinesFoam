@@ -522,9 +522,6 @@ void Foam::fv::actuatorLineSource::addSup
     
     // Zero out force field
     forceField_ *= 0;
-
-    // Read the reference density for incompressible flow
-    //coeffs_.lookup("rhoRef") >> rhoRef_;
     
     // Zero the total force vector
     force_ = vector::zero;
@@ -574,11 +571,44 @@ void Foam::fv::actuatorLineSource::addSup
     const label fieldI
 )
 {
-    // Zero force field
+    // Pitch the actuator line if time has changed
+    scalar t = mesh_.time().value();
+    if (t != lastMotionTime_ and harmonicPitchingActive_)
+    {
+        scalar pi = Foam::constant::mathematical::pi;
+        scalar omega = reducedFreq_*2*mag(freeStreamVelocity_)/chordLength_;
+        scalar dt = mesh_.time().deltaT().value();
+        scalar dpdt = pitchAmplitude_/180.0*pi*omega*cos(omega*t);
+        scalar deltaPitch = dpdt*dt;
+        pitch(deltaPitch);
+        lastMotionTime_ = t;
+    }
+    
+    // Check dimensions on force field and correct if necessary
+    if (forceField_.dimensions() != eqn.dimensions()/dimVolume)
+    {
+        forceField_.dimensions().reset(eqn.dimensions()/dimVolume);
+    }
+    
+    // Zero out force field
     forceField_ *= 0;
+    
+    // Zero the total force vector
+    force_ = vector::zero;
+    
+    forAll(elements_, i)
+    {
+        elements_[i].addSup(rho, eqn, forceField_);
+        force_ += elements_[i].force();
+    }
+    
+    Info<< "Force on " << name_ << ": " << endl << force_ << endl << endl;
 
     // Add source to eqn
     eqn += forceField_;
+    
+    // Write performance to file
+    if (writePerf_ and Pstream::master()) writePerf();
 }
 
 // ************************************************************************* //
