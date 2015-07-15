@@ -631,6 +631,18 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     const label fieldI
 )
 {
+    // Rotate the turbine if time value has changed
+    if (time_.value() != lastRotationTime_)
+    {
+        rotate();
+    }
+
+    // Check dimensions on force field and correct if necessary
+    if (forceField_.dimensions() != eqn.dimensions()/dimVolume)
+    {
+        forceField_.dimensions().reset(eqn.dimensions()/dimVolume);
+    }
+    
     // Zero out force vector and field
     forceField_ *= 0;
     force_ *= 0;

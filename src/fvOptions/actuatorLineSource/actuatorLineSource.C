@@ -584,6 +584,12 @@ void Foam::fv::actuatorLineSource::addSup
         lastMotionTime_ = t;
     }
     
+    // Check dimensions on force field and correct if necessary
+    if (forceField_.dimensions() != eqn.dimensions()/dimVolume)
+    {
+        forceField_.dimensions().reset(eqn.dimensions()/dimVolume);
+    }
+    
     // Zero out force field
     forceField_ *= 0;
     
