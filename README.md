@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/4234/turbinesFoam/turbinesFoam.svg)](http://dx.doi.org/10.5281/zenodo.18423)
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.20375.svg)](http://dx.doi.org/10.5281/zenodo.20375)
 [![Stories in Ready](https://badge.waffle.io/turbinesfoam/turbinesfoam.png?label=ready&title=Ready)](https://waffle.io/turbinesfoam/turbinesfoam)
 turbinesFoam
 ============
@@ -48,11 +48,11 @@ How to cite
 ```bibtex
 @misc{Bachant2015-turbinesFoam,
   author       = {Peter Bachant},
-  title        = {turbinesFoam: v0.0.2},
+  title        = {turbinesFoam: v0.0.3},
   month        = June,
   year         = 2015,
-  doi          = {10.5281/zenodo.18423},
-  url          = {http://dx.doi.org/10.5281/zenodo.18423}
+  doi          = {10.5281/zenodo.20375},
+  url          = {http://dx.doi.org/10.5281/zenodo.20375}
 }
 ```
 
