@@ -4,13 +4,13 @@ turbinesFoam
 ============
 
 `turbinesFoam` is a library for simulating wind and marine 
-hydrokinetic turbines in OpenFOAM (2.4.x).
+hydrokinetic turbines in OpenFOAM (2.4.x) using the actuator line approach.
 
 
 Status
 ------
 
-This library is in heavy development and is not yet fully functional.
+This library is in development and is not yet fully functional.
 See the [issue tracker](https://github.com/petebachant/turbinesFoam/issues)
 for more details. 
 Pull requests are encouraged!
@@ -21,9 +21,10 @@ Also be sure to check out the
 
 Features
 --------
-`fvOptions` classes for adding turbine effects (actuator line model)
-to any solver or turbulence model
-that accepts these (e.g. `simpleFoam`, `pimpleFoam`, `interFoam`). 
+
+`fvOptions` classes for adding actuator lines and turbines constructed from
+actuator lines to any compatible solver or turbulence model, e.g., 
+`simpleFoam`, `pimpleFoam`, `interFoam`). 
 
 
 Installation
