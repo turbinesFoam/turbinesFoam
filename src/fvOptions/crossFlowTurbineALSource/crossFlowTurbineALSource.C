@@ -66,7 +66,6 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
     int nBlades = nBlades_;
     blades_.setSize(nBlades);
     int nElements;
-    word profileName;
     List<List<scalar> > elementData;
     List<List<scalar> > profileData;
     word modelType = "actuatorLineSource";
@@ -79,24 +78,19 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         dictionary bladeSubDict;
         bladeSubDict = bladesDict_.subDict(bladeName);
         bladeSubDict.lookup("nElements") >> nElements;
-        bladeSubDict.lookup("profile") >> profileName;
         bladeSubDict.lookup("elementData") >> elementData;
-        profilesDict_.subDict(profileName).lookup("data") >> profileData;
         
         bladeSubDict.add("freeStreamVelocity", freeStreamVelocity_);
         bladeSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
-        bladeSubDict.add("coefficientData", profileData);
+        bladeSubDict.add("profileData", profileData_);
         bladeSubDict.add("tipEffect", tipEffect_);
         
         if (debug)
         {
             Info<< "Creating actuator line blade " << bladeName << endl;
             Info<< "Blade has " << nElements << " elements" << endl;
-            Info<< "Blade profile: " << profileName << endl;
             Info<< "Element data:" << endl;
             Info<< elementData << endl << endl;
-            Info<< "Profile sectional coefficient data:" << endl;
-            Info<< profileData << endl << endl;
         }
         
         // Convert element data into actuator line element geometry
@@ -242,9 +236,7 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
     int nStruts = strutsDict_.keys().size();
     struts_.setSize(nStruts);
     int nElements;
-    word profileName;
     List<List<scalar> > elementData;
-    List<List<scalar> > profileData;
     word modelType = "actuatorLineSource";
     List<word> strutNames = strutsDict_.toc();
     
@@ -255,24 +247,19 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
         dictionary strutSubDict;
         strutSubDict = strutsDict_.subDict(strutName);
         strutSubDict.lookup("nElements") >> nElements;
-        strutSubDict.lookup("profile") >> profileName;
         strutSubDict.lookup("elementData") >> elementData;
-        profilesDict_.subDict(profileName).lookup("data") >> profileData;
         
         strutSubDict.add("freeStreamVelocity", freeStreamVelocity_);
         strutSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
-        strutSubDict.add("coefficientData", profileData);
+        strutSubDict.add("profileData", profileData_);
         strutSubDict.add("tipEffect", tipEffect_);
         
         if (debug)
         {
             Info<< "Creating actuator line strut " << strutName << endl;
             Info<< "Strut has " << nElements << " elements" << endl;
-            Info<< "Strut profile: " << profileName << endl;
             Info<< "Element data:" << endl;
             Info<< elementData << endl << endl;
-            Info<< "Profile sectional coefficient data:" << endl;
-            Info<< profileData << endl << endl;
         }
         
         // Convert element data into actuator line element geometry
@@ -387,16 +374,10 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
 
 void Foam::fv::crossFlowTurbineALSource::createShaft()
 {
-    int nElements;
-    word profileName;
     List<List<scalar> > elementData;
-    List<List<scalar> > profileData;
-    dictionary shaftSubDict;
+    dictionary shaftSubDict = shaftDict_;
     
-    shaftDict_.lookup("nElements") >> nElements;
-    shaftDict_.lookup("profile") >> profileName;
     shaftDict_.lookup("elementData") >> elementData;
-    profilesDict_.subDict(profileName).lookup("data") >> profileData;
     
     // Convert element data into actuator line element geometry
     label nGeomPoints = elementData.size();
@@ -449,9 +430,8 @@ void Foam::fv::crossFlowTurbineALSource::createShaft()
     
     shaftSubDict.add("elementGeometry", elementGeometry);
     shaftSubDict.add("initialVelocities", initialVelocities);
-    shaftSubDict.add("nElements", nElements);
     shaftSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
-    shaftSubDict.add("coefficientData", profileData);
+    shaftSubDict.add("profileData", profileData_);
     shaftSubDict.add("tipEffect", tipEffect_);
     shaftSubDict.add("freeStreamVelocity", freeStreamVelocity_);
         

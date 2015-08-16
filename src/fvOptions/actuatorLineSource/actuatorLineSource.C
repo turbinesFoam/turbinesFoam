@@ -198,6 +198,8 @@ void Foam::fv::actuatorLineSource::createElements()
         // Actuator point geometry to be calculated from elementGeometry
         label geometrySegmentIndex = i/nElementsPerSegment;
         label pointIndex = i % nElementsPerSegment;
+        label elementProfileIndex = i*elementProfiles_.size()/nElements_;
+        word profileName = elementProfiles_[elementProfileIndex];
         vector position;
         scalar chordLength;
         vector chordDirection;
@@ -265,7 +267,12 @@ void Foam::fv::actuatorLineSource::createElements()
         // Create a dictionary for this actuatorLineElement
         dictionary dict;
         dict.add("position", position);
-        dict.add("coefficientData", coefficientData_);
+        List<List<scalar> > coefficientData
+        (
+            profileData_.subDict(profileName).lookup("data")
+        );
+        dict.add("coefficientData", coefficientData);
+        dict.add("profileName", profileName);
         dict.add("chordLength", chordLength);
         dict.add("chordDirection", chordDirection);
         dict.add("spanLength", spanLength);
@@ -292,6 +299,8 @@ void Foam::fv::actuatorLineSource::createElements()
             Info<< "Pitch (degrees): " << pitch << endl;
             Info<< "Span length: " << spanLength << endl;
             Info<< "Span direction: " << spanDirection << endl;
+            Info<< "Profile name index: " << elementProfileIndex << endl;
+            Info<< "Profile name: " << profileName << endl;
         }
         
         actuatorLineElement* element = new actuatorLineElement
@@ -354,8 +363,8 @@ void Foam::fv::actuatorLineSource::printCoeffs() const
 {
     // Print turbine properties
     Info<< "Actuator line properties:" << endl;
-    Info<< "Coefficient data:" << endl;
-    Info<< coefficientData_ << endl;
+    Info<< "Profile data:" << endl;
+    Info<< profileData_ << endl;
     Info<< "First item of element geometry:" << endl;
     Info<< elementGeometry_[0] << endl;
 }
@@ -370,7 +379,8 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
         applied_.setSize(fieldNames_.size(), false);
 
         // Look up information in dictionary
-        coeffs_.lookup("coefficientData") >> coefficientData_;
+        coeffs_.lookup("elementProfiles") >> elementProfiles_;
+        profileData_ = coeffs_.subDict("profileData");
         coeffs_.lookup("tipEffect") >> tipEffect_;
         coeffs_.lookup("elementGeometry") >> elementGeometry_;
         coeffs_.lookup("nElements") >> nElements_;

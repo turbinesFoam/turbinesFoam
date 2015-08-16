@@ -46,7 +46,7 @@ turbine
             {
                 writePerf   true;
                 nElements   26;
-                profile     S826;
+                elementProfiles (S826);
                 elementData
                 ( // radius, azimuth, chord, chordMount, pitch
                     (0.054999 0.0 0.0495 0.25 38.0)
@@ -81,7 +81,7 @@ turbine
             blade2
             {
                 nElements   26;
-                profile     S826;
+                elementProfiles (S826);
                 elementData
                 ( // radius, azimuth, chord, chordMount, pitch
                     (0.054999 120.0 0.0495 0.25 38.0)
@@ -116,7 +116,7 @@ turbine
             blade3
             {
                 nElements   26;
-                profile     S826;
+                elementProfiles (S826);
                 elementData
                 ( // radius, azimuth, chord, chordMount, pitch
                     (0.054999 240.0 0.0495 0.25 38.0)
@@ -154,7 +154,7 @@ turbine
         {
             includeInTotalDrag  false; // default is false
             nElements   6;
-            profile     cylinder;
+            elementProfiles (cylinder);
             elementData
             ( // axial distance (turbine axis), height, diameter
                 (-0.14 -0.82 0.09)
@@ -167,7 +167,7 @@ turbine
         hub
         {
             nElements   1;
-            profile     cylinder;
+            elementProfiles (cylinder);
             elementData
             ( // axial distance, height, diameter
                 (0 0.09 0.09)
@@ -175,7 +175,7 @@ turbine
             );
         }
         
-        profiles
+        profileData
         {
             S826
             {
