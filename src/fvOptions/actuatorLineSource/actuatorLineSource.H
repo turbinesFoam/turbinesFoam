@@ -68,12 +68,15 @@ protected:
         //- Tip effect
         scalar tipEffect_;
         
-        //- Sectional coefficient data for the foil profile
-        List<List<scalar> > coefficientData_;
+        //- Dictionary for the profiles' sectional coefficient data
+        dictionary profileData_;
         
         //- Element geometry
         // point, spanDirection, chordLength, chordRefDir, pitch 
         List<List<List<scalar> > > elementGeometry_;
+        
+        //- Element profiles
+        List<word> elementProfiles_;
         
         //- Number of blade elements
         label nElements_;
