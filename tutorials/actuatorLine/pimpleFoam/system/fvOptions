@@ -36,6 +36,8 @@ foil
             ((0.0 0.0 1.98) (0 0 1) (1.22) (-1 0 0) (0.25) (15))
         );
         
+        elementProfiles (NACA0012);
+        
         dynamicStall
         {
             active              on;
@@ -70,10 +72,16 @@ foil
             amplitude       10.0; // Degrees
         }
         
-        coefficientData
-        ( // alpha C_l C_d
-            #include "../../../resources/foilData/NACA0012_2e6"
-		);
+        profileData
+        {
+            NACA0012
+            {
+                data
+                ( // alpha C_l C_d
+                    #include "../../../resources/foilData/NACA0012_2e6"
+                );
+            }
+        }
     }
 }
 
