@@ -91,7 +91,7 @@ turbine
             {
                 writePerf   true;
                 nElements   14;
-                profile     NACA0020;
+                elementProfiles (NACA0020);
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
                     (-0.5 0.5 0.0 0.14 0.5 0.0)
@@ -101,7 +101,7 @@ turbine
             blade2
             {
                 nElements   14;
-                profile     NACA0020;
+                elementProfiles (NACA0020);
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
                     (-0.5 0.5 120.0 0.14 0.5 0.0)
@@ -111,7 +111,7 @@ turbine
             blade3
             {
                 nElements   14;
-                profile     NACA0020;
+                elementProfiles (NACA0020);
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
                     (-0.5 0.5 240.0 0.14 0.5 0.0)
@@ -126,7 +126,7 @@ turbine
             {
                 writePerf   true;
                 nElements   6;
-                profile     NACA0020;
+                elementProfiles (NACA0020);
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
                     (0.0 0.05 0.0 0.14 0.3 0.0)
@@ -136,7 +136,7 @@ turbine
             strut2
             {
                 nElements   6;
-                profile     NACA0020;
+                elementProfiles (NACA0020);
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
                     (0.0 0.05 120.0 0.14 0.3 0.0)
@@ -146,7 +146,7 @@ turbine
             strut3
             {
                 nElements   6;
-                profile     NACA0020;
+                elementProfiles (NACA0020);
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
                     (0.0 0.05 240.0 0.14 0.3 0.0)
@@ -158,7 +158,7 @@ turbine
         shaft
         { 
             nElements   20;
-            profile     cylinder;
+            elementProfiles (cylinder);
             elementData
             ( // axialDistance, diameter
                 (-0.66 0.09)
@@ -166,7 +166,7 @@ turbine
             );
         }
         
-        profiles
+        profileData
         {
             NACA0020
             {
