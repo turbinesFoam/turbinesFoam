@@ -73,9 +73,7 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
     int nBlades = nBlades_;
     blades_.setSize(nBlades);
     int nElements;
-    word profileName;
     List<List<scalar> > elementData;
-    List<List<scalar> > profileData;
     word modelType = "actuatorLineSource";
     List<scalar> frontalAreas(nBlades); // frontal area from each blade
     
@@ -83,27 +81,21 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
     {
         word& bladeName = bladeNames_[i];
         // Create dictionary items for this blade
-        dictionary bladeSubDict;
-        bladeSubDict = bladesDict_.subDict(bladeName);
+        dictionary bladeSubDict = bladesDict_.subDict(bladeName);
         bladeSubDict.lookup("nElements") >> nElements;
-        bladeSubDict.lookup("profile") >> profileName;
         bladeSubDict.lookup("elementData") >> elementData;
-        profilesDict_.subDict(profileName).lookup("data") >> profileData;
         
         bladeSubDict.add("freeStreamVelocity", freeStreamVelocity_);
         bladeSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
-        bladeSubDict.add("coefficientData", profileData);
         bladeSubDict.add("tipEffect", tipEffect_);
+        bladeSubDict.add("profileData", profileData_);
         
         if (debug)
         {
             Info<< "Creating actuator line blade " << bladeName << endl;
             Info<< "Blade has " << nElements << " elements" << endl;
-            Info<< "Blade profile: " << profileName << endl;
             Info<< "Element data:" << endl;
             Info<< elementData << endl << endl;
-            Info<< "Profile sectional coefficient data:" << endl;
-            Info<< profileData << endl << endl;
         }
         
         // Convert element data into actuator line element geometry
@@ -237,15 +229,11 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
 void Foam::fv::axialFlowTurbineALSource::createHub()
 {
     int nElements;
-    word profileName;
     List<List<scalar> > elementData;
-    List<List<scalar> > profileData;
-    dictionary hubSubDict;
+    dictionary hubSubDict = hubDict_;
     
     hubDict_.lookup("nElements") >> nElements;
-    hubDict_.lookup("profile") >> profileName;
     hubDict_.lookup("elementData") >> elementData;
-    profilesDict_.subDict(profileName).lookup("data") >> profileData;
     
     // Convert element data into actuator line element geometry
     label nGeomPoints = elementData.size();
@@ -301,9 +289,8 @@ void Foam::fv::axialFlowTurbineALSource::createHub()
     
     hubSubDict.add("elementGeometry", elementGeometry);
     hubSubDict.add("initialVelocities", initialVelocities);
-    hubSubDict.add("nElements", nElements);
     hubSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
-    hubSubDict.add("coefficientData", profileData);
+    hubSubDict.add("profileData", profileData_);
     hubSubDict.add("tipEffect", tipEffect_);
     hubSubDict.add("freeStreamVelocity", freeStreamVelocity_);
         
@@ -329,16 +316,10 @@ void Foam::fv::axialFlowTurbineALSource::createHub()
 void Foam::fv::axialFlowTurbineALSource::createTower()
 {
     vector towerAxis = verticalDirection_;
-    int nElements;
-    word profileName;
     List<List<scalar> > elementData;
-    List<List<scalar> > profileData;
-    dictionary towerSubDict;
+    dictionary towerSubDict = towerDict_;
     
-    towerDict_.lookup("nElements") >> nElements;
-    towerDict_.lookup("profile") >> profileName;
     towerDict_.lookup("elementData") >> elementData;
-    profilesDict_.subDict(profileName).lookup("data") >> profileData;
     
     // Convert element data into actuator line element geometry
     label nGeomPoints = elementData.size();
@@ -394,9 +375,8 @@ void Foam::fv::axialFlowTurbineALSource::createTower()
     
     towerSubDict.add("elementGeometry", elementGeometry);
     towerSubDict.add("initialVelocities", initialVelocities);
-    towerSubDict.add("nElements", nElements);
     towerSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
-    towerSubDict.add("coefficientData", profileData);
+    towerSubDict.add("profileData", profileData_);
     towerSubDict.add("tipEffect", tipEffect_);
     towerSubDict.add("freeStreamVelocity", freeStreamVelocity_);
         

@@ -292,7 +292,7 @@ bool Foam::fv::turbineALSource::read(const dictionary& dict)
         dynamicStallDict_ = coeffs_.subOrEmptyDict("dynamicStall");
         
         // Get profiles information
-        profilesDict_ = coeffs_.subDict("profiles");
+        profileData_ = coeffs_.subDict("profileData");
         
         return true;
     }

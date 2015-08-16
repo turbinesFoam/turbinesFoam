@@ -117,7 +117,7 @@ protected:
         wordList bladeNames_;
         
         //- Dictionary for profile coefficient data
-        dictionary profilesDict_;
+        dictionary profileData_;
         
         //- Force vector
         vector force_;
