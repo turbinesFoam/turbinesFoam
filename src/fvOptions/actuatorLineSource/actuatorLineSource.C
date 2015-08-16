@@ -198,7 +198,7 @@ void Foam::fv::actuatorLineSource::createElements()
         // Actuator point geometry to be calculated from elementGeometry
         label geometrySegmentIndex = i/nElementsPerSegment;
         label pointIndex = i % nElementsPerSegment;
-        label elementProfileIndex = elementProfiles_.size()/nElements_*i;
+        label elementProfileIndex = i*elementProfiles_.size()/nElements_;
         word profileName = elementProfiles_[elementProfileIndex];
         vector position;
         scalar chordLength;
@@ -299,6 +299,8 @@ void Foam::fv::actuatorLineSource::createElements()
             Info<< "Pitch (degrees): " << pitch << endl;
             Info<< "Span length: " << spanLength << endl;
             Info<< "Span direction: " << spanDirection << endl;
+            Info<< "Profile name index: " << elementProfileIndex << endl;
+            Info<< "Profile name: " << profileName << endl;
         }
         
         actuatorLineElement* element = new actuatorLineElement
