@@ -113,6 +113,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             scalar azimuthRadians = degToRad(azimuthDegrees);
             scalar chordLength = elementData[j][3];
             scalar chordMount = elementData[j][4];
+            scalar pitch = elementData[j][5];
             
             // Compute frontal area contribution from this geometry segment
             if (j > 0)
@@ -182,7 +183,6 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             elementGeometry[j][4][0] = chordMount;
             
             // Set pitch
-            scalar pitch = elementData[j][5];
             elementGeometry[j][5][0] = pitch;
         }
         
@@ -286,6 +286,7 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
             scalar azimuthRadians = degToRad(azimuthDegrees);
             scalar chordLength = elementData[j][3];
             scalar chordMount = elementData[j][4];
+            scalar pitch = elementData[j][5];
             
             // Set sizes for actuatorLineSource elementGeometry lists
             elementGeometry[j].setSize(6);
@@ -349,7 +350,6 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
             elementGeometry[j][4][0] = chordMount;
             
             // Set pitch
-            scalar pitch = elementData[j][5];
             elementGeometry[j][5][0] = pitch;
         }
 
