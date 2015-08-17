@@ -113,11 +113,13 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
         forAll(elementData, j)
         {
             // Read AFTAL dict element data
-            scalar radius = elementData[j][0];
-            scalar azimuthDegrees = elementData[j][1] + azimuthalOffset;
+            scalar axialDistance = elementData[j][0];
+            scalar radius = elementData[j][1];
+            scalar azimuthDegrees = elementData[j][2] + azimuthalOffset;
             scalar azimuthRadians = degToRad(azimuthDegrees);
-            scalar chordLength = elementData[j][2];
-            scalar chordMount = elementData[j][3];
+            scalar chordLength = elementData[j][3];
+            scalar chordMount = elementData[j][4];
+            scalar pitch = elementData[j][5];
             
             // Find max radius for calculating frontal area
             if (radius > maxRadius)
@@ -136,6 +138,8 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
             
             // Create geometry point for AL source at origin
             vector point = origin_;
+            // Move point along axial direction
+            point += axialDistance*axis_;
             // Move along radial direction
             point += radius*radialDirection_;
             // Move along chord according to chordMount
@@ -153,9 +157,9 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
             rotateVector(point, origin_, axis_, azimuthRadians);
             rotateVector
             (
-                initialVelocities[j], 
-                velOrigin, 
-                axis_, 
+                initialVelocities[j],
+                velOrigin,
+                axis_,
                 azimuthRadians
             );
             
@@ -186,8 +190,7 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
             elementGeometry[j][4][0] = chordMount;
             
             // Set pitch
-            scalar pitch = elementData[j][5];
-            elementGeometry[j][5][0] = pitch;
+            elementGeometry[j][5][0] = -pitch;
         }
         
         // Add frontal area to list
