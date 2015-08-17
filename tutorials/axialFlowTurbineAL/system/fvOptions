@@ -45,10 +45,28 @@ turbine
             blade1
             {
                 writePerf   true;
-                nElements   26;
-                elementProfiles (S826);
+                nElements   28;
+                elementProfiles 
+                (
+                    cylinder
+                    S826
+                    S826
+                    S826
+                    S826
+                    S826
+                    S826
+                    S826
+                    S826
+                    S826
+                    S826
+                    S826
+                    S826
+                    S826
+                );
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
+                    (0.0 0.0075 0.0 0.0135 0.25 0.0)
+                    (0.0 0.049 0.0 0.0135 0.25 0.0)
                     (0.0 0.054999 0.0 0.0495 0.25 38.0)
                     (0.0 0.0675 0.0 0.081432 0.25 37.055)
                     (0.0 0.0824985 0.0 0.08011 0.25 32.544)
