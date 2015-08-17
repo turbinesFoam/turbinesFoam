@@ -79,6 +79,11 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         bladeSubDict = bladesDict_.subDict(bladeName);
         bladeSubDict.lookup("nElements") >> nElements;
         bladeSubDict.lookup("elementData") >> elementData;
+        scalar azimuthalOffset = bladeSubDict.lookupOrDefault
+        (
+            "azimuthalOffset",
+            0.0
+        );
         
         bladeSubDict.add("freeStreamVelocity", freeStreamVelocity_);
         bladeSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
@@ -104,8 +109,8 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             // Read CFTAL dict data
             scalar axialDistance = elementData[j][0];
             scalar radius = elementData[j][1];
-            scalar azimuthDegrees = elementData[j][2];
-            scalar azimuthRadians = azimuthDegrees/180.0*mathematical::pi;
+            scalar azimuthDegrees = elementData[j][2] + azimuthalOffset;
+            scalar azimuthRadians = degToRad(azimuthDegrees);
             scalar chordLength = elementData[j][3];
             scalar chordMount = elementData[j][4];
             
@@ -248,6 +253,11 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
         strutSubDict = strutsDict_.subDict(strutName);
         strutSubDict.lookup("nElements") >> nElements;
         strutSubDict.lookup("elementData") >> elementData;
+        scalar azimuthalOffset = strutSubDict.lookupOrDefault
+        (
+            "azimuthalOffset",
+            0.0
+        );
         
         strutSubDict.add("freeStreamVelocity", freeStreamVelocity_);
         strutSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
@@ -272,8 +282,8 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
             // Read CFTAL dict data
             scalar axialDistance = elementData[j][0];
             scalar radius = elementData[j][1];
-            scalar azimuthDegrees = elementData[j][2];
-            scalar azimuthRadians = azimuthDegrees/180.0*mathematical::pi;
+            scalar azimuthDegrees = elementData[j][2] + azimuthalOffset;
+            scalar azimuthRadians = degToRad(azimuthDegrees);
             scalar chordLength = elementData[j][3];
             scalar chordMount = elementData[j][4];
             

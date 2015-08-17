@@ -84,6 +84,11 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
         dictionary bladeSubDict = bladesDict_.subDict(bladeName);
         bladeSubDict.lookup("nElements") >> nElements;
         bladeSubDict.lookup("elementData") >> elementData;
+        scalar azimuthalOffset = bladeSubDict.lookupOrDefault
+        (
+            "azimuthalOffset",
+            0.0
+        );
         
         bladeSubDict.add("freeStreamVelocity", freeStreamVelocity_);
         bladeSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
@@ -109,8 +114,8 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
         {
             // Read AFTAL dict element data
             scalar radius = elementData[j][0];
-            scalar azimuthDegrees = elementData[j][1];
-            scalar azimuthRadians = azimuthDegrees/180.0*mathematical::pi;
+            scalar azimuthDegrees = elementData[j][1] + azimuthalOffset;
+            scalar azimuthRadians = degToRad(azimuthDegrees);
             scalar chordLength = elementData[j][2];
             scalar chordMount = elementData[j][3];
             
