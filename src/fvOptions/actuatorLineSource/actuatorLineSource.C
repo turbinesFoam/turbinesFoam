@@ -135,6 +135,7 @@ void Foam::fv::actuatorLineSource::createElements()
     List<vector> points(nGeometryPoints);
     List<vector> spanDirs(nGeometryPoints);
     List<scalar> chordLengths(nGeometryPoints);
+    List<scalar> spanLengths(nGeometrySegments);
     List<vector> chordRefDirs(nGeometryPoints);
     List<scalar> pitches(nGeometryPoints);
     List<scalar> chordMounts(nGeometryPoints);
@@ -148,7 +149,11 @@ void Foam::fv::actuatorLineSource::createElements()
         scalar y = elementGeometry_[i][0][1];
         scalar z = elementGeometry_[i][0][2];
         points[i] = vector(x, y, z);
-        if (i > 0) totalLength_ += mag(points[i] - points[i-1]);
+        if (i > 0) 
+        {
+            spanLengths[i - 1] = mag(points[i] - points[i-1]);
+            totalLength_ += spanLengths[i - 1];
+        }
         // Read span direction
         x = elementGeometry_[i][1][0];
         y = elementGeometry_[i][1][1];
@@ -171,9 +176,6 @@ void Foam::fv::actuatorLineSource::createElements()
     // Compute average chord length
     chordLength_ /= nGeometryPoints;
     
-    // Calculate span length of each element
-    scalar spanLength = totalLength_/nElements_;
-    
     // Lookup initial element velocities if present
     List<vector> initialVelocities(nGeometryPoints, vector::zero);
     coeffs_.readIfPresent("initialVelocities", initialVelocities);
@@ -181,9 +183,11 @@ void Foam::fv::actuatorLineSource::createElements()
     if (debug)
     {
         Info<< "Total length: " << totalLength_ << endl;
-        Info<< "Element span length: " << spanLength << endl;
+        Info<< "Elements per geometry segment: " << nElementsPerSegment 
+            << endl;
         Info<< "Points:" << endl << points << endl;
         Info<< "Span directions:" << endl << spanDirs << endl;
+        Info<< "Span lengths: " << endl << spanLengths << endl;
         Info<< "Chord lengths:" << endl << chordLengths << endl;
         Info<< "Pitches:" << endl << pitches << endl;
     }
@@ -203,6 +207,8 @@ void Foam::fv::actuatorLineSource::createElements()
         vector position;
         scalar chordLength;
         vector chordDirection;
+        scalar spanLength = spanLengths[geometrySegmentIndex];
+        spanLength /= nElementsPerSegment;
         vector spanDirection;
         scalar pitch;
         scalar chordMount;
