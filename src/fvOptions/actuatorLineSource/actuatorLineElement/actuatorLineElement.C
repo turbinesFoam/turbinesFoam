@@ -355,7 +355,7 @@ void Foam::fv::actuatorLineElement::createOutputFile()
 
     outputFile_ = new OFstream(dir/name_ + ".csv");
     
-    *outputFile_<< "time,x,y,z,rel_vel_mag,alpha_deg,alpha_geom_deg,cl,cd,"
+    *outputFile_<< "time,x,y,z,rel_vel_mag,Re,alpha_deg,alpha_geom_deg,cl,cd,"
                 << "fx,fy,fz" << endl;
 }
 
@@ -364,9 +364,9 @@ void Foam::fv::actuatorLineElement::writePerf()
 {
     scalar time = mesh_.time().value();
  
-    // write time,x,y,z,rel_vel_mag,alpha_deg,alpha_geom_deg,cl,cd,fx,fy,fz
+    // write time,x,y,z,rel_vel_mag,Re,alpha_deg,alpha_geom_deg,cl,cd,fx,fy,fz
     *outputFile_<< time << "," << position_.x() << "," << position_.y() << "," 
-                << position_.z() << "," << mag(relativeVelocity_)
+                << position_.z() << "," << mag(relativeVelocity_) << "," << Re_
                 << "," << angleOfAttack_ << "," << angleOfAttackGeom_ << "," 
                 << liftCoefficient_ << "," << dragCoefficient_ << "," 
                 << forceVector_.x() << "," << forceVector_.y() << "," 
