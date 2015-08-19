@@ -3,3 +3,4 @@
 *linux64GccDPOpt
 *.dep
 *lnInclude
+callgrind*
