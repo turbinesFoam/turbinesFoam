@@ -171,6 +171,10 @@ void Foam::fv::actuatorLineSource::createElements()
         pitches[i] = elementGeometry_[i][5][0];
     }
     
+    // Store blade root and tip locations for distance calculations
+    vector rootLocation = points[0];
+    vector tipLocation = points[nGeometryPoints - 1];
+    
     // Compute average chord length
     chordLength_ /= nGeometryPoints;
     
@@ -188,6 +192,8 @@ void Foam::fv::actuatorLineSource::createElements()
         Info<< "Span lengths: " << endl << spanLengths << endl;
         Info<< "Chord lengths:" << endl << chordLengths << endl;
         Info<< "Pitches:" << endl << pitches << endl;
+        Info<< "Root location: " << rootLocation << endl;
+        Info<< "Tip location: " << tipLocation << endl;
     }
 	
     forAll(elements_, i)
@@ -266,6 +272,10 @@ void Foam::fv::actuatorLineSource::createElements()
         chordDirection = chordDir1 
                        + deltaChordDirTotal/nElementsPerSegment*pointIndex
                        + deltaChordDirTotal/nElementsPerSegment/2;
+                       
+        // Calculate nondimensional root and tip distances
+        scalar rootDistance = mag(position - rootLocation)/totalLength_;
+        scalar tipDistance = mag(position - tipLocation)/totalLength_;
 
         
         // Create a dictionary for this actuatorLineElement
@@ -283,6 +293,8 @@ void Foam::fv::actuatorLineSource::createElements()
         dict.add("spanDirection", spanDirection);
         dict.add("freeStreamVelocity", freeStreamVelocity_);
         dict.add("chordMount", chordMount);
+        dict.add("rootDistance" , rootDistance);
+        dict.add("tipDistance", tipDistance);
         if (coeffs_.found("dynamicStall"))
         {
             dictionary dsDict = coeffs_.subDict("dynamicStall");
@@ -311,6 +323,8 @@ void Foam::fv::actuatorLineSource::createElements()
             Info<< "Profile name index: " << elementProfileIndex << endl;
             Info<< "Profile name: " << profileName << endl;
             Info<< "writePerf: " << writeElementPerf << endl;
+            Info<< "Root distance (nondimensional): " << rootDistance << endl;
+            Info<< "Tip distance (nondimensional): " << tipDistance << endl;
         }
         
         actuatorLineElement* element = new actuatorLineElement

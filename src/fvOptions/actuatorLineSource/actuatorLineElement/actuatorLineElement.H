@@ -170,6 +170,12 @@ protected:
         
         //- Output file stream
         OFstream* outputFile_;
+        
+        //- Nondimensional distance from actuator line root
+        scalar rootDistance_;
+        
+        //- Nondimensional distance from actuator line tip
+        scalar tipDistance_;
 
 
     // Protected Member Functions

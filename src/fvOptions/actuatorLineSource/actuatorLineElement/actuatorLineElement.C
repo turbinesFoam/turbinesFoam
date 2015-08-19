@@ -55,6 +55,8 @@ void Foam::fv::actuatorLineElement::read()
     dict_.lookup("coefficientData") >> coefficientData_;
     dict_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
     freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
+    dict_.lookup("rootDistance") >> rootDistance_;
+    dict_.lookup("tipDistance") >> tipDistance_;
     
     // Create lists from coefficient data
     angleOfAttackList_.setSize(coefficientData_.size());
@@ -397,7 +399,9 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     flowCurvatureModelName_("none"),
     velocityLE_(vector::zero),
     velocityTE_(vector::zero),
-    writePerf_(false)
+    writePerf_(false),
+    rootDistance_(0.0),
+    tipDistance_(0.0)
 {
     read();
     if (writePerf_)
