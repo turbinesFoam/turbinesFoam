@@ -45,6 +45,7 @@ turbine
             blade1
             {
                 writePerf   true;
+                writeElementPerf true;
                 nElements   28;
                 elementProfiles 
                 (
@@ -100,6 +101,7 @@ turbine
             {
                 $blade1;
                 writePerf   false;
+                writeElementPerf false;
                 azimuthalOffset 120.0;
             }
             blade3

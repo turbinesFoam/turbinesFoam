@@ -293,6 +293,11 @@ void Foam::fv::actuatorLineSource::createElements()
         }
         dictionary fcDict = coeffs_.subOrEmptyDict("flowCurvature");
         dict.add("flowCurvature", fcDict);
+        bool writeElementPerf 
+        (
+            coeffs_.lookupOrDefault("writeElementPerf", false)
+        );
+        dict.add("writePerf", writeElementPerf);
         
         if (debug)
         {
@@ -307,6 +312,7 @@ void Foam::fv::actuatorLineSource::createElements()
             Info<< "Span direction: " << spanDirection << endl;
             Info<< "Profile name index: " << elementProfileIndex << endl;
             Info<< "Profile name: " << profileName << endl;
+            Info<< "writePerf: " << writeElementPerf << endl;
         }
         
         actuatorLineElement* element = new actuatorLineElement

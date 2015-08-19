@@ -164,6 +164,12 @@ protected:
         
         //- Trailing edge velocity vector
         vector velocityTE_;
+        
+        //- Switch for writing performance
+        bool writePerf_;
+        
+        //- Output file stream
+        OFstream* outputFile_;
 
 
     // Protected Member Functions
@@ -196,6 +202,12 @@ protected:
         
         //- Multiply force vector by local density
         void multiplyForceRho(const volScalarField& rho);
+        
+        //- Create the performance output file
+        virtual void createOutputFile();
+        
+        //- Write performance to CSV
+        void writePerf();
 
 
 public:
