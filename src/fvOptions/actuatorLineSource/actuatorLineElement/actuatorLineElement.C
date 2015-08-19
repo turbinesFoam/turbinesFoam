@@ -103,6 +103,9 @@ void Foam::fv::actuatorLineElement::read()
     transportProperties.lookup("nu") >> nu;
     nu_ = nu.value();
     
+    // Read writePerf switch
+    dict_.lookup("writePerf") >> writePerf_;
+    
     if (debug)
     {
        Info<< "actuatorLineElement properties:" << endl;
@@ -112,6 +115,7 @@ void Foam::fv::actuatorLineElement::read()
        Info<< "spanLength: " << spanLength_ << endl;
        Info<< "spanDirection: " << spanDirection_ << endl;
        Info<< "coefficientData: " << coefficientData_ << endl;
+       Info<< "writePerf: " << writePerf_ << endl;
     }
 }
 
@@ -329,6 +333,47 @@ void Foam::fv::actuatorLineElement::multiplyForceRho
 }
 
 
+void Foam::fv::actuatorLineElement::createOutputFile()
+{
+    fileName dir;
+    
+    if (Pstream::parRun())
+    {
+        dir = mesh_.time().path()/"../postProcessing/actuatorLineElements"
+            / mesh_.time().timeName();
+    }
+    else
+    {
+        dir = mesh_.time().path()/"postProcessing/actuatorLineElements"
+            / mesh_.time().timeName();
+    }
+    
+    if (!isDir(dir))
+    {
+        mkDir(dir);
+    }
+
+    outputFile_ = new OFstream(dir/name_ + ".csv");
+    
+    *outputFile_<< "time,x,y,z,rel_vel_mag,alpha_deg,alpha_geom_deg,cl,cd,"
+                << "fx,fy,fz" << endl;
+}
+
+
+void Foam::fv::actuatorLineElement::writePerf()
+{
+    scalar time = mesh_.time().value();
+ 
+    // write time,x,y,z,rel_vel_mag,alpha_deg,alpha_geom_deg,cl,cd,fx,fy,fz
+    *outputFile_<< time << "," << position_.x() << "," << position_.y() << "," 
+                << position_.z() << "," << mag(relativeVelocity_)
+                << "," << angleOfAttack_ << "," << angleOfAttackGeom_ << "," 
+                << liftCoefficient_ << "," << dragCoefficient_ << "," 
+                << forceVector_.x() << "," << forceVector_.y() << "," 
+                << forceVector_.z() << endl;
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::fv::actuatorLineElement::actuatorLineElement
@@ -351,9 +396,14 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     flowCurvatureActive_(false),
     flowCurvatureModelName_("none"),
     velocityLE_(vector::zero),
-    velocityTE_(vector::zero)
+    velocityTE_(vector::zero),
+    writePerf_(false)
 {
     read();
+    if (writePerf_)
+    {
+        createOutputFile();
+    }
 }
 
 // * * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * //
@@ -778,6 +828,9 @@ void Foam::fv::actuatorLineElement::addSup
 
     // Add force to total actuator line force
     force += forceI;
+    
+    // Write performance to file
+    if (writePerf_ and Pstream::master()) writePerf();
 }
 
 
@@ -816,6 +869,9 @@ void Foam::fv::actuatorLineElement::addSup
 
     // Add force to total actuator line force
     force += forceI;
+    
+    // Write performance to file
+    if (writePerf_ and Pstream::master()) writePerf();
 }
 
 
