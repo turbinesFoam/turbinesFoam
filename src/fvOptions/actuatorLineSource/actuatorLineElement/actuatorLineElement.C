@@ -317,6 +317,19 @@ void Foam::fv::actuatorLineElement::correctFlowCurvature
 }
 
 
+void Foam::fv::actuatorLineElement::correctEndEffects()
+{
+    scalar t = 0.6;
+    scalar f = 1.0;
+    
+    if (rootDistance_ > t)
+    {
+        f = -1.0/magSqr(t)*magSqr(rootDistance_ - t) + 1;
+        liftCoefficient_ *= f;
+    }
+}
+
+
 void Foam::fv::actuatorLineElement::multiplyForceRho
 (
     const volScalarField& rho
@@ -573,6 +586,9 @@ void Foam::fv::actuatorLineElement::calculate
             dragCoefficientList_
         );
     }
+    
+    // Correct for end effects
+    correctEndEffects();
     
     // Calculate force per unit density
     scalar area = chordLength_*spanLength_;

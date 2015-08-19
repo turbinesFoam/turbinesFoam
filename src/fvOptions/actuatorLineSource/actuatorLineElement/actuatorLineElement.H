@@ -206,6 +206,9 @@ protected:
         //- Correct for flow curvatue
         void correctFlowCurvature(scalar& angleOfAttackRad);
         
+        //- Correct for end effects
+        void correctEndEffects();
+        
         //- Multiply force vector by local density
         void multiplyForceRho(const volScalarField& rho);
         
