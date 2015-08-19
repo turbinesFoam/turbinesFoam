@@ -50,6 +50,44 @@ namespace fv
 
 // * * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * //
 
+bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
+{
+    if (option::read(dict))
+    {
+        
+        coeffs_.lookup("fieldNames") >> fieldNames_;
+        applied_.setSize(fieldNames_.size(), false);
+
+        // Look up information in dictionary
+        coeffs_.lookup("elementProfiles") >> elementProfiles_;
+        profileData_ = coeffs_.subDict("profileData");
+        coeffs_.lookup("tipEffect") >> tipEffect_;
+        coeffs_.lookup("elementGeometry") >> elementGeometry_;
+        coeffs_.lookup("nElements") >> nElements_;
+        coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
+        freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
+        
+        // Read harmonic pitching parameters if present
+        dictionary pitchDict = coeffs_.subOrEmptyDict("harmonicPitching");
+        harmonicPitchingActive_ = pitchDict.lookupOrDefault("active", false);
+        reducedFreq_ = pitchDict.lookupOrDefault("reducedFreq", 0.0);
+        pitchAmplitude_ = pitchDict.lookupOrDefault("amplitude", 0.0);
+        
+        if (debug)
+        {
+            Info<< "Debugging for actuatorLineSource on" << endl;
+            printCoeffs();
+        }
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+
 void Foam::fv::actuatorLineSource::createOutputFile()
 {
     fileName dir;
@@ -74,46 +112,6 @@ void Foam::fv::actuatorLineSource::createOutputFile()
     
     *outputFile_<< "time,x,y,z,rel_vel_mag,alpha_deg,alpha_geom_deg,cl,cd" 
                 << endl;
-}
-
-
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
-
-Foam::fv::actuatorLineSource::actuatorLineSource
-(
-    const word& name,
-    const word& modelType,
-    const dictionary& dict,
-    const fvMesh& mesh
-)
-:
-    option(name, modelType, dict, mesh),
-    force_(vector::zero),
-    forceField_
-    (
-        IOobject
-        (
-            "force." + name_,
-            mesh_.time().timeName(),
-            mesh_,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mesh_,
-        dimensionedVector
-        (
-            "force", 
-            dimForce/dimVolume/dimDensity, 
-            vector::zero
-        )
-    ),
-    writePerf_(coeffs_.lookupOrDefault("writePerf", false)),
-    lastMotionTime_(mesh.time().value())
-{
-    read(dict_);
-    createElements();
-    if (writePerf_) createOutputFile();
-    forceField_.write();
 }
 
 
@@ -363,6 +361,46 @@ void Foam::fv::actuatorLineSource::writePerf()
 }
 
 
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+Foam::fv::actuatorLineSource::actuatorLineSource
+(
+    const word& name,
+    const word& modelType,
+    const dictionary& dict,
+    const fvMesh& mesh
+)
+:
+    option(name, modelType, dict, mesh),
+    force_(vector::zero),
+    forceField_
+    (
+        IOobject
+        (
+            "force." + name_,
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh_,
+        dimensionedVector
+        (
+            "force", 
+            dimForce/dimVolume/dimDensity, 
+            vector::zero
+        )
+    ),
+    writePerf_(coeffs_.lookupOrDefault("writePerf", false)),
+    lastMotionTime_(mesh.time().value())
+{
+    read(dict_);
+    createElements();
+    if (writePerf_) createOutputFile();
+    forceField_.write();
+}
+
+
 // * * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * //
 
 Foam::fv::actuatorLineSource::~actuatorLineSource()
@@ -379,44 +417,6 @@ void Foam::fv::actuatorLineSource::printCoeffs() const
     Info<< profileData_ << endl;
     Info<< "First item of element geometry:" << endl;
     Info<< elementGeometry_[0] << endl;
-}
-
-
-bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
-{
-    if (option::read(dict))
-    {
-        
-        coeffs_.lookup("fieldNames") >> fieldNames_;
-        applied_.setSize(fieldNames_.size(), false);
-
-        // Look up information in dictionary
-        coeffs_.lookup("elementProfiles") >> elementProfiles_;
-        profileData_ = coeffs_.subDict("profileData");
-        coeffs_.lookup("tipEffect") >> tipEffect_;
-        coeffs_.lookup("elementGeometry") >> elementGeometry_;
-        coeffs_.lookup("nElements") >> nElements_;
-        coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
-        freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
-        
-        // Read harmonic pitching parameters if present
-        dictionary pitchDict = coeffs_.subOrEmptyDict("harmonicPitching");
-        harmonicPitchingActive_ = pitchDict.lookupOrDefault("active", false);
-        reducedFreq_ = pitchDict.lookupOrDefault("reducedFreq", 0.0);
-        pitchAmplitude_ = pitchDict.lookupOrDefault("amplitude", 0.0);
-        
-        if (debug)
-        {
-            Info<< "Debugging for actuatorLineSource on" << endl;
-            printCoeffs();
-        }
-
-        return true;
-    }
-    else
-    {
-        return false;
-    }
 }
 
 

@@ -125,6 +125,12 @@ protected:
         
         //- Read dictionary
         bool read(const dictionary& dict);
+        
+        //- Create the performance output file
+        virtual void createOutputFile();
+        
+        //- Write performance to CSV
+        void writePerf();
 
 
 public:
@@ -203,12 +209,6 @@ public:
         
             //- Print dictionary values
             virtual void printCoeffs() const;
-            
-            //- Create the performance output file
-            virtual void createOutputFile();
-            
-            //- Write performance to CSV
-            void writePerf();
 
 
         // Source term addition
