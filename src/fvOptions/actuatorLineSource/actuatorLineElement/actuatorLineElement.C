@@ -57,6 +57,9 @@ void Foam::fv::actuatorLineElement::read()
     freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
     dict_.lookup("rootDistance") >> rootDistance_;
     dict_.lookup("tipDistance") >> tipDistance_;
+    dict_.lookup("aspectRatio") >> aspectRatio_;
+    dict_.lookup("rootEffectLength") >> rootEffectLength_;
+    dict_.lookup("tipEffectLength") >> tipEffectLength_;
     
     // Create lists from coefficient data
     angleOfAttackList_.setSize(coefficientData_.size());
@@ -319,11 +322,8 @@ void Foam::fv::actuatorLineElement::correctFlowCurvature
 
 void Foam::fv::actuatorLineElement::correctEndEffects()
 {
-    scalar tipEffectLength = 8.0; // Average chord lengths to which lift tapers
-    scalar rootEffectLength = 8.0;
-    scalar aspectRatio = 20.0;
-    scalar tTip = 1.0 - tipEffectLength/aspectRatio;
-    scalar tRoot = 1.0 - rootEffectLength/aspectRatio;
+    scalar tTip = 1.0 - tipEffectLength_/aspectRatio_;
+    scalar tRoot = 1.0 - rootEffectLength_/aspectRatio_;
     scalar f = 1;
     
     if (rootDistance_ > tTip)

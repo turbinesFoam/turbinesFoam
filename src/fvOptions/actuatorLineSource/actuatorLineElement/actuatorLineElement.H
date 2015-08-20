@@ -176,6 +176,15 @@ protected:
         
         //- Nondimensional distance from actuator line tip
         scalar tipDistance_;
+        
+        //- Aspect ratio of containing actuator line
+        scalar aspectRatio_;
+        
+        //- Average chords to which tip effects taper
+        scalar tipEffectLength_;
+        
+        //- Average chords to which root effects taper
+        scalar rootEffectLength_;
 
 
     // Protected Member Functions

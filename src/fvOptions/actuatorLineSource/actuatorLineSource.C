@@ -178,6 +178,9 @@ void Foam::fv::actuatorLineSource::createElements()
     // Compute average chord length
     chordLength_ /= nGeometryPoints;
     
+    // Compute aspect ratio
+    aspectRatio_ = totalLength_/chordLength_;
+    
     // Lookup initial element velocities if present
     List<vector> initialVelocities(nGeometryPoints, vector::zero);
     coeffs_.readIfPresent("initialVelocities", initialVelocities);
@@ -276,6 +279,14 @@ void Foam::fv::actuatorLineSource::createElements()
         // Calculate nondimensional root and tip distances
         scalar rootDistance = mag(position - rootLocation)/totalLength_;
         scalar tipDistance = mag(position - tipLocation)/totalLength_;
+        scalar rootEffectLength
+        (
+            coeffs_.lookupOrDefault("rootEffectLength", 0.0)
+        );
+        scalar tipEffectLength
+        (
+            coeffs_.lookupOrDefault("tipEffectLength", 0.0)
+        );
 
         
         // Create a dictionary for this actuatorLineElement
@@ -295,6 +306,9 @@ void Foam::fv::actuatorLineSource::createElements()
         dict.add("chordMount", chordMount);
         dict.add("rootDistance" , rootDistance);
         dict.add("tipDistance", tipDistance);
+        dict.add("rootEffectLength", rootEffectLength);
+        dict.add("tipEffectLength", tipEffectLength);
+        dict.add("aspectRatio", aspectRatio_);
         if (coeffs_.found("dynamicStall"))
         {
             dictionary dsDict = coeffs_.subDict("dynamicStall");

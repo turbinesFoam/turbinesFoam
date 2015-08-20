@@ -46,6 +46,8 @@ turbine
             {
                 writePerf   true;
                 writeElementPerf true;
+                tipEffectLength 4;
+                rootEffectLength 4;
                 nElements   28;
                 elementProfiles 
                 (

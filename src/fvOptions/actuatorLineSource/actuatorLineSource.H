@@ -116,6 +116,9 @@ protected:
         
         //- Mean chord length of all elements
         scalar chordLength_;
+        
+        //- Aspect ratio
+        scalar aspectRatio_;
 
 
     // Protected Member Functions
