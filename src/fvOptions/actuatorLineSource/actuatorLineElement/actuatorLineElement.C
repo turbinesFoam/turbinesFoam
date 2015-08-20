@@ -319,61 +319,22 @@ void Foam::fv::actuatorLineElement::correctFlowCurvature
 
 void Foam::fv::actuatorLineElement::correctEndEffects()
 {
-    scalar pi = Foam::constant::mathematical::pi;
     scalar tipEffectLength = 8.0; // Average chord lengths to which lift tapers
+    scalar rootEffectLength = 8.0;
     scalar aspectRatio = 20.0;
-    scalar t = 1.0 - tipEffectLength/aspectRatio;
-    word endEffectsModelName_ = "simple";
+    scalar tTip = 1.0 - tipEffectLength/aspectRatio;
+    scalar tRoot = 1.0 - rootEffectLength/aspectRatio;
     scalar f = 1;
     
-    if (endEffectsModelName_ == "simple")
+    if (rootDistance_ > tTip)
     {
-        if (rootDistance_ > t)
-        {
-            f = sqrt(1.0 - magSqr(rootDistance_ - t)/magSqr(1.0 - t));
-            liftCoefficient_ *= f;
-        }
+        f = sqrt(1.0 - magSqr(rootDistance_ - tTip)/magSqr(1.0 - tTip));
+        liftCoefficient_ *= f;
     }
     
-    else if(endEffectsModelName_ == "Glauert")
+    if (tipDistance_ > tRoot)
     {
-        scalar g = 1.0;
-        scalar nBlades = 3;
-
-        //~ scalar ftip  = (TipRad[m] - bladeRadius[i][j][k])
-                     //~ / (bladeRadius[i][j][k] * sin(windAng*degRad));
-        //~ scalar Ftip  = (2.0/(Foam::constant::mathematical::pi)) 
-                     //~ * acos(exp(-g * (NumBl[m] / 2.0) * ftip));
-                     
-        scalar ftip = tipDistance_;
-        scalar Ftip = 2.0/pi*acos(exp(-g*nBlades/2)*ftip);
-
-        //~ scalar froot = (bladeRadius[i][j][k] - HubRad[i])
-                     //~ / (bladeRadius[i][j][k] * sin(windAng*degRad));
-        //~ scalar Froot = (2.0/(Foam::constant::mathematical::pi)) 
-                     //~ * acos(exp(-g * (NumBl[m] / 2.0) * froot));
-                     
-        scalar froot = rootDistance_;
-        scalar Froot = 2.0/pi*acos(exp(-g*nBlades/2)*froot);
-
-        scalar F = Ftip * Froot;
-        
-        liftCoefficient_ *= F;
-    }
-    
-    else if (endEffectsModelName_ == "rotorDisk")
-    {
-        // Apply tip effect for blade lift
-        scalar tipEffect_ = 0.95;
-        scalar tipFactor = neg(rootDistance_ - tipEffect_);
-        tipFactor *= neg(tipDistance_ - tipEffect_);
-        liftCoefficient_ *= tipFactor;
-    }
-    
-    else if (endEffectsModelName_ == "Prandtl")
-    {
-        scalar c0 = 1.0;
-        f = c0*sqrt(1 - magSqr(rootDistance_));
+        f = sqrt(1.0 - magSqr(tipDistance_ - tRoot)/magSqr(1.0 - tRoot));
         liftCoefficient_ *= f;
     }
 }
