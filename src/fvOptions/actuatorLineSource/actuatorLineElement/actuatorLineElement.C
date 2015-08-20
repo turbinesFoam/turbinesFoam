@@ -319,12 +319,61 @@ void Foam::fv::actuatorLineElement::correctFlowCurvature
 
 void Foam::fv::actuatorLineElement::correctEndEffects()
 {
-    scalar t = 0.6;
-    scalar f = 1.0;
+    scalar pi = Foam::constant::mathematical::pi;
+    scalar tipEffectLength = 8.0; // Average chord lengths to which lift tapers
+    scalar aspectRatio = 20.0;
+    scalar t = 1.0 - tipEffectLength/aspectRatio;
+    word endEffectsModelName_ = "simple";
+    scalar f = 1;
     
-    if (rootDistance_ > t)
+    if (endEffectsModelName_ == "simple")
     {
-        f = -1.0/magSqr(t)*magSqr(rootDistance_ - t) + 1;
+        if (rootDistance_ > t)
+        {
+            f = sqrt(1.0 - magSqr(rootDistance_ - t)/magSqr(1.0 - t));
+            liftCoefficient_ *= f;
+        }
+    }
+    
+    else if(endEffectsModelName_ == "Glauert")
+    {
+        scalar g = 1.0;
+        scalar nBlades = 3;
+
+        //~ scalar ftip  = (TipRad[m] - bladeRadius[i][j][k])
+                     //~ / (bladeRadius[i][j][k] * sin(windAng*degRad));
+        //~ scalar Ftip  = (2.0/(Foam::constant::mathematical::pi)) 
+                     //~ * acos(exp(-g * (NumBl[m] / 2.0) * ftip));
+                     
+        scalar ftip = tipDistance_;
+        scalar Ftip = 2.0/pi*acos(exp(-g*nBlades/2)*ftip);
+
+        //~ scalar froot = (bladeRadius[i][j][k] - HubRad[i])
+                     //~ / (bladeRadius[i][j][k] * sin(windAng*degRad));
+        //~ scalar Froot = (2.0/(Foam::constant::mathematical::pi)) 
+                     //~ * acos(exp(-g * (NumBl[m] / 2.0) * froot));
+                     
+        scalar froot = rootDistance_;
+        scalar Froot = 2.0/pi*acos(exp(-g*nBlades/2)*froot);
+
+        scalar F = Ftip * Froot;
+        
+        liftCoefficient_ *= F;
+    }
+    
+    else if (endEffectsModelName_ == "rotorDisk")
+    {
+        // Apply tip effect for blade lift
+        scalar tipEffect_ = 0.95;
+        scalar tipFactor = neg(rootDistance_ - tipEffect_);
+        tipFactor *= neg(tipDistance_ - tipEffect_);
+        liftCoefficient_ *= tipFactor;
+    }
+    
+    else if (endEffectsModelName_ == "Prandtl")
+    {
+        scalar c0 = 1.0;
+        f = c0*sqrt(1 - magSqr(rootDistance_));
         liftCoefficient_ *= f;
     }
 }
