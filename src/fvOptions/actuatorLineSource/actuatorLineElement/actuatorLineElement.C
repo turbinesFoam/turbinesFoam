@@ -326,6 +326,10 @@ void Foam::fv::actuatorLineElement::correctEndEffects()
     scalar tRoot = 1.0 - rootEffectLength_/aspectRatio_;
     scalar f = 1;
     
+    // Ensure the tip and root thresholds are within [0,1]
+    if (tTip < 0) tTip = 0.0;
+    if (tRoot < 0) tRoot = 0.0;
+    
     if (rootDistance_ > tTip)
     {
         f = sqrt(1.0 - magSqr(rootDistance_ - tTip)/magSqr(1.0 - tTip));
