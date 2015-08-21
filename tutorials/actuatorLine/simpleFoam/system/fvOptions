@@ -29,6 +29,8 @@ foil
         nElements           14;
         writePerf           true;
         writeElementPerf    true;
+        tipEffectLength     1e2;
+        rootEffectLength    1e2;
 
         elementGeometry // Will be interpolated linearly per nElements
         ( // point spanDir chordLength chordRefDir chordMount pitch
