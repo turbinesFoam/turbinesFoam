@@ -16,6 +16,7 @@ import pandas as pd
 # Some constants
 R = 0.45
 U = 10.0
+U_infty = U
 D = R*2
 A = np.pi*R**2
 rho = 1000.0
@@ -115,3 +116,26 @@ def plot_al_perf(name="blade1"):
     
 def plot_blade_perf():
     plot_al_perf("blade1")
+    
+def plot_spanwise():
+    elements_dir = "postProcessing/actuatorLineElements/0"
+    elements = os.listdir(elements_dir)
+    dfs = {}
+    r_R = np.zeros(len(elements))
+    fx = np.zeros(len(elements))
+    ft = np.zeros(len(elements))
+    for e in elements:
+        i = int(e.replace("blade1Element", "").replace(".csv", ""))
+        df = pd.read_csv(os.path.join(elements_dir, e))
+        r_R[i] = np.sqrt(df.y**2 + df.z**2).iloc[-1]/R
+        fx[i] = df.fx.iloc[-1]
+        ft[i] = np.sqrt(df.fy**2 + df.fz**2).iloc[-1]
+    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(7.5, 3.25))
+    ax[0].plot(r_R, 2*ft/(U_infty**2*R))
+    ax[0].set_ylabel(r"$F_\theta / (\rho R U_\infty^2)$")
+    ax[1].plot(r_R, 2*fx/(R*U_infty**2))
+    ax[1].set_ylabel(r"$F_x / (\rho R U_\infty^2 )$")
+    for a in ax:
+        a.set_xlabel("$r/R$")
+    fig.tight_layout()
+    
