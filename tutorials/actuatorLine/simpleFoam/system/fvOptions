@@ -25,7 +25,6 @@ foil
     actuatorLineSourceCoeffs
     {
         fieldNames          (U k epsilon);
-        tipEffect           0.95; 
         freeStreamVelocity  (1 0 0);
         nElements           14;
         writePerf           true;
