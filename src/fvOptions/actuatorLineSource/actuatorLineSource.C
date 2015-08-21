@@ -61,7 +61,6 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
         // Look up information in dictionary
         coeffs_.lookup("elementProfiles") >> elementProfiles_;
         profileData_ = coeffs_.subDict("profileData");
-        coeffs_.lookup("tipEffect") >> tipEffect_;
         coeffs_.lookup("elementGeometry") >> elementGeometry_;
         coeffs_.lookup("nElements") >> nElements_;
         coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;

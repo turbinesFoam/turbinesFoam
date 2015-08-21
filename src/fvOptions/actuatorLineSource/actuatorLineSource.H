@@ -65,9 +65,6 @@ protected:
         //- Total length of geometry in meters
         scalar totalLength_;
         
-        //- Tip effect
-        scalar tipEffect_;
-        
         //- Dictionary for the profiles' sectional coefficient data
         dictionary profileData_;
         

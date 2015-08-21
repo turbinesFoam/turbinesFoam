@@ -88,7 +88,6 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         bladeSubDict.add("freeStreamVelocity", freeStreamVelocity_);
         bladeSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
         bladeSubDict.add("profileData", profileData_);
-        bladeSubDict.add("tipEffect", tipEffect_);
         
         if (debug)
         {
@@ -262,7 +261,6 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
         strutSubDict.add("freeStreamVelocity", freeStreamVelocity_);
         strutSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
         strutSubDict.add("profileData", profileData_);
-        strutSubDict.add("tipEffect", tipEffect_);
         
         if (debug)
         {
@@ -442,7 +440,6 @@ void Foam::fv::crossFlowTurbineALSource::createShaft()
     shaftSubDict.add("initialVelocities", initialVelocities);
     shaftSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
     shaftSubDict.add("profileData", profileData_);
-    shaftSubDict.add("tipEffect", tipEffect_);
     shaftSubDict.add("freeStreamVelocity", freeStreamVelocity_);
         
     dictionary dict;

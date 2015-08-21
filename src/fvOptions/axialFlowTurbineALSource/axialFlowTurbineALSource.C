@@ -92,7 +92,6 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
         
         bladeSubDict.add("freeStreamVelocity", freeStreamVelocity_);
         bladeSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
-        bladeSubDict.add("tipEffect", tipEffect_);
         bladeSubDict.add("profileData", profileData_);
         
         if (debug)
@@ -299,7 +298,6 @@ void Foam::fv::axialFlowTurbineALSource::createHub()
     hubSubDict.add("initialVelocities", initialVelocities);
     hubSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
     hubSubDict.add("profileData", profileData_);
-    hubSubDict.add("tipEffect", tipEffect_);
     hubSubDict.add("freeStreamVelocity", freeStreamVelocity_);
         
     dictionary dict;
@@ -385,7 +383,6 @@ void Foam::fv::axialFlowTurbineALSource::createTower()
     towerSubDict.add("initialVelocities", initialVelocities);
     towerSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
     towerSubDict.add("profileData", profileData_);
-    towerSubDict.add("tipEffect", tipEffect_);
     towerSubDict.add("freeStreamVelocity", freeStreamVelocity_);
         
     dictionary dict;
