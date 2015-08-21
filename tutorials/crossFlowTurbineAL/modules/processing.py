@@ -16,6 +16,7 @@ import pandas as pd
 # Some constants
 R = 0.5
 U = 1.0
+U_infty = U
 H = 1.0
 D = 1.0
 A = H*D
@@ -121,13 +122,26 @@ def plot_blade_perf():
     
 def plot_strut_perf():
     plot_al_perf("strut1")
-
-def main():
-    p = "figures"
-    plt.close("all")
     
-    plotwake(plotlist=["meancontquiv"], save=False, savepath=p)
-    plt.show()
+def plot_spanwise():
+    elements_dir = "postProcessing/actuatorLineElements/0"
+    elements = os.listdir(elements_dir)
+    dfs = {}
+    z_H = np.zeros(len(elements))
+    fx = np.zeros(len(elements))
+    ft = np.zeros(len(elements))
+    for e in elements:
+        i = int(e.replace("blade1Element", "").replace(".csv", ""))
+        df = pd.read_csv(os.path.join(elements_dir, e))
+        z_H[i] = df.z.iloc[-1]/H
+        fx[i] = df.fx.mean()
+        ft[i] = np.sqrt(df.fx**2 + df.fy**2).mean()
+    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(7.5, 3.25))
+    ax[0].plot(z_H, 2*ft/(U_infty**2*R))
+    ax[0].set_ylabel(r"$F_\theta / (\rho R U_\infty^2)$")
+    ax[1].plot(z_H, 2*fx/(R*U_infty**2))
+    ax[1].set_ylabel(r"$F_x / (\rho R U_\infty^2 )$")
+    for a in ax:
+        a.set_xlabel("$z/H$")
+    fig.tight_layout()
 
-if __name__ == "__main__":
-    main()
