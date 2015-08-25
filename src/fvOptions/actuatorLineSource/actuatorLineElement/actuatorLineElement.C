@@ -333,13 +333,13 @@ void Foam::fv::actuatorLineElement::correctEndEffects()
     if (rootDistance_ > tTip)
     {
         f = sqrt(1.0 - magSqr(rootDistance_ - tTip)/magSqr(1.0 - tTip));
-        liftCoefficient_ *= f;
+        inflowVelocity_ *= f;
     }
     
     if (tipDistance_ > tRoot)
     {
         f = sqrt(1.0 - magSqr(tipDistance_ - tRoot)/magSqr(1.0 - tRoot));
-        liftCoefficient_ *= f;
+        inflowVelocity_ *= f;
     }
 }
 
@@ -547,6 +547,9 @@ void Foam::fv::actuatorLineElement::calculate
                             / magSqr(spanDirection_);
     inflowVelocity_ -= spanwiseVelocity;
     
+    // Correct for end effects
+    correctEndEffects();
+    
     // Calculate relative velocity and Reynolds number
     relativeVelocity_ = inflowVelocity_ - velocity_;
     Re_ = mag(relativeVelocity_)*chordLength_/nu_;
@@ -600,9 +603,6 @@ void Foam::fv::actuatorLineElement::calculate
             dragCoefficientList_
         );
     }
-    
-    // Correct for end effects
-    correctEndEffects();
     
     // Calculate force per unit density
     scalar area = chordLength_*spanLength_;
