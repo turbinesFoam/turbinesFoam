@@ -150,15 +150,14 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
                                      + magSqr(radius));
             vector initialVelocity = azimuthalDirection_*omega_*radiusCorr;
             scalar velAngle = atan2(((chordMount - 0.25)*chordLength), radius);
-            vector velOrigin(vector::zero);
-            rotateVector(initialVelocity, velOrigin, axis_, velAngle);
+            rotateVector(initialVelocity, vector::zero, axis_, velAngle);
             initialVelocities[j] = initialVelocity;
             // Rotate point and initial velocity according to azimuth value
             rotateVector(point, origin_, axis_, azimuthRadians);
             rotateVector
             (
                 initialVelocities[j],
-                velOrigin,
+                vector::zero,
                 axis_,
                 azimuthRadians
             );
@@ -171,7 +170,7 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
             // Set span directions for AL source
             scalar spanSign = axis_ & freeStreamDirection_;
             vector spanDirection = spanSign*verticalDirection_;
-            rotateVector(spanDirection, origin_, axis_, azimuthRadians);
+            rotateVector(spanDirection, vector::zero, axis_, azimuthRadians);
             elementGeometry[j][1][0] = spanDirection.x();
             elementGeometry[j][1][1] = spanDirection.y();
             elementGeometry[j][1][2] = spanDirection.z();
@@ -181,7 +180,7 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
             
             // Set chord reference direction
             vector chordDirection = azimuthalDirection_;
-            rotateVector(chordDirection, origin_, axis_, azimuthRadians);
+            rotateVector(chordDirection, vector::zero, axis_, azimuthRadians);
             elementGeometry[j][3][0] = chordDirection.x(); 
             elementGeometry[j][3][1] = chordDirection.y(); 
             elementGeometry[j][3][2] = chordDirection.z();
