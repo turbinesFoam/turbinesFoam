@@ -330,16 +330,38 @@ void Foam::fv::actuatorLineElement::correctEndEffects()
     if (tTip < 0) tTip = 0.0;
     if (tRoot < 0) tRoot = 0.0;
     
+    // Calculate planform normal vector
+    vector planformNormal = -chordDirection_ ^ spanDirection_;
+    planformNormal /= mag(planformNormal);
+    
+    // Calculate angle of attack (radians)
+    scalar angleOfAttackRad = asin((planformNormal & relativeVelocity_)
+                            / (mag(planformNormal)
+                            *  mag(relativeVelocity_)));
+    
     if (rootDistance_ > tTip)
     {
         f = sqrt(1.0 - magSqr(rootDistance_ - tTip)/magSqr(1.0 - tTip));
-        inflowVelocity_ *= f;
+        scalar angle = (1 - f)*angleOfAttackRad;
+        // Rotate relative velocity to decrease angle of attack
+        rotateVector(relativeVelocity_, vector::zero, spanDirection_, angle);
     }
     
     if (tipDistance_ > tRoot)
     {
         f = sqrt(1.0 - magSqr(tipDistance_ - tRoot)/magSqr(1.0 - tRoot));
-        inflowVelocity_ *= f;
+        scalar angle = (1 - f)*angleOfAttackRad;
+        // Rotate relative velocity to decrease angle of attack
+        rotateVector(relativeVelocity_, vector::zero, spanDirection_, angle);
+    }
+    
+    if (debug)
+    {
+        Info<< "    Angle of attack (no end effects): " 
+            << radToDeg(angleOfAttackRad) << endl;
+        scalar angle = f*angleOfAttackRad;
+        Info<< "    Angle of attack (end effects): " << radToDeg(angle) 
+            << endl;
     }
 }
 
@@ -547,12 +569,12 @@ void Foam::fv::actuatorLineElement::calculate
                             / magSqr(spanDirection_);
     inflowVelocity_ -= spanwiseVelocity;
     
-    // Correct for end effects
-    correctEndEffects();
-    
     // Calculate relative velocity and Reynolds number
     relativeVelocity_ = inflowVelocity_ - velocity_;
     Re_ = mag(relativeVelocity_)*chordLength_/nu_;
+    
+    // Correct for end effects
+    correctEndEffects();
     
     // Calculate angle of attack (radians)
     scalar angleOfAttackRad = asin((planformNormal & relativeVelocity_)
