@@ -49,6 +49,10 @@ boundaryField
         value       uniform (1 0 0);
     }
 
+    "proc.*"
+    {
+        type            processor;
+    }
 }
 
 

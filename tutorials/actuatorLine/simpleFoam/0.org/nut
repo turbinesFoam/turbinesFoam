@@ -21,7 +21,6 @@ internalField   uniform 0;
 
 boundaryField
 {
-
     inlet
     {
         type            calculated;
@@ -52,6 +51,10 @@ boundaryField
         value           uniform 0;
     }
 
+    "proc.*"
+    {
+        type            processor;
+    }
 }
 
 

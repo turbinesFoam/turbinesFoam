@@ -22,7 +22,6 @@ internalField   uniform $pressure;
 
 boundaryField
 {
-
     inlet
     {
         type            zeroGradient;
@@ -49,6 +48,10 @@ boundaryField
         type            zeroGradient;
     }
 
+    "proc.*"
+    {
+        type            processor;
+    }
 }
 
 // ************************************************************************* //
