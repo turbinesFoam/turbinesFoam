@@ -80,10 +80,8 @@ public:
         //- Construct from components
         foilData
         (
-            const scalar& refRe,
-            const List<scalar>& angleOfAttackList,
-            const List<scalar>& liftCoefficientList,
-            const List<scalar>& dragCoefficientList
+            const word& name,
+            const dictionary& dict
         );
 
 
