@@ -97,6 +97,32 @@ Foam::scalar Foam::profileData::interpolate
 
 void Foam::profileData::read()
 {
+    List<List<scalar> > coefficientData = dict_.lookup("data");
+    
+    // Create lists from coefficient data
+    angleOfAttackListOrg_.setSize(coefficientData.size());
+    liftCoefficientListOrg_.setSize(coefficientData.size());
+    dragCoefficientListOrg_.setSize(coefficientData.size());
+    forAll(coefficientData, i)
+    {
+        angleOfAttackListOrg_[i] = coefficientData[i][0];
+        liftCoefficientListOrg_[i] = coefficientData[i][1];
+        dragCoefficientListOrg_[i] = coefficientData[i][2];
+        if (coefficientData[i].size() > 3)
+        {
+            momentCoefficientListOrg_[i] = coefficientData[i][3];
+        }
+        else
+        {
+            momentCoefficientListOrg_[i] = VSMALL;
+        }
+    }
+    
+    // Initially lists are identical to original
+    angleOfAttackList_ = angleOfAttackListOrg_;
+    liftCoefficientList_ = liftCoefficientListOrg_;
+    dragCoefficientList_ = dragCoefficientListOrg_;
+    momentCoefficientList_ = momentCoefficientListOrg_;
 }
 
 
@@ -111,7 +137,7 @@ Foam::profileData::profileData
     const dictionary& dict
 )
 :
-    profileName_(name),
+    name_(name),
     dict_(dict)
 {
     read();
@@ -134,6 +160,68 @@ Foam::profileData::~profileData()
 
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
+
+Foam::scalar Foam::profileData::liftCoefficient(scalar angleOfAttackDeg)
+{
+    return interpolate
+    (
+        angleOfAttackDeg,
+        angleOfAttackList_,
+        liftCoefficientList_
+    );
+}
+
+
+Foam::scalar Foam::profileData::dragCoefficient(scalar angleOfAttackDeg)
+{
+    return interpolate
+    (
+        angleOfAttackDeg,
+        angleOfAttackList_,
+        dragCoefficientList_
+    );
+}
+
+
+Foam::scalar Foam::profileData::momentCoefficient(scalar angleOfAttackDeg)
+{
+    return interpolate
+    (
+        angleOfAttackDeg,
+        angleOfAttackList_,
+        momentCoefficientList_
+    );
+}
+
+
+void Foam::profileData::updateRe(scalar Re)
+{
+    Re_ = Re;
+}
+
+
+Foam::List<scalar>& Foam::profileData::angleOfAttackList()
+{
+    return angleOfAttackList_;
+}
+
+
+Foam::List<scalar>& Foam::profileData::liftCoefficientList()
+{
+    return liftCoefficientList_;
+}
+
+
+Foam::List<scalar>& Foam::profileData::dragCoefficientList()
+{
+    return dragCoefficientList_;
+}
+
+
+Foam::List<scalar>& Foam::profileData::momentCoefficientList()
+{
+    return momentCoefficientList_;
+}
 
 
 // ************************************************************************* //

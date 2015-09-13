@@ -121,18 +121,6 @@ protected:
         //- Drag coefficient;
         scalar dragCoefficient_;
         
-        //- List of triplets (AoA, C_l, C_d)
-        List<List<scalar> > coefficientData_;
-        
-        //- List of angles of attack
-        List<scalar> angleOfAttackList_;
-        
-        //- List of lift coefficients
-        List<scalar> liftCoefficientList_;
-        
-        //- List of drag coefficients
-        List<scalar> dragCoefficientList_;
-        
         //- Profile data (encapsulates coefficients)
         profileData profileData_;
         

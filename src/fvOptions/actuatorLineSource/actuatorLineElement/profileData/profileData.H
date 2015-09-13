@@ -61,10 +61,13 @@ class profileData
     // Private data
     
         //- Profile name
-        word profileName_;
+        word name_;
     
         //- Input dictionary
         dictionary dict_;
+        
+        //- Specified Reynolds number
+        scalar Re_;
     
         //- Reference Reynolds number
         scalar refRe_;
@@ -73,25 +76,25 @@ class profileData
         List<scalar> angleOfAttackListOrg_;
         
         //- Unmodified lift coefficient list
-        List<scalar> liftCoeffListOrg_;
+        List<scalar> liftCoefficientListOrg_;
         
         //- Unmodified drag coefficient list
-        List<scalar> dragCoeffListOrg_;
+        List<scalar> dragCoefficientListOrg_;
         
         //- Unmodified moment coefficient list 
-        List<scalar> momentCoeffListOrg_;
+        List<scalar> momentCoefficientListOrg_;
         
         //- Angle of attack list (deg)
         List<scalar> angleOfAttackList_;
         
         //- Lift coefficient list
-        List<scalar> liftCoeffList_;
+        List<scalar> liftCoefficientList_;
         
         //- Drag coefficient list
-        List<scalar> dragCoeffList_;
+        List<scalar> dragCoefficientList_;
         
         //- Moment coefficient list
-        List<scalar> momentCoeffList_;
+        List<scalar> momentCoefficientList_;
 
 
     // Private Member Functions
@@ -139,10 +142,36 @@ public:
     // Member Functions
 
         // Access
+        
+            //- Return reference to angle of attack list
+            List<scalar>& angleOfAttackList();
+            
+            //- Return reference to lift coefficient list
+            List<scalar>& liftCoefficientList();
+            
+            //- Return reference to drag coefficient list
+            List<scalar>& dragCoefficientList();
+            
+            //- Return reference to moment coefficient list
+            List<scalar>& momentCoefficientList();
+        
+            //- Lookup lift coefficient
+            scalar liftCoefficient(scalar angleOfAttackDeg);
+            
+            //- Lookup drag coefficient
+            scalar dragCoefficient(scalar angleOfAttackDeg);
+            
+            //- Lookup moment coefficient
+            scalar momentCoefficient(scalar angleOfAttackDeg);
+
 
         // Check
 
         // Edit
+        
+            //- Update Reynolds number
+            void updateRe(scalar Re);
+            
 
         // Write
 
