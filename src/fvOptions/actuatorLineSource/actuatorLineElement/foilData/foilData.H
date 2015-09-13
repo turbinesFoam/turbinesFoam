@@ -59,6 +59,21 @@ Ostream& operator<<(Ostream&, const foilData&);
 class foilData
 {
     // Private data
+    
+        //- Reference Reynolds number
+        scalar refRe_;
+        
+        //- Unmodified angle of attack list (deg)
+        List<scalar> angleOfAttackListOrg_;
+        
+        //- Unmodified lift coefficient list
+        List<scalar> liftCoeffListOrg_;
+        
+        //- Unmodified drag coefficient list
+        List<scalar> dragCoeffListOrg_;
+        
+        //- Unmodified moment coefficient list 
+        List<scalar> momentCoeffListOrg_;
 
 
     // Private Member Functions
