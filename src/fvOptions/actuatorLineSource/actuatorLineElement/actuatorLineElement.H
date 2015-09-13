@@ -46,6 +46,7 @@ SourceFiles
 #include "fvMatrices.H"
 #include "dynamicStallModel.H"
 #include "interpolationCellPoint.H"
+#include "profileData.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -120,17 +121,11 @@ protected:
         //- Drag coefficient;
         scalar dragCoefficient_;
         
-        //- List of triplets (AoA, C_l, C_d)
-        List<List<scalar> > coefficientData_;
+        //- Profile name
+        word profileName_;
         
-        //- List of angles of attack
-        List<scalar> angleOfAttackList_;
-        
-        //- List of lift coefficients
-        List<scalar> liftCoefficientList_;
-        
-        //- List of drag coefficients
-        List<scalar> dragCoefficientList_;
+        //- Profile data (encapsulates coefficients)
+        profileData profileData_;
         
         //- Dynamic stall model
         autoPtr<dynamicStallModel> dynamicStall_;
@@ -181,14 +176,6 @@ protected:
             vector rotationPoint,
             vector axis,
             scalar radians
-        );
-    
-        //- Interpolate a scalar value
-        scalar interpolate
-        (
-            scalar xNew, 
-            List<scalar>& xOld, 
-            List<scalar>& yOld
         );
         
         //- Lookup force coefficients
