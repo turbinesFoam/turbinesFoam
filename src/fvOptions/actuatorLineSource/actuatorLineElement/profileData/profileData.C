@@ -110,7 +110,7 @@ void Foam::profileData::read()
         liftCoefficientListOrg_[i] = coefficientData[i][1];
         dragCoefficientListOrg_[i] = coefficientData[i][2];
                 
-        if (coefficientData[i].size() == 4)
+        if (coefficientData[i].size() > 3)
         {
             momentCoefficientListOrg_[i] = coefficientData[i][3];
         }
