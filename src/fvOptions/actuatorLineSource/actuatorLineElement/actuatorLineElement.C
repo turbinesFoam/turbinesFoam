@@ -56,6 +56,10 @@ void Foam::fv::actuatorLineElement::read()
     dict_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
     freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
     
+    word profileName = dict_.lookup("profileName");
+    dictionary foilDataDict = dict_.subDict("foilData");
+    foilData_ = foilData(profileName, foilDataDict);
+    
     // Create lists from coefficient data
     angleOfAttackList_.setSize(coefficientData_.size());
     liftCoefficientList_.setSize(coefficientData_.size());

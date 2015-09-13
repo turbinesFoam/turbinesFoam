@@ -81,9 +81,6 @@ class foilData
         //- Disallow default bitwise copy construct
         foilData(const foilData&);
 
-        //- Disallow default bitwise assignment
-        void operator=(const foilData&);
-
 
 public:
 

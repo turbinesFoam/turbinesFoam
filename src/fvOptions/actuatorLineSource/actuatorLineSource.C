@@ -275,6 +275,8 @@ void Foam::fv::actuatorLineSource::createElements()
         (
             profileData_.subDict(profileName).lookup("data")
         );
+        dictionary foilData = profileData_.subDict(profileName);
+        dict.add("foilData", foilData);
         dict.add("coefficientData", coefficientData);
         dict.add("profileName", profileName);
         dict.add("chordLength", chordLength);
