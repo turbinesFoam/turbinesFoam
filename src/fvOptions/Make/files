@@ -8,5 +8,6 @@ actuatorLineSource/actuatorLineElement/dynamicStallModels/LeishmanBeddoes/Leishm
 actuatorLineSource/actuatorLineElement/dynamicStallModels/LeishmanBeddoes3G/LeishmanBeddoes3G.C
 actuatorLineSource/actuatorLineElement/dynamicStallModels/LeishmanBeddoesSGC/LeishmanBeddoesSGC.C
 /*actuatorLineSource/actuatorLineElement/dynamicStallModels/BoeingVertol/BoeingVertol.C*/
+actuatorLineSource/actuatorLineElement/foilData/foilData.C
 
 LIB = $(FOAM_USER_LIBBIN)/libturbinesFoam
