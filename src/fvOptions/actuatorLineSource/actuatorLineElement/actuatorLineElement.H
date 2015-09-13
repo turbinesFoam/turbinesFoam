@@ -121,6 +121,9 @@ protected:
         //- Drag coefficient;
         scalar dragCoefficient_;
         
+        //- Profile name
+        word profileName_;
+        
         //- Profile data (encapsulates coefficients)
         profileData profileData_;
         

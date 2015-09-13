@@ -55,10 +55,6 @@ void Foam::fv::actuatorLineElement::read()
     dict_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
     freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
     
-    word profileName = dict_.lookup("profileName");
-    dictionary profileDataDict = dict_.subDict("profileData");
-    profileData_ = profileData(profileName, profileDataDict);
-    
     // Create dynamic stall model if found
     if (dict_.found("dynamicStall"))
     {
@@ -371,6 +367,8 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     forceVector_(vector::zero),
     relativeVelocity_(vector::zero),
     angleOfAttack_(0.0),
+    profileName_(dict.lookup("profileName")),
+    profileData_(profileName_, dict.subDict("profileData")),
     dynamicStallActive_(false),
     omega_(0.0),
     chordMount_(0.25),

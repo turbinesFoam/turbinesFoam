@@ -99,16 +99,19 @@ void Foam::profileData::read()
 {
     List<List<scalar> > coefficientData = dict_.lookup("data");
     
+    
     // Create lists from coefficient data
     angleOfAttackListOrg_.setSize(coefficientData.size());
     liftCoefficientListOrg_.setSize(coefficientData.size());
     dragCoefficientListOrg_.setSize(coefficientData.size());
+    momentCoefficientListOrg_.setSize(coefficientData.size());
     forAll(coefficientData, i)
     {
         angleOfAttackListOrg_[i] = coefficientData[i][0];
         liftCoefficientListOrg_[i] = coefficientData[i][1];
         dragCoefficientListOrg_[i] = coefficientData[i][2];
-        if (coefficientData[i].size() > 3)
+                
+        if (coefficientData[i].size() == 4)
         {
             momentCoefficientListOrg_[i] = coefficientData[i][3];
         }
@@ -117,7 +120,7 @@ void Foam::profileData::read()
             momentCoefficientListOrg_[i] = VSMALL;
         }
     }
-    
+
     // Initially lists are identical to original
     angleOfAttackList_ = angleOfAttackListOrg_;
     liftCoefficientList_ = liftCoefficientListOrg_;
@@ -138,7 +141,9 @@ Foam::profileData::profileData
 )
 :
     name_(name),
-    dict_(dict)
+    dict_(dict),
+    Re_(1),
+    refRe_(1)
 {
     read();
 }

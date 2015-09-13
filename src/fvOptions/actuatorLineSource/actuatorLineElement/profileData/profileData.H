@@ -42,16 +42,6 @@ SourceFiles
 namespace Foam
 {
 
-// Forward declaration of classes
-class Istream;
-class Ostream;
-
-// Forward declaration of friend functions and operators
-class profileData;
-Istream& operator>>(Istream&, profileData&);
-Ostream& operator<<(Ostream&, const profileData&);
-
-
 /*---------------------------------------------------------------------------*\
                          Class profileData Declaration
 \*---------------------------------------------------------------------------*/
@@ -61,10 +51,10 @@ class profileData
     // Private data
     
         //- Profile name
-        word name_;
+        const word name_;
     
         //- Input dictionary
-        dictionary dict_;
+        const dictionary dict_;
         
         //- Specified Reynolds number
         scalar Re_;
