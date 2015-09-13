@@ -97,6 +97,12 @@ Foam::scalar Foam::profileData::interpolate
 
 void Foam::profileData::read()
 {
+    // Read reference Reynolds number, and if present turn on Reynolds number
+    // corrections
+    ReRef_ = dict_.lookupOrDefault("Re", VSMALL);
+    correctRe_ = (ReRef_ > VSMALL);
+    
+    // Look up sectional coefficient data
     List<List<scalar> > coefficientData = dict_.lookup("data");
     
     // Create lists from coefficient data
@@ -141,8 +147,9 @@ Foam::profileData::profileData
 :
     name_(name),
     dict_(dict),
-    Re_(1),
-    refRe_(1)
+    Re_(VSMALL),
+    ReRef_(VSMALL),
+    correctRe_(false)
 {
     read();
 }
@@ -201,6 +208,28 @@ Foam::scalar Foam::profileData::momentCoefficient(scalar angleOfAttackDeg)
 void Foam::profileData::updateRe(scalar Re)
 {
     Re_ = Re;
+
+    if (correctRe_)
+    {
+        // Correct drag coefficients
+        scalar K = pow((Re/ReRef_), -0.5);
+        dragCoefficientList_ = K*dragCoefficientListOrg_;
+        
+        // Correct lift coefficients
+        scalar n = 0.125;
+        K = pow((Re/ReRef_), n);
+        forAll(liftCoefficientList_, i)
+        {
+            scalar alphaNew = angleOfAttackListOrg_[i]/K;
+            liftCoefficientList_[i] = interpolate
+            (   
+                alphaNew,
+                angleOfAttackListOrg_,
+                liftCoefficientListOrg_
+            );
+            liftCoefficientList_[i] *= K;
+        }
+    }
 }
 
 

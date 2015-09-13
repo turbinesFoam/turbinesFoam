@@ -60,7 +60,7 @@ class profileData
         scalar Re_;
     
         //- Reference Reynolds number
-        scalar refRe_;
+        scalar ReRef_;
         
         //- Unmodified angle of attack list (deg)
         List<scalar> angleOfAttackListOrg_;
@@ -85,6 +85,9 @@ class profileData
         
         //- Moment coefficient list
         List<scalar> momentCoefficientList_;
+        
+        //- Switch for Reynolds number corrections
+        bool correctRe_;
 
 
     // Private Member Functions
