@@ -52,7 +52,6 @@ void Foam::fv::actuatorLineElement::read()
     dict_.lookup("chordMount") >> chordMount_;
     dict_.lookup("spanLength") >> spanLength_;
     dict_.lookup("spanDirection") >> spanDirection_;
-    dict_.lookup("coefficientData") >> coefficientData_;
     dict_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
     freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
     dict_.lookup("rootDistance") >> rootDistance_;
@@ -60,17 +59,6 @@ void Foam::fv::actuatorLineElement::read()
     dict_.lookup("aspectRatio") >> aspectRatio_;
     dict_.lookup("rootEffectLength") >> rootEffectLength_;
     dict_.lookup("tipEffectLength") >> tipEffectLength_;
-    
-    // Create lists from coefficient data
-    angleOfAttackList_.setSize(coefficientData_.size());
-    liftCoefficientList_.setSize(coefficientData_.size());
-    dragCoefficientList_.setSize(coefficientData_.size());
-    forAll(coefficientData_, i)
-    {
-        angleOfAttackList_[i] = coefficientData_[i][0];
-        liftCoefficientList_[i] = coefficientData_[i][1];
-        dragCoefficientList_[i] = coefficientData_[i][2];
-    }
     
     // Create dynamic stall model if found
     if (dict_.found("dynamicStall"))
@@ -119,7 +107,6 @@ void Foam::fv::actuatorLineElement::read()
        Info<< "chordDirection: " << chordDirection_ << endl;
        Info<< "spanLength: " << spanLength_ << endl;
        Info<< "spanDirection: " << spanDirection_ << endl;
-       Info<< "coefficientData: " << coefficientData_ << endl;
        Info<< "writePerf: " << writePerf_ << endl;
     }
 }
@@ -168,88 +155,10 @@ void Foam::fv::actuatorLineElement::rotateVector
 }
 
 
-Foam::scalar Foam::fv::actuatorLineElement::interpolate
-(
-    scalar xNew, 
-    List<scalar>& xOld, 
-    List<scalar>& yOld
-)
-{
-    label index = 0;
-    label indexP = 0;
-    label indexM = 0;
-    scalar error = 1.0E30;
-    forAll(xOld, i)
-    {
-        scalar diff = mag(xNew - xOld[i]);
-        if(diff < error)
-        {
-            index = i;
-            error = diff;
-        }
-    }
-    if (xNew < xOld[index])
-    {
-        if (index == 0)
-        {
-            indexP = 1;
-            indexM = indexP - 1;
-        }
-        else
-        {
-            indexP = index;
-            indexM = indexP - 1;
-        }
-        return yOld[indexM] 
-               + ((yOld[indexP] 
-               - yOld[indexM])/(xOld[indexP] 
-               - xOld[indexM]))*(xNew - xOld[indexM]);
-    }
-    else if (xNew > xOld[index])
-    {
-        if (index == xOld.size() - 1)
-        {
-            indexP = xOld.size() - 1;
-            indexM = indexP - 1;
-        }
-        else
-        {
-            indexP = index + 1;
-            indexM = indexP - 1;
-        }
-        return yOld[indexM] + ((yOld[indexP] 
-               - yOld[indexM])/(xOld[indexP] 
-               - xOld[indexM]))*(xNew - xOld[indexM]);
-    }
-    else if (xNew == xOld[index])
-    {
-        return yOld[index];
-    }
-    else
-    {
-        if (debug)
-        {
-            Info<< "    Interpolation failed" << endl;
-        }
-        return 0.0;
-    }
-}
-
-
 void Foam::fv::actuatorLineElement::lookupCoefficients()
 {
-    liftCoefficient_ = interpolate
-    (
-        angleOfAttack_, 
-        angleOfAttackList_,
-        liftCoefficientList_
-    );
-    dragCoefficient_ = interpolate
-    (
-        angleOfAttack_, 
-        angleOfAttackList_,
-        dragCoefficientList_
-    );
+    liftCoefficient_ = profileData_.liftCoefficient(angleOfAttack_);
+    dragCoefficient_ = profileData_.dragCoefficient(angleOfAttack_);
 }
 
 
@@ -441,6 +350,8 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     forceVector_(vector::zero),
     relativeVelocity_(vector::zero),
     angleOfAttack_(0.0),
+    profileName_(dict.lookup("profileName")),
+    profileData_(profileName_, dict.subDict("profileData")),
     dynamicStallActive_(false),
     omega_(0.0),
     chordMount_(0.25),
@@ -595,6 +506,9 @@ void Foam::fv::actuatorLineElement::calculate
     // Calculate angle of attack in degrees
     angleOfAttack_ = radToDeg(angleOfAttackRad);
     
+    // Update Reynolds number of profile data
+    profileData_.updateRe(Re_);
+    
     // Lookup lift and drag coefficients
     lookupCoefficients();
     
@@ -620,9 +534,9 @@ void Foam::fv::actuatorLineElement::calculate
             angleOfAttack_,
             liftCoefficient_,
             dragCoefficient_,
-            angleOfAttackList_,
-            liftCoefficientList_,
-            dragCoefficientList_
+            profileData_.angleOfAttackList(),
+            profileData_.liftCoefficientList(),
+            profileData_.dragCoefficientList()
         );
     }
     

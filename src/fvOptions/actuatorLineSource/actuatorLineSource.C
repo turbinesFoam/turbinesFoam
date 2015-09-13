@@ -291,11 +291,8 @@ void Foam::fv::actuatorLineSource::createElements()
         // Create a dictionary for this actuatorLineElement
         dictionary dict;
         dict.add("position", position);
-        List<List<scalar> > coefficientData
-        (
-            profileData_.subDict(profileName).lookup("data")
-        );
-        dict.add("coefficientData", coefficientData);
+        dictionary profileDataDict = profileData_.subDict(profileName);
+        dict.add("profileData", profileDataDict);
         dict.add("profileName", profileName);
         dict.add("chordLength", chordLength);
         dict.add("chordDirection", chordDirection);
