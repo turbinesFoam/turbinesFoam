@@ -99,7 +99,6 @@ void Foam::profileData::read()
 {
     List<List<scalar> > coefficientData = dict_.lookup("data");
     
-    
     // Create lists from coefficient data
     angleOfAttackListOrg_.setSize(coefficientData.size());
     liftCoefficientListOrg_.setSize(coefficientData.size());
