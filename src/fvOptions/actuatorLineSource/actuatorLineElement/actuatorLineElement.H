@@ -177,14 +177,6 @@ protected:
             vector axis,
             scalar radians
         );
-    
-        //- Interpolate a scalar value
-        scalar interpolate
-        (
-            scalar xNew, 
-            List<scalar>& xOld, 
-            List<scalar>& yOld
-        );
         
         //- Lookup force coefficients
         void lookupCoefficients();
