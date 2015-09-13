@@ -74,9 +74,29 @@ class foilData
         
         //- Unmodified moment coefficient list 
         List<scalar> momentCoeffListOrg_;
+        
+        //- Angle of attack list (deg)
+        List<scalar> angleOfAttackList_;
+        
+        //- Lift coefficient list
+        List<scalar> liftCoeffList_;
+        
+        //- Drag coefficient list
+        List<scalar> dragCoeffList_;
+        
+        //- Moment coefficient list
+        List<scalar> momentCoeffList_;
 
 
     // Private Member Functions
+    
+        //- Interpolate a scalar value
+        scalar interpolate
+        (
+            scalar xNew, 
+            List<scalar>& xOld, 
+            List<scalar>& yOld
+        );
 
         //- Disallow default bitwise copy construct
         foilData(const foilData&);
