@@ -95,6 +95,11 @@ Foam::scalar Foam::foilData::interpolate
 }
 
 
+void Foam::foilData::read()
+{
+}
+
+
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
 
@@ -105,7 +110,12 @@ Foam::foilData::foilData
     const word& name,
     const dictionary& dict
 )
-{}
+:
+    profileName_(name),
+    dict_(dict)
+{
+    read();
+}
 
 
 // * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //

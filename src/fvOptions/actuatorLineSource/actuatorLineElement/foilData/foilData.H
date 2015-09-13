@@ -60,6 +60,12 @@ class foilData
 {
     // Private data
     
+        //- Profile name
+        word profileName_;
+    
+        //- Input dictionary
+        dictionary dict_;
+    
         //- Reference Reynolds number
         scalar refRe_;
         
@@ -89,6 +95,9 @@ class foilData
 
 
     // Private Member Functions
+    
+        //- Read dictionary
+        void read();
     
         //- Interpolate a scalar value
         scalar interpolate
