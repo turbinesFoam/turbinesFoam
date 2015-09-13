@@ -25,10 +25,6 @@ License
 
 #include "foilData.H"
 
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
-
-const dataType Foam::foilData::staticData();
-
 
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
 
@@ -41,24 +37,13 @@ const dataType Foam::foilData::staticData();
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::foilData::foilData()
-:
-    baseClassName(),
-    data_()
-{}
-
-
-Foam::foilData::foilData(const dataType& data)
-:
-    baseClassName(),
-    data_(data)
-{}
-
-
-Foam::foilData::foilData(const foilData&)
-:
-    baseClassName(),
-    data_()
+Foam::foilData::foilData
+(
+    const scalar& refRe,
+    const List<scalar>& angleOfAttackList,
+    const List<scalar>& liftCoefficientList,
+    const List<scalar>& dragCoefficientList
+)
 {}
 
 
@@ -78,25 +63,6 @@ Foam::foilData::~foilData()
 
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
-
-
-// * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * * //
-
-void Foam::foilData::operator=(const foilData& rhs)
-{
-    // Check for assignment to self
-    if (this == &rhs)
-    {
-        FatalErrorIn("Foam::foilData::operator=(const Foam::foilData&)")
-            << "Attempted assignment to self"
-            << abort(FatalError);
-    }
-}
-
-// * * * * * * * * * * * * * * Friend Functions  * * * * * * * * * * * * * * //
-
-
-// * * * * * * * * * * * * * * Friend Operators * * * * * * * * * * * * * * //
 
 
 // ************************************************************************* //

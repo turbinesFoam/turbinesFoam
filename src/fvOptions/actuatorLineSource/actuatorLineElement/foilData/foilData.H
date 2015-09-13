@@ -29,14 +29,13 @@ Description
 SourceFiles
     foilDataI.H
     foilData.C
-    foilDataIO.C
 
 \*---------------------------------------------------------------------------*/
 
 #ifndef foilData_H
 #define foilData_H
 
-#include ".H"
+#include "fvCFD.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -58,13 +57,8 @@ Ostream& operator<<(Ostream&, const foilData&);
 \*---------------------------------------------------------------------------*/
 
 class foilData
-:
-    public baseClassName
 {
     // Private data
-
-        //- Description of data_
-        dataType data_;
 
 
     // Private Member Functions
@@ -78,25 +72,19 @@ class foilData
 
 public:
 
-    // Static data members
-
-        //- Static data staticData
-        static const dataType staticData;
-
-
     // Constructors
 
         //- Construct null
         foilData();
 
         //- Construct from components
-        foilData(const dataType& data);
-
-        //- Construct from Istream
-        foilData(Istream&);
-
-        //- Construct as copy
-        foilData(const foilData&);
+        foilData
+        (
+            const scalar& refRe,
+            const List<scalar>& angleOfAttackList,
+            const List<scalar>& liftCoefficientList,
+            const List<scalar>& dragCoefficientList
+        );
 
 
     // Selectors
@@ -120,19 +108,6 @@ public:
         // Write
 
 
-    // Member Operators
-
-        void operator=(const foilData&);
-
-
-    // Friend Functions
-
-    // Friend Operators
-
-    // IOstream Operators
-
-        friend Istream& operator>>(Istream&, foilData&);
-        friend Ostream& operator<<(Ostream&, const foilData&);
 };
 
 
