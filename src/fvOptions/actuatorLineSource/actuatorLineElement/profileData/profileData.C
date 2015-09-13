@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "foilData.H"
+#include "profileData.H"
 
 
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
@@ -31,7 +31,7 @@ License
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-Foam::scalar Foam::foilData::interpolate
+Foam::scalar Foam::profileData::interpolate
 (
     scalar xNew, 
     List<scalar>& xOld, 
@@ -95,7 +95,7 @@ Foam::scalar Foam::foilData::interpolate
 }
 
 
-void Foam::foilData::read()
+void Foam::profileData::read()
 {
 }
 
@@ -105,7 +105,7 @@ void Foam::foilData::read()
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::foilData::foilData
+Foam::profileData::profileData
 (
     const word& name,
     const dictionary& dict
@@ -120,16 +120,16 @@ Foam::foilData::foilData
 
 // * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
 
-Foam::autoPtr<Foam::foilData>
-Foam::foilData::New()
+Foam::autoPtr<Foam::profileData>
+Foam::profileData::New()
 {
-    return autoPtr<foilData>(new foilData);
+    return autoPtr<profileData>(new profileData);
 }
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::foilData::~foilData()
+Foam::profileData::~profileData()
 {}
 
 

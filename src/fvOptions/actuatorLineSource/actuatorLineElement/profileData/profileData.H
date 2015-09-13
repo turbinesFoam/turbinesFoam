@@ -22,18 +22,18 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::foilData
+    Foam::profileData
 
 Description
 
 SourceFiles
-    foilDataI.H
-    foilData.C
+    profileDataI.H
+    profileData.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef foilData_H
-#define foilData_H
+#ifndef profileData_H
+#define profileData_H
 
 #include "fvCFD.H"
 
@@ -47,16 +47,16 @@ class Istream;
 class Ostream;
 
 // Forward declaration of friend functions and operators
-class foilData;
-Istream& operator>>(Istream&, foilData&);
-Ostream& operator<<(Ostream&, const foilData&);
+class profileData;
+Istream& operator>>(Istream&, profileData&);
+Ostream& operator<<(Ostream&, const profileData&);
 
 
 /*---------------------------------------------------------------------------*\
-                         Class foilData Declaration
+                         Class profileData Declaration
 \*---------------------------------------------------------------------------*/
 
-class foilData
+class profileData
 {
     // Private data
     
@@ -108,7 +108,7 @@ class foilData
         );
 
         //- Disallow default bitwise copy construct
-        foilData(const foilData&);
+        profileData(const profileData&);
 
 
 public:
@@ -116,10 +116,10 @@ public:
     // Constructors
 
         //- Construct null
-        foilData();
+        profileData();
 
         //- Construct from components
-        foilData
+        profileData
         (
             const word& name,
             const dictionary& dict
@@ -129,11 +129,11 @@ public:
     // Selectors
 
         //- Select null constructed
-        static autoPtr<foilData> New();
+        static autoPtr<profileData> New();
 
 
     //- Destructor
-    ~foilData();
+    ~profileData();
 
 
     // Member Functions
@@ -156,7 +156,7 @@ public:
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#include "foilDataI.H"
+#include "profileDataI.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

@@ -46,7 +46,7 @@ SourceFiles
 #include "fvMatrices.H"
 #include "dynamicStallModel.H"
 #include "interpolationCellPoint.H"
-#include "foilData.H"
+#include "profileData.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -133,8 +133,8 @@ protected:
         //- List of drag coefficients
         List<scalar> dragCoefficientList_;
         
-        //- Foil data
-        foilData foilData_;
+        //- Profile data (encapsulates coefficients)
+        profileData profileData_;
         
         //- Dynamic stall model
         autoPtr<dynamicStallModel> dynamicStall_;
