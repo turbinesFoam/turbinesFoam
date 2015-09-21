@@ -47,7 +47,7 @@ How to cite
 -----------
 ```bibtex
 @misc{Bachant2015-turbinesFoam,
-  author       = {Peter Bachant},
+  author       = {Peter Bachant and Martin Wosnik},
   title        = {turbinesFoam: v0.0.3},
   month        = June,
   year         = 2015,
