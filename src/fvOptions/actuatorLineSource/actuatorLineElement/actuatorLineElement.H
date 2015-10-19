@@ -169,17 +169,8 @@ protected:
         //- Nondimensional distance from actuator line root
         scalar rootDistance_;
         
-        //- Nondimensional distance from actuator line tip
-        scalar tipDistance_;
-        
-        //- Aspect ratio of containing actuator line
-        scalar aspectRatio_;
-        
-        //- Average chords to which tip effects taper
-        scalar tipEffectLength_;
-        
-        //- Average chords to which root effects taper
-        scalar rootEffectLength_;
+        //- End effect correction factor [0, 1]
+        scalar endEffectFactor_;
 
 
     // Protected Member Functions
@@ -201,9 +192,6 @@ protected:
         
         //- Correct for flow curvatue
         void correctFlowCurvature(scalar& angleOfAttackRad);
-        
-        //- Correct for end effects
-        void correctEndEffects();
         
         //- Multiply force vector by local density
         void multiplyForceRho(const volScalarField& rho);
@@ -282,6 +270,9 @@ public:
             //- Return drag coefficient
             scalar& dragCoefficient();
             
+            //- Return nondimensional distance from actuator line root
+            scalar& rootDistance();
+            
             
         // Manipulation
         
@@ -323,6 +314,9 @@ public:
             
             //- Set omega for flow curvature correction
             void setOmega(scalar omega);
+            
+            //- Set end effect correction factor
+            void setEndEffectFactor(scalar factor);
             
 
         // Evaluation

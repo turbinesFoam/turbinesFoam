@@ -55,10 +55,6 @@ void Foam::fv::actuatorLineElement::read()
     dict_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
     freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
     dict_.lookup("rootDistance") >> rootDistance_;
-    dict_.lookup("tipDistance") >> tipDistance_;
-    dict_.lookup("aspectRatio") >> aspectRatio_;
-    dict_.lookup("rootEffectLength") >> rootEffectLength_;
-    dict_.lookup("tipEffectLength") >> tipEffectLength_;
     
     // Create dynamic stall model if found
     if (dict_.found("dynamicStall"))
@@ -229,52 +225,6 @@ void Foam::fv::actuatorLineElement::correctFlowCurvature
 }
 
 
-void Foam::fv::actuatorLineElement::correctEndEffects()
-{
-    scalar tTip = 1.0 - tipEffectLength_/aspectRatio_;
-    scalar tRoot = 1.0 - rootEffectLength_/aspectRatio_;
-    scalar f = 1;
-    
-    // Ensure the tip and root thresholds are within [0,1]
-    if (tTip < 0) tTip = 0.0;
-    if (tRoot < 0) tRoot = 0.0;
-    
-    // Calculate planform normal vector
-    vector planformNormal = -chordDirection_ ^ spanDirection_;
-    planformNormal /= mag(planformNormal);
-    
-    // Calculate angle of attack (radians)
-    scalar angleOfAttackRad = asin((planformNormal & relativeVelocity_)
-                            / (mag(planformNormal)
-                            *  mag(relativeVelocity_)));
-    
-    if (rootDistance_ > tTip)
-    {
-        f = sqrt(1.0 - magSqr(rootDistance_ - tTip)/magSqr(1.0 - tTip));
-        scalar angle = (1 - f)*angleOfAttackRad;
-        // Rotate relative velocity to decrease angle of attack
-        rotateVector(relativeVelocity_, vector::zero, spanDirection_, angle);
-    }
-    
-    if (tipDistance_ > tRoot)
-    {
-        f = sqrt(1.0 - magSqr(tipDistance_ - tRoot)/magSqr(1.0 - tRoot));
-        scalar angle = (1 - f)*angleOfAttackRad;
-        // Rotate relative velocity to decrease angle of attack
-        rotateVector(relativeVelocity_, vector::zero, spanDirection_, angle);
-    }
-    
-    if (debug)
-    {
-        Info<< "    Angle of attack (no end effects): " 
-            << radToDeg(angleOfAttackRad) << endl;
-        scalar angle = f*angleOfAttackRad;
-        Info<< "    Angle of attack (end effects): " << radToDeg(angle) 
-            << endl;
-    }
-}
-
-
 void Foam::fv::actuatorLineElement::multiplyForceRho
 (
     const volScalarField& rho
@@ -361,7 +311,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     velocityTE_(vector::zero),
     writePerf_(false),
     rootDistance_(0.0),
-    tipDistance_(0.0)
+    endEffectFactor_(1.0)
 {
     read();
     if (writePerf_)
@@ -484,9 +434,6 @@ void Foam::fv::actuatorLineElement::calculate
     relativeVelocity_ = inflowVelocity_ - velocity_;
     Re_ = mag(relativeVelocity_)*chordLength_/nu_;
     
-    // Correct for end effects
-    correctEndEffects();
-    
     // Calculate angle of attack (radians)
     scalar angleOfAttackRad = asin((planformNormal & relativeVelocity_)
                             / (mag(planformNormal)
@@ -539,6 +486,9 @@ void Foam::fv::actuatorLineElement::calculate
             profileData_.dragCoefficientList()
         );
     }
+    
+    // Apply end effect correction factor to lift coefficient
+    liftCoefficient_ *= endEffectFactor_;
     
     // Calculate force per unit density
     scalar area = chordLength_*spanLength_;
