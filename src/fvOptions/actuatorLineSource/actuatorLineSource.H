@@ -116,6 +116,9 @@ protected:
         
         //- Aspect ratio
         scalar aspectRatio_;
+        
+        //- Switch for correcting end effects
+        bool endEffectsActive_;
 
 
     // Protected Member Functions
@@ -131,6 +134,9 @@ protected:
         
         //- Write performance to CSV
         void writePerf();
+        
+        //- Calculate end effects from lifting line theory
+        void calcEndEffects();
 
 
 public:

@@ -65,6 +65,7 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
         coeffs_.lookup("nElements") >> nElements_;
         coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
         freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
+        endEffectsActive_ = coeffs_.lookupOrDefault("endEffects", false);
         
         // Read harmonic pitching parameters if present
         dictionary pitchDict = coeffs_.subOrEmptyDict("harmonicPitching");
@@ -370,6 +371,14 @@ void Foam::fv::actuatorLineSource::writePerf()
 }
 
 
+void Foam::fv::actuatorLineSource::calcEndEffects()
+{
+    // Solve lifting line theory
+    
+    // Set endEffectFactor for all elements
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::fv::actuatorLineSource::actuatorLineSource
@@ -401,7 +410,8 @@ Foam::fv::actuatorLineSource::actuatorLineSource
         )
     ),
     writePerf_(coeffs_.lookupOrDefault("writePerf", false)),
-    lastMotionTime_(mesh.time().value())
+    lastMotionTime_(mesh.time().value()),
+    endEffectsActive_(false)
 {
     read(dict_);
     createElements();
@@ -549,6 +559,12 @@ void Foam::fv::actuatorLineSource::addSup
         scalar deltaPitch = dpdt*dt;
         pitch(deltaPitch);
         lastMotionTime_ = t;
+    }
+    
+    // Calculate end effects
+    if (endEffectsActive_)
+    {
+        calcEndEffects();
     }
     
     // Zero out force field
