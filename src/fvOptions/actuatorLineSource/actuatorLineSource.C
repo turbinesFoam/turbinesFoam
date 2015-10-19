@@ -275,18 +275,8 @@ void Foam::fv::actuatorLineSource::createElements()
                        + deltaChordDirTotal/nElementsPerSegment*pointIndex
                        + deltaChordDirTotal/nElementsPerSegment/2;
                        
-        // Calculate nondimensional root and tip distances
+        // Calculate nondimensional root distance
         scalar rootDistance = mag(position - rootLocation)/totalLength_;
-        scalar tipDistance = mag(position - tipLocation)/totalLength_;
-        scalar rootEffectLength
-        (
-            coeffs_.lookupOrDefault("rootEffectLength", 0.0)
-        );
-        scalar tipEffectLength
-        (
-            coeffs_.lookupOrDefault("tipEffectLength", 0.0)
-        );
-
         
         // Create a dictionary for this actuatorLineElement
         dictionary dict;
@@ -301,10 +291,6 @@ void Foam::fv::actuatorLineSource::createElements()
         dict.add("freeStreamVelocity", freeStreamVelocity_);
         dict.add("chordMount", chordMount);
         dict.add("rootDistance" , rootDistance);
-        dict.add("tipDistance", tipDistance);
-        dict.add("rootEffectLength", rootEffectLength);
-        dict.add("tipEffectLength", tipEffectLength);
-        dict.add("aspectRatio", aspectRatio_);
         if (coeffs_.found("dynamicStall"))
         {
             dictionary dsDict = coeffs_.subDict("dynamicStall");
@@ -334,7 +320,6 @@ void Foam::fv::actuatorLineSource::createElements()
             Info<< "Profile name: " << profileName << endl;
             Info<< "writePerf: " << writeElementPerf << endl;
             Info<< "Root distance (nondimensional): " << rootDistance << endl;
-            Info<< "Tip distance (nondimensional): " << tipDistance << endl;
         }
         
         actuatorLineElement* element = new actuatorLineElement
