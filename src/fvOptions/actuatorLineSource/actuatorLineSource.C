@@ -373,6 +373,11 @@ void Foam::fv::actuatorLineSource::writePerf()
 
 void Foam::fv::actuatorLineSource::calcEndEffects()
 {
+    if (debug)
+    {
+        Info<< "Calculating end effects for " << name_ << endl;
+    }
+    
     // Solve lifting line theory
     
     // Set endEffectFactor for all elements
