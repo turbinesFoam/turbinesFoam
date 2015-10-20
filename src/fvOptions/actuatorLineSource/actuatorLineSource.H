@@ -65,9 +65,6 @@ protected:
         //- Total length of geometry in meters
         scalar totalLength_;
         
-        //- Tip effect
-        scalar tipEffect_;
-        
         //- Dictionary for the profiles' sectional coefficient data
         dictionary profileData_;
         
@@ -116,6 +113,12 @@ protected:
         
         //- Mean chord length of all elements
         scalar chordLength_;
+        
+        //- Aspect ratio
+        scalar aspectRatio_;
+        
+        //- Switch for correcting end effects
+        bool endEffectsActive_;
 
 
     // Protected Member Functions
@@ -131,6 +134,9 @@ protected:
         
         //- Write performance to CSV
         void writePerf();
+        
+        //- Calculate end effects from lifting line theory
+        void calcEndEffects();
 
 
 public:

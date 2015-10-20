@@ -32,7 +32,6 @@ turbine
         freeStreamVelocity  (10 0 0);
         tipSpeedRatio       6.0;
         rotorRadius         0.45;
-        tipEffect           0.95;
         
         dynamicStall
         {
@@ -46,6 +45,7 @@ turbine
             {
                 writePerf   true;
                 writeElementPerf true;
+                endEffects  on;
                 nElements   28;
                 elementProfiles 
                 (

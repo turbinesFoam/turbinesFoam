@@ -66,6 +66,8 @@ if __name__ == "__main__":
             plot_cp()
         elif sys.argv[1] == "blade":
             plot_blade_perf()
+        elif sys.argv[1] == "spanwise":
+            plot_spanwise()
     else:
         plot_cp()
     plt.show()

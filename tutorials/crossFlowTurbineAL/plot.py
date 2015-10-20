@@ -77,6 +77,8 @@ if __name__ == "__main__":
             plot_blade_perf()
         elif sys.argv[1] == "strut":
             plot_strut_perf()
+        elif sys.argv[1] == "spanwise":
+            plot_spanwise()
     else:
         plot_cp()
     plt.show()

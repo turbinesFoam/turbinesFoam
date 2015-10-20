@@ -30,6 +30,7 @@ License
 #include "fvMatrices.H"
 #include "geometricOneField.H"
 #include "syncTools.H"
+#include "simpleMatrix.H"
 
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
 
@@ -61,11 +62,11 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
         // Look up information in dictionary
         coeffs_.lookup("elementProfiles") >> elementProfiles_;
         profileData_ = coeffs_.subDict("profileData");
-        coeffs_.lookup("tipEffect") >> tipEffect_;
         coeffs_.lookup("elementGeometry") >> elementGeometry_;
         coeffs_.lookup("nElements") >> nElements_;
         coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
         freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
+        endEffectsActive_ = coeffs_.lookupOrDefault("endEffects", false);
         
         // Read harmonic pitching parameters if present
         dictionary pitchDict = coeffs_.subOrEmptyDict("harmonicPitching");
@@ -171,8 +172,15 @@ void Foam::fv::actuatorLineSource::createElements()
         pitches[i] = elementGeometry_[i][5][0];
     }
     
+    // Store blade root and tip locations for distance calculations
+    vector rootLocation = points[0];
+    vector tipLocation = points[nGeometryPoints - 1];
+    
     // Compute average chord length
     chordLength_ /= nGeometryPoints;
+    
+    // Compute aspect ratio
+    aspectRatio_ = totalLength_/chordLength_;
     
     // Lookup initial element velocities if present
     List<vector> initialVelocities(nGeometryPoints, vector::zero);
@@ -188,6 +196,8 @@ void Foam::fv::actuatorLineSource::createElements()
         Info<< "Span lengths: " << endl << spanLengths << endl;
         Info<< "Chord lengths:" << endl << chordLengths << endl;
         Info<< "Pitches:" << endl << pitches << endl;
+        Info<< "Root location: " << rootLocation << endl;
+        Info<< "Tip location: " << tipLocation << endl;
     }
 	
     forAll(elements_, i)
@@ -266,7 +276,9 @@ void Foam::fv::actuatorLineSource::createElements()
         chordDirection = chordDir1 
                        + deltaChordDirTotal/nElementsPerSegment*pointIndex
                        + deltaChordDirTotal/nElementsPerSegment/2;
-
+                       
+        // Calculate nondimensional root distance
+        scalar rootDistance = mag(position - rootLocation)/totalLength_;
         
         // Create a dictionary for this actuatorLineElement
         dictionary dict;
@@ -280,6 +292,7 @@ void Foam::fv::actuatorLineSource::createElements()
         dict.add("spanDirection", spanDirection);
         dict.add("freeStreamVelocity", freeStreamVelocity_);
         dict.add("chordMount", chordMount);
+        dict.add("rootDistance" , rootDistance);
         if (coeffs_.found("dynamicStall"))
         {
             dictionary dsDict = coeffs_.subDict("dynamicStall");
@@ -308,6 +321,7 @@ void Foam::fv::actuatorLineSource::createElements()
             Info<< "Profile name index: " << elementProfileIndex << endl;
             Info<< "Profile name: " << profileName << endl;
             Info<< "writePerf: " << writeElementPerf << endl;
+            Info<< "Root distance (nondimensional): " << rootDistance << endl;
         }
         
         actuatorLineElement* element = new actuatorLineElement
@@ -358,6 +372,78 @@ void Foam::fv::actuatorLineSource::writePerf()
 }
 
 
+void Foam::fv::actuatorLineSource::calcEndEffects()
+{
+    if (debug)
+    {
+        Info<< "Calculating end effects for " << name_ << endl;
+    }
+    
+    scalar pi = Foam::constant::mathematical::pi;
+    List<scalar> c(nElements_, 1.0); // Chord lengths
+    List<scalar> alpha(nElements_, 0.1); // Geometric AoA in radians
+    List<scalar> theta(nElements_); // Span distance rescaled on [0, pi]
+    List<scalar> relVelMag(nElements_, 1.0);
+    simpleMatrix<scalar> D(nElements_, 0.0, 0.1);
+    List<scalar> A(nElements_); // Fourier coefficients
+    List<scalar> circulation(nElements_);
+    List<scalar> cl(nElements_);
+    
+    // Create lists from element parameters
+    forAll(elements_, n)
+    {
+        theta[n] = elements_[n].rootDistance()*pi;
+        c[n] = elements_[n].chordLength();
+        //~ alpha[n] = Foam::degToRad(elements_[n].angleOfAttackGeom());
+        //~ relVelMag[n] = mag(elements_[n].relativeVelocityGeom());
+    }
+        
+    // Create D matrix
+    forAll(elements_, i)
+    {
+        scalar n = i + 1;
+        forAll(elements_, m)
+        {
+            D[m][i] = 2.0*totalLength_/(pi*c[m])*sin(n*theta[m])
+                    + n*sin(n*theta[m]) / sin(theta[m]);
+        }
+        D.source()[i] = alpha[i];
+    }
+    A = D.solve();
+
+    forAll(elements_, m)
+    {
+        scalar sumA = 0.0;
+        forAll(elements_, i)
+        {
+            scalar n = i + 1;
+            sumA += A[i]*sin(n*theta[m]);
+        }
+        circulation[m] = 2*totalLength_*relVelMag[m]*sumA;
+        cl[m] = circulation[m]/(0.5*c[m]*relVelMag[m]);
+    }
+    
+    // Set endEffectFactor for all elements
+    List<scalar> factors = cl/Foam::max(cl);
+    forAll(elements_, i)
+    {
+        elements_[i].setEndEffectFactor(factors[i]);
+    }
+    
+    if (debug == 2)
+    {
+        Info<< "Debug output from actuatorLineSource::calcEndEffects:" << endl;
+        Info<< "theta: " << theta << endl;
+        Info<< "A: " << A << endl;
+        Info<< "c: " << c << endl;
+        Info<< "D.source: " << D.source() << endl;
+        Info<< "D: " << D << endl;
+        Info<< "cl: " << cl << endl;
+        Info<< "factors:" << factors << endl;
+    }
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::fv::actuatorLineSource::actuatorLineSource
@@ -389,12 +475,18 @@ Foam::fv::actuatorLineSource::actuatorLineSource
         )
     ),
     writePerf_(coeffs_.lookupOrDefault("writePerf", false)),
-    lastMotionTime_(mesh.time().value())
+    lastMotionTime_(mesh.time().value()),
+    endEffectsActive_(false)
 {
     read(dict_);
     createElements();
     if (writePerf_) createOutputFile();
     forceField_.write();
+    // Calculate end effects
+    if (endEffectsActive_)
+    {
+        calcEndEffects();
+    }
 }
 
 

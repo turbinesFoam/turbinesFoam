@@ -24,12 +24,12 @@ foil
 
     actuatorLineSourceCoeffs
     {
-        fieldNames          (U k epsilon);
-        tipEffect           0.95; 
+        fieldNames          (U);
         freeStreamVelocity  (1 0 0);
         nElements           14;
         writePerf           true;
         writeElementPerf    true;
+        endEffects          on;
 
         elementGeometry // Will be interpolated linearly per nElements
         ( // point spanDir chordLength chordRefDir chordMount pitch

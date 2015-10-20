@@ -149,7 +149,6 @@ Foam::fv::turbineALSource::turbineALSource
     angleDeg_(0.0),
     nBlades_(0),
     freeStreamVelocity_(vector::zero),
-    tipEffect_(1.0),
     forceField_
     (
         IOobject
@@ -274,7 +273,6 @@ bool Foam::fv::turbineALSource::read(const dictionary& dict)
         coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
         coeffs_.lookup("tipSpeedRatio") >> meanTSR_;
         coeffs_.lookup("rotorRadius") >> rotorRadius_;
-        coeffs_.lookup("tipEffect") >> tipEffect_;
         tsrAmplitude_ = coeffs_.lookupOrDefault("tsrAmplitude", 0.0);
         tsrPhase_ = coeffs_.lookupOrDefault("tsrPhase", 0.0);
 

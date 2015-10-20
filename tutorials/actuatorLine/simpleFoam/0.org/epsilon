@@ -23,7 +23,6 @@ internalField   uniform $turbulentEpsilon;
 
 boundaryField
 {
-
     inlet
     {
         type            fixedValue;
@@ -54,7 +53,11 @@ boundaryField
         type            epsilonWallFunction;
         value           uniform $turbulentEpsilon;
     }
-
+    
+    "proc.*"
+    {
+        type            processor;
+    }
 }
 
 

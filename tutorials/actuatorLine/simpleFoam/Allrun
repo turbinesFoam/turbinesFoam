@@ -11,6 +11,17 @@ runApplication blockMesh
 runApplication snappyHexMesh -overwrite
 runApplication topoSet
 
-simpleFoam | tee log.simpleFoam
+if [ "$1" = "-parallel" ]
+    then
+    nProc=$(getNumberOfProcessors)
+    runApplication decomposePar
+    ls -d processor* | xargs -I {} rm -rf ./{}/0
+    ls -d processor* | xargs -I {} cp -r 0.org ./{}/0
+    mpirun -np $nProc simpleFoam -parallel | tee log.simpleFoam
+    runApplication reconstructPar
+    rm -rf processor*
+else
+    simpleFoam | tee log.simpleFoam
+fi
 
 vorticity | tee log.vorticity

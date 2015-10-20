@@ -112,8 +112,14 @@ protected:
         //- Relative flow velocity
         vector relativeVelocity_;
         
+        //- Geometric relative flow velcity
+        vector relativeVelocityGeom_;
+        
         //- Angle of attack (degrees)
         scalar angleOfAttack_;
+
+        //- Geometric angle of attack (degrees, no flow curvature correction)
+        scalar angleOfAttackGeom_;
         
         //- Lift coefficient
         scalar liftCoefficient_;
@@ -145,9 +151,6 @@ protected:
         //- Nondimensional chord mount distance
         scalar chordMount_;
         
-        //- Geometric angle of attack (degrees, no flow curvature correction)
-        scalar angleOfAttackGeom_;
-        
         //- Switch for applying flow curvature correction
         bool flowCurvatureActive_;
         
@@ -165,6 +168,12 @@ protected:
         
         //- Output file stream
         OFstream* outputFile_;
+        
+        //- Nondimensional distance from actuator line root
+        scalar rootDistance_;
+        
+        //- End effect correction factor [0, 1]
+        scalar endEffectFactor_;
 
 
     // Protected Member Functions
@@ -243,6 +252,9 @@ public:
             //- Return const access to the element name
             const word& name() const;
             
+            //- Return the element chord length
+            const scalar& chordLength() const;
+            
             //- Return the element location
             vector& position();
             
@@ -251,6 +263,9 @@ public:
             
             //- Return relative velocity
             vector& relativeVelocity();
+            
+            //- Return geometric relative velocity
+            vector& relativeVelocityGeom();
             
             //- Return element angle of attack in degrees
             scalar& angleOfAttack();
@@ -263,6 +278,9 @@ public:
             
             //- Return drag coefficient
             scalar& dragCoefficient();
+            
+            //- Return nondimensional distance from actuator line root
+            scalar& rootDistance();
             
             
         // Manipulation
@@ -305,6 +323,9 @@ public:
             
             //- Set omega for flow curvature correction
             void setOmega(scalar omega);
+            
+            //- Set end effect correction factor
+            void setEndEffectFactor(scalar factor);
             
 
         // Evaluation
