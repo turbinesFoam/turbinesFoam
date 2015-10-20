@@ -389,11 +389,13 @@ void Foam::fv::actuatorLineSource::calcEndEffects()
     List<scalar> circulation(nElements_);
     List<scalar> cl(nElements_);
     
-    // Create theta vector
+    // Create lists from element parameters
     forAll(elements_, n)
     {
         theta[n] = elements_[n].rootDistance()*pi;
         c[n] = elements_[n].chordLength();
+        //~ alpha[n] = Foam::degToRad(elements_[n].angleOfAttackGeom());
+        //~ relVelMag[n] = mag(elements_[n].relativeVelocityGeom());
     }
         
     // Create D matrix
