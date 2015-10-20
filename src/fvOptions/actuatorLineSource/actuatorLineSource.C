@@ -30,6 +30,7 @@ License
 #include "fvMatrices.H"
 #include "geometricOneField.H"
 #include "syncTools.H"
+#include "simpleMatrix.H"
 
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
 
@@ -378,9 +379,66 @@ void Foam::fv::actuatorLineSource::calcEndEffects()
         Info<< "Calculating end effects for " << name_ << endl;
     }
     
-    // Solve lifting line theory
+    scalar pi = Foam::constant::mathematical::pi;
+    List<scalar> c(nElements_, 1.0); // Chord lengths
+    List<scalar> alpha(nElements_, 0.1); // Geometric AoA in radians
+    List<scalar> theta(nElements_); // Span distance rescaled on [0, pi]
+    List<scalar> relVelMag(nElements_, 1.0);
+    simpleMatrix<scalar> D(nElements_, 0.0, 0.1);
+    List<scalar> A(nElements_); // Fourier coefficients
+    List<scalar> circulation(nElements_);
+    List<scalar> cl(nElements_);
+    
+    // Create theta vector
+    forAll(elements_, n)
+    {
+        theta[n] = elements_[n].rootDistance()*pi;
+        c[n] = elements_[n].chordLength();
+    }
+        
+    // Create D matrix
+    forAll(elements_, i)
+    {
+        scalar n = i + 1;
+        forAll(elements_, m)
+        {
+            D[m][i] = 2.0*totalLength_/(pi*c[m])*sin(n*theta[m])
+                    + n*sin(n*theta[m]) / sin(theta[m]);
+        }
+        D.source()[i] = alpha[i];
+    }
+    A = D.solve();
+
+    forAll(elements_, m)
+    {
+        scalar sumA = 0.0;
+        forAll(elements_, i)
+        {
+            scalar n = i + 1;
+            sumA += A[i]*sin(n*theta[m]);
+        }
+        circulation[m] = 2*totalLength_*relVelMag[m]*sumA;
+        cl[m] = circulation[m]/(0.5*c[m]*relVelMag[m]);
+    }
     
     // Set endEffectFactor for all elements
+    List<scalar> factors = cl/Foam::max(cl);
+    forAll(elements_, i)
+    {
+        elements_[i].setEndEffectFactor(factors[i]);
+    }
+    
+    if (debug == 2)
+    {
+        Info<< "Debug output from actuatorLineSource::calcEndEffects:" << endl;
+        Info<< "theta: " << theta << endl;
+        Info<< "A: " << A << endl;
+        Info<< "c: " << c << endl;
+        Info<< "D.source: " << D.source() << endl;
+        Info<< "D: " << D << endl;
+        Info<< "cl: " << cl << endl;
+        Info<< "factors:" << factors << endl;
+    }
 }
 
 

@@ -299,7 +299,9 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     velocity_(vector::zero),
     forceVector_(vector::zero),
     relativeVelocity_(vector::zero),
+    relativeVelocityGeom_(vector::zero),
     angleOfAttack_(0.0),
+    angleOfAttackGeom_(0.0),
     profileName_(dict.lookup("profileName")),
     profileData_(profileName_, dict.subDict("profileData")),
     dynamicStallActive_(false),
@@ -334,6 +336,12 @@ const Foam::word& Foam::fv::actuatorLineElement::name() const
 }
 
 
+const Foam::scalar& Foam::fv::actuatorLineElement::chordLength() const
+{
+    return chordLength_;
+}
+
+
 Foam::vector& Foam::fv::actuatorLineElement::position()
 {
     return position_;
@@ -343,6 +351,12 @@ Foam::vector& Foam::fv::actuatorLineElement::position()
 Foam::vector& Foam::fv::actuatorLineElement::relativeVelocity()
 {
     return relativeVelocity_;
+}
+
+
+Foam::vector& Foam::fv::actuatorLineElement::relativeVelocityGeom()
+{
+    return relativeVelocityGeom_;
 }
 
 
@@ -367,6 +381,12 @@ Foam::scalar& Foam::fv::actuatorLineElement::liftCoefficient()
 Foam::scalar& Foam::fv::actuatorLineElement::dragCoefficient()
 {
     return dragCoefficient_;
+}
+
+
+Foam::scalar& Foam::fv::actuatorLineElement::rootDistance()
+{
+    return rootDistance_;
 }
 
 
@@ -439,9 +459,9 @@ void Foam::fv::actuatorLineElement::calculate
                             / (mag(planformNormal)
                             *  mag(relativeVelocity_)));
     scalar angleOfAttackUncorrected = radToDeg(angleOfAttackRad);
-    vector relVelGeom = freeStreamVelocity_ - velocity_;
-    angleOfAttackGeom_ = asin((planformNormal & relVelGeom)
-                       / (mag(planformNormal)*mag(relVelGeom)));
+    relativeVelocityGeom_ = freeStreamVelocity_ - velocity_;
+    angleOfAttackGeom_ = asin((planformNormal & relativeVelocityGeom_)
+                       / (mag(planformNormal)*mag(relativeVelocityGeom_)));
     angleOfAttackGeom_ *= 180.0/pi;
     
     // Apply flow curvature correction to angle of attack
@@ -862,6 +882,12 @@ void Foam::fv::actuatorLineElement::setDynamicStallActive(bool active)
 void Foam::fv::actuatorLineElement::setOmega(scalar omega)
 {
     omega_ = omega;
+}
+
+
+void Foam::fv::actuatorLineElement::setEndEffectFactor(scalar factor)
+{
+    endEffectFactor_ = factor;
 }
 
 // ************************************************************************* //
