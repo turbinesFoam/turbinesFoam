@@ -482,6 +482,11 @@ Foam::fv::actuatorLineSource::actuatorLineSource
     createElements();
     if (writePerf_) createOutputFile();
     forceField_.write();
+    // Calculate end effects
+    if (endEffectsActive_)
+    {
+        calcEndEffects();
+    }
 }
 
 
@@ -624,12 +629,6 @@ void Foam::fv::actuatorLineSource::addSup
         scalar deltaPitch = dpdt*dt;
         pitch(deltaPitch);
         lastMotionTime_ = t;
-    }
-    
-    // Calculate end effects
-    if (endEffectsActive_)
-    {
-        calcEndEffects();
     }
     
     // Zero out force field
