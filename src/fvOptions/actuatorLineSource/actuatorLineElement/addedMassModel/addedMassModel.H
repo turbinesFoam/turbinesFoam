@@ -93,14 +93,17 @@ public:
 
         // Check
 
-        // Edit
+        // Correct
         
             //- Correct coefficients for added mass effects
             void correct
             (
                 scalar& liftCoefficient,
                 scalar& dragCoefficient,
-                scalar& momentCoefficient
+                scalar& momentCoefficient,
+                scalar alphaRad,
+                scalar chordwiseRelVel,
+                scalar normalRelVel
             );
             
 
