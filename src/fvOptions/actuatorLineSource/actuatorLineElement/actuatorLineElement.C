@@ -155,6 +155,7 @@ void Foam::fv::actuatorLineElement::lookupCoefficients()
 {
     liftCoefficient_ = profileData_.liftCoefficient(angleOfAttack_);
     dragCoefficient_ = profileData_.dragCoefficient(angleOfAttack_);
+    momentCoefficient_ = profileData_.momentCoefficient(angleOfAttack_);
 }
 
 
