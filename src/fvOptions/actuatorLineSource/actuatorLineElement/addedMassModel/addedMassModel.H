@@ -55,6 +55,9 @@ class addedMassModel
         //- Chord length in meters
         scalar chordLength_;
         
+        //- Debug switch (inherited)
+        bool debug;
+        
         //- Previous time value
         scalar timePrev_;
         
@@ -97,7 +100,8 @@ public:
         addedMassModel
         (
             const Time& time,
-            scalar chordLength
+            scalar chordLength,
+            bool debug=false
         );
 
 

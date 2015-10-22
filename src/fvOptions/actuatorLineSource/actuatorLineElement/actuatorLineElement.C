@@ -318,7 +318,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     rootDistance_(0.0),
     endEffectFactor_(1.0),
     addedMassActive_(dict.lookupOrDefault("addedMass", false)),
-    addedMass_(mesh.time(), dict.lookupOrDefault("chordLength", 1.0))
+    addedMass_(mesh.time(), dict.lookupOrDefault("chordLength", 1.0), debug)
 {
     read();
     if (writePerf_)
@@ -520,7 +520,7 @@ void Foam::fv::actuatorLineElement::calculate
             liftCoefficient_,
             dragCoefficient_,
             momentCoefficient_,
-            radToDeg(angleOfAttack_),
+            degToRad(angleOfAttack_),
             mag(chordDirection_ & relativeVelocity_),
             mag(planformNormal & relativeVelocity_)
         );

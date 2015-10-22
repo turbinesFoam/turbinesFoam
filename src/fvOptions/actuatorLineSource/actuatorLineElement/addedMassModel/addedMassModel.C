@@ -48,11 +48,13 @@ void Foam::addedMassModel::update()
 Foam::addedMassModel::addedMassModel
 (
     const Time& time,
-    scalar chordLength
+    scalar chordLength,
+    bool debug
 )
 :
     time_(time),
     chordLength_(chordLength),
+    debug(debug),
     timePrev_(time.value()),
     nNewTimes_(0),
     alpha_(0.0),
@@ -96,6 +98,9 @@ void Foam::addedMassModel::correct
     chordwiseRelVel_ = chordwiseRelVel;
     normalRelVel_ = normalRelVel;
     scalar relVelMagSqr = magSqr(normalRelVel_) + magSqr(chordwiseRelVel_);
+    alpha_ = alphaRad;
+    scalar alphaDot = (alpha_ - alphaPrev_)/deltaT;
+    scalar normVelDot = (normalRelVel_ - normalRelVelPrev_)/deltaT;
     
     // Update previous values if time has changed
     if (time != timePrev_)
@@ -114,17 +119,37 @@ void Foam::addedMassModel::correct
     }
     
     // Calculate added mass coefficients for a flat plate
-    scalar alphaDot = (alpha_ - alphaPrev_)/deltaT;
     scalar ct = pi/8.0*chordLength_*alphaDot*normalRelVel_/relVelMagSqr;
-    scalar normVelDot = (normalRelVel_ - normalRelVelPrev_)/deltaT;
     scalar cn = pi/8.0*chordLength_*normVelDot/relVelMagSqr;
     // Moment coefficient is at quarter chord
     scalar cm = cn/4.0 - pi/8.0*normalRelVel_*chordwiseRelVel_/relVelMagSqr;
+    
+    if (debug)
+    {
+        Info<< endl << "Added mass quantities:" << endl;
+        Info<< "    alphaDot: " << alphaDot << endl;
+        Info<< "    normVelDot: " << normVelDot << endl;
+        Info<< "    cn: " << cn << endl;
+        Info<< "    ct: " << ct << endl;
+        Info<< "    cm: " << cm << endl << endl;
+        Info<< "Coefficients before added mass correction:" << endl;
+        Info<< "    cl: " << liftCoefficient  << endl;
+        Info<< "    cd: " << dragCoefficient << endl;
+        Info<< "    cm: " << momentCoefficient << endl << endl;
+    }
     
     // Modify lift and drag coefficients
     liftCoefficient += cn*cos(alpha_) + ct*sin(alpha_);
     dragCoefficient += cn*sin(alpha_) - ct*cos(alpha_);
     momentCoefficient += cm;
+    
+    if (debug)
+    {
+        Info<< "Coefficients after added mass correction:" << endl;
+        Info<< "    cl: " << liftCoefficient << endl;
+        Info<< "    cd: " << dragCoefficient << endl;
+        Info<< "    cm: " << momentCoefficient << endl << endl;
+    }
 }
 
 
