@@ -507,6 +507,7 @@ void Foam::fv::actuatorLineElement::calculate
             angleOfAttack_,
             liftCoefficient_,
             dragCoefficient_,
+            momentCoefficient_,
             profileData_.angleOfAttackList(),
             profileData_.liftCoefficientList(),
             profileData_.dragCoefficientList()

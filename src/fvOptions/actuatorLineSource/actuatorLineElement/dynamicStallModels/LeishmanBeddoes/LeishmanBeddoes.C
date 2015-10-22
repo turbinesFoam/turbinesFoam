@@ -455,6 +455,7 @@ void Foam::fv::LeishmanBeddoes::correct
     scalar alphaDeg,
     scalar& cl,
     scalar& cd,
+    scalar& cm,
     List<scalar> alphaDegList,
     List<scalar> clList,
     List<scalar> cdList
