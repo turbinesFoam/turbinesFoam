@@ -293,6 +293,7 @@ void Foam::fv::actuatorLineSource::createElements()
         dict.add("freeStreamVelocity", freeStreamVelocity_);
         dict.add("chordMount", chordMount);
         dict.add("rootDistance" , rootDistance);
+        dict.add("addedMass", coeffs_.lookupOrDefault("addedMass", false));
         if (coeffs_.found("dynamicStall"))
         {
             dictionary dsDict = coeffs_.subDict("dynamicStall");
