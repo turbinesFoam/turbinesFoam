@@ -36,6 +36,7 @@ void Foam::addedMassModel::update()
     // Set all time dependent variables for previous time step
     timePrev_ = time_.value();
     alphaPrev_ = alpha_;
+    normalRelVelPrev_ = normalRelVel_;
 }
 
 
@@ -51,7 +52,14 @@ Foam::addedMassModel::addedMassModel
 )
 :
     time_(time),
-    chordLength_(chordLength)
+    chordLength_(chordLength),
+    timePrev_(time.value()),
+    nNewTimes_(0),
+    alpha_(0.0),
+    alphaPrev_(0.0),
+    chordwiseRelVel_(0.0),
+    normalRelVel_(0.0),
+    normalRelVelPrev_(0.0)
 {}
 
 
@@ -110,10 +118,13 @@ void Foam::addedMassModel::correct
     scalar ct = pi/8.0*chordLength_*alphaDot*normalRelVel_/relVelMagSqr;
     scalar normVelDot = (normalRelVel_ - normalRelVelPrev_)/deltaT;
     scalar cn = pi/8.0*chordLength_*normVelDot/relVelMagSqr;
+    // Moment coefficient is at quarter chord
+    scalar cm = cn/4.0 - pi/8.0*normalRelVel_*chordwiseRelVel_/relVelMagSqr;
     
     // Modify lift and drag coefficients
     liftCoefficient += cn*cos(alpha_) + ct*sin(alpha_);
     dragCoefficient += cn*sin(alpha_) - ct*cos(alpha_);
+    momentCoefficient += cm;
 }
 
 
