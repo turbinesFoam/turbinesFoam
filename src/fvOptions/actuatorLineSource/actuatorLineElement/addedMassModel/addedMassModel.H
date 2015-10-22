@@ -55,11 +55,35 @@ class addedMassModel
         //- Chord length in meters
         scalar chordLength_;
         
+        //- Previous time value
+        scalar timePrev_;
+        
+        //- Counter for number of new time steps
+        label nNewTimes_;
+        
+        //- Angle of attack (radians)
+        scalar alpha_;
+        
+        //- Previous angle of attack (radians)
+        scalar alphaPrev_;
+        
+        //- Chordwise component of relative velocity
+        scalar chordwiseRelVel_;
+        
+        //- Normal component of relative velocity
+        scalar normalRelVel_;
+        
+        //- Previous value of normal relative velocity
+        scalar normalRelVelPrev_;
+        
 
     // Private Member Functions
 
         //- Disallow default bitwise copy construct
         addedMassModel(const addedMassModel&);
+        
+        //- Update previous time step values
+        void update();
 
 
 public:

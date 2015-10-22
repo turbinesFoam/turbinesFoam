@@ -31,6 +31,13 @@ License
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
+void Foam::addedMassModel::update()
+{
+    // Set all time dependent variables for previous time step
+    timePrev_ = time_.value();
+    alphaPrev_ = alpha_;
+}
+
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
@@ -65,6 +72,49 @@ Foam::addedMassModel::~addedMassModel()
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
+void Foam::addedMassModel::correct
+(
+    scalar& liftCoefficient,
+    scalar& dragCoefficient,
+    scalar& momentCoefficient,
+    scalar alphaRad,
+    scalar chordwiseRelVel,
+    scalar normalRelVel
+)
+{
+    scalar pi = Foam::constant::mathematical::pi;
+    scalar time = time_.value();
+    scalar deltaT = time_.deltaT().value();
+    chordwiseRelVel_ = chordwiseRelVel;
+    normalRelVel_ = normalRelVel;
+    scalar relVelMagSqr = magSqr(normalRelVel_) + magSqr(chordwiseRelVel_);
+    
+    // Update previous values if time has changed
+    if (time != timePrev_)
+    {
+        nNewTimes_++;
+        if (nNewTimes_ > 1) 
+        {
+            update();
+        }
+    }
+    
+    if (nNewTimes_ <= 1)
+    {
+        alpha_ = alphaRad;
+        alphaPrev_ = alpha_;
+    }
+    
+    // Calculate added mass coefficients for a flat plate
+    scalar alphaDot = (alpha_ - alphaPrev_)/deltaT;
+    scalar ct = pi/8.0*chordLength_*alphaDot*normalRelVel_/relVelMagSqr;
+    scalar normVelDot = (normalRelVel_ - normalRelVelPrev_)/deltaT;
+    scalar cn = pi/8.0*chordLength_*normVelDot/relVelMagSqr;
+    
+    // Modify lift and drag coefficients
+    liftCoefficient += cn*cos(alpha_) + ct*sin(alpha_);
+    dragCoefficient += cn*sin(alpha_) - ct*cos(alpha_);
+}
 
 
 // ************************************************************************* //
