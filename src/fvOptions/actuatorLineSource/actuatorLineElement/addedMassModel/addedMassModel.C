@@ -40,7 +40,7 @@ License
 Foam::addedMassModel::addedMassModel
 (
     const Time& time,
-    const scalar chordLength
+    scalar chordLength
 )
 :
     time_(time),

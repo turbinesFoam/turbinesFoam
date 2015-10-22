@@ -313,7 +313,8 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     velocityTE_(vector::zero),
     writePerf_(false),
     rootDistance_(0.0),
-    endEffectFactor_(1.0)
+    endEffectFactor_(1.0),
+    addedMass_(mesh.time(), dict.lookupOrDefault("chordLength", 1.0))
 {
     read();
     if (writePerf_)

@@ -53,7 +53,7 @@ class addedMassModel
         const Time& time_;
         
         //- Chord length in meters
-        const scalar chordLength_;
+        scalar chordLength_;
         
 
     // Private Member Functions
@@ -73,7 +73,7 @@ public:
         addedMassModel
         (
             const Time& time,
-            const scalar chordLength
+            scalar chordLength
         );
 
 

@@ -47,6 +47,7 @@ SourceFiles
 #include "dynamicStallModel.H"
 #include "interpolationCellPoint.H"
 #include "profileData.H"
+#include "addedMassModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -174,6 +175,9 @@ protected:
         
         //- End effect correction factor [0, 1]
         scalar endEffectFactor_;
+        
+        //- Added mass model
+        addedMassModel addedMass_;
 
 
     // Protected Member Functions
