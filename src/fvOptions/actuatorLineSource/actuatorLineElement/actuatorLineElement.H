@@ -47,6 +47,7 @@ SourceFiles
 #include "dynamicStallModel.H"
 #include "interpolationCellPoint.H"
 #include "profileData.H"
+#include "addedMassModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -127,6 +128,9 @@ protected:
         //- Drag coefficient;
         scalar dragCoefficient_;
         
+        //- 1/4 chord moment coefficient
+        scalar momentCoefficient_;
+        
         //- Profile name
         word profileName_;
         
@@ -174,6 +178,12 @@ protected:
         
         //- End effect correction factor [0, 1]
         scalar endEffectFactor_;
+        
+        //- Switch for added mass correction
+        bool addedMassActive_;
+        
+        //- Added mass model
+        addedMassModel addedMass_;
 
 
     // Protected Member Functions

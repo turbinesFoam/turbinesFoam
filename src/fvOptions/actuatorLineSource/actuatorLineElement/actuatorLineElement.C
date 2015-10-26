@@ -155,6 +155,7 @@ void Foam::fv::actuatorLineElement::lookupCoefficients()
 {
     liftCoefficient_ = profileData_.liftCoefficient(angleOfAttack_);
     dragCoefficient_ = profileData_.dragCoefficient(angleOfAttack_);
+    momentCoefficient_ = profileData_.momentCoefficient(angleOfAttack_);
 }
 
 
@@ -302,6 +303,9 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     relativeVelocityGeom_(vector::zero),
     angleOfAttack_(0.0),
     angleOfAttackGeom_(0.0),
+    liftCoefficient_(0.0),
+    dragCoefficient_(0.0),
+    momentCoefficient_(0.0),
     profileName_(dict.lookup("profileName")),
     profileData_(profileName_, dict.subDict("profileData")),
     dynamicStallActive_(false),
@@ -313,7 +317,9 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     velocityTE_(vector::zero),
     writePerf_(false),
     rootDistance_(0.0),
-    endEffectFactor_(1.0)
+    endEffectFactor_(1.0),
+    addedMassActive_(dict.lookupOrDefault("addedMass", false)),
+    addedMass_(mesh.time(), dict.lookupOrDefault("chordLength", 1.0), debug)
 {
     read();
     if (writePerf_)
@@ -501,9 +507,24 @@ void Foam::fv::actuatorLineElement::calculate
             angleOfAttack_,
             liftCoefficient_,
             dragCoefficient_,
+            momentCoefficient_,
             profileData_.angleOfAttackList(),
             profileData_.liftCoefficientList(),
             profileData_.dragCoefficientList()
+        );
+    }
+    
+    // Correct for added mass effects
+    if (addedMassActive_)
+    {
+        addedMass_.correct
+        (
+            liftCoefficient_,
+            dragCoefficient_,
+            momentCoefficient_,
+            degToRad(angleOfAttack_),
+            mag(chordDirection_ & relativeVelocity_),
+            mag(planformNormal & relativeVelocity_)
         );
     }
     
@@ -736,6 +757,8 @@ Foam::vector Foam::fv::actuatorLineElement::moment(vector point)
     // Calculate radius vector
     vector radius = position_ - point;
     vector moment = radius ^ forceVector_;
+    moment += 0.5*chordLength_*chordLength_*spanLength_*momentCoefficient_
+            * magSqr(relativeVelocity_)*spanDirection_;
     return moment;
 }
 

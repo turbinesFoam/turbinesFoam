@@ -198,6 +198,11 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         bladeSubDict.add("elementGeometry", elementGeometry);
         bladeSubDict.add("initialVelocities", initialVelocities);
         bladeSubDict.add("dynamicStall", dynamicStallDict_);
+        bladeSubDict.add
+        (
+            "addedMass", 
+            coeffs_.lookupOrDefault("addedMass", false)
+        );
         
         // Lookup or create flowCurvature subDict
         dictionary fcDict = coeffs_.subOrEmptyDict("flowCurvature");
