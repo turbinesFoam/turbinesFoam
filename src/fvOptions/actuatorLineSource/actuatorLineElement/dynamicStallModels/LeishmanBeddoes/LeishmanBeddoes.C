@@ -340,6 +340,16 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     // lift
     CN_ = CNF_ + CNV_;
     
+    // Calculate moment coefficient
+    scalar pi = Foam::constant::mathematical::pi;
+    scalar m = 2.0; // Should probably be a member of the class
+    scalar cmf = (K0_ + K1_*(1 - fDoublePrime_) 
+               + K2_*sin(pi*Foam::pow(fDoublePrime_, m)))*CNC_ 
+               + profileData_.zeroLiftMomentCoeff();
+    scalar cpv = 0.20*(1 - cos(pi*tau_/Tvl_));
+    scalar cmv = -cpv*CNV_;
+    CM_ = cmf + cmv;
+    
     if (debug)
     {
         Info<< "    CV: " << CV_ << endl;
@@ -420,7 +430,8 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     fCrit_(0.7),
     K0_(1e-6),
     K1_(0.0),
-    K2_(0.0)
+    K2_(0.0),
+    CM_(0.0)
 {
     dict_.lookup("chordLength") >> c_;
     
@@ -506,9 +517,10 @@ void Foam::fv::LeishmanBeddoes::correct
     calcUnsteady();
     calcSeparated();
     
-    // Modify lift and drag coefficients based on new normal force coefficient
+    // Modify coefficients
     cl = CN_*cos(alpha_) + CT_*sin(alpha_);
     cd = CN_*sin(alpha_) - CT_*cos(alpha_) + CD0_;
+    cm = CM_;
     
     if (debug)
     {

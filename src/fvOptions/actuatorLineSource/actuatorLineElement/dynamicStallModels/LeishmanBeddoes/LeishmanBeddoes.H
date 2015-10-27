@@ -247,6 +247,9 @@ protected:
         //- Sinusoidal pitching moment curve fit coefficient
         scalar K2_;
         
+        //- Total moment coefficient
+        scalar CM_;
+        
         
     // Protected member functions
     
