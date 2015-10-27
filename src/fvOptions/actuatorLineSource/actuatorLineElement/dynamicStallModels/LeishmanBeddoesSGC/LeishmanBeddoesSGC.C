@@ -150,7 +150,7 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
     CN_ = CNF_ + CNV_;
     
     // Calculate moment coefficient
-    scalar m = 2.0; // Should probably be a member of the class
+    scalar m = cmFitExponent_;
     scalar cmf = (K0_ + K1_*(1 - fDoublePrime_) 
                + K2_*sin(pi*Foam::pow(fDoublePrime_, m)))*CNC_ 
                + profileData_.zeroLiftMomentCoeff();

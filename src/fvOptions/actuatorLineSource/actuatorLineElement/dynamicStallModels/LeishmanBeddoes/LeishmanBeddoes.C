@@ -231,7 +231,7 @@ void Foam::fv::LeishmanBeddoes::calcK1K2()
     List<scalar> cn = profileData_.normalCoefficientList(0.5, 25);
     List<scalar> cm = profileData_.momentCoefficientList(0.5, 25);
     List<scalar> f = cnToF(cn, alpha);
-    scalar m = 2;
+    scalar m = cmFitExponent_;
     simpleMatrix<scalar> A(2);
     A[0][0] = Foam::sum(magSqr(1.0 - f));
     A[0][1] = Foam::sum(sin(pi*Foam::pow(f, m)));
@@ -342,7 +342,7 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     
     // Calculate moment coefficient
     scalar pi = Foam::constant::mathematical::pi;
-    scalar m = 2.0; // Should probably be a member of the class
+    scalar m = cmFitExponent_;
     scalar cmf = (K0_ + K1_*(1 - fDoublePrime_) 
                + K2_*sin(pi*Foam::pow(fDoublePrime_, m)))*CNC_ 
                + profileData_.zeroLiftMomentCoeff();
@@ -431,6 +431,7 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     K0_(1e-6),
     K1_(0.0),
     K2_(0.0),
+    cmFitExponent_(coeffs_.lookupOrDefault("cmFitExponent", 2)),
     CM_(0.0)
 {
     dict_.lookup("chordLength") >> c_;
