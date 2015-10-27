@@ -127,6 +127,9 @@ class profileData
         //- Calculate zero lift angle of attack
         void calcZeroLiftAngleOfAttack();
         
+        //- Calculate zero lift moment coefficient
+        void calcZeroLiftMomentCoeff();
+        
         //- Calculate normal force coefficient slope
         void calcNormalCoeffSlope();
         
