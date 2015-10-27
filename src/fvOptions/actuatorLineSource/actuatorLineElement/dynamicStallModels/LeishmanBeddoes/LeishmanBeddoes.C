@@ -506,6 +506,7 @@ void Foam::fv::LeishmanBeddoes::correct
         Info<< "    Initial normal force coefficient: " << cn0 << endl;
         Info<< "    Initial lift coefficient: " << cl << endl;
         Info<< "    Initial drag coefficient: " << cd << endl;
+        Info<< "    Initial moment coefficient: " << cm << endl;
     }
     
     calcAlphaEquiv();
@@ -539,6 +540,7 @@ void Foam::fv::LeishmanBeddoes::correct
         Info<< "    Tangential force coefficient: " << CT_ << endl;
         Info<< "    Corrected lift coefficient: " << cl << endl;
         Info<< "    Corrected drag coefficient: " << cd << endl;
+        Info<< "    Corrected moment coefficient: " << cm << endl;
         Info<< "    -------------------------------------------------" << endl;
     }
 }

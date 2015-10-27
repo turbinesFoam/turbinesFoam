@@ -161,6 +161,8 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
     {
         Info<< "    Vx: " << Vx_ << endl;
         Info<< "    f: " << f << endl;
+        Info<< "    cmf: " << cmf << endl;
+        Info<< "    cmv: " << cmv << endl;
     }
 }
 
