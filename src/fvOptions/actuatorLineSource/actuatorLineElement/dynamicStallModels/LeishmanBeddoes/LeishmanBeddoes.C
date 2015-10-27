@@ -227,9 +227,9 @@ void Foam::fv::LeishmanBeddoes::calcS1S2
 void Foam::fv::LeishmanBeddoes::calcK1K2()
 {
     scalar pi = Foam::constant::mathematical::pi;
-    List<scalar> alpha = degToRad(profileData_.angleOfAttackList(0, 25));
-    List<scalar> cn = profileData_.normalCoefficientList(0, 25);
-    List<scalar> cm = profileData_.momentCoefficientList(0, 25);
+    List<scalar> alpha = degToRad(profileData_.angleOfAttackList(0.5, 25));
+    List<scalar> cn = profileData_.normalCoefficientList(0.5, 25);
+    List<scalar> cm = profileData_.momentCoefficientList(0.5, 25);
     List<scalar> f = cnToF(cn, alpha);
     scalar m = 2;
     simpleMatrix<scalar> A(2);
