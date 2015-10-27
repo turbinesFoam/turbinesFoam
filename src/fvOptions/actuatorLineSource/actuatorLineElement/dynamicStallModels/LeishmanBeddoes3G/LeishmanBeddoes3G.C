@@ -182,6 +182,11 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
     // Total normal force coefficient does not have CNV contribution since 
     // this is included in the Vx term
     CN_ = CNF_;
+    
+    // Calculate moment coefficient
+    scalar cmf = 0.0;
+    scalar cmv = 0.0;
+    CM_ = CMI_ + cmf + cmv;
 }
 
 
