@@ -179,8 +179,8 @@ void Foam::profileData::calcZeroLiftAngleOfAttack()
 void Foam::profileData::calcZeroLiftMomentCoeff()
 {
     List<scalar> cmList = momentCoefficientList(-10, 10);
-    List<scalar> alphaList = momentCoefficientList(-10, 10);
-    zeroLiftMomentCoeff_ = interpolate(0, cmList, alphaList);
+    List<scalar> clList = liftCoefficientList(-10, 10);
+    zeroLiftMomentCoeff_ = interpolate(0, clList, cmList);
 }
 
 
