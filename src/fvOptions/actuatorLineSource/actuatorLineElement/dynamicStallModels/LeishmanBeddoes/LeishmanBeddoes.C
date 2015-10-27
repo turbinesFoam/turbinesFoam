@@ -121,6 +121,9 @@ void Foam::fv::LeishmanBeddoes::evalStaticData()
     
     // Calculate S1 and S2 constants for the separation point curve
     calcS1S2();
+    
+    // Calculate the K1 and K2 constants for the moment coefficient
+    calcK1K2();
 }
 
 
