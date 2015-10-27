@@ -246,12 +246,7 @@ protected:
     
         //- Evaluate the static foil data, i.e., calculate CNAlpha, CN1, 
         // alpha1, and CD0
-        virtual void evalStaticData
-        (
-            List<scalar> alphaDegList,
-            List<scalar> clList,
-            List<scalar> cdList
-        );
+        virtual void evalStaticData();
         
         //- Calculate unsteady quantities
         virtual void calcUnsteady();
@@ -259,9 +254,6 @@ protected:
         //- Calculate S1 and S2 constants
         virtual void calcS1S2
         (
-            List<scalar> alphaDegList,
-            List<scalar> clList,
-            List<scalar> cdList,
             scalar B=0.3,
             scalar C=0.04,
             scalar D=0.66
@@ -269,6 +261,14 @@ protected:
         
         //- Calculate separated flow quantities
         virtual void calcSeparated();
+        
+        //- Convert normal force coefficient to trailing edge separation point
+        virtual List<scalar> cnToF
+        (
+            List<scalar> cnList,
+            List<scalar> alphaRadList,
+            bool limit=true
+        );
     
         //- Update previous time step values
         virtual void update();
@@ -287,18 +287,20 @@ public:
         (
             const dictionary& dict, 
             const word& modelName,
-            const Time& time
+            const Time& time,
+            profileData& profileData
         );
 
 
     // Selectors
 
-        //- Select null constructed
+        //- Select from components
         static autoPtr<LeishmanBeddoes> New
         (
             const dictionary& dict,
             const word& modelName,
-            const Time& time
+            const Time& time,
+            profileData& profileData
         );
 
 
@@ -325,10 +327,7 @@ public:
                 scalar alphaDeg,
                 scalar& cl,
                 scalar& cd,
-                scalar& cm,
-                List<scalar> alphaDegList,
-                List<scalar> clList,
-                List<scalar> cdList
+                scalar& cm
             );
 
 

@@ -112,9 +112,6 @@ protected:
         //- Calculate S1 and S2 constants
         virtual void calcS1S2
         (
-            List<scalar> alphaDegList,
-            List<scalar> clList,
-            List<scalar> cdList,
             scalar B=0.4,
             scalar C=0.02,
             scalar D=0.58
@@ -140,7 +137,8 @@ public:
         (
             const dictionary& dict, 
             const word& modelName,
-            const Time& time
+            const Time& time,
+            profileData& profileData
         );
 
 
@@ -151,7 +149,8 @@ public:
         (
             const dictionary& dict,
             const word& modelName,
-            const Time& time
+            const Time& time,
+            profileData& profileData
         );
 
 

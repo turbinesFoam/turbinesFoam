@@ -171,10 +171,11 @@ Foam::fv::LeishmanBeddoesSGC::LeishmanBeddoesSGC
 (
     const dictionary& dict,
     const word& modelName,
-    const Time& time
+    const Time& time,
+    profileData& profileData
 )
 :
-    LeishmanBeddoes3G(dict, modelName, time),
+    LeishmanBeddoes3G(dict, modelName, time, profileData),
     TAlpha_(coeffs_.lookupOrDefault("TAlpha", 6.30)),
     alphaPrimePrev_(0.0),
     alphaCrit_(17.0),

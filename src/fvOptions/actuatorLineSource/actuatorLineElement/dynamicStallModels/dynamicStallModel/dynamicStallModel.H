@@ -39,6 +39,7 @@ SourceFiles
 #include "dictionary.H"
 #include "vector.H"
 #include "fvCFD.H"
+#include "profileData.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -66,6 +67,9 @@ protected:
         
         //- Runtime reference
         const Time& time_;
+        
+        //- Profile data reference
+        profileData& profileData_;
         
         //- Coefficients subdict
         const dictionary coeffs_;
@@ -99,9 +103,10 @@ public:
             (
                 const dictionary& dict,
                 const word& modelName,
-                const Time& time
+                const Time& time,
+                profileData& profileData
             ),
-            (dict, modelName, time)
+            (dict, modelName, time, profileData)
         );
 
     // Constructors
@@ -111,7 +116,8 @@ public:
         (
             const dictionary&, 
             const word& modelName,
-            const Time& time
+            const Time& time,
+            profileData& profileData
         );
 
 
@@ -122,7 +128,8 @@ public:
         (
             const dictionary& dict, 
             const word& modelName,
-            const Time& time
+            const Time& time,
+            profileData& profileData
         );
 
 
@@ -150,10 +157,7 @@ public:
                 scalar alphaDeg,
                 scalar& cl,
                 scalar& cd,
-                scalar& cm,
-                List<scalar> alphaDegList,
-                List<scalar> clList,
-                List<scalar> cdList
+                scalar& cm
             );
 
         // Write

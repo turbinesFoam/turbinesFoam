@@ -116,7 +116,8 @@ public:
         (
             const dictionary& dict, 
             const word& modelName,
-            const Time& time
+            const Time& time,
+            profileData& profileData
         );
 
 
@@ -127,7 +128,8 @@ public:
         (
             const dictionary& dict,
             const word& modelName,
-            const Time& time
+            const Time& time,
+            profileData& profileData
         );
 
 

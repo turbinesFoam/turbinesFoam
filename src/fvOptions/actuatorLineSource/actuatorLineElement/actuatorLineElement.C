@@ -65,7 +65,8 @@ void Foam::fv::actuatorLineElement::read()
         (
             dsDict, 
             dsName, 
-            mesh_.time()
+            mesh_.time(),
+            profileData_
         );
         dsDict.lookup("active") >> dynamicStallActive_;
     }
@@ -507,10 +508,7 @@ void Foam::fv::actuatorLineElement::calculate
             angleOfAttack_,
             liftCoefficient_,
             dragCoefficient_,
-            momentCoefficient_,
-            profileData_.angleOfAttackList(),
-            profileData_.liftCoefficientList(),
-            profileData_.dragCoefficientList()
+            momentCoefficient_
         );
     }
     

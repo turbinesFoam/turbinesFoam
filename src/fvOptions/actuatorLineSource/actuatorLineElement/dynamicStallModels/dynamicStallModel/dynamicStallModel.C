@@ -45,7 +45,8 @@ Foam::fv::dynamicStallModel::New
 (
     const dictionary& dict, 
     const word& modelName,
-    const Time& time
+    const Time& time,
+    profileData& profileData
 )
 {
     
@@ -62,7 +63,13 @@ Foam::fv::dynamicStallModel::New
             << exit(FatalError);
     }
 
-    return autoPtr<dynamicStallModel>(cstrIter()(dict, modelName, time));
+    return autoPtr<dynamicStallModel>(cstrIter()
+    (
+        dict, 
+        modelName, 
+        time,
+        profileData
+    ));
 }
 
 
@@ -146,12 +153,14 @@ Foam::fv::dynamicStallModel::dynamicStallModel
 (
     const dictionary& dict,
     const word& modelName,
-    const Time& time
+    const Time& time,
+    profileData& profileData
 )
 :
     dict_(dict),
     modelName_(modelName),
     time_(time),
+    profileData_(profileData),
     coeffs_(dict.subOrEmptyDict(modelName + "Coeffs")),
     startTime_(time.value())
 {
@@ -180,10 +189,7 @@ void Foam::fv::dynamicStallModel::correct
     scalar alphaDeg,
     scalar& cl,
     scalar& cd,
-    scalar& cm,
-    List<scalar> alphaDegList,
-    List<scalar> clList,
-    List<scalar> cdList
+    scalar& cm
 )
 {}
 

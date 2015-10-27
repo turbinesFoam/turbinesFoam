@@ -24,6 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "profileData.H"
+#include "simpleMatrix.H"
 
 
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
@@ -134,6 +135,72 @@ void Foam::profileData::read()
 }
 
 
+void Foam::profileData::calcStaticStallAngle()
+{
+    // Static stall is where the slope of the drag coefficient curve first 
+    // breaks {threshold} per degree
+    scalar threshold = 0.03;
+    scalar alpha=GREAT, cd0, cd1, slope, dAlpha;
+    forAll(angleOfAttackList_, i)
+    {
+        alpha = angleOfAttackList_[i];
+        if (alpha > 2 && alpha < 30)
+        {
+            cd1 = dragCoefficient(alpha + 1.0);
+            cd0 = dragCoefficient(alpha);
+            dAlpha = 1.0;
+            slope = (cd1 - cd0)/dAlpha;
+            if (slope > threshold)
+            {
+                staticStallAngle_ = alpha;
+                break;
+            }
+        }
+    }
+}
+
+
+void Foam::profileData::calcZeroLiftDragCoeff()
+{
+    List<scalar> cdList = dragCoefficientList(-10, 10);
+    List<scalar> clList = liftCoefficientList(-10, 10);
+    zeroLiftDragCoeff_ = interpolate(0, clList, cdList);
+}
+
+
+void Foam::profileData::calcZeroLiftAngleOfAttack()
+{
+    List<scalar> clList = liftCoefficientList(-10, 10);
+    List<scalar> alphaList = angleOfAttackList(-10, 10);
+    zeroLiftAngleOfAttack_ = interpolate(0, clList, alphaList);
+}
+
+
+void Foam::profileData::calcNormalCoeffSlope()
+{
+    scalar alphaHigh = 0.5*staticStallAngle_;
+    List<scalar> alphaList = degToRad(angleOfAttackList(0, alphaHigh));
+    List<scalar> cnList = normalCoefficientList(0, alphaHigh);
+    simpleMatrix<scalar> A(2);
+    A[0][0] = alphaList.size();
+    A[0][1] = Foam::sum(alphaList);
+    A[1][0] = Foam::sum(alphaList);
+    A[1][1] = Foam::sum(Foam::sqr(alphaList));
+    A.source()[0] = Foam::sum(cnList);
+    A.source()[1] = Foam::sum(cnList*alphaList);
+    normalCoeffSlope_ = A.solve()[1];
+}
+
+
+void Foam::profileData::analyze()
+{
+    calcStaticStallAngle();
+    calcZeroLiftDragCoeff();
+    calcZeroLiftAngleOfAttack();
+    calcNormalCoeffSlope();
+}
+
+
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
 
@@ -149,9 +216,18 @@ Foam::profileData::profileData
     dict_(dict),
     Re_(VSMALL),
     ReRef_(VSMALL),
-    correctRe_(false)
+    correctRe_(false),
+    staticStallAngle_(0.0),
+    zeroLiftDragCoeff_(0.0),
+    zeroLiftAngleOfAttack_(0.0),
+    normalCoeffSlope_(0.0)
 {
     read();
+    // Analyze if the data is not from a bluff body
+    if (Foam::sum(Foam::mag(liftCoefficientList_)) > VSMALL)
+    {
+        analyze();
+    }
 }
 
 
@@ -207,9 +283,7 @@ Foam::scalar Foam::profileData::momentCoefficient(scalar angleOfAttackDeg)
 
 void Foam::profileData::updateRe(scalar Re)
 {
-    Re_ = Re;
-
-    if (correctRe_)
+    if (correctRe_ and Re != Re_)
     {
         // Correct drag coefficients
         scalar K = pow((Re/ReRef_), -0.5);
@@ -229,7 +303,12 @@ void Foam::profileData::updateRe(scalar Re)
             );
             liftCoefficientList_[i] *= K;
         }
+        
+        // Recalculate static stall angle, etc.
+        analyze();
     }
+    
+    Re_ = Re;
 }
 
 
@@ -254,6 +333,188 @@ Foam::List<scalar>& Foam::profileData::dragCoefficientList()
 Foam::List<scalar>& Foam::profileData::momentCoefficientList()
 {
     return momentCoefficientList_;
+}
+
+
+Foam::List<scalar> Foam::profileData::angleOfAttackList
+(
+    scalar alphaDegStart,
+    scalar alphaDegStop
+)
+{
+    List<scalar> newList;
+    forAll(angleOfAttackList_, i)
+    {
+        if 
+        (
+            angleOfAttackList_[i] >= alphaDegStart
+            and
+            angleOfAttackList_[i] <= alphaDegStop
+        )
+        {
+            newList.append(angleOfAttackList_[i]);
+        }
+    }
+    return newList;
+}
+
+
+Foam::List<scalar> Foam::profileData::liftCoefficientList
+(
+    scalar alphaDegStart,
+    scalar alphaDegStop
+)
+{
+    List<scalar> newList;
+    forAll(angleOfAttackList_, i)
+    {
+        if 
+        (
+            angleOfAttackList_[i] >= alphaDegStart
+            and
+            angleOfAttackList_[i] <= alphaDegStop
+        )
+        {
+            newList.append(liftCoefficientList_[i]);
+        }
+    }
+    return newList;
+}
+
+
+Foam::List<scalar> Foam::profileData::dragCoefficientList
+(
+    scalar alphaDegStart,
+    scalar alphaDegStop
+)
+{
+    List<scalar> newList;
+    forAll(angleOfAttackList_, i)
+    {
+        if 
+        (
+            angleOfAttackList_[i] >= alphaDegStart
+            and
+            angleOfAttackList_[i] <= alphaDegStop
+        )
+        {
+            newList.append(dragCoefficientList_[i]);
+        }
+    }
+    return newList;
+}
+
+
+Foam::List<scalar> Foam::profileData::momentCoefficientList
+(
+    scalar alphaDegStart,
+    scalar alphaDegStop
+)
+{
+    List<scalar> newList;
+    forAll(angleOfAttackList_, i)
+    {
+        if 
+        (
+            angleOfAttackList_[i] >= alphaDegStart
+            and
+            angleOfAttackList_[i] <= alphaDegStop
+        )
+        {
+            newList.append(momentCoefficientList_[i]);
+        }
+    }
+    return newList;
+}
+
+
+Foam::List<scalar> Foam::profileData::normalCoefficientList
+(
+    scalar alphaDegStart,
+    scalar alphaDegStop
+)
+{
+    List<scalar> newList;
+    forAll(angleOfAttackList_, i)
+    {
+        if 
+        (
+            angleOfAttackList_[i] >= alphaDegStart
+            and
+            angleOfAttackList_[i] <= alphaDegStop
+        )
+        {
+            newList.append
+            (
+                liftCoefficientList_[i]*cos(degToRad(angleOfAttackList_[i]))
+              - dragCoefficientList_[i]*sin(degToRad(angleOfAttackList_[i]))
+            );
+        }
+    }
+    return newList;
+}
+
+
+Foam::List<scalar> Foam::profileData::chordwiseCoefficientList
+(
+    scalar alphaDegStart,
+    scalar alphaDegStop
+)
+{
+    List<scalar> newList;
+    forAll(angleOfAttackList_, i)
+    {
+        if 
+        (
+            angleOfAttackList_[i] >= alphaDegStart
+            and
+            angleOfAttackList_[i] <= alphaDegStop
+        )
+        {
+            newList.append
+            (
+                liftCoefficientList_[i]*sin(degToRad(angleOfAttackList_[i]))
+              - dragCoefficientList_[i]*cos(degToRad(angleOfAttackList_[i]))
+            );
+        }
+    }
+    return newList;
+}
+
+
+Foam::scalar Foam::profileData::staticStallAngleRad()
+{
+    return degToRad(staticStallAngle_);
+}
+
+
+Foam::scalar Foam::profileData::zeroLiftDragCoeff()
+{
+    return zeroLiftDragCoeff_;
+}
+
+
+Foam::scalar Foam::profileData::zeroLiftAngleOfAttack()
+{
+    return zeroLiftAngleOfAttack_;
+}
+
+
+Foam::scalar Foam::profileData::normalCoeffSlope()
+{
+    return normalCoeffSlope_;
+}
+
+
+Foam::scalar Foam::profileData::Re()
+{
+    return Re_;
+}
+
+
+bool Foam::profileData::correctRe()
+{
+    return correctRe_;
 }
 
 

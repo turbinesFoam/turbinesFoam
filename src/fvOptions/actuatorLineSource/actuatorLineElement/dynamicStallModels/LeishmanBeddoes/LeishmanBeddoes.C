@@ -25,6 +25,7 @@ License
 
 #include "LeishmanBeddoes.H"
 #include "addToRunTimeSelectionTable.H"
+#include "simpleMatrix.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -45,6 +46,35 @@ namespace fv
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
+Foam::List<scalar> Foam::fv::LeishmanBeddoes::cnToF
+(
+    List<scalar> cnList,
+    List<scalar> alphaRadList,
+    bool limit
+)
+{
+    List<scalar> fList(cnList.size());
+    scalar alpha0 = degToRad(profileData_.zeroLiftAngleOfAttack());
+    
+    forAll(cnList, i)
+    {
+        if (alphaRadList[i] == 0.0) alphaRadList[i] = SMALL;
+        fList[i] = magSqr
+        (
+            2*Foam::sqrt(mag(cnList[i]) /
+            (CNAlpha_ * mag(alphaRadList[i] - alpha0)))
+            - 1.0
+        );
+        if (limit)
+        {
+            if (fList[i] >= 1) fList[i] = 1.0 - SMALL;
+            if (fList[i] <= 0) fList[i] = SMALL;
+        }
+    }
+    return fList;
+}
+
+
 void Foam::fv::LeishmanBeddoes::calcAlphaEquiv()
 {
     scalar beta = 1.0 - M_*M_;
@@ -56,75 +86,32 @@ void Foam::fv::LeishmanBeddoes::calcAlphaEquiv()
 }
 
 
-void Foam::fv::LeishmanBeddoes::evalStaticData
-(
-    List<scalar> alphaDegList,
-    List<scalar> clList,
-    List<scalar> cdList
-)
-{
-    // Create lists for normal and chordwise coefficients
-    scalar pi = Foam::constant::mathematical::pi;
-    List<scalar> alphaRadList(alphaDegList.size());
-    List<scalar> cnList(clList.size());
-    List<scalar> ctList(cdList.size());
+void Foam::fv::LeishmanBeddoes::evalStaticData()
+{    
+    // Get static stall angle in radians
+    alphaSS_ = profileData_.staticStallAngleRad();
     
-    forAll(alphaDegList, i)
-    {
-        alphaRadList[i] = alphaDegList[i]/180.0*pi;
-        cnList[i] = clList[i]*cos(alphaRadList[i]) 
-                  - cdList[i]*sin(alphaRadList[i]);
-        ctList[i] = clList[i]*sin(alphaRadList[i])
-                  - cdList[i]*cos(alphaRadList[i]);
-    }
-    
-    // Calculate critical normal force coefficient CN1, where the slope of the
-    // curve slope first breaks 0.02 per degree
-    scalar alpha=GREAT, cd0, cd1, slope, dAlpha;
-    forAll(alphaDegList, i)
-    {
-        alpha = alphaDegList[i];
-        if (alpha > 2 && alpha < 30)
-        {
-            cd1 = interpolate(alpha + 1.0, alphaDegList, cdList);
-            cd0 = interpolate(alpha, alphaDegList, cdList);
-            dAlpha = 1.0;
-            slope = (cd1 - cd0)/dAlpha;
-            if (slope > 0.02)
-            {
-                alphaSS_ = alpha/180.0*pi;
-                break;
-            }
-        }
-    }
-    
-    // Calculate lift slope CNAlpha using a line that intersects at 70% of
-    // the static stall angle
-    scalar alphaLow = 0.0;
-    scalar alphaHigh = 0.7*alphaSS_/pi*180.0;
-    scalar cnLow = interpolate(alphaLow, alphaDegList, cnList);
-    scalar cnHigh = interpolate(alphaHigh, alphaDegList, cnList);
-    dAlpha = (alphaHigh - alphaLow)/180.0*pi;
-    CNAlpha_ = (cnHigh - cnLow)/dAlpha;
+    // Get normal coefficient slope CNAlpha
+    CNAlpha_ = profileData_.normalCoeffSlope();
     
     // Calculate CN1 using normal coefficient slope and critical f value
-    // alpha1 is 90% of the static stall angle
+    // alpha1 is 87% of the static stall angle
     scalar f = fCrit_;
-    alpha1_ = alphaSS_*0.9;
+    alpha1_ = alphaSS_*0.87;
     CN1_ = CNAlpha_*alpha1_*pow((1.0 + sqrt(f))/2.0, 2);
     
     if (debug)
     {
         Info<< "    Evaluating static foil data" << endl;
         scalar cn = CNAlpha_*alpha_;
-        Info<< "    Static stall angle (deg): " << alpha << endl;
+        Info<< "    Static stall angle (deg): " << radToDeg(alphaSS_) << endl;
         Info<< "    Critical normal force coefficient: " << CN1_ << endl;
         Info<< "    Normal coefficient slope: " << CNAlpha_ << endl;
         Info<< "    Normal coefficient from slope: " << cn << endl;
     }
 
-    // Calculate CD0
-    CD0_ = interpolate(0, alphaDegList, cdList);
+    // Get CD0
+    CD0_ = profileData_.zeroLiftDragCoeff();
     
     if (debug)
     {
@@ -133,7 +120,7 @@ void Foam::fv::LeishmanBeddoes::evalStaticData
     }
     
     // Calculate S1 and S2 constants for the separation point curve
-    calcS1S2(alphaDegList, clList, cdList);
+    calcS1S2();
 }
 
 
@@ -179,80 +166,52 @@ void Foam::fv::LeishmanBeddoes::calcUnsteady()
 
 void Foam::fv::LeishmanBeddoes::calcS1S2
 (
-    List<scalar> alphaDegList,
-    List<scalar> clList,
-    List<scalar> cdList,
     scalar B,
     scalar C,
     scalar D
 )
-{
-    scalar pi = Foam::constant::mathematical::pi;
-    scalar sumY = 0.0;
-    scalar sumXYLnY = 0.0;
-    scalar sumXY = 0.0;
-    scalar sumYLnY = 0.0;
-    scalar sumX2Y = 0.0;
-    scalar alphaLowerLimit = 0.0;
-    scalar alphaUpperLimit = alpha1_;
-    scalar x;
-    scalar y;
-    scalar f = 1.0;
-
-    // Calculate S1
-    forAll(alphaDegList, i)
-    {
-        scalar alphaRad = alphaDegList[i]/180.0*pi;
-        scalar cn = clList[i]*cos(alphaRad) - cdList[i]*sin(alphaRad);
-        if (alphaRad > alphaLowerLimit and alphaRad < alphaUpperLimit)
-        {
-            f = pow((sqrt(mag(cn)/CNAlpha_/mag(alphaRad))
-                    *2.0 - 1.0), 2);
-            x = mag(alphaRad) - alpha1_;
-            y = (f - 1)/(-B);
-            if (f > 0 and f < 1 and y > 0)
-            {
-                sumY += y;
-                sumXYLnY += x*y*log(y);
-                sumXY += x*y;
-                sumYLnY += y*log(y);
-                sumX2Y += x*x*y;
-            }
-        }
-    }
-    scalar b = (sumY*sumXYLnY - sumXY*sumYLnY)/(sumY*sumX2Y - sumXY*sumXY);
-    S1_ = 1.0/b;
+{    
+    // Get subset of angle of attack list in radians
+    List<scalar> alphaList = degToRad
+    (
+        profileData_.angleOfAttackList
+        (
+            0.5, 
+            radToDeg(alpha1_)
+        )
+    );
     
-    // Calculate S2
-    sumY = 0.0;
-    sumXYLnY = 0.0;
-    sumXY = 0.0;
-    sumYLnY = 0.0;
-    sumX2Y = 0.0;
-    alphaLowerLimit = alpha1_ - 1e-3;
-    alphaUpperLimit = pi/6.0;
-    forAll(alphaDegList, i)
-    {
-        scalar alphaRad = alphaDegList[i]/180.0*pi;
-        scalar cn = clList[i]*cos(alphaRad) - cdList[i]*sin(alphaRad);
-        if (alphaRad > alphaLowerLimit and alphaRad < alphaUpperLimit)
-        {
-            f = pow((sqrt(mag(cn)/CNAlpha_/mag(alphaRad))
-                    *2.0 - 1.0), 2);
-            x = alpha1_ - mag(alphaRad);
-            y = (f - C)/D;
-            if (f > 0 and f < 1 and y > 0)
-            {
-                sumY += y;
-                sumXYLnY += x*y*log(y);
-                sumXY += x*y;
-                sumYLnY += y*log(y);
-                sumX2Y += x*x*y;
-            }
-        }
-    }
-    b = (sumY*sumXYLnY - sumXY*sumYLnY)/(sumY*sumX2Y - sumXY*sumXY);
-    S2_ = 1.0/b;
+    // Least squares fit to find S1
+    List<scalar> cnList = profileData_.normalCoefficientList
+    (
+        0.5,
+        radToDeg(alpha1_)
+    );
+    List<scalar> f = cnToF(cnList, alphaList, true);
+    List<scalar> x = alphaList - alpha1_;
+    List<scalar> y = Foam::mag((f - 1.0)/(-B));
+    scalar b = Foam::sum(x*y*Foam::log(y))/Foam::sum(x*x*y);
+    S1_ = 1/b;
+    
+    // Least squares fit to find S2
+    alphaList = degToRad
+    (
+        profileData_.angleOfAttackList
+        (
+            radToDeg(alpha1_) + 0.001,
+            25.0
+        )
+    );
+    cnList = profileData_.normalCoefficientList
+    (
+        radToDeg(alpha1_) + 0.001,
+        25.0
+    );
+    f = cnToF(cnList, alphaList, true);
+    x = alpha1_ - alphaList;
+    y = Foam::mag((f - C)/D);
+    b = Foam::sum(x*y*Foam::log(y))/Foam::sum(x*x*y);
+    S2_ = 1/b;
     
     if (debug)
     {
@@ -389,10 +348,11 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
 (
     const dictionary& dict,
     const word& modelName,
-    const Time& time
+    const Time& time,
+    profileData& profileData
 )
 :
-    dynamicStallModel(dict, modelName, time),
+    dynamicStallModel(dict, modelName, time, profileData),
     X_(0.0),
     XPrev_(0.0),
     Y_(0.0),
@@ -421,6 +381,9 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     CNV_(0.0),
     CNVPrev_(0.0),
     eta_(coeffs_.lookupOrDefault("eta", 0.95)),
+    S1_(VGREAT),
+    S2_(VGREAT),
+    CD0_(VGREAT),
     stalledPrev_(false),
     Tp_(coeffs_.lookupOrDefault("Tp", 1.7)),
     Tf_(coeffs_.lookupOrDefault("Tf", 3.0)),
@@ -455,10 +418,7 @@ void Foam::fv::LeishmanBeddoes::correct
     scalar alphaDeg,
     scalar& cl,
     scalar& cd,
-    scalar& cm,
-    List<scalar> alphaDegList,
-    List<scalar> clList,
-    List<scalar> cdList
+    scalar& cm
 )
 {
     scalar pi = Foam::constant::mathematical::pi;
@@ -509,7 +469,12 @@ void Foam::fv::LeishmanBeddoes::correct
     }
     
     calcAlphaEquiv();
-    evalStaticData(alphaDegList, clList, cdList);
+    // Evaluate static coefficient data if it has changed, e.g., from a
+    // Reynolds number correction
+    if (CD0_ != profileData_.zeroLiftDragCoeff())
+    {
+        evalStaticData();
+    }
     calcUnsteady();
     calcSeparated();
     

@@ -99,15 +99,12 @@ void Foam::fv::LeishmanBeddoes3G::calcUnsteady()
 
 void Foam::fv::LeishmanBeddoes3G::calcS1S2
 (
-    List<scalar> alphaDegList,
-    List<scalar> clList,
-    List<scalar> cdList,
     scalar B,
     scalar C,
     scalar D
 )
 {
-    LeishmanBeddoes::calcS1S2(alphaDegList, clList, cdList, B, C, D);
+    LeishmanBeddoes::calcS1S2(B, C, D);
 }
 
 
@@ -197,10 +194,11 @@ Foam::fv::LeishmanBeddoes3G::LeishmanBeddoes3G
 (
     const dictionary& dict,
     const word& modelName,
-    const Time& time
+    const Time& time,
+    profileData& profileData
 )
 :
-    LeishmanBeddoes(dict, modelName, time),
+    LeishmanBeddoes(dict, modelName, time, profileData),
     Z_(0.0),
     ZPrev_(0.0),
     etaL_(0.0),
