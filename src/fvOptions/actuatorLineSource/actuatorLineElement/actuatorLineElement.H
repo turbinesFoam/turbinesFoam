@@ -289,6 +289,9 @@ public:
             //- Return drag coefficient
             scalar& dragCoefficient();
             
+            //- Return moment coefficient
+            scalar& momentCoefficient();
+            
             //- Return nondimensional distance from actuator line root
             scalar& rootDistance();
             

@@ -111,7 +111,7 @@ void Foam::fv::actuatorLineSource::createOutputFile()
 
     outputFile_ = new OFstream(dir/name_ + ".csv");
     
-    *outputFile_<< "time,x,y,z,rel_vel_mag,alpha_deg,alpha_geom_deg,cl,cd" 
+    *outputFile_<< "time,x,y,z,rel_vel_mag,alpha_deg,alpha_geom_deg,cl,cd,cm" 
                 << endl;
 }
 
@@ -348,6 +348,7 @@ void Foam::fv::actuatorLineSource::writePerf()
     scalar alphaGeom = 0.0;
     scalar cl = 0.0;
     scalar cd = 0.0;
+    scalar cm = 0.0;
     
     forAll(elements_, i)
     {
@@ -358,18 +359,19 @@ void Foam::fv::actuatorLineSource::writePerf()
         alphaGeom += elements_[i].angleOfAttackGeom();
         cl += elements_[i].liftCoefficient();
         cd += elements_[i].dragCoefficient();
+        cm += elements_[i].momentCoefficient();
     }
     
     x /= nElements_; y /= nElements_; z /= nElements_;
     relVelMag /= nElements_;
     alphaDeg /= nElements_;
     alphaGeom /= nElements_;
-    cl /= nElements_; cd /= nElements_;
+    cl /= nElements_; cd /= nElements_; cm /= nElements_;
  
-    // write time,x,y,z,rel_vel_mag,alpha_deg,alpha_geom_deg,cl,cd
+    // write time,x,y,z,rel_vel_mag,alpha_deg,alpha_geom_deg,cl,cd,cm
     *outputFile_<< time << "," << x << "," << y << "," << z << "," << relVelMag
                 << "," << alphaDeg << "," << alphaGeom << "," << cl << "," 
-                << cd << endl;
+                << cd << "," << cm << endl;
 }
 
 

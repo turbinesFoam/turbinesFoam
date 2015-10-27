@@ -391,6 +391,12 @@ Foam::scalar& Foam::fv::actuatorLineElement::dragCoefficient()
 }
 
 
+Foam::scalar& Foam::fv::actuatorLineElement::momentCoefficient()
+{
+    return momentCoefficient_;
+}
+
+
 Foam::scalar& Foam::fv::actuatorLineElement::rootDistance()
 {
     return rootDistance_;
