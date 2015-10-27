@@ -78,6 +78,9 @@ protected:
         //- Constant associated with vortex lift
         scalar B1_;
         
+        //- Constant associated with vortex moment
+        scalar B2_;
+        
         //- Constant associated with the tangential force
         scalar E0_;
         

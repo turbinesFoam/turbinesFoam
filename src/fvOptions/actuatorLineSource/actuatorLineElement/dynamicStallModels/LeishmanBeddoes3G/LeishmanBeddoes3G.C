@@ -73,6 +73,13 @@ void Foam::fv::LeishmanBeddoes3G::calcUnsteady()
        + (lambdaL_ - lambdaLPrev_)*exp(-deltaT_/(2.0*TI_));
     CNI_ = 4.0/M_*H_;
     
+    // Calculate the impulsive moment coefficient
+    lambdaM_ = 3*pi/16*(alpha_ + c_/(4*magU_)*deltaAlpha_/deltaT_)
+             + pi/16*c_/magU_*deltaAlpha_/deltaT_;
+    J_ = JPrev_*exp(-deltaT_/TI_)
+       + (lambdaM_ - lambdaMPrev_)*exp(-deltaT_/(2.0*TI_));
+    CMI_ = -4.0/M_*J_;
+    
     // Calculate total normal force coefficient
     CNP_ = CNC_ + CNI_;
     
@@ -185,6 +192,8 @@ void Foam::fv::LeishmanBeddoes3G::update()
     etaLPrev_ = etaL_;
     HPrev_ = H_;
     lambdaLPrev_ = lambdaL_;
+    JPrev_ = J_;
+    lambdaMPrev_ = lambdaM_;
 }
 
 
@@ -209,7 +218,13 @@ Foam::fv::LeishmanBeddoes3G::LeishmanBeddoes3G
     H_(0.0),
     HPrev_(0.0),
     lambdaL_(0.0),
-    lambdaLPrev_(0.0)
+    lambdaLPrev_(0.0),
+    J_(0.0),
+    JPrev_(0.0),
+    lambdaM_(0.0),
+    lambdaMPrev_(0.0),
+    CMC_(0.0),
+    CMI_(0.0)
 {
     fCrit_ = 0.6;
     Tv_ = coeffs_.lookupOrDefault("Tv", 10.0);

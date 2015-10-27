@@ -94,11 +94,29 @@ protected:
         //- Previous value of lambdaL
         scalar lambdaLPrev_;
         
+        //- Deficiency function for impulsive moment coefficient
+        scalar J_;
+        
+        //- Previous value of J
+        scalar JPrev_;
+        
+        //- Impulsive forcing term for pitching moment
+        scalar lambdaM_;
+        
+        //- Previous value of lambdaM
+        scalar lambdaMPrev_;
+        
         //- Modified trailing edge separation point
         scalar f3G_;
         
         //- Modulation parameter for the f3G deficiency function
         scalar Vx_;
+        
+        //- Circulatory moment coefficient
+        scalar CMC_;
+        
+        //- Impulsive moment coefficient
+        scalar CMI_;
         
         
     // Protected member functions
