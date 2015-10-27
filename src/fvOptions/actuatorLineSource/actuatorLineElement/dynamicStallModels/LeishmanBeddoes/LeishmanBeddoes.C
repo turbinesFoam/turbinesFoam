@@ -221,6 +221,28 @@ void Foam::fv::LeishmanBeddoes::calcS1S2
 }
 
 
+void Foam::fv::LeishmanBeddoes::calcK1K2()
+{
+    scalar pi = Foam::constant::mathematical::pi;
+    List<scalar> alpha = degToRad(profileData_.angleOfAttackList(0, 25));
+    List<scalar> cn = profileData_.normalCoefficientList(0, 25);
+    List<scalar> cm = profileData_.momentCoefficientList(0, 25);
+    List<scalar> f = cnToF(cn, alpha);
+    scalar m = 2;
+    simpleMatrix<scalar> A(2);
+    A[0][0] = Foam::sum(magSqr(1.0 - f));
+    A[0][1] = Foam::sum(sin(pi*Foam::pow(f, m)));
+    A[1][0] = Foam::sum(sin(pi*Foam::pow(f, m))*(1.0 - f));
+    A[1][1] = Foam::sum(magSqr(sin(pi*Foam::pow(f, m))));
+    A.source()[0] = Foam::sum(cm/cn*(1.0 - f)) - K0_*Foam::sum((1.0 - f));
+    A.source()[1] = Foam::sum(cm/cn*sin(pi*Foam::pow(f, m))) 
+                  - K0_*Foam::sum(sin(pi*Foam::pow(f, m)));
+    List<scalar> sol = A.solve();
+    K1_ = sol[0];
+    K2_ = sol[1];
+}
+
+
 void Foam::fv::LeishmanBeddoes::calcSeparated()
 {
     // Calculate trailing-edge separation point
@@ -392,7 +414,10 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     tau_(0.0),
     tauPrev_(0.0),
     nNewTimes_(0),
-    fCrit_(0.7)
+    fCrit_(0.7),
+    K0_(1e-6),
+    K1_(0.0),
+    K2_(0.0)
 {
     dict_.lookup("chordLength") >> c_;
     
