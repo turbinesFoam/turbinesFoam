@@ -98,6 +98,9 @@ class profileData
         //- Angle of attack at zero lift (deg)
         scalar zeroLiftAngleOfAttack_;
         
+        //- Moment coefficient at zero lift
+        scalar zeroLiftMomentCoeff_;
+        
         //- Slope of normal force coefficient (1/rad)
         scalar normalCoeffSlope_;
 
@@ -240,6 +243,9 @@ public:
             
             //- Return zero lift angle of attack (deg)
             scalar zeroLiftAngleOfAttack();
+            
+            //- Return zero lift moment coefficient
+            scalar zeroLiftMomentCoeff();
             
             //- Return normal coefficient slope (1/rad)
             scalar normalCoeffSlope();

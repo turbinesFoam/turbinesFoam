@@ -176,6 +176,14 @@ void Foam::profileData::calcZeroLiftAngleOfAttack()
 }
 
 
+void Foam::profileData::calcZeroLiftMomentCoeff()
+{
+    List<scalar> cmList = momentCoefficientList(-10, 10);
+    List<scalar> alphaList = momentCoefficientList(-10, 10);
+    zeroLiftMomentCoeff_ = interpolate(0, cmList, alphaList);
+}
+
+
 void Foam::profileData::calcNormalCoeffSlope()
 {
     scalar alphaHigh = 0.5*staticStallAngle_;
@@ -197,6 +205,7 @@ void Foam::profileData::analyze()
     calcStaticStallAngle();
     calcZeroLiftDragCoeff();
     calcZeroLiftAngleOfAttack();
+    calcZeroLiftMomentCoeff();
     calcNormalCoeffSlope();
 }
 
@@ -220,6 +229,7 @@ Foam::profileData::profileData
     staticStallAngle_(0.0),
     zeroLiftDragCoeff_(0.0),
     zeroLiftAngleOfAttack_(0.0),
+    zeroLiftMomentCoeff_(0.0),
     normalCoeffSlope_(0.0)
 {
     read();
@@ -497,6 +507,12 @@ Foam::scalar Foam::profileData::zeroLiftDragCoeff()
 Foam::scalar Foam::profileData::zeroLiftAngleOfAttack()
 {
     return zeroLiftAngleOfAttack_;
+}
+
+
+Foam::scalar Foam::profileData::zeroLiftMomentCoeff()
+{
+    return zeroLiftMomentCoeff_;
 }
 
 
