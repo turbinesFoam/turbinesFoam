@@ -132,9 +132,6 @@ class profileData
         
         //- Calculate normal force coefficient slope
         void calcNormalCoeffSlope();
-        
-        //- Analyze the input data
-        void analyze();
 
         //- Disallow default bitwise copy construct
         profileData(const profileData&);
@@ -261,6 +258,10 @@ public:
 
 
         // Check
+        
+            //- Analyze the input data
+            void analyze();
+
 
         // Edit
         

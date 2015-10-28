@@ -200,16 +200,6 @@ void Foam::profileData::calcNormalCoeffSlope()
 }
 
 
-void Foam::profileData::analyze()
-{
-    calcStaticStallAngle();
-    calcZeroLiftDragCoeff();
-    calcZeroLiftAngleOfAttack();
-    calcZeroLiftMomentCoeff();
-    calcNormalCoeffSlope();
-}
-
-
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
 
@@ -257,6 +247,16 @@ Foam::profileData::~profileData()
 
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
+
+void Foam::profileData::analyze()
+{
+    calcStaticStallAngle();
+    calcZeroLiftDragCoeff();
+    calcZeroLiftAngleOfAttack();
+    calcZeroLiftMomentCoeff();
+    calcNormalCoeffSlope();
+}
+
 
 Foam::scalar Foam::profileData::liftCoefficient(scalar angleOfAttackDeg)
 {
