@@ -535,6 +535,7 @@ void Foam::fv::LeishmanBeddoes::correct
         Info<< "    fDoublePrime: " << fDoublePrime_ << endl;
         Info<< "    Corrected normal force coefficient: " << CN_ << endl;
         Info<< "    Circulatory normal force coefficient: " << CNC_ << endl;
+        Info<< "    Separation normal force coefficient: " << CNF_ << endl;
         Info<< "    Impulsive normal force coefficient: " << CNI_ << endl;
         Info<< "    Vortex normal force coefficient: " << CNV_ << endl;
         Info<< "    Tangential force coefficient: " << CT_ << endl;
