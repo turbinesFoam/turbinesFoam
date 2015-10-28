@@ -183,10 +183,13 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
     // this is included in the Vx term
     CN_ = CNF_;
     
-    // Calculate moment coefficient
-    scalar cmf = 0.0;
-    scalar cmv = 0.0;
-    CM_ = CMI_ + cmf + cmv;
+    // Calculate moment coefficient (needs to be verified in reference)
+    scalar m = cmFitExponent_;
+    scalar cmf = (K0_ + K1_*(1 - fDoublePrime_) 
+               + K2_*sin(pi*Foam::pow(fDoublePrime_, m)))*CNC_ 
+               + profileData_.zeroLiftMomentCoeff();
+    scalar cmv = 0.2*(1.0 - cos(pi*tau_/Tvl_))*CNV_;
+    CM_ = cmf + cmv + CMI_;
 }
 
 
