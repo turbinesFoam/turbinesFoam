@@ -479,6 +479,7 @@ void Foam::fv::LeishmanBeddoes::correct
     {
         alpha_ = alphaDeg/180.0*pi;
         alphaPrev_ = alpha_;
+        profileData_.analyze();
     }
     
     magU_ = magU;

@@ -223,11 +223,6 @@ Foam::profileData::profileData
     normalCoeffSlope_(0.0)
 {
     read();
-    // Analyze if the data is not from a bluff body
-    if (Foam::sum(Foam::mag(liftCoefficientList_)) > VSMALL)
-    {
-        analyze();
-    }
 }
 
 
