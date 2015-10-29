@@ -216,11 +216,11 @@ Foam::profileData::profileData
     Re_(VSMALL),
     ReRef_(VSMALL),
     correctRe_(false),
-    staticStallAngle_(0.0),
-    zeroLiftDragCoeff_(0.0),
-    zeroLiftAngleOfAttack_(0.0),
-    zeroLiftMomentCoeff_(0.0),
-    normalCoeffSlope_(0.0)
+    staticStallAngle_(VGREAT),
+    zeroLiftDragCoeff_(VGREAT),
+    zeroLiftAngleOfAttack_(VGREAT),
+    zeroLiftMomentCoeff_(VGREAT),
+    normalCoeffSlope_(VGREAT)
 {
     read();
 }
@@ -489,30 +489,50 @@ Foam::List<scalar> Foam::profileData::chordwiseCoefficientList
 
 Foam::scalar Foam::profileData::staticStallAngleRad()
 {
+    if (staticStallAngle_ == VGREAT)
+    {
+        calcStaticStallAngle();
+    }
     return degToRad(staticStallAngle_);
 }
 
 
 Foam::scalar Foam::profileData::zeroLiftDragCoeff()
 {
+    if (zeroLiftDragCoeff_ == VGREAT)
+    {
+        calcZeroLiftDragCoeff();
+    }
     return zeroLiftDragCoeff_;
 }
 
 
 Foam::scalar Foam::profileData::zeroLiftAngleOfAttack()
 {
+    if (zeroLiftAngleOfAttack_ == VGREAT)
+    {
+        calcZeroLiftAngleOfAttack();
+    }
     return zeroLiftAngleOfAttack_;
 }
 
 
 Foam::scalar Foam::profileData::zeroLiftMomentCoeff()
 {
+    if (zeroLiftMomentCoeff_ == VGREAT)
+    {
+        calcZeroLiftMomentCoeff();
+    }
     return zeroLiftMomentCoeff_;
 }
 
 
 Foam::scalar Foam::profileData::normalCoeffSlope()
 {
+    if (normalCoeffSlope_ == VGREAT)
+    {
+        calcNormalCoeffSlope();
+    }
     return normalCoeffSlope_;
 }
 

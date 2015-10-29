@@ -164,9 +164,6 @@ Foam::fv::dynamicStallModel::dynamicStallModel
     coeffs_(dict.subOrEmptyDict(modelName + "Coeffs")),
     startTime_(time.value())
 {
-    // Analyze profileData
-    profileData_.analyze();
-
     if (debug)
     {
         Info<< modelName << " dynamic stall model created" << endl
