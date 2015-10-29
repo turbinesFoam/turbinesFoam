@@ -176,6 +176,14 @@ void Foam::profileData::calcZeroLiftAngleOfAttack()
 }
 
 
+void Foam::profileData::calcZeroLiftMomentCoeff()
+{
+    List<scalar> cmList = momentCoefficientList(-10, 10);
+    List<scalar> clList = liftCoefficientList(-10, 10);
+    zeroLiftMomentCoeff_ = interpolate(0, clList, cmList);
+}
+
+
 void Foam::profileData::calcNormalCoeffSlope()
 {
     scalar alphaHigh = 0.5*staticStallAngle_;
@@ -189,15 +197,6 @@ void Foam::profileData::calcNormalCoeffSlope()
     A.source()[0] = Foam::sum(cnList);
     A.source()[1] = Foam::sum(cnList*alphaList);
     normalCoeffSlope_ = A.solve()[1];
-}
-
-
-void Foam::profileData::analyze()
-{
-    calcStaticStallAngle();
-    calcZeroLiftDragCoeff();
-    calcZeroLiftAngleOfAttack();
-    calcNormalCoeffSlope();
 }
 
 
@@ -217,17 +216,13 @@ Foam::profileData::profileData
     Re_(VSMALL),
     ReRef_(VSMALL),
     correctRe_(false),
-    staticStallAngle_(0.0),
-    zeroLiftDragCoeff_(0.0),
-    zeroLiftAngleOfAttack_(0.0),
-    normalCoeffSlope_(0.0)
+    staticStallAngle_(VGREAT),
+    zeroLiftDragCoeff_(VGREAT),
+    zeroLiftAngleOfAttack_(VGREAT),
+    zeroLiftMomentCoeff_(VGREAT),
+    normalCoeffSlope_(VGREAT)
 {
     read();
-    // Analyze if the data is not from a bluff body
-    if (Foam::sum(Foam::mag(liftCoefficientList_)) > VSMALL)
-    {
-        analyze();
-    }
 }
 
 
@@ -247,6 +242,16 @@ Foam::profileData::~profileData()
 
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
+
+void Foam::profileData::analyze()
+{
+    calcStaticStallAngle();
+    calcZeroLiftDragCoeff();
+    calcZeroLiftAngleOfAttack();
+    calcZeroLiftMomentCoeff();
+    calcNormalCoeffSlope();
+}
+
 
 Foam::scalar Foam::profileData::liftCoefficient(scalar angleOfAttackDeg)
 {
@@ -484,24 +489,50 @@ Foam::List<scalar> Foam::profileData::chordwiseCoefficientList
 
 Foam::scalar Foam::profileData::staticStallAngleRad()
 {
+    if (staticStallAngle_ == VGREAT)
+    {
+        calcStaticStallAngle();
+    }
     return degToRad(staticStallAngle_);
 }
 
 
 Foam::scalar Foam::profileData::zeroLiftDragCoeff()
 {
+    if (zeroLiftDragCoeff_ == VGREAT)
+    {
+        calcZeroLiftDragCoeff();
+    }
     return zeroLiftDragCoeff_;
 }
 
 
 Foam::scalar Foam::profileData::zeroLiftAngleOfAttack()
 {
+    if (zeroLiftAngleOfAttack_ == VGREAT)
+    {
+        calcZeroLiftAngleOfAttack();
+    }
     return zeroLiftAngleOfAttack_;
+}
+
+
+Foam::scalar Foam::profileData::zeroLiftMomentCoeff()
+{
+    if (zeroLiftMomentCoeff_ == VGREAT)
+    {
+        calcZeroLiftMomentCoeff();
+    }
+    return zeroLiftMomentCoeff_;
 }
 
 
 Foam::scalar Foam::profileData::normalCoeffSlope()
 {
+    if (normalCoeffSlope_ == VGREAT)
+    {
+        calcNormalCoeffSlope();
+    }
     return normalCoeffSlope_;
 }
 

@@ -238,6 +238,21 @@ protected:
         //- Magnitude of the relative velocity
         scalar magU_;
         
+        //- Offset of aerodynamic center (0.25 - x_ac)
+        scalar K0_;
+        
+        //- Linear pitching moment curve fit coefficient
+        scalar K1_;
+        
+        //- Sinusoidal pitching moment curve fit coefficient
+        scalar K2_;
+        
+        //- Exponent on f in moment coefficient fit equation
+        scalar cmFitExponent_;
+        
+        //- Total moment coefficient
+        scalar CM_;
+        
         
     // Protected member functions
     
@@ -258,6 +273,9 @@ protected:
             scalar C=0.04,
             scalar D=0.66
         );
+        
+        //- Calculate K1 and K2 coefficients
+        virtual void calcK1K2();
         
         //- Calculate separated flow quantities
         virtual void calcSeparated();

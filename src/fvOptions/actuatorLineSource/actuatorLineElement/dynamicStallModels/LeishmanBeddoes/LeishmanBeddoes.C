@@ -121,6 +121,9 @@ void Foam::fv::LeishmanBeddoes::evalStaticData()
     
     // Calculate S1 and S2 constants for the separation point curve
     calcS1S2();
+    
+    // Calculate the K1 and K2 constants for the moment coefficient
+    calcK1K2();
 }
 
 
@@ -221,6 +224,28 @@ void Foam::fv::LeishmanBeddoes::calcS1S2
 }
 
 
+void Foam::fv::LeishmanBeddoes::calcK1K2()
+{
+    scalar pi = Foam::constant::mathematical::pi;
+    List<scalar> alpha = degToRad(profileData_.angleOfAttackList(0.5, 25));
+    List<scalar> cn = profileData_.normalCoefficientList(0.5, 25);
+    List<scalar> cm = profileData_.momentCoefficientList(0.5, 25);
+    List<scalar> f = cnToF(cn, alpha);
+    scalar m = cmFitExponent_;
+    simpleMatrix<scalar> A(2);
+    A[0][0] = Foam::sum(magSqr(1.0 - f));
+    A[0][1] = Foam::sum(sin(pi*Foam::pow(f, m)));
+    A[1][0] = Foam::sum(sin(pi*Foam::pow(f, m))*(1.0 - f));
+    A[1][1] = Foam::sum(magSqr(sin(pi*Foam::pow(f, m))));
+    A.source()[0] = Foam::sum(cm/cn*(1.0 - f)) - K0_*Foam::sum((1.0 - f));
+    A.source()[1] = Foam::sum(cm/cn*sin(pi*Foam::pow(f, m))) 
+                  - K0_*Foam::sum(sin(pi*Foam::pow(f, m)));
+    List<scalar> sol = A.solve();
+    K1_ = sol[0];
+    K2_ = sol[1];
+}
+
+
 void Foam::fv::LeishmanBeddoes::calcSeparated()
 {
     // Calculate trailing-edge separation point
@@ -315,6 +340,16 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     // lift
     CN_ = CNF_ + CNV_;
     
+    // Calculate moment coefficient
+    scalar pi = Foam::constant::mathematical::pi;
+    scalar m = cmFitExponent_;
+    scalar cmf = (K0_ + K1_*(1 - fDoublePrime_) 
+               + K2_*sin(pi*Foam::pow(fDoublePrime_, m)))*CNC_ 
+               + profileData_.zeroLiftMomentCoeff();
+    scalar cpv = 0.20*(1 - cos(pi*tau_/Tvl_));
+    scalar cmv = -cpv*CNV_;
+    CM_ = cmf + cmv;
+    
     if (debug)
     {
         Info<< "    CV: " << CV_ << endl;
@@ -392,7 +427,12 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     tau_(0.0),
     tauPrev_(0.0),
     nNewTimes_(0),
-    fCrit_(0.7)
+    fCrit_(0.7),
+    K0_(1e-6),
+    K1_(0.0),
+    K2_(0.0),
+    cmFitExponent_(coeffs_.lookupOrDefault("cmFitExponent", 2)),
+    CM_(0.0)
 {
     dict_.lookup("chordLength") >> c_;
     
@@ -466,6 +506,7 @@ void Foam::fv::LeishmanBeddoes::correct
         Info<< "    Initial normal force coefficient: " << cn0 << endl;
         Info<< "    Initial lift coefficient: " << cl << endl;
         Info<< "    Initial drag coefficient: " << cd << endl;
+        Info<< "    Initial moment coefficient: " << cm << endl;
     }
     
     calcAlphaEquiv();
@@ -478,9 +519,10 @@ void Foam::fv::LeishmanBeddoes::correct
     calcUnsteady();
     calcSeparated();
     
-    // Modify lift and drag coefficients based on new normal force coefficient
+    // Modify coefficients
     cl = CN_*cos(alpha_) + CT_*sin(alpha_);
     cd = CN_*sin(alpha_) - CT_*cos(alpha_) + CD0_;
+    cm = CM_;
     
     if (debug)
     {
@@ -493,11 +535,13 @@ void Foam::fv::LeishmanBeddoes::correct
         Info<< "    fDoublePrime: " << fDoublePrime_ << endl;
         Info<< "    Corrected normal force coefficient: " << CN_ << endl;
         Info<< "    Circulatory normal force coefficient: " << CNC_ << endl;
+        Info<< "    Separation normal force coefficient: " << CNF_ << endl;
         Info<< "    Impulsive normal force coefficient: " << CNI_ << endl;
         Info<< "    Vortex normal force coefficient: " << CNV_ << endl;
         Info<< "    Tangential force coefficient: " << CT_ << endl;
         Info<< "    Corrected lift coefficient: " << cl << endl;
         Info<< "    Corrected drag coefficient: " << cd << endl;
+        Info<< "    Corrected moment coefficient: " << cm << endl;
         Info<< "    -------------------------------------------------" << endl;
     }
 }

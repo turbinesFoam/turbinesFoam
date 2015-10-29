@@ -98,6 +98,9 @@ class profileData
         //- Angle of attack at zero lift (deg)
         scalar zeroLiftAngleOfAttack_;
         
+        //- Moment coefficient at zero lift
+        scalar zeroLiftMomentCoeff_;
+        
         //- Slope of normal force coefficient (1/rad)
         scalar normalCoeffSlope_;
 
@@ -124,11 +127,11 @@ class profileData
         //- Calculate zero lift angle of attack
         void calcZeroLiftAngleOfAttack();
         
+        //- Calculate zero lift moment coefficient
+        void calcZeroLiftMomentCoeff();
+        
         //- Calculate normal force coefficient slope
         void calcNormalCoeffSlope();
-        
-        //- Analyze the input data
-        void analyze();
 
         //- Disallow default bitwise copy construct
         profileData(const profileData&);
@@ -241,6 +244,9 @@ public:
             //- Return zero lift angle of attack (deg)
             scalar zeroLiftAngleOfAttack();
             
+            //- Return zero lift moment coefficient
+            scalar zeroLiftMomentCoeff();
+            
             //- Return normal coefficient slope (1/rad)
             scalar normalCoeffSlope();
             
@@ -252,6 +258,10 @@ public:
 
 
         // Check
+        
+            //- Analyze the input data
+            void analyze();
+
 
         // Edit
         

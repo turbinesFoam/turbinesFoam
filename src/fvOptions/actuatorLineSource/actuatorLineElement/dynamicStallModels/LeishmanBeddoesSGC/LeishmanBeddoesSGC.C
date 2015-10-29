@@ -149,10 +149,20 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
     // lift
     CN_ = CNF_ + CNV_;
     
+    // Calculate moment coefficient
+    scalar m = cmFitExponent_;
+    scalar cmf = (K0_ + K1_*(1 - fDoublePrime_) 
+               + K2_*sin(pi*Foam::pow(fDoublePrime_, m)))*CNC_ 
+               + profileData_.zeroLiftMomentCoeff();
+    scalar cmv = B2_*(1.0 - cos(pi*tau_/Tvl_))*CNV_;
+    CM_ = cmf + cmv + CMI_;
+    
     if (debug)
     {
         Info<< "    Vx: " << Vx_ << endl;
         Info<< "    f: " << f << endl;
+        Info<< "    cmf: " << cmf << endl;
+        Info<< "    cmv: " << cmv << endl;
     }
 }
 
@@ -182,6 +192,7 @@ Foam::fv::LeishmanBeddoesSGC::LeishmanBeddoesSGC
     r_(0.0),
     r0_(coeffs_.lookupOrDefault("r0", 0.01)),
     B1_(coeffs_.lookupOrDefault("B1", 0.5)),
+    B2_(coeffs_.lookupOrDefault("B2", 0.2)),
     E0_(coeffs_.lookupOrDefault("E0", 0.15)),
     alphaDS0DiffDeg_(coeffs_.lookupOrDefault("alphaDS0DiffDeg", 3.6)),
     DAlpha_(0.0),

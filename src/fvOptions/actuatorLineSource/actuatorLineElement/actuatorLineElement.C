@@ -391,6 +391,12 @@ Foam::scalar& Foam::fv::actuatorLineElement::dragCoefficient()
 }
 
 
+Foam::scalar& Foam::fv::actuatorLineElement::momentCoefficient()
+{
+    return momentCoefficient_;
+}
+
+
 Foam::scalar& Foam::fv::actuatorLineElement::rootDistance()
 {
     return rootDistance_;
@@ -755,9 +761,10 @@ Foam::vector Foam::fv::actuatorLineElement::moment(vector point)
     // Calculate radius vector
     vector radius = position_ - point;
     vector moment = radius ^ forceVector_;
-    moment += 0.5*chordLength_*chordLength_*spanLength_*momentCoefficient_
-            * magSqr(relativeVelocity_)*spanDirection_;
-    return moment;
+    vector pitchingMoment = 0.5*chordLength_*chordLength_*spanLength_
+                          * momentCoefficient_*magSqr(relativeVelocity_)
+                          * spanDirection_;
+    return moment + pitchingMoment;
 }
 
 
