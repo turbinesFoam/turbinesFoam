@@ -8,7 +8,7 @@ before_install:
     - sudo apt-get update -qq
 
 install:
-    - sudo apt-get install -qq openfoam240
+    - sudo apt-get install -qq openfoam240 --allow-unauthenticated
     - source /opt/openfoam240/etc/bashrc
     - ./Allwmake
 
