@@ -6,12 +6,14 @@ dist: trusty
 before_install:
     - sudo add-apt-repository http://www.openfoam.org/download/ubuntu
     - sudo apt-get update -qq
-
-install:
-    - sudo apt-get install openfoam240
-
-before_script:
+    - sudo apt-get install -qq openfoam240
     - source /opt/openfoam240/etc/bashrc
 
-script:
+install:
     - ./Allwmake
+
+before_script:
+   - cd tutorials/actuatorLine/simpleFoam
+
+script:
+    - ./Allrun
