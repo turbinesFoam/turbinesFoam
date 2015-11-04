@@ -1,0 +1,13 @@
+# Travis CI setup for turbinesFoam
+
+language: cpp
+
+before_install:
+    - sudo add-apt-repository http://www.openfoam.org/download/ubuntu
+    - sudo apt-get update -qq
+    - sudo apt-get install openfoam240
+    - sudo apt-get install paraviewopenfoam410
+
+install:
+    - source /opt/openfoam240/etc/bashrc
+    - ./Allwmake
