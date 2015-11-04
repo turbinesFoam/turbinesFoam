@@ -17,11 +17,11 @@ if [ "$1" = "-parallel" ]
     runApplication decomposePar
     ls -d processor* | xargs -I {} rm -rf ./{}/0
     ls -d processor* | xargs -I {} cp -r 0.org ./{}/0
-    mpirun -np $nProc simpleFoam -parallel | tee log.simpleFoam
+    runParallel $nProc simpleFoam
     runApplication reconstructPar
     rm -rf processor*
 else
-    simpleFoam | tee log.simpleFoam
+    runApplication simpleFoam
 fi
 
-vorticity | tee log.vorticity
+runApplication vorticity
