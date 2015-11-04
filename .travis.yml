@@ -11,3 +11,7 @@ before_install:
 install:
     - source /opt/openfoam240/etc/bashrc
     - ./Allwmake
+
+script:
+    - cd tutorials/actuatorLine/simpleFoam
+    - ./Allrun
