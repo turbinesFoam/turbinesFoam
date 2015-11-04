@@ -1,18 +1,17 @@
 # Travis CI setup for turbinesFoam
 
 sudo: required
-# dist: trusty
+dist: trusty
 
 before_install:
-    - VERS=$(lsb_release -cs)
-    - sudo sh -c "echo deb http://www.openfoam.org/download/ubuntu $VERS main > /etc/apt/sources.list.d/openfoam.list"
+    - sudo add-apt-repository http://www.openfoam.org/download/ubuntu
     - sudo apt-get update -qq
 
 install:
-    - sudo apt-get install openfoam230 --allow-unauthenticated
+    - sudo apt-get install openfoam240
 
 before_script:
-    - source /opt/openfoam230/etc/bashrc
+    - source /opt/openfoam240/etc/bashrc
 
 script:
     - ./Allwmake
