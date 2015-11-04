@@ -8,12 +8,10 @@ before_install:
     - sudo apt-get update -qq
 
 install:
-    - sudo apt-get install -qq openfoam240 --allow-unauthenticated
-    - source /opt/openfoam240/etc/bashrc
-    - ./Allwmake
+    - sudo apt-get install -qq openfoam240
 
 before_script:
-    - cd tutorials/actuatorLine/simpleFoam
+    - source /opt/openfoam240/etc/bashrc
 
 script:
-    - ./Allrun
+    - ./Allwmake
