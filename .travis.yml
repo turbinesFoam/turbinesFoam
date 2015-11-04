@@ -6,8 +6,8 @@ before_install:
     - VERS=$(lsb_release -cs)
     - sudo sh -c "echo deb http://www.openfoam.org/download/ubuntu $VERS main > /etc/apt/sources.list.d/openfoam.list"
     - sudo apt-get update -qq
-    - sudo apt-get install openfoam230
-    - sudo apt-get install paraviewopenfoam410
+    - sudo apt-get install openfoam230 --allow-unauthenticated
+    - sudo apt-get install paraviewopenfoam410 --allow-unauthenticated
 
 install:
     - source /opt/openfoam230/etc/bashrc
