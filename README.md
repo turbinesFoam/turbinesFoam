@@ -1,8 +1,9 @@
 turbinesFoam
 ============
 
-[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.32471.svg)](http://dx.doi.org/10.5281/zenodo.32471)
+[![Build Status](https://travis-ci.org/turbinesFoam/turbinesFoam.svg?branch=master)](https://travis-ci.org/turbinesFoam/turbinesFoam)
 [![Stories in Ready](https://badge.waffle.io/turbinesfoam/turbinesfoam.png?label=ready&title=Ready)](https://waffle.io/turbinesfoam/turbinesfoam)
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.32471.svg)](http://dx.doi.org/10.5281/zenodo.32471)
 
 `turbinesFoam` is a library for simulating wind and marine
 hydrokinetic turbines in OpenFOAM (2.4.x) using the actuator line approach.
