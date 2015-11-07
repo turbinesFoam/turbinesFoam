@@ -403,6 +403,12 @@ void Foam::fv::axialFlowTurbineALSource::createTower()
 }
 
 
+void Foam::fv::axialFlowTurbineALSource::createNacelle()
+{
+    // Do nothing
+}
+
+
 // * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
 Foam::fv::axialFlowTurbineALSource::axialFlowTurbineALSource
