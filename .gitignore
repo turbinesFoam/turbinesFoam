@@ -4,3 +4,4 @@
 *.dep
 *lnInclude
 callgrind*
+*.pyc
