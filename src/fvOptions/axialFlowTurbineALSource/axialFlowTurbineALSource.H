@@ -116,8 +116,11 @@ protected:
         //- Create actuator line for nacelle
         void createNacelle();
         
-        //- Rotate the turbine
+        //- Rotate the turbine according to its angular velocity and time step
         virtual void rotate();
+        
+        //- Rotate the turbine a specified angle about its axis
+        virtual void rotate(scalar radians);
 
 
 public:

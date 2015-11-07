@@ -485,6 +485,10 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     if (hasShaft_) createShaft();
     createOutputFile();
     
+    // Rotate turbine to azimuthalOffset if necessary
+    scalar azimuthalOffset = coeffs_.lookupOrDefault("azimuthalOffset", 0.0);
+    rotate(degToRad(azimuthalOffset));
+    
     if (debug)
     {
         Info<< "crossFlowTurbineALSource created at time = " << time_.value()
@@ -511,7 +515,20 @@ void Foam::fv::crossFlowTurbineALSource::rotate()
 
     scalar deltaT = time_.deltaT().value();
     scalar radians = omega_*deltaT;
-    
+    rotate(radians);
+    angleDeg_ += radToDeg(radians);
+    lastRotationTime_ = time_.value();
+}
+
+
+void Foam::fv::crossFlowTurbineALSource::rotate(scalar radians)
+{
+    if (debug)
+    {
+        Info<< "Rotating " << name_ << " " << radians << " radians" 
+            << endl << endl;
+    }
+
     forAll(blades_, i)
     {
         blades_[i].rotate(origin_, axis_, radians);
@@ -532,14 +549,6 @@ void Foam::fv::crossFlowTurbineALSource::rotate()
         shaft_->rotate(origin_, axis_, radians);
         shaft_->setSpeed(origin_, axis_, omega_);
     }
-    
-    if (debug)
-    {
-        Info<< "Rotating " << name_ << " " << radians << " radians" 
-            << endl << endl;
-    }
-    angleDeg_ += radians*180.0/Foam::constant::mathematical::pi;
-    lastRotationTime_ = time_.value();
 }
 
 

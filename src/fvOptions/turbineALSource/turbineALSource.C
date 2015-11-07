@@ -203,8 +203,11 @@ Foam::scalar& Foam::fv::turbineALSource::torque()
 
 
 void Foam::fv::turbineALSource::rotate()
-{
-}
+{}
+
+
+void Foam::fv::turbineALSource::rotate(scalar radians)
+{}
 
 
 void Foam::fv::turbineALSource::addSup
