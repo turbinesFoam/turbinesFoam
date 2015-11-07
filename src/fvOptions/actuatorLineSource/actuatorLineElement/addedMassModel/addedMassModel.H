@@ -92,9 +92,6 @@ class addedMassModel
 public:
 
     // Constructors
-    
-        //- Construct null
-        addedMassModel();
 
         //- Construct from components
         addedMassModel
@@ -107,8 +104,13 @@ public:
 
     // Selectors
 
-        //- Select null constructed
-        static autoPtr<addedMassModel> New();
+        //- Select from components
+        static autoPtr<addedMassModel> New
+        (
+            const Time& time,
+            scalar chordLength,
+            bool debug=false
+        );
 
 
     //- Destructor

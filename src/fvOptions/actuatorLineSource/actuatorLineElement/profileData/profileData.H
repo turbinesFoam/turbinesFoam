@@ -141,9 +141,6 @@ public:
 
     // Constructors
 
-        //- Construct null
-        profileData();
-
         //- Construct from components
         profileData
         (
@@ -154,8 +151,12 @@ public:
 
     // Selectors
 
-        //- Select null constructed
-        static autoPtr<profileData> New();
+        //- Select from components
+        static autoPtr<profileData> New
+        (
+            const word& name,
+            const dictionary& dict
+        );
 
 
     //- Destructor

@@ -123,7 +123,7 @@ public:
 
     // Selectors
 
-        //- Select null constructed
+        //- Select from components
         static autoPtr<dynamicStallModel> New
         (
             const dictionary& dict, 

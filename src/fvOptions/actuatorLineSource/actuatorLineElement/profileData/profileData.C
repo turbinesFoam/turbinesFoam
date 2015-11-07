@@ -229,9 +229,20 @@ Foam::profileData::profileData
 // * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
 
 Foam::autoPtr<Foam::profileData>
-Foam::profileData::New()
+Foam::profileData::New
+(
+    const word& name,
+    const dictionary& dict
+)
 {
-    return autoPtr<profileData>(new profileData);
+    return autoPtr<profileData>
+    (
+        new profileData
+        (
+            name,
+            dict
+        )
+    );
 }
 
 

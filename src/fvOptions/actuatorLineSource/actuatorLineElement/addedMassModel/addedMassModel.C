@@ -68,9 +68,22 @@ Foam::addedMassModel::addedMassModel
 // * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
 
 Foam::autoPtr<Foam::addedMassModel>
-Foam::addedMassModel::New()
+Foam::addedMassModel::New
+(
+    const Time& time,
+    scalar chordLength,
+    bool debug
+)
 {
-    return autoPtr<addedMassModel>(new addedMassModel);
+    return autoPtr<addedMassModel>
+    (
+        new addedMassModel
+        (
+            time,
+            chordLength,
+            debug
+        )
+    );
 }
 
 
