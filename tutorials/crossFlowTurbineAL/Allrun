@@ -11,6 +11,3 @@ runApplication blockMesh
 runApplication snappyHexMesh -overwrite
 runApplication topoSet
 runApplication pimpleFoam
-runApplication vorticity
-python scripts/gensampledict.py
-runApplication sample

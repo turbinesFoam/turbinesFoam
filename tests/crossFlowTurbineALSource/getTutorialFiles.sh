@@ -7,8 +7,6 @@ TUTORIAL_DIR="../../tutorials/crossFlowTurbineAL"
 cp -rfT $TUTORIAL_DIR/0.org 0.org
 cp -rfT $TUTORIAL_DIR/system system
 cp -rfT $TUTORIAL_DIR/constant constant
-cp -rfT $TUTORIAL_DIR/scripts scripts
-cp -rfT $TUTORIAL_DIR/modules modules
 
 # Get run and plotting scripts
 cp $TUTORIAL_DIR/Allrun Allrun
