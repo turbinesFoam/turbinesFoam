@@ -245,6 +245,39 @@ void Foam::fv::actuatorLineElement::multiplyForceRho
 }
 
 
+void Foam::fv::actuatorLineElement::applyForceField
+(
+    volVectorField& forceField
+)
+{
+    // Calculate projection width
+    scalar epsilon = calcProjectionEpsilon();
+    reduce(epsilon, minOp<scalar>());
+    scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
+    
+    // Apply force to the cells within the element's sphere of influence
+    scalar sphereRadius = chordLength_ + projectionRadius;
+    forAll(mesh_.cells(), cellI)
+    {
+        scalar dis = mag(mesh_.C()[cellI] - position_);
+        if (dis <= sphereRadius)
+        {
+            scalar factor = Foam::exp(-Foam::sqr(dis/epsilon))
+                          / (Foam::pow(epsilon, 3)
+                          * Foam::pow(Foam::constant::mathematical::pi, 1.5));
+            // forceField is opposite forceVector
+            forceField[cellI] += -forceVector_*factor;
+        }
+    }
+    
+    if (debug)
+    {
+        Info<< "    epsilon: " << epsilon << endl;
+        Info<< "    sphereRadius: " << sphereRadius << endl;
+    }
+}
+
+
 void Foam::fv::actuatorLineElement::createOutputFile()
 {
     fileName dir;
@@ -403,10 +436,9 @@ Foam::scalar& Foam::fv::actuatorLineElement::rootDistance()
 }
 
 
-void Foam::fv::actuatorLineElement::calculate
+void Foam::fv::actuatorLineElement::calculateForce
 (
-    const volVectorField& Uin,
-    volVectorField& forceField
+    const volVectorField& Uin
 )
 {
     scalar pi = Foam::constant::mathematical::pi;
@@ -545,30 +577,8 @@ void Foam::fv::actuatorLineElement::calculate
     vector dragDirection = relativeVelocity_/mag(relativeVelocity_);
     forceVector_ = lift*liftDirection + drag*dragDirection;
     
-    // Calculate projection width
-    scalar epsilon = calcProjectionEpsilon();
-    reduce(epsilon, minOp<scalar>());
-    scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
-    
-    // Apply force to the cells within the element's sphere of influence
-    scalar sphereRadius = chordLength_ + projectionRadius;
-    forAll(mesh_.cells(), cellI)
-    {
-        scalar dis = mag(mesh_.C()[cellI] - position_);
-        if (dis <= sphereRadius)
-        {
-            scalar factor = Foam::exp(-Foam::sqr(dis/epsilon))
-                          / (Foam::pow(epsilon, 3)
-                          * Foam::pow(Foam::constant::mathematical::pi, 1.5));
-            // forceField is opposite forceVector
-            forceField[cellI] += -forceVector_*factor;
-        }
-    }
-    
     if (debug)
     {
-        Info<< "    epsilon: " << epsilon << endl;
-        Info<< "    sphereRadius: " << sphereRadius << endl;
         Info<< "    force (per unit density): " << forceVector_ << endl 
             << endl;
     }
@@ -771,10 +781,10 @@ Foam::vector Foam::fv::actuatorLineElement::moment(vector point)
 void Foam::fv::actuatorLineElement::addSup
 (
     fvMatrix<vector>& eqn,
-    volVectorField& force
+    volVectorField& forceField
 )
 {
-    volVectorField forceI
+    volVectorField forceFieldI
     (
         IOobject
         (
@@ -792,10 +802,11 @@ void Foam::fv::actuatorLineElement::addSup
     );
 
     const volVectorField& Uin(eqn.psi());
-    calculate(Uin, forceI);
+    calculateForce(Uin);
+    applyForceField(forceFieldI);
 
     // Add force to total actuator line force
-    force += forceI;
+    forceField += forceFieldI;
     
     // Write performance to file
     if (writePerf_ and Pstream::master()) writePerf();
@@ -806,10 +817,10 @@ void Foam::fv::actuatorLineElement::addSup
 (
     const volScalarField& rho,
     fvMatrix<vector>& eqn,
-    volVectorField& force
+    volVectorField& forceField
 )
 {
-    volVectorField forceI
+    volVectorField forceFieldI
     (
         IOobject
         (
@@ -821,22 +832,23 @@ void Foam::fv::actuatorLineElement::addSup
         dimensionedVector
         (
             "zero",
-            force.dimensions()/rho.dimensions(),
+            forceField.dimensions()/rho.dimensions(),
             vector::zero
         )
     );
 
     const volVectorField& Uin(eqn.psi());
-    calculate(Uin, forceI);
+    calculateForce(Uin);
+    applyForceField(forceFieldI);
     
     // Multiply force vector by local density
     multiplyForceRho(rho);
     
     // Multiply this element's force field by density field
-    forceI *= rho;
+    forceFieldI *= rho;
 
     // Add force to total actuator line force
-    force += forceI;
+    forceField += forceFieldI;
     
     // Write performance to file
     if (writePerf_ and Pstream::master()) writePerf();
