@@ -51,6 +51,12 @@ def test_alpha_sweep():
     assert mse < 0.1
 
 
+def test_3d():
+    """Test actuator line in 3-D."""
+    out = subprocess.check_output("./Allclean")
+    out = subprocess.check_output(["./Allrun-3D", str(alpha_deg)])
+
+
 def teardown():
     """Move back into tests directory."""
     os.chdir("../")
