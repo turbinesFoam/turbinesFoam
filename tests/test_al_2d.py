@@ -30,18 +30,20 @@ def test_created():
 
 
 def test_output_file_exists():
-    """Test that the output file exists."""
+    """Test that actuatorLineSource output file exists."""
     assert os.path.isfile(output_fpath)
 
 
 def test_geometric_alpha():
-    """Test geometric angle of attack was set properly."""
+    """
+    Test that actuatorLineSource geometric angle of attack was set properly.
+    """
     df = load_output()
     assert np.all(df.alpha_geom_deg == alpha_deg)
 
 
 def test_alpha_sweep():
-    """Test angle of attack sweep."""
+    """Test 2-D actuator line angle of attack sweep."""
     out = subprocess.check_output(["python", "paramsweep.py", "-15", "16", "5"])
     df = pd.read_csv("processed/alpha_sweep.csv")
     mse = np.mean((df.alpha_geom_deg - df.alpha_deg)**2)
