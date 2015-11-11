@@ -1,3 +1,4 @@
+#!/usr/bin/env sh
 # This script copies necessary tutorial files to this directory
 
 cd ${0%/*} || exit 1    # run from this directory
