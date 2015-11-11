@@ -13,6 +13,7 @@ output_fpath = "postProcessing/actuatorLines/0/foil.csv"
 
 
 def setup():
+    os.chdir("actuatorLineSource")
     output_clean = subprocess.check_output("./Allclean")
     output_run = subprocess.check_output(["./Allrun", str(alpha_deg)])
 
@@ -42,7 +43,7 @@ def test_geometric_alpha():
 
 def test_alpha_sweep():
     """Test angle of attack sweep."""
-    out = subprocess.check_output(["python", "paramsweep.py"])
+    out = subprocess.check_output(["python", "paramsweep.py", "-15", "16", "5"])
     df = pd.read_csv("processed/alpha_sweep.csv")
     mse = np.mean((df.alpha_geom_deg - df.alpha_deg)**2)
     print("Mean square error between geometric and detected alpha (deg):", mse)

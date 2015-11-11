@@ -2,8 +2,4 @@
 
 cd ${0%/*} || exit 1    # run from this directory
 
-echo "Testing actuatorLineSource"
-nosetests -v -w tests/actuatorLineSource
-
-# echo "\nTesting crossFlowTurbineALSource"
-# nosetests -v -w tests/crossFlowTurbineALSource
+nosetests -v -w tests
