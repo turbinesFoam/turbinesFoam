@@ -48,3 +48,8 @@ def test_alpha_sweep():
     mse = np.mean((df.alpha_geom_deg - df.alpha_deg)**2)
     print("Mean square error between geometric and detected alpha (deg):", mse)
     assert mse < 0.1
+
+
+def teardown():
+    """Move back into tests directory."""
+    os.chdir("../")
