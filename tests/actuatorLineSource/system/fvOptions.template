@@ -33,8 +33,8 @@ foil
 
         elementGeometry // Will be interpolated linearly per nElements
         ( // point spanDir chordLength chordRefDir chordMount pitch
-            ((0.0 0.0 -0.05) (0 0 1) (0.10) (-1 0 0) (0.25) ({alpha_deg}))
-            ((0.0 0.0 0.05) (0 0 1) (0.10) (-1 0 0) (0.25) ({alpha_deg}))
+            ((0.0 0.0 -{semispan}) (0 0 1) (0.10) (-1 0 0) (0.25) ({alpha_deg}))
+            ((0.0 0.0 {semispan}) (0 0 1) (0.10) (-1 0 0) (0.25) ({alpha_deg}))
         );
 
         elementProfiles (profile0); // Will be distributed evenly

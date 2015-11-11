@@ -24,10 +24,10 @@ actions
         source	cylinderToCell;
         sourceInfo
         {
-            type cylinder; 
-            p1 (0 0 -0.5); 
-            p2 (0 0 0.5); 
-            radius 0.1;
+            type cylinder;
+            p1 (0 0 -0.65);
+            p2 (0 0 0.65);
+            radius 0.14;
         }
     }
 
