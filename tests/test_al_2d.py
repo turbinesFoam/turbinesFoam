@@ -37,8 +37,7 @@ def test_output_file_exists():
 def test_geometric_alpha():
     """Test geometric angle of attack was set properly."""
     df = load_output()
-    assert df.alpha_geom_deg.max() == alpha_deg
-    assert df.alpha_geom_deg.min() == alpha_deg
+    assert np.all(df.alpha_geom_deg == alpha_deg)
 
 
 def test_alpha_sweep():
