@@ -20,7 +20,7 @@ if [ "$1" = "-parallel" ]
     nProc=$(getNumberOfProcessors)
     runApplication decomposePar
     ls -d processor* | xargs -I {} rm -rf ./{}/0
-    ls -d processor* | xargs -I {} cp -r 0.org ./{}/0
+    ls -d processor* | xargs -I {} cp -r $TUTORIAL_DIR/0.org ./{}/0
     runParallel simpleFoam  $nProc
     runApplication reconstructPar
     rm -rf processor*
