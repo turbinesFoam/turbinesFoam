@@ -8,8 +8,7 @@ before_install:
     - sudo add-apt-repository http://www.openfoam.org/download/ubuntu
     - sudo apt-get update -qq
     - sudo apt-get install -qq openfoam240 --allow-unauthenticated
-    - sudo apt-get install -qq python-numpy python-nose python-pandas python-pip
-    - sudo pip install foampy
+    - sudo apt-get install -qq python-numpy python-nose python-pandas
 
 install:
     - source /opt/openfoam240/etc/bashrc
