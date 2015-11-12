@@ -16,11 +16,14 @@ if __name__ == "__main__":
     print("Setting angle of attack to {} degrees".format(alpha_deg))
 
     if args.three_dim:
-        semispan=0.5
+        semispan = 0.5
+        n_elements = 12
     else:
-        semispan=0.05
+        semispan = 0.05
+        n_elements = 1
 
     with open("system/fvOptions", "w") as f:
         with open("system/fvOptions.template") as template:
             txt = template.read()
-        f.write(txt.format(semispan=semispan, alpha_deg=alpha_deg))
+        f.write(txt.format(n_elements=n_elements, semispan=semispan,
+                           alpha_deg=alpha_deg))
