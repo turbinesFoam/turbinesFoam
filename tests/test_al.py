@@ -54,7 +54,7 @@ def test_alpha_sweep():
 def test_3d():
     """Test actuator line in 3-D."""
     out = subprocess.check_output("./Allclean")
-    out = subprocess.check_output(["./Allrun-3D", str(alpha_deg)])
+    out = subprocess.check_output(["./Allrun3D", str(alpha_deg)])
 
 
 def teardown():
