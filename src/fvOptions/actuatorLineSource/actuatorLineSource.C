@@ -662,9 +662,7 @@ void Foam::fv::actuatorLineSource::addSup
     fvMatrix<scalar>& eqn,
     const label fieldI
 )
-{
-    forceField_ *= 0.0;
-    
+{    
     const volVectorField& U = mesh_.lookupObject<volVectorField>("U");
     
     word fieldName = fieldNames_[fieldI];
@@ -672,7 +670,7 @@ void Foam::fv::actuatorLineSource::addSup
     Info<< endl << "Adding " << fieldName << " from " << name_ << endl << endl;
     forAll(elements_, i)
     {
-        elements_[i].calculate(U, forceField_);
+        elements_[i].calculateForce(U);
         elements_[i].addTurbulence(eqn, fieldName);
     }
 }

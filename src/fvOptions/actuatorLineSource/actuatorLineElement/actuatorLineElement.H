@@ -208,6 +208,9 @@ protected:
         
         //- Multiply force vector by local density
         void multiplyForceRho(const volScalarField& rho);
+
+        //- Apply force field based on force vector
+        void applyForceField(volVectorField& forceField);
         
         //- Create the performance output file
         virtual void createOutputFile();
@@ -344,10 +347,9 @@ public:
         // Evaluation
             
             //- Calculate forces
-            void calculate
+            void calculateForce
             (
-                const volVectorField& Uin, 
-                volVectorField& forceField
+                const volVectorField& Uin
             );
             
             //- Read coefficient data

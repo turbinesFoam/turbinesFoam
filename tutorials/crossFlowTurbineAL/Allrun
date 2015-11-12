@@ -9,11 +9,5 @@ cp -rf 0.org 0
 
 runApplication blockMesh
 runApplication snappyHexMesh -overwrite
-
 runApplication topoSet
-pimpleFoam | tee log.pimpleFoam
-
-runApplication vorticity
-
-python scripts/gensampledict.py
-runApplication sample
+runApplication pimpleFoam

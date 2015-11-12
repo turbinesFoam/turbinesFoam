@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+cd ${0%/*} || exit 1    # run from this directory
+
+nosetests -v -w tests
