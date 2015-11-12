@@ -166,7 +166,7 @@ Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
     scalar epsilon = VGREAT;
     const scalarField& V = mesh_.V();
     meshSearch ms(mesh_);
-    label posCellI = ms.findCell(position_);
+    label posCellI = ms.findNearestCell(position_, 0 , true);
     
     if (posCellI >= 0)
     {
@@ -467,7 +467,7 @@ void Foam::fv::actuatorLineElement::calculateForce
     inflowVelocityPoint -= planformNormal*0.75*chordLength_;
     interpolationCellPoint<vector> UInterp(Uin);
     meshSearch ms(mesh_);
-    label inflowCellI = ms.findCell(inflowVelocityPoint);
+    label inflowCellI = ms.findNearestCell(inflowVelocityPoint, 0 , true);
     if (inflowCellI >= 0)
     {
         inflowVelocity_ = UInterp.interpolate
