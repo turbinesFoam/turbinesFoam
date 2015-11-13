@@ -166,7 +166,7 @@ Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
     scalar epsilon = VGREAT;
     const scalarField& V = mesh_.V();
     meshSearch ms(mesh_);
-    label posCellI = ms.findNearestCell(position_, 0 , true);
+    label posCellI = ms.findNearestCell(position_, 0);
     
     if (posCellI >= 0)
     {
@@ -255,6 +255,11 @@ void Foam::fv::actuatorLineElement::applyForceField
     // Calculate projection width
     scalar epsilon = calcProjectionEpsilon();
     reduce(epsilon, minOp<scalar>());
+    if (debug)
+    {
+        Info<< "    epsilon: " << epsilon << endl;
+    }
+    
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
     
     // Apply force to the cells within the element's sphere of influence
@@ -274,7 +279,6 @@ void Foam::fv::actuatorLineElement::applyForceField
     
     if (debug)
     {
-        Info<< "    epsilon: " << epsilon << endl;
         Info<< "    sphereRadius: " << sphereRadius << endl;
     }
 }
@@ -467,7 +471,7 @@ void Foam::fv::actuatorLineElement::calculateForce
     inflowVelocityPoint -= planformNormal*0.75*chordLength_;
     interpolationCellPoint<vector> UInterp(Uin);
     meshSearch ms(mesh_);
-    label inflowCellI = ms.findNearestCell(inflowVelocityPoint, 0 , true);
+    label inflowCellI = ms.findCell(inflowVelocityPoint, 0);
     if (inflowCellI >= 0)
     {
         inflowVelocity_ = UInterp.interpolate
@@ -476,21 +480,19 @@ void Foam::fv::actuatorLineElement::calculateForce
             inflowCellI
         );
     }
-    else
-    {
-        // Inflow velocity point is not in the mesh
-        if (not Pstream::parRun())
-        {
-            // Raise fatal error since inflow velocity cannot be detected
-            FatalErrorIn("void actuatorLineElement::calculate()")
-                << "Inflow velocity point for " << name_ 
-                << " not found in mesh" 
-                << abort(FatalError);
-        }
-    }
     
     // Reduce inflow velocity over all processors
     reduce(inflowVelocity_, minOp<vector>());
+    
+    // If inflow velocity is not detected, position is not in the mesh
+    if (not (inflowVelocity_[0] < VGREAT))
+    {
+        // Raise fatal error since inflow velocity cannot be detected
+        FatalErrorIn("void actuatorLineElement::calculateForce()")
+            << "Inflow velocity point for " << name_ 
+            << " not found in mesh" 
+            << abort(FatalError);
+    }
         
     // Subtract spanwise component of inflow velocity
     vector spanwiseVelocity = spanDirection_
@@ -582,8 +584,7 @@ void Foam::fv::actuatorLineElement::calculateForce
     
     if (debug)
     {
-        Info<< "    force (per unit density): " << forceVector_ << endl 
-            << endl;
+        Info<< "    force (per unit density): " << forceVector_ << endl;
     }
 }
 
