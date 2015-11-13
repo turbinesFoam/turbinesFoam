@@ -19,3 +19,6 @@ sed -i 's/..\/..\/resources\/foilData/..\/..\/..\/tutorials\/resources\/foilData
 
 # Reduce endTime
 sed -i '/endTime /c\endTime         0.1;' system/controlDict
+
+# Add debug switches to controlDict
+cat debugSwitches >> system/controlDict
