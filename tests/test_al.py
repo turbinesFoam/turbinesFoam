@@ -6,9 +6,10 @@ import subprocess
 import pandas as pd
 import os
 import numpy as np
+from nose.tools import timed
 
 
-alpha_deg = 8.0
+alpha_deg = 10.0
 output_fpath = "postProcessing/actuatorLines/0/foil.csv"
 
 
@@ -52,9 +53,16 @@ def test_alpha_sweep():
 
 
 def test_3d():
-    """Test actuator line in 3-D."""
+    """Test 3-D actuator line."""
     out = subprocess.check_output("./Allclean")
     out = subprocess.check_output(["./Allrun3D", str(alpha_deg)])
+
+
+@timed(30) # Test must run faster than 30 seconds
+def test_parallel():
+    """Test 3-D actuator line in parallel."""
+    out = subprocess.check_output("./Allclean")
+    out = subprocess.check_output(["./Allrun3D", "-parallel", str(alpha_deg)])
 
 
 def teardown():
