@@ -28,6 +28,7 @@ License
 #include "geometricOneField.H"
 #include "fvMatrices.H"
 #include "syncTools.H"
+#include "meshSearch.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -164,7 +165,8 @@ Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
 {
     scalar epsilon = VGREAT;
     const scalarField& V = mesh_.V();
-    label posCellI = mesh_.findCell(position_, polyMesh::FACEPLANES);
+    meshSearch ms(mesh_, polyMesh::FACEPLANES);
+    label posCellI = ms.findCell(position_, 0);
     if (posCellI >= 0)
     {
         // Projection width based on local cell size (from Troldborg (2008))
@@ -476,11 +478,8 @@ void Foam::fv::actuatorLineElement::calculateForce
     inflowVelocityPoint += chordDirection_*0.1*chordLength_;
     inflowVelocityPoint -= planformNormal*0.75*chordLength_;
     interpolationCellPoint<vector> UInterp(Uin);
-    label inflowCellI = mesh_.findCell
-    (
-        inflowVelocityPoint,
-        polyMesh::FACEPLANES
-    );
+    meshSearch ms(mesh_, polyMesh::FACEPLANES);
+    label inflowCellI = ms.findCell(inflowVelocityPoint, 0);
     if (inflowCellI >= 0)
     {
         inflowVelocity_ = UInterp.interpolate
