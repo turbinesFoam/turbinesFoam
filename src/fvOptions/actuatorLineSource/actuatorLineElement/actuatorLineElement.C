@@ -28,7 +28,6 @@ License
 #include "geometricOneField.H"
 #include "fvMatrices.H"
 #include "syncTools.H"
-#include "meshSearch.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -165,9 +164,7 @@ Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
 {
     scalar epsilon = VGREAT;
     const scalarField& V = mesh_.V();
-    meshSearch ms(mesh_);
-    label posCellI = ms.findNearestCell(position_, 0);
-    
+    label posCellI = mesh_.findCell(position_, polyMesh::FACEPLANES);
     if (posCellI >= 0)
     {
         // Projection width based on local cell size (from Troldborg (2008))
@@ -255,6 +252,15 @@ void Foam::fv::actuatorLineElement::applyForceField
     // Calculate projection width
     scalar epsilon = calcProjectionEpsilon();
     reduce(epsilon, minOp<scalar>());
+    
+    // If epsilon is not reduced, position is not in the mesh
+    if (not (epsilon < VGREAT))
+    {
+        // Raise fatal error since mesh size cannot be detected
+        FatalErrorIn("void actuatorLineElement::applyForceField()")
+            << "Position of " << name_  << " not found in mesh" 
+            << abort(FatalError);
+    }
     if (debug)
     {
         Info<< "    epsilon: " << epsilon << endl;
@@ -470,8 +476,11 @@ void Foam::fv::actuatorLineElement::calculateForce
     inflowVelocityPoint += chordDirection_*0.1*chordLength_;
     inflowVelocityPoint -= planformNormal*0.75*chordLength_;
     interpolationCellPoint<vector> UInterp(Uin);
-    meshSearch ms(mesh_);
-    label inflowCellI = ms.findCell(inflowVelocityPoint, 0);
+    label inflowCellI = mesh_.findCell
+    (
+        inflowVelocityPoint,
+        polyMesh::FACEPLANES
+    );
     if (inflowCellI >= 0)
     {
         inflowVelocity_ = UInterp.interpolate
