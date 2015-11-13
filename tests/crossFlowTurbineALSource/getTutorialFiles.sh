@@ -22,3 +22,6 @@ sed -i '/endTime /c\endTime         0.1;' system/controlDict
 
 # Add debug switches to controlDict
 cat debugSwitches >> system/controlDict
+
+# Delete reconstructPar from Allrun to save time
+sed -i '/reconstructPar/d' Allrun

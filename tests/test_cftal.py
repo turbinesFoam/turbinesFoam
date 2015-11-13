@@ -55,6 +55,8 @@ def test_parallel():
     output_run = subprocess.check_output(["./Allrun", "-parallel"])
     check_created()
     check_perf()
+    log_end = subprocess.check_output(["tail", "log.pimpleFoam"]).decode()
+    assert "Finalising parallel run" in log_end
 
 
 def teardown():
