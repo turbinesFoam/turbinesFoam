@@ -63,6 +63,8 @@ def test_3d():
     """Test 3-D actuatorLineSource."""
     out = subprocess.check_output("./Allclean")
     out = subprocess.check_output(["./Allrun3D", str(alpha_deg)])
+    log_end = subprocess.check_output("tail log.simpleFoam", shell=True)
+    assert log_end.decode().split()[-1] == "End"
 
 
 @timed(30) # Test must run faster than 30 seconds
