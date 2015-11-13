@@ -14,17 +14,15 @@ import numpy as np
 def setup():
     os.chdir("crossFlowTurbineALSource")
     out = subprocess.check_output("./getTutorialFiles.sh", shell=True)
-    output_clean = subprocess.check_output("./Allclean")
-    output_run = subprocess.check_output("./Allrun")
 
 
-def test_created():
+def check_created():
     """Test that crossFlowTurbineALSource was created."""
     txt = "Selecting finite volume options model type crossFlowTurbineALSource"
     subprocess.check_output(["grep", txt, "log.pimpleFoam"])
 
 
-def test_perf(angle0=540.0):
+def check_perf(angle0=540.0):
     """Test CFTAL performance was written and in reasonable range."""
     df = pd.read_csv("postProcessing/turbines/0/turbine.csv")
     df = df.drop_duplicates("time", take_last=True)
@@ -41,6 +39,22 @@ def test_perf(angle0=540.0):
     assert 1.6 < mean_tsr < 2.1
     assert 0.2 < mean_cp < 1.0
     assert 0.8 < mean_cd < 1.8
+
+
+def test_serial():
+    """Test crossFlowTurbineALSource in serial."""
+    output_clean = subprocess.check_output("./Allclean")
+    output_run = subprocess.check_output("./Allrun")
+    check_created()
+    check_perf()
+
+
+def test_parallel():
+    """Test crossFlowTurbineALSource in parallel."""
+    output_clean = subprocess.check_output("./Allclean")
+    output_run = subprocess.check_output(["./Allrun", "-parallel"])
+    check_created()
+    check_perf()
 
 
 def teardown():
