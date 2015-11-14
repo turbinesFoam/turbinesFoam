@@ -290,7 +290,7 @@ void Foam::fv::actuatorLineElement::multiplyForceRho
 )
 {
     // Lookup local density
-    label cellI = mesh_.findCell(position_);
+    label cellI = findCell(position_);
     scalar localRho = VGREAT;
     if (cellI >= 0)
     {
