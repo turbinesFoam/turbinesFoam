@@ -165,8 +165,9 @@ Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
 {
     scalar epsilon = VGREAT;
     const scalarField& V = mesh_.V();
-    meshSearch ms(mesh_, polyMesh::FACEPLANES);
-    label posCellI = ms.findCell(position_, 0);
+    meshSearch ms(mesh_, polyMesh::CELL_TETS);
+    label posCellI = ms.findCell(position_, cellI_, false);
+    cellI_ = posCellI;
     if (posCellI >= 0)
     {
         // Projection width based on local cell size (from Troldborg (2008))
@@ -254,6 +255,7 @@ void Foam::fv::actuatorLineElement::applyForceField
     // Calculate projection width
     scalar epsilon = calcProjectionEpsilon();
     reduce(epsilon, minOp<scalar>());
+    reduce(cellI_, maxOp<label>());
     
     // If epsilon is not reduced, position is not in the mesh
     if (not (epsilon < VGREAT))
@@ -345,6 +347,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     dict_(dict),
     name_(name),
     mesh_(mesh),
+    cellI_(-1),
     velocity_(vector::zero),
     forceVector_(vector::zero),
     relativeVelocity_(vector::zero),
@@ -478,8 +481,9 @@ void Foam::fv::actuatorLineElement::calculateForce
     inflowVelocityPoint += chordDirection_*0.1*chordLength_;
     inflowVelocityPoint -= planformNormal*0.75*chordLength_;
     interpolationCellPoint<vector> UInterp(Uin);
-    meshSearch ms(mesh_, polyMesh::FACEPLANES);
-    label inflowCellI = ms.findCell(inflowVelocityPoint, 0);
+    meshSearch ms(mesh_, polyMesh::CELL_TETS);
+    label inflowCellI = ms.findCell(inflowVelocityPoint, cellI_, false);
+    cellI_ = inflowCellI;
     if (inflowCellI >= 0)
     {
         inflowVelocity_ = UInterp.interpolate
@@ -489,8 +493,9 @@ void Foam::fv::actuatorLineElement::calculateForce
         );
     }
     
-    // Reduce inflow velocity over all processors
+    // Reduce inflow velocity and cell index over all processors
     reduce(inflowVelocity_, minOp<vector>());
+    reduce(cellI_, maxOp<label>());
     
     // If inflow velocity is not detected, position is not in the mesh
     if (not (inflowVelocity_[0] < VGREAT))

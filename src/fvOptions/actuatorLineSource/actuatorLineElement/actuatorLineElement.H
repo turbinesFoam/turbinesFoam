@@ -76,6 +76,9 @@ protected:
         //- Reference to the mesh
         const fvMesh& mesh_;
         
+        //- Local cell index (used to help speed up search)
+        label cellI_;
+        
         //- Chord direction
         vector chordDirection_;
         
