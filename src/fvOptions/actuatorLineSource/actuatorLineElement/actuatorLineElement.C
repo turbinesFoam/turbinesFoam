@@ -173,7 +173,7 @@ void Foam::fv::actuatorLineElement::detectInflow
     inflowVelocityPoint += chordDirection_*0.1*chordLength_;
     inflowVelocityPoint -= planformNormal_*0.75*chordLength_;
     interpolationCellPoint<vector> UInterp(Uin);
-    meshSearch ms(mesh_, polyMesh::FACEPLANES);
+    meshSearch ms(mesh_, polyMesh::CELL_TETS);
     label inflowCellI = ms.findCell(inflowVelocityPoint, cellI_, false);
     cellI_ = inflowCellI;
     if (inflowCellI >= 0)
@@ -211,7 +211,7 @@ Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
 {
     scalar epsilon = VGREAT;
     const scalarField& V = mesh_.V();
-    meshSearch ms(mesh_, polyMesh::FACEPLANES);
+    meshSearch ms(mesh_, polyMesh::CELL_TETS);
     label posCellI = ms.findCell(position_, cellI_, false);
     cellI_ = posCellI;
     if (posCellI >= 0)
