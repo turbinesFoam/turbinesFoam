@@ -193,7 +193,7 @@ void Foam::fv::actuatorLineElement::detectInflow
     if (not (inflowVelocity_[0] < VGREAT))
     {
         // Raise fatal error since inflow velocity cannot be detected
-        FatalErrorIn("void actuatorLineElement::calculateForce()")
+        FatalErrorIn("void actuatorLineElement::detectInflow()")
             << "Inflow velocity point for " << name_ 
             << " not found in mesh" 
             << abort(FatalError);
