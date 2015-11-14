@@ -267,10 +267,6 @@ void Foam::fv::actuatorLineElement::correctFlowCurvature
         vector relativeVelocityLE = inflowVelocity_ - velocityLE_;
         vector relativeVelocityTE = inflowVelocity_ - velocityTE_;
     
-        // Calculate vector normal to chord--span plane
-        vector planformNormal_ = -chordDirection_ ^ spanDirection_;
-        planformNormal_ /= mag(planformNormal_);
-    
         // Calculate angle of attack at leading and trailing edge
         scalar alphaLE = asin((planformNormal_ & relativeVelocityLE)
                        / (mag(planformNormal_)*mag(relativeVelocityLE)));
