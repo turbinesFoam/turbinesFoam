@@ -161,6 +161,52 @@ void Foam::fv::actuatorLineElement::lookupCoefficients()
 }
 
 
+void Foam::fv::actuatorLineElement::detectInflow
+(
+    const volVectorField& Uin
+)
+{
+    // Find local flow velocity by interpolating to element location
+    inflowVelocity_ = vector(VGREAT, VGREAT, VGREAT);
+    vector inflowVelocityPoint = position_;
+    inflowVelocityPoint -= freeStreamDirection_*0.15*chordLength_;
+    inflowVelocityPoint += chordDirection_*0.1*chordLength_;
+    inflowVelocityPoint -= planformNormal_*0.75*chordLength_;
+    interpolationCellPoint<vector> UInterp(Uin);
+    meshSearch ms(mesh_, polyMesh::FACEPLANES);
+    label inflowCellI = ms.findCell(inflowVelocityPoint, cellI_, false);
+    cellI_ = inflowCellI;
+    if (inflowCellI >= 0)
+    {
+        inflowVelocity_ = UInterp.interpolate
+        (
+            inflowVelocityPoint, 
+            inflowCellI
+        );
+    }
+    
+    // Reduce inflow velocity and cell index over all processors
+    reduce(inflowVelocity_, minOp<vector>());
+    reduce(cellI_, maxOp<label>());
+    
+    // If inflow velocity is not detected, position is not in the mesh
+    if (not (inflowVelocity_[0] < VGREAT))
+    {
+        // Raise fatal error since inflow velocity cannot be detected
+        FatalErrorIn("void actuatorLineElement::calculateForce()")
+            << "Inflow velocity point for " << name_ 
+            << " not found in mesh" 
+            << abort(FatalError);
+    }
+        
+    // Subtract spanwise component of inflow velocity
+    vector spanwiseVelocity = spanDirection_
+                            * (inflowVelocity_ & spanDirection_)
+                            / magSqr(spanDirection_);
+    inflowVelocity_ -= spanwiseVelocity;
+}
+
+
 Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
 {
     scalar epsilon = VGREAT;
@@ -213,14 +259,14 @@ void Foam::fv::actuatorLineElement::correctFlowCurvature
         vector relativeVelocityTE = inflowVelocity_ - velocityTE_;
     
         // Calculate vector normal to chord--span plane
-        vector planformNormal = -chordDirection_ ^ spanDirection_;
-        planformNormal /= mag(planformNormal);
+        vector planformNormal_ = -chordDirection_ ^ spanDirection_;
+        planformNormal_ /= mag(planformNormal_);
     
         // Calculate angle of attack at leading and trailing edge
-        scalar alphaLE = asin((planformNormal & relativeVelocityLE)
-                       / (mag(planformNormal)*mag(relativeVelocityLE)));
-        scalar alphaTE = asin((planformNormal & relativeVelocityTE)
-                       / (mag(planformNormal)*mag(relativeVelocityTE)));
+        scalar alphaLE = asin((planformNormal_ & relativeVelocityLE)
+                       / (mag(planformNormal_)*mag(relativeVelocityLE)));
+        scalar alphaTE = asin((planformNormal_ & relativeVelocityTE)
+                       / (mag(planformNormal_)*mag(relativeVelocityTE)));
                        
         scalar beta = alphaTE - alphaLE;
         
@@ -348,6 +394,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     name_(name),
     mesh_(mesh),
     cellI_(-1),
+    planformNormal_(vector::zero),
     velocity_(vector::zero),
     forceVector_(vector::zero),
     relativeVelocity_(vector::zero),
@@ -471,60 +518,24 @@ void Foam::fv::actuatorLineElement::calculateForce
     }
     
     // Calculate vector normal to chord--span plane
-    vector planformNormal = -chordDirection_ ^ spanDirection_;
-    planformNormal /= mag(planformNormal);
-    
-    // Find local flow velocity by interpolating to element location
-    inflowVelocity_ = vector(VGREAT, VGREAT, VGREAT);
-    vector inflowVelocityPoint = position_;
-    inflowVelocityPoint -= freeStreamDirection_*0.15*chordLength_;
-    inflowVelocityPoint += chordDirection_*0.1*chordLength_;
-    inflowVelocityPoint -= planformNormal*0.75*chordLength_;
-    interpolationCellPoint<vector> UInterp(Uin);
-    meshSearch ms(mesh_, polyMesh::FACEPLANES);
-    label inflowCellI = ms.findCell(inflowVelocityPoint, cellI_, false);
-    cellI_ = inflowCellI;
-    if (inflowCellI >= 0)
-    {
-        inflowVelocity_ = UInterp.interpolate
-        (
-            inflowVelocityPoint, 
-            inflowCellI
-        );
-    }
-    
-    // Reduce inflow velocity and cell index over all processors
-    reduce(inflowVelocity_, minOp<vector>());
-    reduce(cellI_, maxOp<label>());
-    
-    // If inflow velocity is not detected, position is not in the mesh
-    if (not (inflowVelocity_[0] < VGREAT))
-    {
-        // Raise fatal error since inflow velocity cannot be detected
-        FatalErrorIn("void actuatorLineElement::calculateForce()")
-            << "Inflow velocity point for " << name_ 
-            << " not found in mesh" 
-            << abort(FatalError);
-    }
-        
-    // Subtract spanwise component of inflow velocity
-    vector spanwiseVelocity = spanDirection_
-                            * (inflowVelocity_ & spanDirection_)
-                            / magSqr(spanDirection_);
-    inflowVelocity_ -= spanwiseVelocity;
+    vector planformNormal_ = -chordDirection_ ^ spanDirection_;
+    planformNormal_ /= mag(planformNormal_);
+
+    // Detect inflow velocity
+    detectInflow(Uin);
     
     // Calculate relative velocity and Reynolds number
     relativeVelocity_ = inflowVelocity_ - velocity_;
     Re_ = mag(relativeVelocity_)*chordLength_/nu_;
     
     // Calculate angle of attack (radians)
-    scalar angleOfAttackRad = asin((planformNormal & relativeVelocity_)
-                            / (mag(planformNormal)
+    scalar angleOfAttackRad = asin((planformNormal_ & relativeVelocity_)
+                            / (mag(planformNormal_)
                             *  mag(relativeVelocity_)));
     scalar angleOfAttackUncorrected = radToDeg(angleOfAttackRad);
     relativeVelocityGeom_ = freeStreamVelocity_ - velocity_;
-    angleOfAttackGeom_ = asin((planformNormal & relativeVelocityGeom_)
-                       / (mag(planformNormal)*mag(relativeVelocityGeom_)));
+    angleOfAttackGeom_ = asin((planformNormal_ & relativeVelocityGeom_)
+                       / (mag(planformNormal_)*mag(relativeVelocityGeom_)));
     angleOfAttackGeom_ *= 180.0/pi;
     
     // Apply flow curvature correction to angle of attack
@@ -578,7 +589,7 @@ void Foam::fv::actuatorLineElement::calculateForce
             momentCoefficient_,
             degToRad(angleOfAttack_),
             mag(chordDirection_ & relativeVelocity_),
-            mag(planformNormal & relativeVelocity_)
+            mag(planformNormal_ & relativeVelocity_)
         );
     }
     

@@ -91,6 +91,9 @@ protected:
         //- Element span length, for calculating force
         scalar spanLength_;
         
+        //- Element planform normal vector
+        vector planformNormal_;
+        
         //- Location of element's half chord
         vector position_;
         
@@ -202,6 +205,9 @@ protected:
         
         //- Lookup force coefficients
         void lookupCoefficients();
+        
+        //- Detect inflow velocity
+        void detectInflow(const volVectorField& Uin);
         
         //- Calculate projection width epsilon
         scalar calcProjectionEpsilon();
