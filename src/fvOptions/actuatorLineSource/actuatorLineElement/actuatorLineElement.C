@@ -158,9 +158,16 @@ Foam::label Foam::fv::actuatorLineElement::findCell
     const point& location
 ) const
 {
-    meshSearch ms(mesh_, polyMesh::CELL_TETS);
-    label cellI = ms.findCell(location, cellI_, false);
-    return cellI;
+    if (Pstream::parRun())
+    {
+        
+        meshSearch ms(mesh_, polyMesh::CELL_TETS);
+        return ms.findCell(location, cellI_, false);
+    }
+    else
+    {
+        return mesh_.findCell(location);
+    }
 }
 
 
