@@ -63,8 +63,9 @@ def test_3d():
     """Test 3-D actuatorLineSource."""
     out = subprocess.check_output("./Allclean")
     out = subprocess.check_output(["./Allrun3D", str(alpha_deg)])
-    log_end = subprocess.check_output("tail log.simpleFoam", shell=True)
-    assert log_end.decode().split()[-1] == "End"
+    log_end = subprocess.check_output(["tail", "log.simpleFoam"]).decode()
+    print(log_end)
+    assert log_end.split()[-1] == "End"
 
 
 @timed(30) # Test must run faster than 30 seconds
@@ -72,8 +73,9 @@ def test_parallel():
     """Test 3-D actuatorLineSource in parallel."""
     out = subprocess.check_output("./Allclean")
     out = subprocess.check_output(["./Allrun3D", "-parallel", str(alpha_deg)])
-    log_end = subprocess.check_output(["tail", "log.simpleFoam"])
-    assert "Finalising parallel run" in log_end.decode()
+    log_end = subprocess.check_output(["tail", "log.simpleFoam"]).decode()
+    print(log_end)
+    assert "Finalising parallel run" in log_end
 
 
 def teardown():

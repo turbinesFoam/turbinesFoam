@@ -47,6 +47,9 @@ def test_serial():
     output_run = subprocess.check_output("./Allrun")
     check_created()
     check_perf()
+    log_end = subprocess.check_output(["tail", "log.pimpleFoam"]).decode()
+    print(log_end)
+    assert log_end.split()[-1] == "End"
 
 
 def test_parallel():
@@ -56,6 +59,7 @@ def test_parallel():
     check_created()
     check_perf()
     log_end = subprocess.check_output(["tail", "log.pimpleFoam"]).decode()
+    print(log_end)
     assert "Finalising parallel run" in log_end
 
 
