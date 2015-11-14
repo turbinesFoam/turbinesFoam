@@ -203,6 +203,9 @@ protected:
             scalar radians
         );
         
+        //- Find cell containing location
+        label findCell(const point& location) const;
+        
         //- Lookup force coefficients
         void lookupCoefficients();
         
