@@ -172,51 +172,6 @@ void Foam::fv::actuatorLineElement::lookupCoefficients()
 }
 
 
-void Foam::fv::actuatorLineElement::detectInflow
-(
-    const volVectorField& Uin
-)
-{
-    // Find local flow velocity by interpolating to element location
-    inflowVelocity_ = vector(VGREAT, VGREAT, VGREAT);
-    vector inflowVelocityPoint = position_;
-    inflowVelocityPoint -= freeStreamDirection_*0.15*chordLength_;
-    inflowVelocityPoint += chordDirection_*0.1*chordLength_;
-    inflowVelocityPoint -= planformNormal_*0.75*chordLength_;
-    interpolationCellPoint<vector> UInterp(Uin);
-    label inflowCellI = findCell(inflowVelocityPoint);
-    cellI_ = inflowCellI;
-    if (inflowCellI >= 0)
-    {
-        inflowVelocity_ = UInterp.interpolate
-        (
-            inflowVelocityPoint, 
-            inflowCellI
-        );
-    }
-    
-    // Reduce inflow velocity and cell index over all processors
-    reduce(inflowVelocity_, minOp<vector>());
-    reduce(cellI_, maxOp<label>());
-    
-    // If inflow velocity is not detected, position is not in the mesh
-    if (not (inflowVelocity_[0] < VGREAT))
-    {
-        // Raise fatal error since inflow velocity cannot be detected
-        FatalErrorIn("void actuatorLineElement::detectInflow()")
-            << "Inflow velocity point for " << name_ 
-            << " not found in mesh" 
-            << abort(FatalError);
-    }
-        
-    // Subtract spanwise component of inflow velocity
-    vector spanwiseVelocity = spanDirection_
-                            * (inflowVelocity_ & spanDirection_)
-                            / magSqr(spanDirection_);
-    inflowVelocity_ -= spanwiseVelocity;
-}
-
-
 Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
 {
     scalar epsilon = VGREAT;
@@ -526,8 +481,43 @@ void Foam::fv::actuatorLineElement::calculateForce
     vector planformNormal_ = -chordDirection_ ^ spanDirection_;
     planformNormal_ /= mag(planformNormal_);
 
-    // Detect inflow velocity
-    detectInflow(Uin);
+    // Find local flow velocity by interpolating to element location
+    inflowVelocity_ = vector(VGREAT, VGREAT, VGREAT);
+    vector inflowVelocityPoint = position_;
+    inflowVelocityPoint -= freeStreamDirection_*0.15*chordLength_;
+    inflowVelocityPoint += chordDirection_*0.1*chordLength_;
+    inflowVelocityPoint -= planformNormal_*0.75*chordLength_;
+    interpolationCellPoint<vector> UInterp(Uin);
+    label inflowCellI = findCell(inflowVelocityPoint);
+    cellI_ = inflowCellI;
+    if (inflowCellI >= 0)
+    {
+        inflowVelocity_ = UInterp.interpolate
+        (
+            inflowVelocityPoint, 
+            inflowCellI
+        );
+    }
+    
+    // Reduce inflow velocity and cell index over all processors
+    reduce(inflowVelocity_, minOp<vector>());
+    reduce(cellI_, maxOp<label>());
+    
+    // If inflow velocity is not detected, position is not in the mesh
+    if (not (inflowVelocity_[0] < VGREAT))
+    {
+        // Raise fatal error since inflow velocity cannot be detected
+        FatalErrorIn("void actuatorLineElement::calculateForce()")
+            << "Inflow velocity point for " << name_ 
+            << " not found in mesh" 
+            << abort(FatalError);
+    }
+        
+    // Subtract spanwise component of inflow velocity
+    vector spanwiseVelocity = spanDirection_
+                            * (inflowVelocity_ & spanDirection_)
+                            / magSqr(spanDirection_);
+    inflowVelocity_ -= spanwiseVelocity;
     
     // Calculate relative velocity and Reynolds number
     relativeVelocity_ = inflowVelocity_ - velocity_;

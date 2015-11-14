@@ -209,9 +209,6 @@ protected:
         //- Lookup force coefficients
         void lookupCoefficients();
         
-        //- Detect inflow velocity
-        void detectInflow(const volVectorField& Uin);
-        
         //- Calculate projection width epsilon
         scalar calcProjectionEpsilon();
         
