@@ -28,7 +28,6 @@ License
 #include "geometricOneField.H"
 #include "fvMatrices.H"
 #include "syncTools.H"
-#include "meshSearch.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -160,9 +159,6 @@ Foam::label Foam::fv::actuatorLineElement::findCell
 {
     if (Pstream::parRun())
     {
-        // Force construction of face diagonals
-        (void)mesh_.tetBasePtIs();
-        reduce(cellI_, maxOp<label>());
         if (meshBoundBox_.containsInside(location))
         {
             if (debug)
@@ -170,10 +166,8 @@ Foam::label Foam::fv::actuatorLineElement::findCell
                 Pout<< "Looking for cell containing " << location 
                     << " inside bounding box:" << endl
                     << meshBoundBox_ << endl;
-                Pout<< "Using seed cell index: " << cellI_ << endl;
             }
-            meshSearch ms(mesh_, polyMesh::CELL_TETS);
-            return ms.findCell(location, cellI_, true);
+            return mesh_.findCell(location);
         }
         else
         {
@@ -204,7 +198,6 @@ Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
     scalar epsilon = VGREAT;
     const scalarField& V = mesh_.V();
     label posCellI = findCell(position_);
-    cellI_ = posCellI;
     if (posCellI >= 0)
     {
         // Projection width based on local cell size (from Troldborg (2008))
@@ -380,7 +373,6 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     name_(name),
     mesh_(mesh),
     meshBoundBox_(mesh_.points(), false),
-    cellI_(-1),
     planformNormal_(vector::zero),
     velocity_(vector::zero),
     forceVector_(vector::zero),
@@ -517,7 +509,6 @@ void Foam::fv::actuatorLineElement::calculateForce
     inflowVelocityPoint -= planformNormal_*0.75*chordLength_;
     interpolationCellPoint<vector> UInterp(Uin);
     label inflowCellI = findCell(inflowVelocityPoint);
-    cellI_ = inflowCellI;
     if (inflowCellI >= 0)
     {
         inflowVelocity_ = UInterp.interpolate

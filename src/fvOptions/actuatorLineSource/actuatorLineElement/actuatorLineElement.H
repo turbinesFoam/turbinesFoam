@@ -79,9 +79,6 @@ protected:
         //- Mesh bounding box
         boundBox meshBoundBox_;
         
-        //- Local cell index (used to help speed up search)
-        label cellI_;
-        
         //- Chord direction
         vector chordDirection_;
         
