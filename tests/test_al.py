@@ -72,7 +72,13 @@ def test_3d():
 def test_parallel():
     """Test 3-D actuatorLineSource in parallel."""
     out = subprocess.check_output("./Allclean")
-    out = subprocess.check_output(["./Allrun3D", "-parallel", str(alpha_deg)])
+    try:
+        out = subprocess.check_output(["./Allrun3D", "-parallel",
+                                       str(alpha_deg)])
+    except subprocess.CalledProcessError:
+        print(subprocess.check_output(["tail", "-n", "200",
+                                       "log.simpleFoam"]).decode())
+        assert False
     log_end = subprocess.check_output(["tail", "log.simpleFoam"]).decode()
     print(log_end)
     assert "Finalising parallel run" in log_end
