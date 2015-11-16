@@ -166,8 +166,8 @@ Foam::label Foam::fv::actuatorLineElement::findCell
             if (debug)
             {
                 Pout<< "Looking for cell containing " << location 
-                    << "inside bounding box:" << endl
-                    << "    " << meshBoundBox_ << endl;
+                    << " inside bounding box:" << endl
+                    << meshBoundBox_ << endl;
                 Pout<< "Using seed cell index: " << cellI_ << endl;
             }
             meshSearch ms(mesh_, polyMesh::CELL_TETS);
