@@ -23,7 +23,6 @@ if [ "$1" = "-parallel" ]
     ls -d processor* | xargs -I {} cp -r $TUTORIAL_DIR/0.org ./{}/0
     runParallel simpleFoam  $nProc
     runApplication reconstructPar
-    rm -rf processor*
 else
     python scripts/set_alpha.py $1 -d
     runApplication simpleFoam
