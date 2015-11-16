@@ -156,18 +156,20 @@ void Foam::fv::actuatorLineElement::rotateVector
 Foam::label Foam::fv::actuatorLineElement::findCell
 (
     const point& location
-) const
+)
 {
     if (Pstream::parRun())
     {
+        reduce(cellI_, maxOp<label>());
         if (meshBoundBox_.containsInside(location))
         {
             if (debug)
             {
                 Pout<< "Looking for cell inside " << meshBoundBox_ << endl;
+                Pout<< "Using seed cell index: " << cellI_ << endl;
             }
             meshSearch ms(mesh_, polyMesh::CELL_TETS);
-            return ms.findCell(location, cellI_, true);
+            return ms.findCell(location, cellI_, false);
         }
         else
         {
@@ -282,7 +284,6 @@ void Foam::fv::actuatorLineElement::applyForceField
     // Calculate projection width
     scalar epsilon = calcProjectionEpsilon();
     reduce(epsilon, minOp<scalar>());
-    reduce(cellI_, maxOp<label>());
     
     // If epsilon is not reduced, position is not in the mesh
     if (not (epsilon < VGREAT))
@@ -522,9 +523,8 @@ void Foam::fv::actuatorLineElement::calculateForce
         );
     }
     
-    // Reduce inflow velocity and cell index over all processors
+    // Reduce inflow velocity over all processors
     reduce(inflowVelocity_, minOp<vector>());
-    reduce(cellI_, maxOp<label>());
     
     // If inflow velocity is not detected, position is not in the mesh
     if (not (inflowVelocity_[0] < VGREAT))

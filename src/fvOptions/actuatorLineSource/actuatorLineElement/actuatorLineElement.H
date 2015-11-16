@@ -207,7 +207,7 @@ protected:
         );
         
         //- Find cell containing location
-        label findCell(const point& location) const;
+        label findCell(const point& location);
         
         //- Lookup force coefficients
         void lookupCoefficients();
