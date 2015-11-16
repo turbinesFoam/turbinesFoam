@@ -76,6 +76,9 @@ protected:
         //- Reference to the mesh
         const fvMesh& mesh_;
         
+        //- Mesh bounding box
+        boundBox meshBoundBox_;
+        
         //- Local cell index (used to help speed up search)
         label cellI_;
         

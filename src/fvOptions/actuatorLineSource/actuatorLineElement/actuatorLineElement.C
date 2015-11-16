@@ -160,13 +160,27 @@ Foam::label Foam::fv::actuatorLineElement::findCell
 {
     if (Pstream::parRun())
     {
-        
-        meshSearch ms(mesh_, polyMesh::CELL_TETS);
-        return ms.findCell(location, cellI_, false);
+        if (meshBoundBox_.containsInside(location))
+        {
+            if (debug)
+            {
+                Pout<< "Looking for cell inside " << meshBoundBox_ << endl;
+            }
+            meshSearch ms(mesh_, polyMesh::CELL_TETS);
+            return ms.findCell(location, cellI_, false);
+        }
+        else
+        {
+            if (debug)
+            {
+                Pout<< "Cell not inside " << meshBoundBox_ << endl;
+            }
+            return -1;
+        }
     }
     else
     {
-        return mesh_.findCell(location);
+        return mesh_.findCell(location);;
     }
 }
 
@@ -360,6 +374,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     dict_(dict),
     name_(name),
     mesh_(mesh),
+    meshBoundBox_(mesh_.points(), false),
     cellI_(-1),
     planformNormal_(vector::zero),
     velocity_(vector::zero),
@@ -386,6 +401,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     addedMassActive_(dict.lookupOrDefault("addedMass", false)),
     addedMass_(mesh.time(), dict.lookupOrDefault("chordLength", 1.0), debug)
 {
+    meshBoundBox_.inflate(1e-6);
     read();
     if (writePerf_)
     {
