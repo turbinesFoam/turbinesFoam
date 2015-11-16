@@ -55,7 +55,12 @@ def test_serial():
 def test_parallel():
     """Test crossFlowTurbineALSource in parallel."""
     output_clean = subprocess.check_output("./Allclean")
-    output_run = subprocess.check_output(["./Allrun", "-parallel"])
+    try:
+        output_run = subprocess.check_output(["./Allrun", "-parallel"])
+    except subprocess.CalledProcessError:
+        print(subprocess.check_output(["tail", "-n", "200",
+                                       "log.pimpleFoam"]).decode())
+        assert False
     check_created()
     check_perf()
     log_end = subprocess.check_output(["tail", "log.pimpleFoam"]).decode()
