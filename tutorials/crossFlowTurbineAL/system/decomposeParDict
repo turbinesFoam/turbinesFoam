@@ -15,9 +15,9 @@ FoamFile
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-numberOfSubdomains 4;
+numberOfSubdomains 5;
 
-method          hierarchical;
+method          scotch;
 
 hierarchicalCoeffs
 {
