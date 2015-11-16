@@ -166,8 +166,8 @@ Foam::label Foam::fv::actuatorLineElement::findCell
             {
                 Pout<< "Looking for cell inside " << meshBoundBox_ << endl;
             }
-            meshSearch ms(mesh_, polyMesh::FACEPLANES);
-            return ms.findCell(location, cellI_, false);
+            meshSearch ms(mesh_, polyMesh::CELL_TETS);
+            return ms.findCell(location, cellI_, true);
         }
         else
         {
