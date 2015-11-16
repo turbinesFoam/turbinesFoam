@@ -160,6 +160,8 @@ Foam::label Foam::fv::actuatorLineElement::findCell
 {
     if (Pstream::parRun())
     {
+        // Force construction of face diagonals
+        (void)mesh_.tetBasePtIs();
         reduce(cellI_, maxOp<label>());
         if (meshBoundBox_.containsInside(location))
         {
