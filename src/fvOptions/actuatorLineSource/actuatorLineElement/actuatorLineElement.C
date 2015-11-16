@@ -173,7 +173,7 @@ Foam::label Foam::fv::actuatorLineElement::findCell
                 Pout<< "Using seed cell index: " << cellI_ << endl;
             }
             meshSearch ms(mesh_, polyMesh::CELL_TETS);
-            return ms.findCell(location, cellI_, false);
+            return ms.findCell(location, cellI_, true);
         }
         else
         {
