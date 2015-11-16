@@ -152,6 +152,39 @@ void Foam::fv::actuatorLineElement::rotateVector
 }
 
 
+Foam::label Foam::fv::actuatorLineElement::findCell
+(
+    const point& location
+)
+{
+    if (Pstream::parRun())
+    {
+        if (meshBoundBox_.containsInside(location))
+        {
+            if (debug)
+            {
+                Pout<< "Looking for cell containing " << location 
+                    << " inside bounding box:" << endl
+                    << meshBoundBox_ << endl;
+            }
+            return mesh_.findCell(location);
+        }
+        else
+        {
+            if (debug)
+            {
+                Pout<< "Cell not inside " << meshBoundBox_ << endl;
+            }
+            return -1;
+        }
+    }
+    else
+    {
+        return mesh_.findCell(location);;
+    }
+}
+
+
 void Foam::fv::actuatorLineElement::lookupCoefficients()
 {
     liftCoefficient_ = profileData_.liftCoefficient(angleOfAttack_);
@@ -164,8 +197,7 @@ Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
 {
     scalar epsilon = VGREAT;
     const scalarField& V = mesh_.V();
-    label posCellI = mesh_.findCell(position_);
-    
+    label posCellI = findCell(position_);
     if (posCellI >= 0)
     {
         // Projection width based on local cell size (from Troldborg (2008))
@@ -210,15 +242,11 @@ void Foam::fv::actuatorLineElement::correctFlowCurvature
         vector relativeVelocityLE = inflowVelocity_ - velocityLE_;
         vector relativeVelocityTE = inflowVelocity_ - velocityTE_;
     
-        // Calculate vector normal to chord--span plane
-        vector planformNormal = -chordDirection_ ^ spanDirection_;
-        planformNormal /= mag(planformNormal);
-    
         // Calculate angle of attack at leading and trailing edge
-        scalar alphaLE = asin((planformNormal & relativeVelocityLE)
-                       / (mag(planformNormal)*mag(relativeVelocityLE)));
-        scalar alphaTE = asin((planformNormal & relativeVelocityTE)
-                       / (mag(planformNormal)*mag(relativeVelocityTE)));
+        scalar alphaLE = asin((planformNormal_ & relativeVelocityLE)
+                       / (mag(planformNormal_)*mag(relativeVelocityLE)));
+        scalar alphaTE = asin((planformNormal_ & relativeVelocityTE)
+                       / (mag(planformNormal_)*mag(relativeVelocityTE)));
                        
         scalar beta = alphaTE - alphaLE;
         
@@ -233,7 +261,7 @@ void Foam::fv::actuatorLineElement::multiplyForceRho
 )
 {
     // Lookup local density
-    label cellI = mesh_.findCell(position_);
+    label cellI = findCell(position_);
     scalar localRho = VGREAT;
     if (cellI >= 0)
     {
@@ -253,6 +281,20 @@ void Foam::fv::actuatorLineElement::applyForceField
     // Calculate projection width
     scalar epsilon = calcProjectionEpsilon();
     reduce(epsilon, minOp<scalar>());
+    
+    // If epsilon is not reduced, position is not in the mesh
+    if (not (epsilon < VGREAT))
+    {
+        // Raise fatal error since mesh size cannot be detected
+        FatalErrorIn("void actuatorLineElement::applyForceField()")
+            << "Position of " << name_  << " not found in mesh" 
+            << abort(FatalError);
+    }
+    if (debug)
+    {
+        Info<< "    epsilon: " << epsilon << endl;
+    }
+    
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
     
     // Apply force to the cells within the element's sphere of influence
@@ -272,7 +314,6 @@ void Foam::fv::actuatorLineElement::applyForceField
     
     if (debug)
     {
-        Info<< "    epsilon: " << epsilon << endl;
         Info<< "    sphereRadius: " << sphereRadius << endl;
     }
 }
@@ -331,6 +372,8 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     dict_(dict),
     name_(name),
     mesh_(mesh),
+    meshBoundBox_(mesh_.points(), false),
+    planformNormal_(vector::zero),
     velocity_(vector::zero),
     forceVector_(vector::zero),
     relativeVelocity_(vector::zero),
@@ -355,6 +398,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     addedMassActive_(dict.lookupOrDefault("addedMass", false)),
     addedMass_(mesh.time(), dict.lookupOrDefault("chordLength", 1.0), debug)
 {
+    meshBoundBox_.inflate(1e-6);
     read();
     if (writePerf_)
     {
@@ -454,17 +498,17 @@ void Foam::fv::actuatorLineElement::calculateForce
     }
     
     // Calculate vector normal to chord--span plane
-    vector planformNormal = -chordDirection_ ^ spanDirection_;
-    planformNormal /= mag(planformNormal);
-    
+    vector planformNormal_ = -chordDirection_ ^ spanDirection_;
+    planformNormal_ /= mag(planformNormal_);
+
     // Find local flow velocity by interpolating to element location
     inflowVelocity_ = vector(VGREAT, VGREAT, VGREAT);
     vector inflowVelocityPoint = position_;
     inflowVelocityPoint -= freeStreamDirection_*0.15*chordLength_;
     inflowVelocityPoint += chordDirection_*0.1*chordLength_;
-    inflowVelocityPoint -= planformNormal*0.75*chordLength_;
+    inflowVelocityPoint -= planformNormal_*0.75*chordLength_;
     interpolationCellPoint<vector> UInterp(Uin);
-    label inflowCellI = mesh_.findCell(inflowVelocityPoint);
+    label inflowCellI = findCell(inflowVelocityPoint);
     if (inflowCellI >= 0)
     {
         inflowVelocity_ = UInterp.interpolate
@@ -473,21 +517,19 @@ void Foam::fv::actuatorLineElement::calculateForce
             inflowCellI
         );
     }
-    else
-    {
-        // Inflow velocity point is not in the mesh
-        if (not Pstream::parRun())
-        {
-            // Raise fatal error since inflow velocity cannot be detected
-            FatalErrorIn("void actuatorLineElement::calculate()")
-                << "Inflow velocity point for " << name_ 
-                << " not found in mesh" 
-                << abort(FatalError);
-        }
-    }
     
     // Reduce inflow velocity over all processors
     reduce(inflowVelocity_, minOp<vector>());
+    
+    // If inflow velocity is not detected, position is not in the mesh
+    if (not (inflowVelocity_[0] < VGREAT))
+    {
+        // Raise fatal error since inflow velocity cannot be detected
+        FatalErrorIn("void actuatorLineElement::calculateForce()")
+            << "Inflow velocity point for " << name_ 
+            << " not found in mesh" 
+            << abort(FatalError);
+    }
         
     // Subtract spanwise component of inflow velocity
     vector spanwiseVelocity = spanDirection_
@@ -500,13 +542,13 @@ void Foam::fv::actuatorLineElement::calculateForce
     Re_ = mag(relativeVelocity_)*chordLength_/nu_;
     
     // Calculate angle of attack (radians)
-    scalar angleOfAttackRad = asin((planformNormal & relativeVelocity_)
-                            / (mag(planformNormal)
+    scalar angleOfAttackRad = asin((planformNormal_ & relativeVelocity_)
+                            / (mag(planformNormal_)
                             *  mag(relativeVelocity_)));
     scalar angleOfAttackUncorrected = radToDeg(angleOfAttackRad);
     relativeVelocityGeom_ = freeStreamVelocity_ - velocity_;
-    angleOfAttackGeom_ = asin((planformNormal & relativeVelocityGeom_)
-                       / (mag(planformNormal)*mag(relativeVelocityGeom_)));
+    angleOfAttackGeom_ = asin((planformNormal_ & relativeVelocityGeom_)
+                       / (mag(planformNormal_)*mag(relativeVelocityGeom_)));
     angleOfAttackGeom_ *= 180.0/pi;
     
     // Apply flow curvature correction to angle of attack
@@ -560,7 +602,7 @@ void Foam::fv::actuatorLineElement::calculateForce
             momentCoefficient_,
             degToRad(angleOfAttack_),
             mag(chordDirection_ & relativeVelocity_),
-            mag(planformNormal & relativeVelocity_)
+            mag(planformNormal_ & relativeVelocity_)
         );
     }
     
@@ -579,8 +621,7 @@ void Foam::fv::actuatorLineElement::calculateForce
     
     if (debug)
     {
-        Info<< "    force (per unit density): " << forceVector_ << endl 
-            << endl;
+        Info<< "    force (per unit density): " << forceVector_ << endl;
     }
 }
 

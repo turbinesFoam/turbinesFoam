@@ -76,6 +76,9 @@ protected:
         //- Reference to the mesh
         const fvMesh& mesh_;
         
+        //- Mesh bounding box
+        boundBox meshBoundBox_;
+        
         //- Chord direction
         vector chordDirection_;
         
@@ -87,6 +90,9 @@ protected:
         
         //- Element span length, for calculating force
         scalar spanLength_;
+        
+        //- Element planform normal vector
+        vector planformNormal_;
         
         //- Location of element's half chord
         vector position_;
@@ -196,6 +202,9 @@ protected:
             vector axis,
             scalar radians
         );
+        
+        //- Find cell containing location
+        label findCell(const point& location);
         
         //- Lookup force coefficients
         void lookupCoefficients();

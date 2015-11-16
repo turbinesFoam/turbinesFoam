@@ -21,7 +21,6 @@ internalField   uniform (0 0 0 0 0 0);
 
 boundaryField
 {
-
     inlet
     {
         type            fixedValue;
@@ -52,6 +51,10 @@ boundaryField
         value           $internalField;
     }
 
+    "proc.*"
+    {
+        type            processor;
+    }
 }
 
 

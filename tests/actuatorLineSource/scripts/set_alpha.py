@@ -7,7 +7,7 @@ import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("alpha_deg", nargs="?", type=float, default=4.0)
+    parser.add_argument("alpha_deg", nargs="?", type=float, default=10.0)
     parser.add_argument("--three-dim", "-d", action="store_true", default=False,
                         help="3-D actuator line")
 
