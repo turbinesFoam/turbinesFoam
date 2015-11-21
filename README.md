@@ -5,7 +5,7 @@ turbinesFoam
 [![Stories in Ready](https://badge.waffle.io/turbinesfoam/turbinesfoam.png?label=ready&title=Ready)](https://waffle.io/turbinesfoam/turbinesfoam)
 [![DOI](https://zenodo.org/badge/4234/turbinesFoam/turbinesFoam.svg)](https://zenodo.org/badge/latestdoi/4234/turbinesFoam/turbinesFoam)
 
-`turbinesFoam` is a library for simulating wind and marine
+turbinesFoam is a library for simulating wind and marine
 hydrokinetic turbines in OpenFOAM (2.4.x) using the actuator line approach.
 
 [![](https://cloud.githubusercontent.com/assets/4604869/10141523/f2e3ad9a-65da-11e5-971c-b736abd30c3b.png)](https://www.youtube.com/watch?v=THZvV4R1vow)
@@ -44,7 +44,7 @@ cd turbinesFoam
 
 Usage
 -----
-There are tutorials located in `turbinesFoam/tutorials`
+There are tutorials located in `turbinesFoam/tutorials`.
 
 
 How to cite
