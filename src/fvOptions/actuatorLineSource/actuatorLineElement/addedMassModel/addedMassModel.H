@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright held by original author(s)
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of turbinesFoam, which is based on OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@ Class
     Foam::addedMassModel
 
 Description
+    Added mass model based on Strickland (1981) "A vortex model of the 
+    Darrieus turbine: An analytical and experimental study".
 
 SourceFiles
     addedMassModel.C
