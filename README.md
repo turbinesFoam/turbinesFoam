@@ -3,7 +3,7 @@ turbinesFoam
 
 [![Build Status](https://travis-ci.org/turbinesFoam/turbinesFoam.svg?branch=master)](https://travis-ci.org/turbinesFoam/turbinesFoam)
 [![Stories in Ready](https://badge.waffle.io/turbinesfoam/turbinesfoam.png?label=ready&title=Ready)](https://waffle.io/turbinesfoam/turbinesfoam)
-[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.32471.svg)](http://dx.doi.org/10.5281/zenodo.32471)
+[![DOI](https://zenodo.org/badge/4234/turbinesFoam/turbinesFoam.svg)](https://zenodo.org/badge/latestdoi/4234/turbinesFoam/turbinesFoam)
 
 `turbinesFoam` is a library for simulating wind and marine
 hydrokinetic turbines in OpenFOAM (2.4.x) using the actuator line approach.
@@ -49,17 +49,7 @@ There are tutorials located in `turbinesFoam/tutorials`
 
 How to cite
 -----------
-```bibtex
-@misc{Bachant2015-turbinesFoam,
-  author       = {Peter Bachant and Martin Wosnik},
-  title        = {turbinesFoam: v0.0.4},
-  month        = October,
-  year         = 2015,
-  doi          = {10.5281/zenodo.32471},
-  url          = {http://dx.doi.org/10.5281/zenodo.32471},
-  howpublished = {Zenodo. \url{http://dx.doi.org/10.5281/zenodo.32471}}
-}
-```
+The latest release of turbinesFoam can be cited via DOI thanks to Zenodo: [![DOI](https://zenodo.org/badge/4234/turbinesFoam/turbinesFoam.svg)](https://zenodo.org/badge/latestdoi/4234/turbinesFoam/turbinesFoam)
 
 
 License
