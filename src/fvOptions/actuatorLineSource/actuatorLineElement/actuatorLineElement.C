@@ -504,9 +504,9 @@ void Foam::fv::actuatorLineElement::calculateForce
     // Find local flow velocity by interpolating to element location
     inflowVelocity_ = vector(VGREAT, VGREAT, VGREAT);
     vector inflowVelocityPoint = position_;
-    inflowVelocityPoint -= freeStreamDirection_*0.15*chordLength_;
-    inflowVelocityPoint += chordDirection_*0.1*chordLength_;
-    inflowVelocityPoint -= planformNormal_*0.75*chordLength_;
+    //~ inflowVelocityPoint -= freeStreamDirection_*0.15*chordLength_;
+    //~ inflowVelocityPoint += chordDirection_*0.1*chordLength_;
+    //~ inflowVelocityPoint -= planformNormal_*0.75*chordLength_;
     interpolationCellPoint<vector> UInterp(Uin);
     label inflowCellI = findCell(inflowVelocityPoint);
     if (inflowCellI >= 0)
