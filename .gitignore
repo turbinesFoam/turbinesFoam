@@ -1,6 +1,7 @@
 
 *~
 *linux64GccDPOpt
+*linux64GccDPInt32Opt
 *.dep
 *lnInclude
 callgrind*
