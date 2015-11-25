@@ -36,8 +36,6 @@ SourceFiles
 #define turbineALSource_H
 
 #include "fvOption.H"
-#include "cylindricalCS.H"
-#include "localAxesRotation.H"
 #include "NamedEnum.H"
 #include "actuatorLineSource.H"
 #include "volFieldsFwd.H"
@@ -62,16 +60,16 @@ class turbineALSource
 protected:
 
     // Protected data
-    
+
         //- Runtime pointer
         const Time& time_;
-        
+
         //- Time value used to determine whether to rotate
         scalar lastRotationTime_;
-        
+
         //- Origin of turbine coordinate system
         vector origin_;
-        
+
         //- Turbine axis of rotation
         vector axis_;
 
@@ -81,7 +79,7 @@ protected:
         //- Rotational speed in rad/s
         //  Positive anti-clockwise when looking along axis direction
         scalar omega_;
-        
+
         //- Azimuthal angle in degrees (does not reset each rotation)
         scalar angleDeg_;
 
@@ -90,70 +88,70 @@ protected:
 
         //- Inlet velocity for specified inflow
         vector freeStreamVelocity_;
-        
+
         //- Free stream velocity direction
         vector freeStreamDirection_;
-        
+
         //- (Initial) radial direction
         vector radialDirection_;
-        
+
         //- Rotor tip speed ratio
         scalar tipSpeedRatio_;
-        
+
         //- Rotor radius for calculating tip speed ratio
         scalar rotorRadius_;
 
         //- List of actuator lines as blades
         PtrList<actuatorLineSource> blades_;
-        
+
         //- Blade definitions dictionary
         dictionary bladesDict_;
-        
+
         //- List of blade names
         wordList bladeNames_;
-        
+
         //- Dictionary for profile coefficient data
         dictionary profileData_;
-        
+
         //- Force vector
         vector force_;
-        
+
         //- Force field (per unit density)
         volVectorField forceField_;
-        
+
         //- Torque about the axis
         scalar torque_;
-        
+
         //- Frontal area in m^2
         scalar frontalArea_;
-        
+
         //- Nondimensional power coefficient
         scalar powerCoefficient_;
-        
+
         //- Nondimensional drag coefficient
         scalar dragCoefficient_;
-        
+
         //- Nondimensional torque coefficient
         scalar torqueCoefficient_;
-        
+
         //- Output file stream
         OFstream* outputFile_;
-        
+
         //- Dynamic stall dictionary
         dictionary dynamicStallDict_;
-        
+
         //- Amplitude of prescribed TSR oscillation
         scalar tsrAmplitude_;
-        
+
         //- Angle of first peak in TSR oscillation (rad)
         scalar tsrPhase_;
-        
+
         //- Mean tip speed ratio
         scalar meanTSR_;
 
 
     // Protected Member Functions
-    
+
         //- Rotate a vector
         void rotateVector
         (
@@ -162,16 +160,16 @@ protected:
             vector axis,
             scalar radians
         );
-        
+
         //- Create actuator lines for blades
         virtual void createBlades();
 
         //- Create the co-ordinate system
         virtual void createCoordinateSystem();
-        
+
         //- Rotate the turbine according to its angular velocity and time step
         virtual void rotate();
-        
+
         //- Rotate the turbine a specified angle about its axis
         virtual void rotate(scalar radians);
 
@@ -201,7 +199,7 @@ public:
     // Member Functions
 
         // Access
-        
+
             //- Return const access to runTime
             inline const Time& time() const;
 
@@ -210,13 +208,13 @@ public:
 
             //- Return the rotational speed (rad/s)
             inline scalar omega() const;
-            
+
             //- Return force vector
             vector& force();
-            
+
             //- Return force field
             volVectorField& forceField();
-            
+
             //- Return torque
             scalar& torque();
 
@@ -237,7 +235,7 @@ public:
                 fvMatrix<vector>& eqn,
                 const label fieldI
             );
-            
+
             //- Add source term to turbulence model equation
             virtual void addSup
             (
@@ -247,19 +245,19 @@ public:
 
 
         // I-O
-        
+
             //- Create the turbine output file
             virtual void createOutputFile();
 
             //- Write the turbine performance to file
             virtual void writePerf();
-            
+
             //- Write the source properties
             virtual void writeData(Ostream&) const;
 
             //- Read source dictionary
             virtual bool read(const dictionary& dict);
-            
+
             //- Print dictionary values
             virtual void printCoeffs() const;
 };
