@@ -50,9 +50,6 @@ maxCo           0.9;
 
 libs
 (
-    "libOpenFOAM.so"
-    "libincompressibleTurbulenceModel.so"
-    "libincompressibleRASModels.so"
     "libturbinesFoam.so"
     "libturbinesFoamTurbulenceModels.so"
 );
