@@ -53,9 +53,9 @@ namespace fv
 
 bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
 {
-    if (option::read(dict))
+    if (cellSetOption::read(dict))
     {
-        
+
         coeffs_.lookup("fieldNames") >> fieldNames_;
         applied_.setSize(fieldNames_.size(), false);
 
@@ -67,13 +67,13 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
         coeffs_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
         freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
         endEffectsActive_ = coeffs_.lookupOrDefault("endEffects", false);
-        
+
         // Read harmonic pitching parameters if present
         dictionary pitchDict = coeffs_.subOrEmptyDict("harmonicPitching");
         harmonicPitchingActive_ = pitchDict.lookupOrDefault("active", false);
         reducedFreq_ = pitchDict.lookupOrDefault("reducedFreq", 0.0);
         pitchAmplitude_ = pitchDict.lookupOrDefault("amplitude", 0.0);
-        
+
         if (debug)
         {
             Info<< "Debugging for actuatorLineSource on" << endl;
@@ -92,7 +92,7 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
 void Foam::fv::actuatorLineSource::createOutputFile()
 {
     fileName dir;
-    
+
     if (Pstream::parRun())
     {
         dir = mesh_.time().path()/"../postProcessing/actuatorLines"
@@ -103,15 +103,15 @@ void Foam::fv::actuatorLineSource::createOutputFile()
         dir = mesh_.time().path()/"postProcessing/actuatorLines"
             / mesh_.time().timeName();
     }
-    
+
     if (!isDir(dir))
     {
         mkDir(dir);
     }
 
     outputFile_ = new OFstream(dir/name_ + ".csv");
-    
-    *outputFile_<< "time,x,y,z,rel_vel_mag,alpha_deg,alpha_geom_deg,cl,cd,cm" 
+
+    *outputFile_<< "time,x,y,z,rel_vel_mag,alpha_deg,alpha_geom_deg,cl,cd,cm"
                 << endl;
 }
 
@@ -119,7 +119,7 @@ void Foam::fv::actuatorLineSource::createOutputFile()
 void Foam::fv::actuatorLineSource::createElements()
 {
 	elements_.setSize(nElements_);
-    
+
     label nGeometryPoints = elementGeometry_.size();
     label nGeometrySegments = nGeometryPoints - 1;
     label nElementsPerSegment = nElements_/nGeometrySegments;
@@ -128,7 +128,7 @@ void Foam::fv::actuatorLineSource::createElements()
         // Need to have integer number of elements per geometry segment
         FatalErrorIn("void actuatorLineSource::createElements()")
             << "Number of actuator line elements must be multiple of the "
-            << "number of actuator line geometry segments" 
+            << "number of actuator line geometry segments"
             << abort(FatalError);
     }
     List<vector> points(nGeometryPoints);
@@ -140,7 +140,7 @@ void Foam::fv::actuatorLineSource::createElements()
     List<scalar> chordMounts(nGeometryPoints);
     totalLength_ = 0.0;
     chordLength_ = 0.0;
-    
+
     forAll(points, i)
     {
         // Extract geometry point
@@ -148,7 +148,7 @@ void Foam::fv::actuatorLineSource::createElements()
         scalar y = elementGeometry_[i][0][1];
         scalar z = elementGeometry_[i][0][2];
         points[i] = vector(x, y, z);
-        if (i > 0) 
+        if (i > 0)
         {
             spanLengths[i - 1] = mag(points[i] - points[i-1]);
             totalLength_ += spanLengths[i - 1];
@@ -171,25 +171,25 @@ void Foam::fv::actuatorLineSource::createElements()
         // Read pitch
         pitches[i] = elementGeometry_[i][5][0];
     }
-    
+
     // Store blade root and tip locations for distance calculations
     vector rootLocation = points[0];
     vector tipLocation = points[nGeometryPoints - 1];
-    
+
     // Compute average chord length
     chordLength_ /= nGeometryPoints;
-    
+
     // Compute aspect ratio
     aspectRatio_ = totalLength_/chordLength_;
-    
+
     // Lookup initial element velocities if present
     List<vector> initialVelocities(nGeometryPoints, vector::zero);
     coeffs_.readIfPresent("initialVelocities", initialVelocities);
-    
+
     if (debug)
     {
         Info<< "Total length: " << totalLength_ << endl;
-        Info<< "Elements per geometry segment: " << nElementsPerSegment 
+        Info<< "Elements per geometry segment: " << nElementsPerSegment
             << endl;
         Info<< "Points:" << endl << points << endl;
         Info<< "Span directions:" << endl << spanDirs << endl;
@@ -199,7 +199,7 @@ void Foam::fv::actuatorLineSource::createElements()
         Info<< "Root location: " << rootLocation << endl;
         Info<< "Tip location: " << tipLocation << endl;
     }
-	
+
     forAll(elements_, i)
     {
         std::stringstream ss;
@@ -221,28 +221,28 @@ void Foam::fv::actuatorLineSource::createElements()
         scalar pitch;
         scalar chordMount;
         vector initialVelocity;
-        
+
         // Linearly interpolate position
         vector point1 = points[geometrySegmentIndex];
         vector point2 = points[geometrySegmentIndex + 1];
         vector segment = point2 - point1;
-        position = point1 
+        position = point1
                  + segment/nElementsPerSegment*pointIndex
                  + segment/nElementsPerSegment/2;
-                 
+
         // Linearly interpolate chordLength
         scalar chordLength1 = chordLengths[geometrySegmentIndex];
         scalar chordLength2 = chordLengths[geometrySegmentIndex + 1];
         scalar deltaChordTotal = chordLength2 - chordLength1;
-        chordLength = chordLength1 
+        chordLength = chordLength1
                     + deltaChordTotal/nElementsPerSegment*pointIndex
                     + deltaChordTotal/nElementsPerSegment/2;
-                    
+
         // Linearly interpolate spanDirection
         vector spanDir1 = spanDirs[geometrySegmentIndex];
         vector spanDir2 = spanDirs[geometrySegmentIndex + 1];
         vector deltaSpanTotal = spanDir2 - spanDir1;
-        spanDirection = spanDir1 
+        spanDirection = spanDir1
                       + deltaSpanTotal/nElementsPerSegment*pointIndex
                       + deltaSpanTotal/nElementsPerSegment/2;
 
@@ -250,36 +250,36 @@ void Foam::fv::actuatorLineSource::createElements()
         scalar pitch1 = pitches[geometrySegmentIndex];
         scalar pitch2 = pitches[geometrySegmentIndex + 1];
         scalar deltaPitchTotal = pitch2 - pitch1;
-        pitch = pitch1 
+        pitch = pitch1
               + deltaPitchTotal/nElementsPerSegment*pointIndex
               + deltaPitchTotal/nElementsPerSegment/2;
-              
+
         // Linearly interpolate chord mount
         scalar cm1 = chordMounts[geometrySegmentIndex];
         scalar cm2 = chordMounts[geometrySegmentIndex + 1];
         scalar deltaCmTotal = cm2 - cm1;
         chordMount = cm1 + deltaCmTotal/nElementsPerSegment*pointIndex
                    + deltaCmTotal/nElementsPerSegment/2;
-              
+
         // Linearly interpolate element velocity
         vector vel1 = initialVelocities[geometrySegmentIndex];
         vector vel2 = initialVelocities[geometrySegmentIndex + 1];
         vector deltaVelTotal = vel2 - vel1;
-        initialVelocity = vel1 
+        initialVelocity = vel1
                         + deltaVelTotal/nElementsPerSegment*pointIndex
                         + deltaVelTotal/nElementsPerSegment/2;
-        
+
         // Linearly interpolate chordDirection
         vector chordDir1 = chordRefDirs[geometrySegmentIndex];
         vector chordDir2 = chordRefDirs[geometrySegmentIndex + 1];
         vector deltaChordDirTotal = chordDir2 - chordDir1;
-        chordDirection = chordDir1 
+        chordDirection = chordDir1
                        + deltaChordDirTotal/nElementsPerSegment*pointIndex
                        + deltaChordDirTotal/nElementsPerSegment/2;
-                       
+
         // Calculate nondimensional root distance
         scalar rootDistance = mag(position - rootLocation)/totalLength_;
-        
+
         // Create a dictionary for this actuatorLineElement
         dictionary dict;
         dict.add("position", position);
@@ -302,19 +302,19 @@ void Foam::fv::actuatorLineSource::createElements()
         }
         dictionary fcDict = coeffs_.subOrEmptyDict("flowCurvature");
         dict.add("flowCurvature", fcDict);
-        bool writeElementPerf 
+        bool writeElementPerf
         (
             coeffs_.lookupOrDefault("writeElementPerf", false)
         );
         dict.add("writePerf", writeElementPerf);
-        
+
         if (debug)
         {
             Info<< "Creating actuatorLineElement: " << name << endl;
             Info<< "Geometry segment index: " << geometrySegmentIndex << endl;
             Info<< "Position: " << position << endl;
             Info<< "Chord length: " << chordLength << endl;
-            Info<< "Chord direction (before pitching): " << chordDirection 
+            Info<< "Chord direction (before pitching): " << chordDirection
                 << endl;
             Info<< "Pitch (degrees): " << pitch << endl;
             Info<< "Span length: " << spanLength << endl;
@@ -324,7 +324,7 @@ void Foam::fv::actuatorLineSource::createElements()
             Info<< "writePerf: " << writeElementPerf << endl;
             Info<< "Root distance (nondimensional): " << rootDistance << endl;
         }
-        
+
         actuatorLineElement* element = new actuatorLineElement
         (
             name, dict, mesh_
@@ -349,7 +349,7 @@ void Foam::fv::actuatorLineSource::writePerf()
     scalar cl = 0.0;
     scalar cd = 0.0;
     scalar cm = 0.0;
-    
+
     forAll(elements_, i)
     {
         vector pos = elements_[i].position();
@@ -361,16 +361,16 @@ void Foam::fv::actuatorLineSource::writePerf()
         cd += elements_[i].dragCoefficient();
         cm += elements_[i].momentCoefficient();
     }
-    
+
     x /= nElements_; y /= nElements_; z /= nElements_;
     relVelMag /= nElements_;
     alphaDeg /= nElements_;
     alphaGeom /= nElements_;
     cl /= nElements_; cd /= nElements_; cm /= nElements_;
- 
+
     // write time,x,y,z,rel_vel_mag,alpha_deg,alpha_geom_deg,cl,cd,cm
     *outputFile_<< time << "," << x << "," << y << "," << z << "," << relVelMag
-                << "," << alphaDeg << "," << alphaGeom << "," << cl << "," 
+                << "," << alphaDeg << "," << alphaGeom << "," << cl << ","
                 << cd << "," << cm << endl;
 }
 
@@ -381,7 +381,7 @@ void Foam::fv::actuatorLineSource::calcEndEffects()
     {
         Info<< "Calculating end effects for " << name_ << endl;
     }
-    
+
     scalar pi = Foam::constant::mathematical::pi;
     List<scalar> c(nElements_, 1.0); // Chord lengths
     List<scalar> alpha(nElements_, 0.1); // Geometric AoA in radians
@@ -391,7 +391,7 @@ void Foam::fv::actuatorLineSource::calcEndEffects()
     List<scalar> A(nElements_); // Fourier coefficients
     List<scalar> circulation(nElements_);
     List<scalar> cl(nElements_);
-    
+
     // Create lists from element parameters
     forAll(elements_, n)
     {
@@ -400,7 +400,7 @@ void Foam::fv::actuatorLineSource::calcEndEffects()
         //~ alpha[n] = Foam::degToRad(elements_[n].angleOfAttackGeom());
         //~ relVelMag[n] = mag(elements_[n].relativeVelocityGeom());
     }
-        
+
     // Create D matrix
     forAll(elements_, i)
     {
@@ -425,14 +425,14 @@ void Foam::fv::actuatorLineSource::calcEndEffects()
         circulation[m] = 2*totalLength_*relVelMag[m]*sumA;
         cl[m] = circulation[m]/(0.5*c[m]*relVelMag[m]);
     }
-    
+
     // Set endEffectFactor for all elements
     List<scalar> factors = cl/Foam::max(cl);
     forAll(elements_, i)
     {
         elements_[i].setEndEffectFactor(factors[i]);
     }
-    
+
     if (debug == 2)
     {
         Info<< "Debug output from actuatorLineSource::calcEndEffects:" << endl;
@@ -457,7 +457,7 @@ Foam::fv::actuatorLineSource::actuatorLineSource
     const fvMesh& mesh
 )
 :
-    option(name, modelType, dict, mesh),
+    cellSetOption(name, modelType, dict, mesh),
     force_(vector::zero),
     forceField_
     (
@@ -472,8 +472,8 @@ Foam::fv::actuatorLineSource::actuatorLineSource
         mesh_,
         dimensionedVector
         (
-            "force", 
-            dimForce/dimVolume/dimDensity, 
+            "force",
+            dimForce/dimVolume/dimDensity,
             vector::zero
         )
     ),
@@ -514,7 +514,7 @@ void Foam::fv::actuatorLineSource::printCoeffs() const
 
 void Foam::fv::actuatorLineSource::rotate
 (
-    vector rotationPoint, 
+    vector rotationPoint,
     vector axis,
     scalar radians
 )
@@ -604,13 +604,13 @@ Foam::vector Foam::fv::actuatorLineSource::moment(vector point)
     {
         moment += elements_[i].moment(point);
     }
-    
+
     if (debug)
     {
         Info<< "Moment on " << name_ << " about " << point << ": " << moment
             << endl;
     }
-    
+
     return moment;
 }
 
@@ -633,25 +633,25 @@ void Foam::fv::actuatorLineSource::addSup
         pitch(deltaPitch);
         lastMotionTime_ = t;
     }
-    
+
     // Zero out force field
     forceField_ *= 0;
-    
+
     // Zero the total force vector
     force_ = vector::zero;
-    
+
     forAll(elements_, i)
     {
         elements_[i].addSup(eqn, forceField_);
         force_ += elements_[i].force();
     }
-    
+
     Info<< "Force (per unit density) on " << name_ << ": "
         << endl << force_ << endl << endl;
 
     // Add source to eqn
     eqn += forceField_;
-    
+
     // Write performance to file
     if (writePerf_ and Pstream::master()) writePerf();
 }
@@ -662,9 +662,9 @@ void Foam::fv::actuatorLineSource::addSup
     fvMatrix<scalar>& eqn,
     const label fieldI
 )
-{    
+{
     const volVectorField& U = mesh_.lookupObject<volVectorField>("U");
-    
+
     word fieldName = fieldNames_[fieldI];
 
     Info<< endl << "Adding " << fieldName << " from " << name_ << endl << endl;
@@ -695,30 +695,30 @@ void Foam::fv::actuatorLineSource::addSup
         pitch(deltaPitch);
         lastMotionTime_ = t;
     }
-    
+
     // Check dimensions on force field and correct if necessary
     if (forceField_.dimensions() != eqn.dimensions()/dimVolume)
     {
         forceField_.dimensions().reset(eqn.dimensions()/dimVolume);
     }
-    
+
     // Zero out force field
     forceField_ *= 0;
-    
+
     // Zero the total force vector
     force_ = vector::zero;
-    
+
     forAll(elements_, i)
     {
         elements_[i].addSup(rho, eqn, forceField_);
         force_ += elements_[i].force();
     }
-    
+
     Info<< "Force on " << name_ << ": " << endl << force_ << endl << endl;
 
     // Add source to eqn
     eqn += forceField_;
-    
+
     // Write performance to file
     if (writePerf_ and Pstream::master()) writePerf();
 }
