@@ -24,43 +24,90 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "kEpsilonOptions.H"
-#include "addToRunTimeSelectionTable.H"
-
-#include "backwardsCompatibilityWallFunctions.H"
+#include "bound.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-namespace incompressible
-{
 namespace RASModels
 {
 
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+// * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
-defineTypeNameAndDebug(kEpsilonOptions, 0);
-addToRunTimeSelectionTable(RASModel, kEpsilonOptions, dictionary);
+template<class BasicTurbulenceModel>
+void kEpsilonOptions<BasicTurbulenceModel>::correctNut()
+{
+    this->nut_ = Cmu_*sqr(k_)/epsilon_;
+    this->nut_.correctBoundaryConditions();
+
+    BasicTurbulenceModel::correctNut();
+}
+
+
+template<class BasicTurbulenceModel>
+tmp<fvScalarMatrix> kEpsilonOptions<BasicTurbulenceModel>::kSource() const
+{
+    return tmp<fvScalarMatrix>
+    (
+        new fvScalarMatrix
+        (
+            k_,
+            dimVolume*this->rho_.dimensions()*k_.dimensions()
+            /dimTime
+        )
+    );
+}
+
+
+template<class BasicTurbulenceModel>
+tmp<fvScalarMatrix> kEpsilonOptions<BasicTurbulenceModel>::epsilonSource() const
+{
+    return tmp<fvScalarMatrix>
+    (
+        new fvScalarMatrix
+        (
+            epsilon_,
+            dimVolume*this->rho_.dimensions()*epsilon_.dimensions()
+            /dimTime
+        )
+    );
+}
+
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-kEpsilonOptions::kEpsilonOptions
+template<class BasicTurbulenceModel>
+kEpsilonOptions<BasicTurbulenceModel>::kEpsilonOptions
 (
+    const alphaField& alpha,
+    const rhoField& rho,
     const volVectorField& U,
+    const surfaceScalarField& alphaRhoPhi,
     const surfaceScalarField& phi,
-    transportModel& transport,
-    const word& turbulenceModelName,
-    const word& modelName
+    const transportModel& transport,
+    const word& propertiesName,
+    const word& type
 )
 :
-    RASModel(modelName, U, phi, transport, turbulenceModelName),
+    eddyViscosity<RASModel<BasicTurbulenceModel> >
+    (
+        type,
+        alpha,
+        rho,
+        U,
+        alphaRhoPhi,
+        phi,
+        transport,
+        propertiesName
+    ),
 
     Cmu_
     (
         dimensioned<scalar>::lookupOrAddToDict
         (
             "Cmu",
-            coeffDict_,
+            this->coeffDict_,
             0.09
         )
     ),
@@ -69,7 +116,7 @@ kEpsilonOptions::kEpsilonOptions
         dimensioned<scalar>::lookupOrAddToDict
         (
             "C1",
-            coeffDict_,
+            this->coeffDict_,
             1.44
         )
     ),
@@ -78,8 +125,26 @@ kEpsilonOptions::kEpsilonOptions
         dimensioned<scalar>::lookupOrAddToDict
         (
             "C2",
-            coeffDict_,
+            this->coeffDict_,
             1.92
+        )
+    ),
+    C3_
+    (
+        dimensioned<scalar>::lookupOrAddToDict
+        (
+            "C3",
+            this->coeffDict_,
+            -0.33
+        )
+    ),
+    sigmak_
+    (
+        dimensioned<scalar>::lookupOrAddToDict
+        (
+            "sigmak",
+            this->coeffDict_,
+            1.0
         )
     ),
     sigmaEps_
@@ -87,7 +152,7 @@ kEpsilonOptions::kEpsilonOptions
         dimensioned<scalar>::lookupOrAddToDict
         (
             "sigmaEps",
-            coeffDict_,
+            this->coeffDict_,
             1.3
         )
     ),
@@ -96,127 +161,53 @@ kEpsilonOptions::kEpsilonOptions
     (
         IOobject
         (
-            "k",
-            runTime_.timeName(),
-            mesh_,
-            IOobject::NO_READ,
+            IOobject::groupName("k", U.group()),
+            this->runTime_.timeName(),
+            this->mesh_,
+            IOobject::MUST_READ,
             IOobject::AUTO_WRITE
         ),
-        autoCreateK("k", mesh_)
+        this->mesh_
     ),
     epsilon_
     (
         IOobject
         (
-            "epsilon",
-            runTime_.timeName(),
-            mesh_,
-            IOobject::NO_READ,
+            IOobject::groupName("epsilon", U.group()),
+            this->runTime_.timeName(),
+            this->mesh_,
+            IOobject::MUST_READ,
             IOobject::AUTO_WRITE
         ),
-        autoCreateEpsilon("epsilon", mesh_)
+        this->mesh_
     ),
-    nut_
-    (
-        IOobject
-        (
-            "nut",
-            runTime_.timeName(),
-            mesh_,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        autoCreateNut("nut", mesh_)
-    ),
-    fvOptions(U.mesh())
+
+    fvOptions_(U.mesh())
 {
-    bound(k_, kMin_);
-    bound(epsilon_, epsilonMin_);
+    bound(k_, this->kMin_);
+    bound(epsilon_, this->epsilonMin_);
 
-    nut_ = Cmu_*sqr(k_)/epsilon_;
-    nut_.correctBoundaryConditions();
-
-    printCoeffs();
+    if (type == typeName)
+    {
+        this->printCoeffs(type);
+        correctNut();
+    }
 }
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-tmp<volSymmTensorField> kEpsilonOptions::R() const
+template<class BasicTurbulenceModel>
+bool kEpsilonOptions<BasicTurbulenceModel>::read()
 {
-    return tmp<volSymmTensorField>
-    (
-        new volSymmTensorField
-        (
-            IOobject
-            (
-                "R",
-                runTime_.timeName(),
-                mesh_,
-                IOobject::NO_READ,
-                IOobject::NO_WRITE
-            ),
-            ((2.0/3.0)*I)*k_ - nut_*twoSymm(fvc::grad(U_)),
-            k_.boundaryField().types()
-        )
-    );
-}
-
-
-tmp<volSymmTensorField> kEpsilonOptions::devReff() const
-{
-    return tmp<volSymmTensorField>
-    (
-        new volSymmTensorField
-        (
-            IOobject
-            (
-                "devRhoReff",
-                runTime_.timeName(),
-                mesh_,
-                IOobject::NO_READ,
-                IOobject::NO_WRITE
-            ),
-           -nuEff()*dev(twoSymm(fvc::grad(U_)))
-        )
-    );
-}
-
-
-tmp<fvVectorMatrix> kEpsilonOptions::divDevReff(volVectorField& U) const
-{
-    return
-    (
-      - fvm::laplacian(nuEff(), U)
-      - fvc::div(nuEff()*dev(T(fvc::grad(U))))
-    );
-}
-
-
-tmp<fvVectorMatrix> kEpsilonOptions::divDevRhoReff
-(
-    const volScalarField& rho,
-    volVectorField& U
-) const
-{
-    volScalarField muEff("muEff", rho*nuEff());
-
-    return
-    (
-      - fvm::laplacian(muEff, U)
-      - fvc::div(muEff*dev(T(fvc::grad(U))))
-    );
-}
-
-
-bool kEpsilonOptions::read()
-{
-    if (RASModel::read())
+    if (eddyViscosity<RASModel<BasicTurbulenceModel> >::read())
     {
-        Cmu_.readIfPresent(coeffDict());
-        C1_.readIfPresent(coeffDict());
-        C2_.readIfPresent(coeffDict());
-        sigmaEps_.readIfPresent(coeffDict());
+        Cmu_.readIfPresent(this->coeffDict());
+        C1_.readIfPresent(this->coeffDict());
+        C2_.readIfPresent(this->coeffDict());
+        C3_.readIfPresent(this->coeffDict());
+        sigmak_.readIfPresent(this->coeffDict());
+        sigmaEps_.readIfPresent(this->coeffDict());
 
         return true;
     }
@@ -227,16 +218,28 @@ bool kEpsilonOptions::read()
 }
 
 
-void kEpsilonOptions::correct()
+template<class BasicTurbulenceModel>
+void kEpsilonOptions<BasicTurbulenceModel>::correct()
 {
-    RASModel::correct();
-
-    if (!turbulence_)
+    if (!this->turbulence_)
     {
         return;
     }
 
-    volScalarField G(GName(), nut_*2*magSqr(symm(fvc::grad(U_))));
+    // Local references
+    const alphaField& alpha = this->alpha_;
+    const rhoField& rho = this->rho_;
+    const surfaceScalarField& alphaRhoPhi = this->alphaRhoPhi_;
+    const volVectorField& U = this->U_;
+    volScalarField& nut = this->nut_;
+
+    eddyViscosity<RASModel<BasicTurbulenceModel> >::correct();
+
+    volScalarField divU(fvc::div(fvc::absolute(this->phi(), U)));
+
+    tmp<volTensorField> tgradU = fvc::grad(U);
+    volScalarField G(this->GName(), nut*(dev(twoSymm(tgradU())) && tgradU()));
+    tgradU.clear();
 
     // Update epsilon and G at the wall
     epsilon_.boundaryField().updateCoeffs();
@@ -244,52 +247,51 @@ void kEpsilonOptions::correct()
     // Dissipation equation
     tmp<fvScalarMatrix> epsEqn
     (
-        fvm::ddt(epsilon_)
-      + fvm::div(phi_, epsilon_)
-      - fvm::laplacian(DepsilonEff(), epsilon_)
+        fvm::ddt(alpha, rho, epsilon_)
+      + fvm::div(alphaRhoPhi, epsilon_)
+      - fvm::laplacian(alpha*rho*DepsilonEff(), epsilon_)
      ==
-        C1_*G*epsilon_/k_
-      - fvm::Sp(C2_*epsilon_/k_, epsilon_)
-      + fvOptions(epsilon_)
+        C1_*alpha*rho*G*epsilon_/k_
+      - fvm::SuSp(((2.0/3.0)*C1_ + C3_)*alpha*rho*divU, epsilon_)
+      - fvm::Sp(C2_*alpha*rho*epsilon_/k_, epsilon_)
+      + epsilonSource()
+      + fvOptions_(epsilon_)
     );
 
     epsEqn().relax();
-    fvOptions.constrain(epsEqn());
+    fvOptions_.constrain(epsEqn());
     epsEqn().boundaryManipulate(epsilon_.boundaryField());
     solve(epsEqn);
-    fvOptions.correct(epsilon_);
-    bound(epsilon_, epsilonMin_);
-
+    fvOptions_.correct(epsilon_);
+    bound(epsilon_, this->epsilonMin_);
 
     // Turbulent kinetic energy equation
     tmp<fvScalarMatrix> kEqn
     (
-        fvm::ddt(k_)
-      + fvm::div(phi_, k_)
-      - fvm::laplacian(DkEff(), k_)
+        fvm::ddt(alpha, rho, k_)
+      + fvm::div(alphaRhoPhi, k_)
+      - fvm::laplacian(alpha*rho*DkEff(), k_)
      ==
-        G
-      - fvm::Sp(epsilon_/k_, k_)
-      + fvOptions(k_)
+        alpha*rho*G
+      - fvm::SuSp((2.0/3.0)*alpha*rho*divU, k_)
+      - fvm::Sp(alpha*rho*epsilon_/k_, k_)
+      + kSource()
+      + fvOptions_(k_)
     );
 
     kEqn().relax();
-    fvOptions.constrain(kEqn());
+    fvOptions_.constrain(kEqn());
     solve(kEqn);
-    fvOptions.correct(k_);
-    bound(k_, kMin_);
+    fvOptions_.correct(k_);
+    bound(k_, this->kMin_);
 
-
-    // Re-calculate viscosity
-    nut_ = Cmu_*sqr(k_)/epsilon_;
-    nut_.correctBoundaryConditions();
+    correctNut();
 }
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace RASModels
-} // End namespace incompressible
 } // End namespace Foam
 
 // ************************************************************************* //

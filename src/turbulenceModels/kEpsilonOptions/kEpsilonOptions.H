@@ -22,21 +22,41 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::incompressible::RASModels::kEpsilonOptions
+    Foam::RASModels::kEpsilonOptions
 
 Group
-    grpIcoRASTurbulence
+    grpRASTurbulence
 
 Description
-    Standard k-epsilon turbulence model for incompressible flows.
+    Standard k-epsilon turbulence model for incompressible and compressible
+    flows including rapid distortion theory (RDT) based compression term.
 
-    The default model coefficients correspond to the following:
+    Reference:
+    \verbatim
+        Standard model:
+            Launder, B. E., & Spalding, D. B. (1972).
+            Lectures in mathematical models of turbulence.
+
+            Launder, B. E., & Spalding, D. B. (1974).
+            The numerical computation of turbulent flows.
+            Computer methods in applied mechanics and engineering,
+            3(2), 269-289.
+
+        For the RDT-based compression term:
+            El Tahry, S. H. (1983).
+            k-epsilon equation for compressible reciprocating engine flows.
+            Journal of Energy, 7(4), 345-353.
+    \endverbatim
+
+    The default model coefficients are
     \verbatim
         kEpsilonOptionsCoeffs
         {
             Cmu         0.09;
             C1          1.44;
             C2          1.92;
+            C3          -0.33;
+            sigmak      1.0;
             sigmaEps    1.3;
         }
     \endverbatim
@@ -50,13 +70,12 @@ SourceFiles
 #define kEpsilonOptions_H
 
 #include "RASModel.H"
+#include "eddyViscosity.H"
 #include "fvIOoptionList.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
-{
-namespace incompressible
 {
 namespace RASModels
 {
@@ -65,10 +84,17 @@ namespace RASModels
                            Class kEpsilonOptions Declaration
 \*---------------------------------------------------------------------------*/
 
+template<class BasicTurbulenceModel>
 class kEpsilonOptions
 :
-    public RASModel
+    public eddyViscosity<RASModel<BasicTurbulenceModel> >
 {
+    // Private Member Functions
+
+        // Disallow default bitwise copy construct and assignment
+        kEpsilonOptions(const kEpsilonOptions&);
+        kEpsilonOptions& operator=(const kEpsilonOptions&);
+
 
 protected:
 
@@ -79,33 +105,51 @@ protected:
             dimensionedScalar Cmu_;
             dimensionedScalar C1_;
             dimensionedScalar C2_;
+            dimensionedScalar C3_;
+            dimensionedScalar sigmak_;
             dimensionedScalar sigmaEps_;
-
 
         // Fields
 
             volScalarField k_;
             volScalarField epsilon_;
-            volScalarField nut_;
 
-        fv::IOoptionList fvOptions;
+        // fvOptions
+
+            fv::IOoptionList fvOptions_;
+
+
+    // Protected Member Functions
+
+        virtual void correctNut();
+        virtual tmp<fvScalarMatrix> kSource() const;
+        virtual tmp<fvScalarMatrix> epsilonSource() const;
 
 
 public:
 
+    typedef typename BasicTurbulenceModel::alphaField alphaField;
+    typedef typename BasicTurbulenceModel::rhoField rhoField;
+    typedef typename BasicTurbulenceModel::transportModel transportModel;
+
+
     //- Runtime type information
     TypeName("kEpsilonOptions");
+
 
     // Constructors
 
         //- Construct from components
         kEpsilonOptions
         (
+            const alphaField& alpha,
+            const rhoField& rho,
             const volVectorField& U,
+            const surfaceScalarField& alphaRhoPhi,
             const surfaceScalarField& phi,
-            transportModel& transport,
-            const word& turbulenceModelName = turbulenceModel::typeName,
-            const word& modelName = typeName
+            const transportModel& transport,
+            const word& propertiesName = turbulenceModel::propertiesName,
+            const word& type = typeName
         );
 
 
@@ -116,18 +160,19 @@ public:
 
     // Member Functions
 
-        //- Return the turbulence viscosity
-        virtual tmp<volScalarField> nut() const
-        {
-            return nut_;
-        }
+        //- Re-read model coefficients if they have changed
+        virtual bool read();
 
         //- Return the effective diffusivity for k
         tmp<volScalarField> DkEff() const
         {
             return tmp<volScalarField>
             (
-                new volScalarField("DkEff", nut_ + nu())
+                new volScalarField
+                (
+                    "DkEff",
+                    (this->nut_/sigmak_ + this->nu())
+                )
             );
         }
 
@@ -136,7 +181,11 @@ public:
         {
             return tmp<volScalarField>
             (
-                new volScalarField("DepsilonEff", nut_/sigmaEps_ + nu())
+                new volScalarField
+                (
+                    "DepsilonEff",
+                    (this->nut_/sigmaEps_ + this->nu())
+                )
             );
         }
 
@@ -152,34 +201,14 @@ public:
             return epsilon_;
         }
 
-        //- Return the Reynolds stress tensor
-        virtual tmp<volSymmTensorField> R() const;
-
-        //- Return the effective stress tensor including the laminar stress
-        virtual tmp<volSymmTensorField> devReff() const;
-
-        //- Return the source term for the momentum equation
-        virtual tmp<fvVectorMatrix> divDevReff(volVectorField& U) const;
-
-        //- Return the source term for the momentum equation
-        virtual tmp<fvVectorMatrix> divDevRhoReff
-        (
-            const volScalarField& rho,
-            volVectorField& U
-        ) const;
-
         //- Solve the turbulence equations and correct the turbulence viscosity
         virtual void correct();
-
-        //- Read RASProperties dictionary
-        virtual bool read();
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace RASModels
-} // End namespace incompressible
 } // End namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
