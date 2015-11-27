@@ -35,7 +35,7 @@ SourceFiles
 #ifndef turbineALSource_H
 #define turbineALSource_H
 
-#include "fvOption.H"
+#include "cellSetOption.H"
 #include "NamedEnum.H"
 #include "actuatorLineSource.H"
 #include "volFieldsFwd.H"
@@ -54,7 +54,7 @@ namespace fv
 
 class turbineALSource
 :
-    public option
+    public cellSetOption
 {
 
 protected:
