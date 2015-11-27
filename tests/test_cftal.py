@@ -44,7 +44,12 @@ def check_perf(angle0=540.0):
 def test_serial():
     """Test crossFlowTurbineALSource in serial."""
     output_clean = subprocess.check_output("./Allclean")
-    output_run = subprocess.check_output("./Allrun")
+    try:
+        output_run = subprocess.check_output("./Allrun")
+    except subprocess.CalledProcessError:
+        print(subprocess.check_output(["tail", "-n", "200",
+                                       "log.pimpleFoam"]).decode())
+        assert False
     check_created()
     check_perf()
     log_end = subprocess.check_output(["tail", "log.pimpleFoam"]).decode()
