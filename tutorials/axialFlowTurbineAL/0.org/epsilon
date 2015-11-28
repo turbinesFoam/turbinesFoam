@@ -53,6 +53,11 @@ boundaryField
         type            epsilonWallFunction;
         value           uniform $turbulentEpsilon;
     }
+
+    "proc.*"
+    {
+        type            processor;
+    }
 }
 
 
