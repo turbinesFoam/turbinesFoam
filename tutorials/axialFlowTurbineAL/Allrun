@@ -9,12 +9,16 @@ cp -rf 0.org 0
 
 runApplication blockMesh
 runApplication snappyHexMesh -overwrite
-
 runApplication topoSet
-pimpleFoam | tee log.pimpleFoam
 
-runApplication vorticity
-#runApplication R
-
-python scripts/gensampledict.py
-runApplication sample
+if [ "$1" = "-parallel" ]
+    then
+    nProc=$(getNumberOfProcessors)
+    runApplication decomposePar
+    ls -d processor* | xargs -I {} rm -rf ./{}/0
+    ls -d processor* | xargs -I {} cp -r 0.org ./{}/0
+    runParallel pimpleFoam  $nProc
+    runApplication reconstructPar
+else
+    runApplication pimpleFoam
+fi
