@@ -1,29 +1,26 @@
 #!/usr/bin/env python
-"""Tests for `crossFlowTurbineALSource`."""
+"""Tests for `axialFlowTurbineALSource`."""
 
 from __future__ import division, print_function
 import subprocess
 import pandas as pd
 import os
 import numpy as np
-# import sys
-# sys.path = [os.path.abspath("./crossFlowTurbineALSource")] + sys.path
-# from modules import processing
 
 
 def setup():
-    os.chdir("crossFlowTurbineALSource")
+    os.chdir("axialFlowTurbineALSource")
     out = subprocess.check_output("./getTutorialFiles.sh", shell=True)
 
 
 def check_created():
-    """Test that crossFlowTurbineALSource was created."""
-    txt = "Selecting finite volume options model type crossFlowTurbineALSource"
+    """Test that axialFlowTurbineALSource was created."""
+    txt = "Selecting finite volume options model type axialFlowTurbineALSource"
     subprocess.check_output(["grep", txt, "log.pimpleFoam"])
 
 
 def check_perf(angle0=540.0):
-    """Test CFTAL performance was written and in reasonable range."""
+    """Test AFTAL performance was written and in reasonable range."""
     df = pd.read_csv("postProcessing/turbines/0/turbine.csv")
     df = df.drop_duplicates("time", take_last=True)
     if df.angle_deg.max() < angle0:
@@ -36,13 +33,13 @@ def check_perf(angle0=540.0):
     print("Mean TSR = {:.2f}".format(mean_tsr))
     print("Mean C_P = {:.2f}".format(mean_cp))
     print("Mean C_D = {:.2f}".format(mean_cd))
-    assert 1.6 < mean_tsr < 2.1
-    assert 0.2 < mean_cp < 1.0
-    assert 0.8 < mean_cd < 1.8
+    assert mean_tsr == 6.0
+    assert 0.4 < mean_cp < 1.0
+    assert 0.5 < mean_cd < 1.0
 
 
 def test_serial():
-    """Test crossFlowTurbineALSource in serial."""
+    """Test axialFlowTurbineALSource in serial."""
     output_clean = subprocess.check_output("./Allclean")
     try:
         output_run = subprocess.check_output("./Allrun")
@@ -58,7 +55,7 @@ def test_serial():
 
 
 def test_parallel():
-    """Test crossFlowTurbineALSource in parallel."""
+    """Test axialFlowTurbineALSource in parallel."""
     output_clean = subprocess.check_output("./Allclean")
     try:
         output_run = subprocess.check_output(["./Allrun", "-parallel"])

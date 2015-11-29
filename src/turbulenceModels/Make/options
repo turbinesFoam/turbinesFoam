@@ -10,7 +10,7 @@ EXE_INC = \
     -I$(LIB_SRC)/sampling/lnInclude
 
 
-EXE_LIBS = \
+LIB_LIBS = \
     -lincompressibleTurbulenceModel \
     -lincompressibleRASModels \
     -lincompressibleTransportModels \
