@@ -50,18 +50,9 @@ maxCo           0.9;
 
 libs
 (
-    "libOpenFOAM.so"
-    "libincompressibleTurbulenceModel.so"
-    "libincompressibleRASModels.so"
     "libturbinesFoam.so"
     "libturbinesFoamTurbulenceModels.so"
 );
 
-DebugSwitches
-{
-    actuatorLineSource  1;
-    actuatorLineElement 1;
-    LeishmanBeddoes     1;
-}
 
 // ************************************************************************* //
