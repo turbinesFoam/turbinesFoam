@@ -55,7 +55,7 @@ void Foam::fv::actuatorLineElement::read()
     dict_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
     freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
     dict_.lookup("rootDistance") >> rootDistance_;
-    
+
     // Create dynamic stall model if found
     if (dict_.found("dynamicStall"))
     {
@@ -63,14 +63,14 @@ void Foam::fv::actuatorLineElement::read()
         word dsName = dsDict.lookup("dynamicStallModel");
         dynamicStall_ = dynamicStallModel::New
         (
-            dsDict, 
-            dsName, 
+            dsDict,
+            dsName,
             mesh_.time(),
             profileData_
         );
         dsDict.lookup("active") >> dynamicStallActive_;
     }
-    
+
     // Read flow curvature correction subdictionary
     if (dict_.found("flowCurvature"))
     {
@@ -83,7 +83,7 @@ void Foam::fv::actuatorLineElement::read()
             defaultName
         );
     }
-    
+
     // Read nu from object registry
     const dictionary& transportProperties = mesh_.lookupObject<IOdictionary>
     (
@@ -92,10 +92,10 @@ void Foam::fv::actuatorLineElement::read()
     dimensionedScalar nu;
     transportProperties.lookup("nu") >> nu;
     nu_ = nu.value();
-    
+
     // Read writePerf switch
     dict_.lookup("writePerf") >> writePerf_;
-    
+
     if (debug)
     {
        Info<< "actuatorLineElement properties:" << endl;
@@ -112,7 +112,7 @@ void Foam::fv::actuatorLineElement::read()
 void Foam::fv::actuatorLineElement::rotateVector
 (
     vector& vectorToRotate,
-    vector rotationPoint, 
+    vector rotationPoint,
     vector axis,
     scalar radians
 )
@@ -120,33 +120,33 @@ void Foam::fv::actuatorLineElement::rotateVector
     // Declare and define the rotation matrix (from SOWFA)
     tensor RM;
     scalar angle = radians;
-    RM.xx() = Foam::sqr(axis.x()) 
-            + (1.0 - Foam::sqr(axis.x())) * Foam::cos(angle); 
-    RM.xy() = axis.x() * axis.y() 
-            * (1.0 - Foam::cos(angle)) - axis.z() * Foam::sin(angle); 
-    RM.xz() = axis.x() * axis.z() 
+    RM.xx() = Foam::sqr(axis.x())
+            + (1.0 - Foam::sqr(axis.x())) * Foam::cos(angle);
+    RM.xy() = axis.x() * axis.y()
+            * (1.0 - Foam::cos(angle)) - axis.z() * Foam::sin(angle);
+    RM.xz() = axis.x() * axis.z()
             * (1.0 - Foam::cos(angle)) + axis.y() * Foam::sin(angle);
-    RM.yx() = axis.x() * axis.y() 
-            * (1.0 - Foam::cos(angle)) + axis.z() * Foam::sin(angle); 
-    RM.yy() = Foam::sqr(axis.y()) 
+    RM.yx() = axis.x() * axis.y()
+            * (1.0 - Foam::cos(angle)) + axis.z() * Foam::sin(angle);
+    RM.yy() = Foam::sqr(axis.y())
             + (1.0 - Foam::sqr(axis.y())) * Foam::cos(angle);
-    RM.yz() = axis.y() * axis.z() 
+    RM.yz() = axis.y() * axis.z()
             * (1.0 - Foam::cos(angle)) - axis.x() * Foam::sin(angle);
-    RM.zx() = axis.x() * axis.z() 
+    RM.zx() = axis.x() * axis.z()
             * (1.0 - Foam::cos(angle)) - axis.y() * Foam::sin(angle);
-    RM.zy() = axis.y() * axis.z() 
+    RM.zy() = axis.y() * axis.z()
             * (1.0 - Foam::cos(angle)) + axis.x() * Foam::sin(angle);
-    RM.zz() = Foam::sqr(axis.z()) 
+    RM.zz() = Foam::sqr(axis.z())
             + (1.0 - Foam::sqr(axis.z())) * Foam::cos(angle);
-    
-    // Rotation matrices make a rotation about the origin, so need to subtract 
+
+    // Rotation matrices make a rotation about the origin, so need to subtract
     // rotation point off the point to be rotated.
     vectorToRotate -= rotationPoint;
 
     // Perform the rotation.
     vectorToRotate = RM & vectorToRotate;
 
-    // Return the rotated point to its new location relative to the rotation 
+    // Return the rotated point to its new location relative to the rotation
     // point
     vectorToRotate += rotationPoint;
 }
@@ -163,7 +163,7 @@ Foam::label Foam::fv::actuatorLineElement::findCell
         {
             if (debug)
             {
-                Pout<< "Looking for cell containing " << location 
+                Pout<< "Looking for cell containing " << location
                     << " inside bounding box:" << endl
                     << meshBoundBox_ << endl;
             }
@@ -202,7 +202,7 @@ Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
     {
         // Projection width based on local cell size (from Troldborg (2008))
         epsilon = 2*Foam::cbrt(V[posCellI]);
-        
+
         if (epsilon > (chordLength_/2.0))
         {
             return epsilon;
@@ -229,7 +229,7 @@ void Foam::fv::actuatorLineElement::correctFlowCurvature
         Info<< "    Correcting for flow curvature with "
             << flowCurvatureModelName_ << " model" << endl;
     }
-    
+
     if (flowCurvatureModelName_ == "Goude")
     {
         angleOfAttackRad += omega_*(chordMount_ - 0.25)
@@ -241,15 +241,15 @@ void Foam::fv::actuatorLineElement::correctFlowCurvature
         // Calculate relative velocity at leading and trailing edge
         vector relativeVelocityLE = inflowVelocity_ - velocityLE_;
         vector relativeVelocityTE = inflowVelocity_ - velocityTE_;
-    
+
         // Calculate angle of attack at leading and trailing edge
         scalar alphaLE = asin((planformNormal_ & relativeVelocityLE)
                        / (mag(planformNormal_)*mag(relativeVelocityLE)));
         scalar alphaTE = asin((planformNormal_ & relativeVelocityTE)
                        / (mag(planformNormal_)*mag(relativeVelocityTE)));
-                       
+
         scalar beta = alphaTE - alphaLE;
-        
+
         angleOfAttackRad += atan2((1.0 - cos(beta/2.0)), sin(beta/2.0));
     }
 }
@@ -267,7 +267,7 @@ void Foam::fv::actuatorLineElement::multiplyForceRho
     {
         localRho = rho[cellI];
     }
-    
+
     reduce(localRho, minOp<scalar>());
     forceVector_ *= localRho;
 }
@@ -281,22 +281,22 @@ void Foam::fv::actuatorLineElement::applyForceField
     // Calculate projection width
     scalar epsilon = calcProjectionEpsilon();
     reduce(epsilon, minOp<scalar>());
-    
+
     // If epsilon is not reduced, position is not in the mesh
     if (not (epsilon < VGREAT))
     {
         // Raise fatal error since mesh size cannot be detected
         FatalErrorIn("void actuatorLineElement::applyForceField()")
-            << "Position of " << name_  << " not found in mesh" 
+            << "Position of " << name_  << " not found in mesh"
             << abort(FatalError);
     }
     if (debug)
     {
         Info<< "    epsilon: " << epsilon << endl;
     }
-    
+
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
-    
+
     // Apply force to the cells within the element's sphere of influence
     scalar sphereRadius = chordLength_ + projectionRadius;
     forAll(mesh_.cells(), cellI)
@@ -311,7 +311,7 @@ void Foam::fv::actuatorLineElement::applyForceField
             forceField[cellI] += -forceVector_*factor;
         }
     }
-    
+
     if (debug)
     {
         Info<< "    sphereRadius: " << sphereRadius << endl;
@@ -322,7 +322,7 @@ void Foam::fv::actuatorLineElement::applyForceField
 void Foam::fv::actuatorLineElement::createOutputFile()
 {
     fileName dir;
-    
+
     if (Pstream::parRun())
     {
         dir = mesh_.time().path()/"../postProcessing/actuatorLineElements"
@@ -333,14 +333,14 @@ void Foam::fv::actuatorLineElement::createOutputFile()
         dir = mesh_.time().path()/"postProcessing/actuatorLineElements"
             / mesh_.time().timeName();
     }
-    
+
     if (!isDir(dir))
     {
         mkDir(dir);
     }
 
     outputFile_ = new OFstream(dir/name_ + ".csv");
-    
+
     *outputFile_<< "time,x,y,z,rel_vel_mag,Re,alpha_deg,alpha_geom_deg,cl,cd,"
                 << "fx,fy,fz" << endl;
 }
@@ -349,13 +349,13 @@ void Foam::fv::actuatorLineElement::createOutputFile()
 void Foam::fv::actuatorLineElement::writePerf()
 {
     scalar time = mesh_.time().value();
- 
+
     // write time,x,y,z,rel_vel_mag,Re,alpha_deg,alpha_geom_deg,cl,cd,fx,fy,fz
-    *outputFile_<< time << "," << position_.x() << "," << position_.y() << "," 
+    *outputFile_<< time << "," << position_.x() << "," << position_.y() << ","
                 << position_.z() << "," << mag(relativeVelocity_) << "," << Re_
-                << "," << angleOfAttack_ << "," << angleOfAttackGeom_ << "," 
-                << liftCoefficient_ << "," << dragCoefficient_ << "," 
-                << forceVector_.x() << "," << forceVector_.y() << "," 
+                << "," << angleOfAttack_ << "," << angleOfAttackGeom_ << ","
+                << liftCoefficient_ << "," << dragCoefficient_ << ","
+                << forceVector_.x() << "," << forceVector_.y() << ","
                 << forceVector_.z() << endl;
 }
 
@@ -486,17 +486,17 @@ void Foam::fv::actuatorLineElement::calculateForce
 )
 {
     scalar pi = Foam::constant::mathematical::pi;
-    
+
     if (debug)
     {
-        Info<< "Calculating force contribution from actuatorLineElement " 
+        Info<< "Calculating force contribution from actuatorLineElement "
             << name_ << endl;
         Info<< "    position: " << position_ << endl;
         Info<< "    chordDirection: " << chordDirection_ << endl;
         Info<< "    spanDirection: " << spanDirection_ << endl;
         Info<< "    elementVelocity: " << velocity_ << endl;
     }
-    
+
     // Calculate vector normal to chord--span plane
     vector planformNormal_ = -chordDirection_ ^ spanDirection_;
     planformNormal_ /= mag(planformNormal_);
@@ -504,43 +504,40 @@ void Foam::fv::actuatorLineElement::calculateForce
     // Find local flow velocity by interpolating to element location
     inflowVelocity_ = vector(VGREAT, VGREAT, VGREAT);
     vector inflowVelocityPoint = position_;
-    inflowVelocityPoint -= freeStreamDirection_*0.15*chordLength_;
-    inflowVelocityPoint += chordDirection_*0.1*chordLength_;
-    inflowVelocityPoint -= planformNormal_*0.75*chordLength_;
     interpolationCellPoint<vector> UInterp(Uin);
     label inflowCellI = findCell(inflowVelocityPoint);
     if (inflowCellI >= 0)
     {
         inflowVelocity_ = UInterp.interpolate
         (
-            inflowVelocityPoint, 
+            inflowVelocityPoint,
             inflowCellI
         );
     }
-    
+
     // Reduce inflow velocity over all processors
     reduce(inflowVelocity_, minOp<vector>());
-    
+
     // If inflow velocity is not detected, position is not in the mesh
     if (not (inflowVelocity_[0] < VGREAT))
     {
         // Raise fatal error since inflow velocity cannot be detected
         FatalErrorIn("void actuatorLineElement::calculateForce()")
-            << "Inflow velocity point for " << name_ 
-            << " not found in mesh" 
+            << "Inflow velocity point for " << name_
+            << " not found in mesh"
             << abort(FatalError);
     }
-        
+
     // Subtract spanwise component of inflow velocity
     vector spanwiseVelocity = spanDirection_
                             * (inflowVelocity_ & spanDirection_)
                             / magSqr(spanDirection_);
     inflowVelocity_ -= spanwiseVelocity;
-    
+
     // Calculate relative velocity and Reynolds number
     relativeVelocity_ = inflowVelocity_ - velocity_;
     Re_ = mag(relativeVelocity_)*chordLength_/nu_;
-    
+
     // Calculate angle of attack (radians)
     scalar angleOfAttackRad = asin((planformNormal_ & relativeVelocity_)
                             / (mag(planformNormal_)
@@ -550,22 +547,22 @@ void Foam::fv::actuatorLineElement::calculateForce
     angleOfAttackGeom_ = asin((planformNormal_ & relativeVelocityGeom_)
                        / (mag(planformNormal_)*mag(relativeVelocityGeom_)));
     angleOfAttackGeom_ *= 180.0/pi;
-    
+
     // Apply flow curvature correction to angle of attack
     if (flowCurvatureActive_)
     {
         correctFlowCurvature(angleOfAttackRad);
     }
-    
+
     // Calculate angle of attack in degrees
     angleOfAttack_ = radToDeg(angleOfAttackRad);
-    
+
     // Update Reynolds number of profile data
     profileData_.updateRe(Re_);
-    
+
     // Lookup lift and drag coefficients
     lookupCoefficients();
-    
+
     if (debug)
     {
         Info<< "    inflowVelocity: " << inflowVelocity_ << endl;
@@ -573,12 +570,12 @@ void Foam::fv::actuatorLineElement::calculateForce
         Info<< "    Reynolds number: " << Re_ << endl;
         Info<< "    Geometric angle of attack (degrees): "
             << angleOfAttackGeom_ << endl;
-        Info<< "    Angle of attack (uncorrected, degrees): " 
+        Info<< "    Angle of attack (uncorrected, degrees): "
             << angleOfAttackUncorrected << endl;
-        Info<< "    Angle of attack (corrected, degrees): " 
+        Info<< "    Angle of attack (corrected, degrees): "
             << angleOfAttack_ << endl;
     }
-    
+
     // Correct coefficients with dynamic stall model
     if (dynamicStallActive_)
     {
@@ -591,7 +588,7 @@ void Foam::fv::actuatorLineElement::calculateForce
             momentCoefficient_
         );
     }
-    
+
     // Correct for added mass effects
     if (addedMassActive_)
     {
@@ -605,10 +602,10 @@ void Foam::fv::actuatorLineElement::calculateForce
             mag(planformNormal_ & relativeVelocity_)
         );
     }
-    
+
     // Apply end effect correction factor to lift coefficient
     liftCoefficient_ *= endEffectFactor_;
-    
+
     // Calculate force per unit density
     scalar area = chordLength_*spanLength_;
     scalar magSqrU = magSqr(relativeVelocity_);
@@ -618,7 +615,7 @@ void Foam::fv::actuatorLineElement::calculateForce
     liftDirection /= mag(liftDirection);
     vector dragDirection = relativeVelocity_/mag(relativeVelocity_);
     forceVector_ = lift*liftDirection + drag*dragDirection;
-    
+
     if (debug)
     {
         Info<< "    force (per unit density): " << forceVector_ << endl;
@@ -628,8 +625,8 @@ void Foam::fv::actuatorLineElement::calculateForce
 
 void Foam::fv::actuatorLineElement::rotate
 (
-    vector rotationPoint, 
-    vector axis, 
+    vector rotationPoint,
+    vector axis,
     scalar radians,
     bool rotateVelocity=true
 )
@@ -637,25 +634,25 @@ void Foam::fv::actuatorLineElement::rotate
     // Declare and define the rotation matrix (from SOWFA)
     tensor RM;
     scalar angle = radians;
-    RM.xx() = Foam::sqr(axis.x()) 
-            + (1.0 - Foam::sqr(axis.x())) * Foam::cos(angle); 
-    RM.xy() = axis.x() * axis.y() 
-            * (1.0 - Foam::cos(angle)) - axis.z() * Foam::sin(angle); 
-    RM.xz() = axis.x() * axis.z() 
+    RM.xx() = Foam::sqr(axis.x())
+            + (1.0 - Foam::sqr(axis.x())) * Foam::cos(angle);
+    RM.xy() = axis.x() * axis.y()
+            * (1.0 - Foam::cos(angle)) - axis.z() * Foam::sin(angle);
+    RM.xz() = axis.x() * axis.z()
             * (1.0 - Foam::cos(angle)) + axis.y() * Foam::sin(angle);
-    RM.yx() = axis.x() * axis.y() 
-            * (1.0 - Foam::cos(angle)) + axis.z() * Foam::sin(angle); 
-    RM.yy() = Foam::sqr(axis.y()) 
+    RM.yx() = axis.x() * axis.y()
+            * (1.0 - Foam::cos(angle)) + axis.z() * Foam::sin(angle);
+    RM.yy() = Foam::sqr(axis.y())
             + (1.0 - Foam::sqr(axis.y())) * Foam::cos(angle);
-    RM.yz() = axis.y() * axis.z() 
+    RM.yz() = axis.y() * axis.z()
             * (1.0 - Foam::cos(angle)) - axis.x() * Foam::sin(angle);
-    RM.zx() = axis.x() * axis.z() 
+    RM.zx() = axis.x() * axis.z()
             * (1.0 - Foam::cos(angle)) - axis.y() * Foam::sin(angle);
-    RM.zy() = axis.y() * axis.z() 
+    RM.zy() = axis.y() * axis.z()
             * (1.0 - Foam::cos(angle)) + axis.x() * Foam::sin(angle);
-    RM.zz() = Foam::sqr(axis.z()) 
+    RM.zz() = Foam::sqr(axis.z())
             + (1.0 - Foam::sqr(axis.z())) * Foam::cos(angle);
-    
+
     if (debug)
     {
         Info<< "Rotating actuatorLineElement: " << name_ << endl;
@@ -669,7 +666,7 @@ void Foam::fv::actuatorLineElement::rotate
         Info<< "Initial velocity: " << velocity_ << endl;
     }
 
-    // Rotation matrices make a rotation about the origin, so need to subtract 
+    // Rotation matrices make a rotation about the origin, so need to subtract
     // rotation point off the point to be rotated.
     vector point = position_;
     point -= rotationPoint;
@@ -677,20 +674,20 @@ void Foam::fv::actuatorLineElement::rotate
     // Perform the rotation.
     point = RM & point;
 
-    // Return the rotated point to its new location relative to the rotation 
+    // Return the rotated point to its new location relative to the rotation
     // point
     point += rotationPoint;
-    
+
     // Set the position of the element
     position_ = point;
-    
+
     // Rotate the span and chord vectors of the element
     chordDirection_ = RM & chordDirection_;
     spanDirection_ = RM & spanDirection_;
-    
+
     // Rotate the element's velocity vector if specified
     if (rotateVelocity) velocity_ = RM & velocity_;
-    
+
     if (debug)
     {
         Info<< "Final position: " << position_ << endl;
@@ -703,7 +700,7 @@ void Foam::fv::actuatorLineElement::rotate
 
 void Foam::fv::actuatorLineElement::pitch
 (
-    scalar radians, 
+    scalar radians,
     scalar chordFraction
 )
 {
@@ -721,9 +718,9 @@ void Foam::fv::actuatorLineElement::translate(vector translationVector)
 
 void Foam::fv::actuatorLineElement::setVelocity(vector velocity)
 {
-    if (debug) 
+    if (debug)
     {
-        Info<< "Changing velocity of " << name_ << " from " 
+        Info<< "Changing velocity of " << name_ << " from "
             << velocity_ << " to " << velocity << endl << endl;
     }
     velocity_ = velocity;
@@ -752,15 +749,15 @@ void Foam::fv::actuatorLineElement::setSpeed
         Info<< "Setting speed of " << name_ << " from rotation" << endl;
         Info<< "    Initial velocity: " << velocity_ << endl;
     }
-    
-    // First find radius from axis to element position -- formula from 
+
+    // First find radius from axis to element position -- formula from
     // http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
     vector point2 = point + axis;
     scalar radius = mag((position_ - point) ^ (position_ - point2))
                   / mag(point2 - point);
     scalar speed = omega*radius;
     setSpeed(speed);
-    
+
     scalar angleLE = 0.0;
     scalar angleTE = 0.0;
     if (radius > 0.0)
@@ -770,26 +767,26 @@ void Foam::fv::actuatorLineElement::setSpeed
         angleLE = atan2(0.25*chordLength_, radius);
         velocityLE_ = velocity_*radiusLE/radius;
         rotateVector(velocityLE_, vector::zero, spanDirection_, angleLE);
-        
+
         // Set velocity at trailing edge
         scalar radiusTE = sqrt(magSqr(0.75*chordLength_) + magSqr(radius));
         angleTE = atan2(-0.75*chordLength_, radius);
         velocityTE_ = velocity_*radiusTE/radius;
         rotateVector(velocityTE_, vector::zero, spanDirection_, angleTE);
     }
-    
+
     // Also set omega for flow curvature correction
     setOmega(omega);
-    
+
     if (debug)
     {
         Info<< "    Radius: " << radius << endl;
         Info<< "    Final velocity: " << velocity_ << endl;
         Info<< "    Leading edge velocity: " << velocityLE_ << endl;
         Info<< "    Trailing edge velocity: " << velocityTE_ << endl;
-        Info<< "    Leading edge velocity angle (radians): " 
+        Info<< "    Leading edge velocity angle (radians): "
             << angleLE << endl;
-        Info<< "    Trailing edge velocity angle (radians): " 
+        Info<< "    Trailing edge velocity angle (radians): "
             << angleTE << endl;
     }
 }
@@ -848,7 +845,7 @@ void Foam::fv::actuatorLineElement::addSup
 
     // Add force to total actuator line force
     forceField += forceFieldI;
-    
+
     // Write performance to file
     if (writePerf_ and Pstream::master()) writePerf();
 }
@@ -881,23 +878,23 @@ void Foam::fv::actuatorLineElement::addSup
     const volVectorField& Uin(eqn.psi());
     calculateForce(Uin);
     applyForceField(forceFieldI);
-    
+
     // Multiply force vector by local density
     multiplyForceRho(rho);
-    
+
     // Multiply this element's force field by density field
     forceFieldI *= rho;
 
     // Add force to total actuator line force
     forceField += forceFieldI;
-    
+
     // Write performance to file
     if (writePerf_ and Pstream::master()) writePerf();
 }
 
 
 void Foam::fv::actuatorLineElement::addTurbulence
-(   
+(
     fvMatrix<scalar>& eqn,
     word fieldName
 )
@@ -915,19 +912,19 @@ void Foam::fv::actuatorLineElement::addTurbulence
         mesh_,
         dimensionedScalar
         (
-            "zero", 
-            eqn.dimensions()/dimVolume, 
+            "zero",
+            eqn.dimensions()/dimVolume,
             0.0
         )
     );
-    
+
     // Calculate projection radius
     scalar epsilon = calcProjectionEpsilon();
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
-    
+
     // Calculate TKE injection rate
     scalar k = 0.1*mag(dragCoefficient_);
-    
+
     // Add turbulence to the cells within the element's sphere of influence
     scalar sphereRadius = chordLength_ + projectionRadius;
     forAll(mesh_.cells(), cellI)
@@ -949,7 +946,7 @@ void Foam::fv::actuatorLineElement::addTurbulence
             }
         }
     }
-    
+
     eqn += turbulence;
 }
 
