@@ -78,6 +78,9 @@ protected:
         //- Mesh bounding box
         boundBox meshBoundBox_;
 
+        //- Cell index
+        label cellI_;
+
         //- Chord direction
         vector chordDirection_;
 

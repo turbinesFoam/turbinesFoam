@@ -28,6 +28,7 @@ License
 #include "geometricOneField.H"
 #include "fvMatrices.H"
 #include "syncTools.H"
+#include "meshSearch.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -167,7 +168,9 @@ Foam::label Foam::fv::actuatorLineElement::findCell
                     << " inside bounding box:" << endl
                     << meshBoundBox_ << endl;
             }
-            return mesh_.findCell(location);
+            meshSearch ms(mesh_);
+            return ms.findCell(location, cellI_);
+            // return mesh_.findCell(location);
         }
         else
         {
@@ -180,7 +183,9 @@ Foam::label Foam::fv::actuatorLineElement::findCell
     }
     else
     {
-        return mesh_.findCell(location);;
+        meshSearch ms(mesh_);
+        return ms.findCell(location, cellI_);
+        // return mesh_.findCell(location);;
     }
 }
 
@@ -373,6 +378,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     name_(name),
     mesh_(mesh),
     meshBoundBox_(mesh_.points(), false),
+    cellI_(0),
     planformNormal_(vector::zero),
     velocity_(vector::zero),
     forceVector_(vector::zero),
@@ -506,6 +512,7 @@ void Foam::fv::actuatorLineElement::calculateForce
     vector inflowVelocityPoint = position_;
     interpolationCellPoint<vector> UInterp(Uin);
     label inflowCellI = findCell(inflowVelocityPoint);
+    cellI_ = inflowCellI;
     if (inflowCellI >= 0)
     {
         inflowVelocity_ = UInterp.interpolate
@@ -517,6 +524,7 @@ void Foam::fv::actuatorLineElement::calculateForce
 
     // Reduce inflow velocity over all processors
     reduce(inflowVelocity_, minOp<vector>());
+    reduce(cellI_, maxOp<label>());
 
     // If inflow velocity is not detected, position is not in the mesh
     if (not (inflowVelocity_[0] < VGREAT))
