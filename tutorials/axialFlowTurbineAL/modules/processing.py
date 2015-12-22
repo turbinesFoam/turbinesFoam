@@ -99,9 +99,9 @@ def calcwake(t1=0.0):
     
 def plot_al_perf(name="blade1"):
     df_turb = pd.read_csv("postProcessing/turbines/0/turbine.csv")
-    df_turb = df_turb.drop_duplicates("time", take_last=True)
+    df_turb = df_turb.drop_duplicates("time", keep="last")
     df = pd.read_csv("postProcessing/actuatorLines/0/{}.csv".format(name))
-    df = df.drop_duplicates("time", take_last=True)
+    df = df.drop_duplicates("time", keep="last")
     df["angle_deg"] = df_turb.angle_deg
     plt.figure()
     plt.plot(df.angle_deg, df.alpha_deg)
