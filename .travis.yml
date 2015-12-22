@@ -15,8 +15,7 @@ before_install:
     - hash -r
     - conda config --set always_yes yes --set changeps1 no
     - conda update -q conda
-    - conda info -a
-    - conda install pandas numpy nose
+    - conda install -q pandas numpy nose
 
 install:
     - source /opt/openfoam30/etc/bashrc
