@@ -9,6 +9,7 @@ before_install:
     - sudo apt-get update -qq
     - sudo apt-get install -qq openfoam30 --allow-unauthenticated
     - sudo apt-get install -qq python-numpy python-nose python-pandas
+    - sudo pip install pandas -U
 
 install:
     - source /opt/openfoam30/etc/bashrc
