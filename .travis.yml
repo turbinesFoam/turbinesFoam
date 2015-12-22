@@ -8,8 +8,15 @@ before_install:
     - sudo add-apt-repository http://www.openfoam.org/download/ubuntu
     - sudo apt-get update -qq
     - sudo apt-get install -qq openfoam30 --allow-unauthenticated
-    - sudo apt-get install -qq python-numpy python-nose python-pandas
-    - sudo pip install pandas -U
+    # http://conda.pydata.org/docs/travis.html#the-travis-yml-file
+    - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+    - bash miniconda.sh -b -p $HOME/miniconda
+    - export PATH="$HOME/miniconda/bin:$PATH"
+    - hash -r
+    - conda config --set always_yes yes --set changeps1 no
+    - conda update -q conda
+    - conda info -a
+    - conda install pandas numpy nose
 
 install:
     - source /opt/openfoam30/etc/bashrc
