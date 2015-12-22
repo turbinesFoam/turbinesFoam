@@ -292,7 +292,16 @@ void Foam::fv::actuatorLineElement::applyForceField
     }
     if (debug)
     {
-        Info<< "    epsilon: " << epsilon << endl;
+        word epsilonMethod;
+        if (epsilon == chordLength_/2.0)
+        {
+            epsilonMethod = "chord-based";
+        }
+        else
+        {
+            epsilonMethod = "mesh-based";
+        }
+        Info<< "    epsilon (" << epsilonMethod << "): " << epsilon << endl;
     }
 
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
