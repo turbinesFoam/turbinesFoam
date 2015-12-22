@@ -12,7 +12,7 @@ plt.style.use("fivethirtyeight")
 
 def loadperf():
     df = pd.read_csv("postProcessing/actuatorLines/0/foil.csv")
-    df = df.drop_duplicates("time", take_last=True)
+    df = df.drop_duplicates("time", keep="last")
     df["alpha_rad"] = df.alpha_deg/180.0*np.pi
     df["cn"] =  df.cl*np.cos(df.alpha_rad) - df.cd*np.sin(df.alpha_rad)
     df["cc"] = df.cl*np.sin(df.alpha_rad) - df.cd*np.cos(df.alpha_rad)

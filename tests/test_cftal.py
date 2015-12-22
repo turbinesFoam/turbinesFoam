@@ -25,7 +25,7 @@ def check_created():
 def check_perf(angle0=540.0):
     """Test CFTAL performance was written and in reasonable range."""
     df = pd.read_csv("postProcessing/turbines/0/turbine.csv")
-    df = df.drop_duplicates("time", take_last=True)
+    df = df.drop_duplicates("time", keep="last")
     if df.angle_deg.max() < angle0:
         angle0 = 0.0
     mean_tsr = df.tsr[df.angle_deg >= angle0].mean()
