@@ -1,7 +1,7 @@
 EXE_INC = \
-    -I$(LIB_SRC)/turbulenceModels \
-    -I$(LIB_SRC)/turbulenceModels/incompressible/RAS/RASModel \
-    -I$(LIB_SRC)/turbulenceModels/incompressible/RAS/backwardsCompatibility/wallFunctions \
+    -I$(LIB_SRC)/TurbulenceModels \
+    -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+    -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/RAS/RASModel \
     -I$(LIB_SRC)/transportModels \
     -I$(LIB_SRC)/transportModels/incompressible/singlePhaseTransportModel \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
@@ -10,9 +10,8 @@ EXE_INC = \
     -I$(LIB_SRC)/sampling/lnInclude
 
 
-LIB_LIBS = \
-    -lincompressibleTurbulenceModel \
-    -lincompressibleRASModels \
+EXE_LIBS = \
+    -linturbulenceModels \
     -lincompressibleTransportModels \
     -lfiniteVolume \
     -lmeshTools \

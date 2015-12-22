@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.4.x                                 |
+|  \\    /   O peration     | Version:  3.0.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -48,19 +48,8 @@ maxCo           0.9;
 
 libs
 (
-    "libOpenFOAM.so"
-    "libincompressibleTurbulenceModel.so"
-    "libincompressibleRASModels.so"
     "libturbinesFoam.so"
 );
 
-DebugSwitches
-{
-    actuatorLineSource  1;
-    actuatorLineElement 1;
-    LeishmanBeddoes     1;
-    LeishmanBeddoes3G   1;
-    LeishmanBeddoesSGC  1;
-}
 
 // ************************************************************************* //

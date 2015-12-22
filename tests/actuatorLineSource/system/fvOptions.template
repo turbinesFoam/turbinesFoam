@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.4.x                                 |
+|  \\    /   O peration     | Version:  3.0.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -18,13 +18,13 @@ FoamFile
 foil
 {{
     type            actuatorLineSource;
-    active          on;            // on/off switch
-    selectionMode   cellSet;       // cellSet, points, cellZone
-    cellSet         foil;          // cellSet name
+    active          on;
 
     actuatorLineSourceCoeffs
     {{
         fieldNames          (U);
+        selectionMode       cellSet;    // cellSet, points, cellZone
+        cellSet             foil;       // cellSet name
         freeStreamVelocity  (1 0 0);
         nElements           {n_elements};
         writePerf           true;

@@ -53,7 +53,7 @@ namespace fv
 void Foam::fv::turbineALSource::rotateVector
 (
     vector& vectorToRotate,
-    vector rotationPoint, 
+    vector rotationPoint,
     vector axis,
     scalar radians
 )
@@ -61,33 +61,33 @@ void Foam::fv::turbineALSource::rotateVector
     // Declare and define the rotation matrix (from SOWFA)
     tensor RM;
     scalar angle = radians;
-    RM.xx() = Foam::sqr(axis.x()) 
-            + (1.0 - Foam::sqr(axis.x())) * Foam::cos(angle); 
-    RM.xy() = axis.x() * axis.y() 
-            * (1.0 - Foam::cos(angle)) - axis.z() * Foam::sin(angle); 
-    RM.xz() = axis.x() * axis.z() 
+    RM.xx() = Foam::sqr(axis.x())
+            + (1.0 - Foam::sqr(axis.x())) * Foam::cos(angle);
+    RM.xy() = axis.x() * axis.y()
+            * (1.0 - Foam::cos(angle)) - axis.z() * Foam::sin(angle);
+    RM.xz() = axis.x() * axis.z()
             * (1.0 - Foam::cos(angle)) + axis.y() * Foam::sin(angle);
-    RM.yx() = axis.x() * axis.y() 
-            * (1.0 - Foam::cos(angle)) + axis.z() * Foam::sin(angle); 
-    RM.yy() = Foam::sqr(axis.y()) 
+    RM.yx() = axis.x() * axis.y()
+            * (1.0 - Foam::cos(angle)) + axis.z() * Foam::sin(angle);
+    RM.yy() = Foam::sqr(axis.y())
             + (1.0 - Foam::sqr(axis.y())) * Foam::cos(angle);
-    RM.yz() = axis.y() * axis.z() 
+    RM.yz() = axis.y() * axis.z()
             * (1.0 - Foam::cos(angle)) - axis.x() * Foam::sin(angle);
-    RM.zx() = axis.x() * axis.z() 
+    RM.zx() = axis.x() * axis.z()
             * (1.0 - Foam::cos(angle)) - axis.y() * Foam::sin(angle);
-    RM.zy() = axis.y() * axis.z() 
+    RM.zy() = axis.y() * axis.z()
             * (1.0 - Foam::cos(angle)) + axis.x() * Foam::sin(angle);
-    RM.zz() = Foam::sqr(axis.z()) 
+    RM.zz() = Foam::sqr(axis.z())
             + (1.0 - Foam::sqr(axis.z())) * Foam::cos(angle);
-    
-    // Rotation matrices make a rotation about the origin, so need to subtract 
+
+    // Rotation matrices make a rotation about the origin, so need to subtract
     // rotation point off the point to be rotated.
     vectorToRotate -= rotationPoint;
 
     // Perform the rotation.
     vectorToRotate = RM & vectorToRotate;
 
-    // Return the rotated point to its new location relative to the rotation 
+    // Return the rotated point to its new location relative to the rotation
     // point
     vectorToRotate += rotationPoint;
 }
@@ -108,7 +108,7 @@ void Foam::fv::turbineALSource::createBlades()
 void Foam::fv::turbineALSource::createOutputFile()
 {
     fileName dir;
-    
+
     if (Pstream::parRun())
     {
         dir = time_.path()/"../postProcessing/turbines"
@@ -119,14 +119,14 @@ void Foam::fv::turbineALSource::createOutputFile()
         dir = time_.path()/"postProcessing/turbines"
             / time_.timeName();
     }
-    
+
     if (!isDir(dir))
     {
         mkDir(dir);
     }
 
     outputFile_ = new OFstream(dir/name_ + ".csv");
-    
+
     *outputFile_<< "time,angle_deg,tsr,cp,cd,ct" << endl;
 }
 
@@ -141,7 +141,7 @@ Foam::fv::turbineALSource::turbineALSource
     const fvMesh& mesh
 )
 :
-    option(name, modelType, dict, mesh),
+    cellSetOption(name, modelType, dict, mesh),
     time_(mesh.time()),
     lastRotationTime_(time_.value()),
     rhoRef_(1.0),
@@ -162,8 +162,8 @@ Foam::fv::turbineALSource::turbineALSource
         mesh_,
         dimensionedVector
         (
-            "force", 
-            dimForce/dimVolume/dimDensity, 
+            "force",
+            dimForce/dimVolume/dimDensity,
             vector::zero
         )
     ),
@@ -249,8 +249,8 @@ void Foam::fv::turbineALSource::printCoeffs() const
 
 void Foam::fv::turbineALSource::writePerf()
 {
-    *outputFile_<< time_.value() << "," << angleDeg_ << "," 
-                << tipSpeedRatio_ << "," << powerCoefficient_ << "," 
+    *outputFile_<< time_.value() << "," << angleDeg_ << ","
+                << tipSpeedRatio_ << "," << powerCoefficient_ << ","
                 << dragCoefficient_ << "," << torqueCoefficient_ << endl;
 }
 
@@ -264,7 +264,7 @@ void Foam::fv::turbineALSource::writeData(Ostream& os) const
 
 bool Foam::fv::turbineALSource::read(const dictionary& dict)
 {
-    if (option::read(dict))
+    if (cellSetOption::read(dict))
     {
         coeffs_.lookup("fieldNames") >> fieldNames_;
         applied_.setSize(fieldNames_.size(), false);
@@ -283,19 +283,19 @@ bool Foam::fv::turbineALSource::read(const dictionary& dict)
         bladesDict_ = coeffs_.subDict("blades");
         nBlades_ = bladesDict_.keys().size();
         bladeNames_ = bladesDict_.toc();
-        
+
         // Set tip speed ratio and omega
         scalar t = time_.value();
-        tipSpeedRatio_ = meanTSR_ 
+        tipSpeedRatio_ = meanTSR_
                        + tsrAmplitude_*cos(nBlades_*(meanTSR_*t - tsrPhase_));
         omega_ = tipSpeedRatio_*mag(freeStreamVelocity_)/rotorRadius_;
-        
+
         // Get dynamic stall subdict
         dynamicStallDict_ = coeffs_.subOrEmptyDict("dynamicStall");
-        
+
         // Get profiles information
         profileData_ = coeffs_.subDict("profileData");
-        
+
         return true;
     }
     else

@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.4.x                                 |
+|  \\    /   O peration     | Version:  3.0.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -20,19 +20,19 @@ turbine
 {
     type            axialFlowTurbineALSource;
     active          on;
-    selectionMode   cellSet; // cellSet || points || cellZone
-    cellSet         turbine;
 
     axialFlowTurbineALSourceCoeffs
     {
         fieldNames          (U);
+        selectionMode       cellSet; // cellSet || points || cellZone
+        cellSet             turbine;
         origin              (0 0 0);
         axis                (-1 0 0);
         verticalDirection   (0 0 1);
         freeStreamVelocity  (10 0 0);
         tipSpeedRatio       6.0;
         rotorRadius         0.45;
-        
+
         dynamicStall
         {
             active              off;
@@ -47,7 +47,7 @@ turbine
                 writeElementPerf true;
                 endEffects  on;
                 nElements   28;
-                elementProfiles 
+                elementProfiles
                 (
                     cylinder
                     S826
@@ -110,7 +110,7 @@ turbine
                 azimuthalOffset 240.0;
             }
         }
-        
+
         tower
         {
             includeInTotalDrag  false; // default is false
@@ -124,7 +124,7 @@ turbine
                 (-0.14  0.00 0.05)
             );
         }
-        
+
         hub
         {
             nElements   1;
@@ -135,7 +135,7 @@ turbine
                 (0 -0.09 0.09)
             );
         }
-        
+
         profileData
         {
             S826

@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.4.x                                 |
+|  \\    /   O peration     | Version:  3.0.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -19,12 +19,12 @@ foil
 {
     type            actuatorLineSource;
     active          on;            // on/off switch
-    selectionMode   cellSet;       // cellSet, points, cellZone
-    cellSet         foil;          // cellSet name
 
     actuatorLineSourceCoeffs
     {
         fieldNames          (U);
+        selectionMode   cellSet;       // cellSet, points, cellZone
+        cellSet         foil;          // cellSet name
         freeStreamVelocity  (29.9 0 0); // M = 0.381
         nElements           4;
         writePerf           true;
@@ -34,25 +34,25 @@ foil
             ((0.0 0.0 0.0) (0 0 1) (1.22) (-1 0 0) (0.25) (15))
             ((0.0 0.0 1.98) (0 0 1) (1.22) (-1 0 0) (0.25) (15))
         );
-        
+
         elementProfiles (NACA0012);
-        
+
         dynamicStall
         {
             active              on;
             dynamicStallModel   LeishmanBeddoesSGC;
             speedOfSound        343;
-            
+
             LeishmanBeddoesCoeffs
             {
                 speedOfSound    $speedOfSound;
             }
-            
+
             LeishmanBeddoes3GCoeffs
             {
                 speedOfSound    $speedOfSound;
             }
-            
+
             LeishmanBeddoesSGCCoeffs
             {
                 speedOfSound    $speedOfSound;
@@ -63,14 +63,14 @@ foil
                 E0              0.25;
             }
         }
-        
+
         harmonicPitching
         {
             active          on;
             reducedFreq     0.124; // omega*c/(2*UInfty) about chordMount
             amplitude       10.0; // Degrees
         }
-        
+
         profileData
         {
             NACA0012

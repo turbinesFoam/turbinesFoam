@@ -40,7 +40,6 @@ SourceFiles
 #include "runTimeSelectionTables.H"
 #include "dictionary.H"
 #include "vector.H"
-#include "localAxesRotation.H"
 #include "volFieldsFwd.H"
 #include "fvMesh.H"
 #include "fvMatrices.H"

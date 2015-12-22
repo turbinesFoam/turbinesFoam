@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.4.x                                 |
+|  \\    /   O peration     | Version:  3.0.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -20,12 +20,12 @@ turbine
 {
     type            crossFlowTurbineALSource;
     active          on;
-    selectionMode   cellSet; // cellSet || points || cellZone
-    cellSet         turbine;
 
     crossFlowTurbineALSourceCoeffs
     {
         fieldNames          (U);
+        selectionMode       cellSet; // cellSet || points || cellZone
+        cellSet             turbine;
         origin              (0 0 0);
         axis                (0 0 1);    // Negative for opposite rotation
         rotorRadius         0.5;
