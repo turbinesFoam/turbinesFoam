@@ -203,13 +203,13 @@ Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
         // Projection width based on local cell size (from Troldborg (2008))
         epsilon = 2*Foam::cbrt(V[posCellI]);
 
-        if (epsilon > (chordLength_/2.0))
+        if (epsilon > 1.0*chordLength_)
         {
             return epsilon;
         }
         else
         {
-            return chordLength_/2.0;
+            return 1.0*chordLength_;
         }
     }
     else
@@ -293,7 +293,7 @@ void Foam::fv::actuatorLineElement::applyForceField
     if (debug)
     {
         word epsilonMethod;
-        if (epsilon == chordLength_/2.0)
+        if (epsilon == 1.0*chordLength_)
         {
             epsilonMethod = "chord-based";
         }
