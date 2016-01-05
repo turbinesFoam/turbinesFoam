@@ -25,7 +25,7 @@ Class
     Foam::addedMassModel
 
 Description
-    Added mass model based on Strickland (1981) "A vortex model of the 
+    Added mass model based on Strickland (1981) "A vortex model of the
     Darrieus turbine: An analytical and experimental study".
 
 SourceFiles
@@ -50,43 +50,43 @@ namespace Foam
 class addedMassModel
 {
     // Private data
-    
+
         //- Run time reference
         const Time& time_;
-        
+
         //- Chord length in meters
         scalar chordLength_;
-        
-        //- Debug switch (inherited)
-        bool debug;
-        
+
+        //- Debug level
+        label& debug;
+
         //- Previous time value
         scalar timePrev_;
-        
+
         //- Counter for number of new time steps
         label nNewTimes_;
-        
+
         //- Angle of attack (radians)
         scalar alpha_;
-        
+
         //- Previous angle of attack (radians)
         scalar alphaPrev_;
-        
+
         //- Chordwise component of relative velocity
         scalar chordwiseRelVel_;
-        
+
         //- Normal component of relative velocity
         scalar normalRelVel_;
-        
+
         //- Previous value of normal relative velocity
         scalar normalRelVelPrev_;
-        
+
 
     // Private Member Functions
 
         //- Disallow default bitwise copy construct
         addedMassModel(const addedMassModel&);
-        
+
         //- Update previous time step values
         void update();
 
@@ -100,7 +100,7 @@ public:
         (
             const Time& time,
             scalar chordLength,
-            bool debug=false
+            label& debug
         );
 
 
@@ -111,7 +111,7 @@ public:
         (
             const Time& time,
             scalar chordLength,
-            bool debug=false
+            label& debug
         );
 
 
@@ -126,7 +126,7 @@ public:
         // Check
 
         // Correct
-        
+
             //- Correct coefficients for added mass effects
             void correct
             (
@@ -137,7 +137,7 @@ public:
                 scalar chordwiseRelVel,
                 scalar normalRelVel
             );
-            
+
 
         // Write
 
