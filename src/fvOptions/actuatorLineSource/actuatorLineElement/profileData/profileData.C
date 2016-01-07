@@ -309,7 +309,7 @@ void Foam::profileData::updateRe(scalar Re)
         scalar fReRef = Foam::pow((Foam::log(ReRef_) - 0.407), -2.64);
         scalar fRe = Foam::pow((Foam::log(Re) - 0.407), -2.64);
         scalar K = fReRef/fRe;
-        dragCoefficientList_ = K*dragCoefficientListOrg_;
+        dragCoefficientList_ = dragCoefficientListOrg_/K;
 
         if (debug)
         {
@@ -323,7 +323,7 @@ void Foam::profileData::updateRe(scalar Re)
         }
 
         // Correct lift coefficients
-        scalar n = 0.125;
+        scalar n = dict_.lookupOrDefault("liftReCorrExp", 0.23);
         K = pow((Re/ReRef_), n);
         forAll(liftCoefficientList_, i)
         {
