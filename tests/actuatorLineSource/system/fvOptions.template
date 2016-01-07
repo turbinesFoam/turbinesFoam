@@ -43,6 +43,7 @@ foil
         {{
             profile0
             {{
+                Re          9e4;
                 data
                 ( // alpha C_l C_d
                     (-90 1.45 0.21)

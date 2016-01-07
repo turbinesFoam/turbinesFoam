@@ -393,7 +393,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     dragCoefficient_(0.0),
     momentCoefficient_(0.0),
     profileName_(dict.lookup("profileName")),
-    profileData_(profileName_, dict.subDict("profileData")),
+    profileData_(profileName_, dict.subDict("profileData"), debug),
     dynamicStallActive_(false),
     omega_(0.0),
     chordMount_(0.25),
