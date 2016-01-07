@@ -311,6 +311,17 @@ void Foam::profileData::updateRe(scalar Re)
         scalar K = fReRef/fRe;
         dragCoefficientList_ = K*dragCoefficientListOrg_;
 
+        if (debug)
+        {
+            Info<< "Correcting " << name_ << " profile data for Reynolds number"
+                << " effects" << endl;
+            Info<< "    Re: " << Re << endl;
+            Info<< "    ReRef: " << ReRef_ << endl;
+            Info<< "    f(Re): " << fRe << endl;
+            Info<< "    f(ReRef): " << fReRef << endl;
+            Info<< "    K (drag): " << K << endl;
+        }
+
         // Correct lift coefficients
         scalar n = 0.125;
         K = pow((Re/ReRef_), n);
@@ -324,6 +335,12 @@ void Foam::profileData::updateRe(scalar Re)
                 liftCoefficientListOrg_
             );
             liftCoefficientList_[i] *= K;
+        }
+
+        if (debug)
+        {
+            Info<< "    n: " << n << endl;
+            Info<< "    K (lift): " << K << endl;
         }
 
         // Recalculate static stall angle, etc.
