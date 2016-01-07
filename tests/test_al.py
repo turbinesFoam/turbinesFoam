@@ -34,11 +34,46 @@ def check_output_file_exists():
 
 
 def check_geometric_alpha():
-    """
-    Test that actuatorLineSource geometric angle of attack was set properly.
+    """Test that actuatorLineSource geometric angle of attack was set properly.
     """
     df = load_output()
     assert np.all(df.alpha_geom_deg == alpha_deg)
+
+
+def check_re_corrections():
+    """Parse and check data from Reynolds number corrections."""
+    cmd_temp = "grep '{} {} {} coefficient' log.simpleFoam"
+    def make_array(when=None, minmax=None, quantity=None, cmd=None):
+        if cmd is None:
+            cmd = cmd_temp.format(when, minmax, quantity)
+        raw = subprocess.check_output(cmd, shell=True).decode().split("\n")
+        arr = []
+        for i in raw:
+            try:
+                arr.append(float(i.split()[-1]))
+            except IndexError:
+                pass
+        return np.array(arr)
+    df = pd.DataFrame()
+    for when in ["Initial", "Corrected"]:
+        for minmax, quantity in zip(["maximum","minimum"], ["lift", "drag"]):
+            name = when.lower() + "_" + minmax + "_" + quantity
+            df[name] = make_array(when, minmax, quantity)
+    Re = make_array(cmd="grep Re: log.simpleFoam")[-1]
+    Re_ref = make_array(cmd="grep ReRef: log.simpleFoam")[-1]
+    cdi = df.initial_minimum_drag.iloc[-1]
+    cdc = df.corrected_minimum_drag.iloc[-1]
+    cli = df.initial_maximum_lift.iloc[-1]
+    clc = df.corrected_maximum_lift.iloc[-1]
+    if Re > Re_ref:
+        assert clc > cli
+        assert cdc < cdi
+    elif Re < Re_ref:
+        assert clc < cli
+        assert cdc > cdi
+    elif Re == Re_ref:
+        assert clc == cli
+        assert cdc == cdi
 
 
 def test_2d():
@@ -48,6 +83,7 @@ def test_2d():
     check_created()
     check_output_file_exists()
     check_geometric_alpha()
+    check_re_corrections()
 
 
 def test_alpha_sweep():
