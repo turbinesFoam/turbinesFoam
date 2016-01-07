@@ -208,11 +208,13 @@ void Foam::profileData::calcNormalCoeffSlope()
 Foam::profileData::profileData
 (
     const word& name,
-    const dictionary& dict
+    const dictionary& dict,
+    const label& debug
 )
 :
     name_(name),
     dict_(dict),
+    debug(debug),
     Re_(VSMALL),
     ReRef_(VSMALL),
     correctRe_(false),
@@ -232,7 +234,8 @@ Foam::autoPtr<Foam::profileData>
 Foam::profileData::New
 (
     const word& name,
-    const dictionary& dict
+    const dictionary& dict,
+    const label& debug
 )
 {
     return autoPtr<profileData>
@@ -240,7 +243,8 @@ Foam::profileData::New
         new profileData
         (
             name,
-            dict
+            dict,
+            debug
         )
     );
 }

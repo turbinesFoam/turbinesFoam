@@ -55,6 +55,9 @@ class profileData
         //- Input dictionary
         const dictionary dict_;
 
+        //- Debug level
+        const label& debug;
+
         //- Specified Reynolds number
         scalar Re_;
 
@@ -144,7 +147,8 @@ public:
         profileData
         (
             const word& name,
-            const dictionary& dict
+            const dictionary& dict,
+            const label& debug
         );
 
 
@@ -154,7 +158,8 @@ public:
         static autoPtr<profileData> New
         (
             const word& name,
-            const dictionary& dict
+            const dictionary& dict,
+            const label& debug
         );
 
 
