@@ -341,6 +341,14 @@ void Foam::profileData::updateRe(scalar Re)
         {
             Info<< "    n: " << n << endl;
             Info<< "    K (lift): " << K << endl;
+            Info<< "    Initial minimum drag coefficient: "
+                << Foam::min(dragCoefficientListOrg_) << endl;
+            Info<< "    Corrected minimum drag coefficient: "
+                << Foam::min(dragCoefficientList_) << endl;
+            Info<< "    Initial maximum lift coefficient: "
+                << Foam::max(liftCoefficientListOrg_) << endl;
+            Info<< "    Corrected maximum lift coefficient: "
+                << Foam::max(liftCoefficientList_) << endl;
         }
 
         // Recalculate static stall angle, etc.
