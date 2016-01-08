@@ -195,27 +195,57 @@ void Foam::fv::actuatorLineElement::lookupCoefficients()
 
 Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
 {
+    // Provide ideal epsilon target
+    scalar epsilonThreshold = 1.0*chordLength_;
+
     scalar epsilon = VGREAT;
+    scalar epsilonMesh = VGREAT;
     const scalarField& V = mesh_.V();
     label posCellI = findCell(position_);
     if (posCellI >= 0)
     {
         // Projection width based on local cell size (from Troldborg (2008))
-        epsilon = 2*Foam::cbrt(V[posCellI]);
+        epsilonMesh = 2.0*Foam::cbrt(V[posCellI]);
+        epsilonMesh *= 1.5; // Cell could have non-unity aspect ratio
 
-        if (epsilon > 1.0*chordLength_)
+        if (epsilonMesh > epsilonThreshold)
         {
-            return epsilon;
+            epsilon = epsilonMesh;
         }
         else
         {
-            return 1.0*chordLength_;
+            epsilon = epsilonThreshold;
         }
     }
-    else
+
+    // Reduce epsilon over all processors
+    reduce(epsilon, minOp<scalar>());
+
+    // If epsilon is not reduced, position is not in the mesh
+    if (not (epsilon < VGREAT))
     {
-        return epsilon;
+        // Raise fatal error since mesh size cannot be detected
+        FatalErrorIn("void actuatorLineElement::applyForceField()")
+            << "Position of " << name_  << " not found in mesh"
+            << abort(FatalError);
     }
+
+    if (debug)
+    {
+        reduce(epsilonMesh, minOp<scalar>());
+        word epsilonMethod;
+        if (epsilon == epsilonThreshold)
+        {
+            epsilonMethod = "chord-based";
+        }
+        else if (epsilon == epsilonMesh)
+        {
+            epsilonMethod = "mesh-based";
+        }
+        Info<< "    epsilon (" << epsilonMethod << "): " << epsilon << endl;
+    }
+
+    return epsilon;
 }
 
 
@@ -280,30 +310,6 @@ void Foam::fv::actuatorLineElement::applyForceField
 {
     // Calculate projection width
     scalar epsilon = calcProjectionEpsilon();
-    reduce(epsilon, minOp<scalar>());
-
-    // If epsilon is not reduced, position is not in the mesh
-    if (not (epsilon < VGREAT))
-    {
-        // Raise fatal error since mesh size cannot be detected
-        FatalErrorIn("void actuatorLineElement::applyForceField()")
-            << "Position of " << name_  << " not found in mesh"
-            << abort(FatalError);
-    }
-    if (debug)
-    {
-        word epsilonMethod;
-        if (epsilon == 1.0*chordLength_)
-        {
-            epsilonMethod = "chord-based";
-        }
-        else
-        {
-            epsilonMethod = "mesh-based";
-        }
-        Info<< "    epsilon (" << epsilonMethod << "): " << epsilon << endl;
-    }
-
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
 
     // Apply force to the cells within the element's sphere of influence
