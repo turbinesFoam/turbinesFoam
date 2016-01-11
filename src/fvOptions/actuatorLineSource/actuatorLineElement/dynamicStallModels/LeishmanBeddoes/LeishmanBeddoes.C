@@ -434,11 +434,6 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     cmFitExponent_(coeffs_.lookupOrDefault("cmFitExponent", 2)),
     CM_(0.0)
 {
-    if (not debug and dynamicStallModel::debug)
-    {
-        debug = dynamicStallModel::debug;
-    }
-
     dict_.lookup("chordLength") >> c_;
 
     if (debug)
