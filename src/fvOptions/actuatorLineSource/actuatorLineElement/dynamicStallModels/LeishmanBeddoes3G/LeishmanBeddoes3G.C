@@ -238,11 +238,6 @@ Foam::fv::LeishmanBeddoes3G::LeishmanBeddoes3G
     CMC_(0.0),
     CMI_(0.0)
 {
-    if (not debug and LeishmanBeddoes::debug)
-    {
-        debug = LeishmanBeddoes::debug;
-    }
-
     fCrit_ = 0.6;
     Tv_ = coeffs_.lookupOrDefault("Tv", 10.0);
     Tvl_ = coeffs_.lookupOrDefault("Tvl", 8.0);

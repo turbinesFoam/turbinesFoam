@@ -198,11 +198,6 @@ Foam::fv::LeishmanBeddoesSGC::LeishmanBeddoesSGC
     DAlpha_(0.0),
     DAlphaPrev_(0.0)
 {
-    if (not debug and LeishmanBeddoes3G::debug)
-    {
-        debug = LeishmanBeddoes3G::debug;
-    }
-
     Tv_ = coeffs_.lookupOrDefault("Tv", 11.0);
     Tvl_ = coeffs_.lookupOrDefault("Tvl", 9.0);
     eta_ = coeffs_.lookupOrDefault("eta", 0.975);
