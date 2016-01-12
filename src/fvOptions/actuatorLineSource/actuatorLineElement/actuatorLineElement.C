@@ -196,7 +196,7 @@ void Foam::fv::actuatorLineElement::lookupCoefficients()
 Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
 {
     // Provide ideal epsilon target
-    scalar epsilonThreshold = 0.75*chordLength_;
+    scalar epsilonThreshold = 0.25*chordLength_;
 
     scalar epsilon = VGREAT;
     scalar epsilonMesh = VGREAT;
