@@ -215,9 +215,7 @@ void Foam::fv::turbineALSource::addSup
     fvMatrix<vector>& eqn,
     const label fieldI
 )
-{
-    // Should be unique for each turbine type
-}
+{}
 
 
 void Foam::fv::turbineALSource::addSup
@@ -226,9 +224,7 @@ void Foam::fv::turbineALSource::addSup
     fvMatrix<vector>& eqn,
     const label fieldI
 )
-{
-    // Should be unique for each turbine type
-}
+{}
 
 
 void Foam::fv::turbineALSource::addSup
@@ -236,9 +232,19 @@ void Foam::fv::turbineALSource::addSup
     fvMatrix<scalar>& eqn,
     const label fieldI
 )
-{
-    // Should be unique for each turbine type
-}
+{}
+
+
+void Foam::fv::turbineALSource::constrain
+(
+    fvMatrix<scalar>& eqn,
+    const label fieldI
+)
+{}
+
+
+void Foam::fv::turbineALSource::correct(volScalarField& field)
+{}
 
 
 void Foam::fv::turbineALSource::printCoeffs() const

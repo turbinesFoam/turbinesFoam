@@ -226,7 +226,7 @@ public:
                 const label fieldI
             );
 
-            //- Source term to turbulence scalars
+            //- Add source to turbulence scalar equation
             virtual void addSup
             (
                 fvMatrix<scalar>& eqn,
@@ -240,6 +240,20 @@ public:
                 fvMatrix<vector>& eqn,
                 const label fieldI
             );
+
+
+        // Constrain turbulence model equation
+
+            virtual void constrain
+            (
+                fvMatrix<scalar>& eqn,
+                const label fieldI
+            );
+
+
+        // Correction to turbulence model equation
+
+            virtual void correct(volScalarField& field);
 };
 
 

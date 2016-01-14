@@ -659,25 +659,6 @@ void Foam::fv::actuatorLineSource::addSup
 
 void Foam::fv::actuatorLineSource::addSup
 (
-    fvMatrix<scalar>& eqn,
-    const label fieldI
-)
-{
-    const volVectorField& U = mesh_.lookupObject<volVectorField>("U");
-
-    word fieldName = fieldNames_[fieldI];
-
-    Info<< endl << "Adding " << fieldName << " from " << name_ << endl << endl;
-    forAll(elements_, i)
-    {
-        elements_[i].calculateForce(U);
-        elements_[i].addTurbulence(eqn, fieldName);
-    }
-}
-
-
-void Foam::fv::actuatorLineSource::addSup
-(
     const volScalarField& rho,
     fvMatrix<vector>& eqn,
     const label fieldI
@@ -722,5 +703,42 @@ void Foam::fv::actuatorLineSource::addSup
     // Write performance to file
     if (writePerf_ and Pstream::master()) writePerf();
 }
+
+
+void Foam::fv::actuatorLineSource::addSup
+(
+    fvMatrix<scalar>& eqn,
+    const label fieldI
+)
+{
+    const volVectorField& U = mesh_.lookupObject<volVectorField>("U");
+
+    word fieldName = fieldNames_[fieldI];
+
+    if (debug)
+    {
+        Info<< endl << "Adding " << fieldName << " from " << name_ << endl
+            << endl;
+    }
+
+    forAll(elements_, i)
+    {
+        elements_[i].calculateForce(U);
+        elements_[i].addTurbulence(eqn, fieldName);
+    }
+}
+
+
+void Foam::fv::actuatorLineSource::constrain
+(
+    fvMatrix<scalar>& eqn,
+    const label fieldI
+)
+{}
+
+
+void Foam::fv::actuatorLineSource::correct(volScalarField& field)
+{}
+
 
 // ************************************************************************* //

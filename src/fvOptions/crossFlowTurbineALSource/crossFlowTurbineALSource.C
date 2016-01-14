@@ -738,6 +738,18 @@ void Foam::fv::crossFlowTurbineALSource::addSup
 }
 
 
+void Foam::fv::crossFlowTurbineALSource::constrain
+(
+    fvMatrix<scalar>& eqn,
+    const label fieldI
+)
+{}
+
+
+void Foam::fv::crossFlowTurbineALSource::correct(volScalarField& field)
+{}
+
+
 void Foam::fv::crossFlowTurbineALSource::printCoeffs() const
 {
     Info<< "Number of blades: " << nBlades_ << endl;
