@@ -51,7 +51,6 @@ maxCo           0.9;
 libs
 (
     "libturbinesFoam.so"
-    "libturbinesFoamTurbulenceModels.so"
 );
 
 DebugSwitches
