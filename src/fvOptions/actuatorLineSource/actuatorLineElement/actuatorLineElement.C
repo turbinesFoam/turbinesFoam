@@ -934,11 +934,39 @@ void Foam::fv::actuatorLineElement::addTurbulence
     );
 
     // Calculate projection radius
-    scalar epsilon = calcProjectionEpsilon();
+    scalar epsilon = calcProjectionEpsilon()/2;
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
 
-    // Calculate TKE injection rate
-    scalar k = 0.1*mag(dragCoefficient_);
+    // Lookup turbulence injection properties
+    dictionary turbDict = profileData_.dict().subOrEmptyDict
+    (
+        "turbulenceInjection"
+    );
+
+    // Calculate turbulence kinetic energy injection
+    scalar kSlope = turbDict.lookupOrDefault("kSlope", 0.0);
+    scalar kIntercept = turbDict.lookupOrDefault("kIntercept", 0.0);
+    scalar kMax = turbDict.lookupOrDefault("kMax", 0.0);
+    scalar k = Foam::min((kSlope*dragCoefficient_ + kIntercept), kMax);
+    k *= Foam::magSqr(relativeVelocity_);
+    k = mag(k);
+
+    Info<< "Adding k source from " << name_ << ": " << k << endl;
+
+    // Calculate dissipation injection
+    scalar epsilonSlope = turbDict.lookupOrDefault("epsilonSlope", 0.0);
+    scalar epsilonIntercept = turbDict.lookupOrDefault("epsilonIntercept", 0.0);
+    scalar epsilonMax = turbDict.lookupOrDefault("epsilonMax", 0.0);
+    scalar epsilonTurb = Foam::min
+    (
+        (epsilonSlope*dragCoefficient_ + epsilonIntercept),
+        epsilonMax
+    );
+    epsilonTurb *= magSqr(relativeVelocity_) * mag(relativeVelocity_);
+    epsilonTurb /= chordLength_;
+    epsilonTurb = mag(epsilonTurb);
+
+    Info<< "Adding epsilon source from " << name_ << ": " << epsilonTurb << endl;
 
     // Add turbulence to the cells within the element's sphere of influence
     scalar sphereRadius = chordLength_ + projectionRadius;
@@ -956,8 +984,7 @@ void Foam::fv::actuatorLineElement::addTurbulence
             }
             else if (fieldName == "epsilon")
             {
-                turbulence[cellI] = factor*Foam::pow(k, 1.5)
-                                  * 0.09/(chordLength_/10.0);
+                turbulence[cellI] = factor*epsilonTurb;
             }
         }
     }
