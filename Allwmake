@@ -4,6 +4,4 @@ startDir=$PWD
 
 cd src/fvOptions
 wmake libso
-cd $startDir/src/turbulenceModels
-wmake libso
 cd $startDir

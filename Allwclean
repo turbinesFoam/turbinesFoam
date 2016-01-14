@@ -6,6 +6,4 @@ echo "Cleaning turbinesFoam"
 
 cd src/fvOptions
 wclean
-cd $startDir/src/turbulenceModels
-wclean
 cd $startDir
