@@ -22,7 +22,7 @@ foil
 
     actuatorLineSourceCoeffs
     {{
-        fieldNames          (U);
+        fieldNames          (U k epsilon);
         selectionMode       cellSet;    // cellSet, points, cellZone
         cellSet             foil;       // cellSet name
         freeStreamVelocity  (1 0 0);
