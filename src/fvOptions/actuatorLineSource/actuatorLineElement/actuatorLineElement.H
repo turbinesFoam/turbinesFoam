@@ -75,6 +75,9 @@ protected:
         //- Reference to the mesh
         const fvMesh& mesh_;
 
+        //- Reference to the list of cell indices
+        const labelList& cells_;
+
         //- Mesh bounding box
         boundBox meshBoundBox_;
 
@@ -220,6 +223,9 @@ protected:
         //- Apply force field based on force vector
         void applyForceField(volVectorField& forceField);
 
+        //- Calculate turbulence quantity
+        scalar calcTurbulence(word quantity);
+
         //- Create the performance output file
         virtual void createOutputFile();
 
@@ -258,7 +264,8 @@ public:
     (
         const word& name,
         const dictionary& dict,
-        const fvMesh& mesh
+        const fvMesh& mesh,
+        const labelList& cells
     );
 
 
@@ -378,6 +385,16 @@ public:
 
             //- Add source term to turbulence quantity
             virtual void addTurbulence(fvMatrix<scalar>& eqn, word fieldName);
+
+            //- Constrain turbulence quantity
+            virtual void constrainTurbulence
+            (
+                fvMatrix<scalar>& eqn,
+                word fieldName
+            );
+
+            //- Correct turbulence quantity
+            virtual void correctTurbulence(volScalarField& eqn);
 
             //- Source term to compressible momentum equation
             virtual void addSup

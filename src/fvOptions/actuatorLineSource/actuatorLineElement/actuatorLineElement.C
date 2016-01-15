@@ -381,12 +381,14 @@ Foam::fv::actuatorLineElement::actuatorLineElement
 (
     const word& name,
     const dictionary& dict,
-    const fvMesh& mesh
+    const fvMesh& mesh,
+    const labelList& cells
 )
 :
     dict_(dict),
     name_(name),
     mesh_(mesh),
+    cells_(cells),
     meshBoundBox_(mesh_.points(), false),
     planformNormal_(vector::zero),
     velocity_(vector::zero),
@@ -908,6 +910,46 @@ void Foam::fv::actuatorLineElement::addSup
 }
 
 
+Foam::scalar Foam::fv::actuatorLineElement::calcTurbulence
+(
+    word quantity
+)
+{
+    // Lookup turbulence injection properties
+    dictionary turbDict = profileData_.dict().subOrEmptyDict
+    (
+        "turbulenceInjection"
+    );
+
+    // Read slope, intercept and max value
+    word slopeName = quantity + "Slope";
+    scalar slope = turbDict.lookupOrDefault(slopeName, 0.0);
+    word interceptName = quantity + "intercept";
+    scalar intercept = turbDict.lookupOrDefault(interceptName, 0.0);
+    word maxName = quantity + "max";
+    scalar maxValue = turbDict.lookupOrDefault(maxName, 0.0);
+    scalar val = Foam::min((slope*dragCoefficient_ + intercept), maxValue);
+    // k *= Foam::magSqr(relativeVelocity_);
+    // epsilonTurb *= magSqr(relativeVelocity_) * mag(relativeVelocity_);
+    // epsilonTurb /= chordLength_;
+    val = mag(val);
+
+    if (debug)
+    {
+        if (val == maxValue)
+        {
+            Info<< quantity << " injection (limited): " << val << endl;
+        }
+        else
+        {
+            Info<< quantity << " injection (C_d-based): " << val << endl;
+        }
+    }
+
+    return val;
+}
+
+
 void Foam::fv::actuatorLineElement::addTurbulence
 (
     fvMatrix<scalar>& eqn,
@@ -934,62 +976,99 @@ void Foam::fv::actuatorLineElement::addTurbulence
     );
 
     // Calculate projection radius
-    scalar epsilon = calcProjectionEpsilon()/2;
+    scalar epsilon = calcProjectionEpsilon();
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
 
-    // Lookup turbulence injection properties
-    dictionary turbDict = profileData_.dict().subOrEmptyDict
-    (
-        "turbulenceInjection"
-    );
+    // Calculate turbulence value
+    scalar turbVal = calcTurbulence(fieldName);
 
-    // Calculate turbulence kinetic energy injection
-    scalar kSlope = turbDict.lookupOrDefault("kSlope", 0.0);
-    scalar kIntercept = turbDict.lookupOrDefault("kIntercept", 0.0);
-    scalar kMax = turbDict.lookupOrDefault("kMax", 0.0);
-    scalar k = Foam::min((kSlope*dragCoefficient_ + kIntercept), kMax);
-    k *= Foam::magSqr(relativeVelocity_);
-    k = mag(k);
-
-    Info<< "Adding k source from " << name_ << ": " << k << endl;
-
-    // Calculate dissipation injection
-    scalar epsilonSlope = turbDict.lookupOrDefault("epsilonSlope", 0.0);
-    scalar epsilonIntercept = turbDict.lookupOrDefault("epsilonIntercept", 0.0);
-    scalar epsilonMax = turbDict.lookupOrDefault("epsilonMax", 0.0);
-    scalar epsilonTurb = Foam::min
-    (
-        (epsilonSlope*dragCoefficient_ + epsilonIntercept),
-        epsilonMax
-    );
-    epsilonTurb *= magSqr(relativeVelocity_) * mag(relativeVelocity_);
-    epsilonTurb /= chordLength_;
-    epsilonTurb = mag(epsilonTurb);
-
-    Info<< "Adding epsilon source from " << name_ << ": " << epsilonTurb << endl;
+    Info<< "Adding " << fieldName << " source from " << name_ << ": "
+        << turbVal << endl;
 
     // Add turbulence to the cells within the element's sphere of influence
     scalar sphereRadius = chordLength_ + projectionRadius;
-    forAll(mesh_.cells(), cellI)
+    forAll(cells_, i)
     {
+        label cellI = cells_[i];
         scalar dis = mag(mesh_.C()[cellI] - position_);
         if (dis <= sphereRadius)
         {
             scalar factor = Foam::exp(-Foam::sqr(dis/epsilon))
                           / (Foam::pow(epsilon, 3)
                           * Foam::pow(Foam::constant::mathematical::pi, 1.5));
-            if (fieldName == "k")
-            {
-                turbulence[cellI] = factor*k;
-            }
-            else if (fieldName == "epsilon")
-            {
-                turbulence[cellI] = factor*epsilonTurb;
-            }
+            turbulence[cellI] = factor*turbVal;
         }
     }
 
     eqn += turbulence;
+}
+
+
+void Foam::fv::actuatorLineElement::constrainTurbulence
+(
+    fvMatrix<scalar>& eqn,
+    word fieldName
+)
+{
+    // Calculate projection radius
+    scalar epsilon = calcProjectionEpsilon();
+    scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
+
+    // Calculate turbulence value
+    scalar turbVal = calcTurbulence(fieldName);
+
+    Info<< "Adding " << fieldName << " source from " << name_ << ": "
+        << turbVal << endl;
+
+    const volScalarField& existing(eqn.psi());
+    List<scalar> newValues(cells_.size());
+
+    // Add turbulence to the cells within the element's sphere of influence
+    scalar sphereRadius = chordLength_ + projectionRadius;
+    forAll(cells_, i)
+    {
+        label cellI = cells_[i];
+        scalar dis = mag(mesh_.C()[cellI] - position_);
+        if (dis <= sphereRadius)
+        {
+            scalar factor = Foam::exp(-Foam::sqr(dis/epsilon))
+                          / (Foam::pow(epsilon, 3)
+                          * Foam::pow(Foam::constant::mathematical::pi, 1.5));
+            newValues[i] = max(existing[cellI], factor*turbVal);
+        }
+    }
+
+    eqn.setValues(cells_, newValues);
+}
+
+
+void Foam::fv::actuatorLineElement::correctTurbulence
+(
+    volScalarField& field
+)
+{
+    word fieldName = field.name();
+
+    // Calculate projection radius
+    scalar epsilon = calcProjectionEpsilon();
+    scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
+
+    scalar turbVal = calcTurbulence(fieldName);
+
+    // Add turbulence to the cells within the element's sphere of influence
+    scalar sphereRadius = chordLength_ + projectionRadius;
+    forAll(cells_, i)
+    {
+        label cellI = cells_[i];
+        scalar dis = mag(mesh_.C()[cellI] - position_);
+        if (dis <= sphereRadius)
+        {
+            scalar factor = Foam::exp(-Foam::sqr(dis/epsilon))
+                          / (Foam::pow(epsilon, 3)
+                          * Foam::pow(Foam::constant::mathematical::pi, 1.5));
+            field[cellI] = max(factor*turbVal, field[cellI]);
+        }
+    }
 }
 
 

@@ -327,7 +327,10 @@ void Foam::fv::actuatorLineSource::createElements()
 
         actuatorLineElement* element = new actuatorLineElement
         (
-            name, dict, mesh_
+            name,
+            dict,
+            mesh_,
+            cells_
         );
         elements_.set(i, element);
         pitch = pitch/180.0*Foam::constant::mathematical::pi;
@@ -734,11 +737,43 @@ void Foam::fv::actuatorLineSource::constrain
     fvMatrix<scalar>& eqn,
     const label fieldI
 )
-{}
+{
+    // const volVectorField& U = mesh_.lookupObject<volVectorField>("U");
+    //
+    // word fieldName = fieldNames_[fieldI];
+    //
+    // if (debug)
+    // {
+    //     Info<< endl << "Constraining " << fieldName << " from " << name_ << endl
+    //         << endl;
+    // }
+    //
+    // forAll(elements_, i)
+    // {
+    //     elements_[i].calculateForce(U);
+    //     elements_[i].constrainTurbulence(eqn, fieldName);
+    // }
+}
 
 
 void Foam::fv::actuatorLineSource::correct(volScalarField& field)
-{}
+{
+    // const volVectorField& U = mesh_.lookupObject<volVectorField>("U");
+
+    // word fieldName = field.name();
+
+    // if (debug)
+    // {
+    //     Info<< endl << "Correcting " << fieldName << " from " << name_ << endl
+    //         << endl;
+    // }
+
+    // forAll(elements_, i)
+    // {
+    //     elements_[i].calculateForce(U);
+    //     elements_[i].correctTurbulence(field);
+    // }
+}
 
 
 // ************************************************************************* //
