@@ -1,6 +1,8 @@
 turbinesFoam
 ============
 
+[![Join the chat at https://gitter.im/turbinesFoam/turbinesFoam](https://badges.gitter.im/turbinesFoam/turbinesFoam.svg)](https://gitter.im/turbinesFoam/turbinesFoam?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build Status](https://travis-ci.org/turbinesFoam/turbinesFoam.svg?branch=master)](https://travis-ci.org/turbinesFoam/turbinesFoam)
 [![Stories in Ready](https://badge.waffle.io/turbinesfoam/turbinesfoam.png?label=ready&title=Ready)](https://waffle.io/turbinesfoam/turbinesfoam)
 [![DOI](https://zenodo.org/badge/4234/turbinesFoam/turbinesFoam.svg)](https://zenodo.org/badge/latestdoi/4234/turbinesFoam/turbinesFoam)
