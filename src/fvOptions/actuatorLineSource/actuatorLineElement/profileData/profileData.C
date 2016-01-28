@@ -359,25 +359,25 @@ void Foam::profileData::updateRe(scalar Re)
 }
 
 
-Foam::List<scalar>& Foam::profileData::angleOfAttackList()
+const Foam::List<scalar>& Foam::profileData::angleOfAttackList()
 {
     return angleOfAttackList_;
 }
 
 
-Foam::List<scalar>& Foam::profileData::liftCoefficientList()
+const Foam::List<scalar>& Foam::profileData::liftCoefficientList()
 {
     return liftCoefficientList_;
 }
 
 
-Foam::List<scalar>& Foam::profileData::dragCoefficientList()
+const Foam::List<scalar>& Foam::profileData::dragCoefficientList()
 {
     return dragCoefficientList_;
 }
 
 
-Foam::List<scalar>& Foam::profileData::momentCoefficientList()
+const Foam::List<scalar>& Foam::profileData::momentCoefficientList()
 {
     return momentCoefficientList_;
 }
