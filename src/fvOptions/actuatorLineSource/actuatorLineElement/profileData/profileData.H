@@ -174,17 +174,17 @@ public:
             //- Return const reference to dictionary
             const dictionary& dict();
 
-            //- Return reference to angle of attack list
-            List<scalar>& angleOfAttackList();
+            //- Return const reference to angle of attack list
+            const List<scalar>& angleOfAttackList();
 
-            //- Return reference to lift coefficient list
-            List<scalar>& liftCoefficientList();
+            //- Return const reference to lift coefficient list
+            const List<scalar>& liftCoefficientList();
 
             //- Return reference to drag coefficient list
-            List<scalar>& dragCoefficientList();
+            const List<scalar>& dragCoefficientList();
 
             //- Return reference to moment coefficient list
-            List<scalar>& momentCoefficientList();
+            const List<scalar>& momentCoefficientList();
 
             //- Return subset of angle of attack list
             List<scalar> angleOfAttackList
