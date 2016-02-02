@@ -198,6 +198,12 @@ Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
     // Provide ideal epsilon target
     scalar epsilonThreshold = 0.25*chordLength_;
 
+    // If drag coefficient is large, epsilon should be larger as well
+    if (dragCoefficient_ > 0.2)
+    {
+        epsilonThreshold = 1.0*chordLength_;
+    }
+
     scalar epsilon = VGREAT;
     scalar epsilonMesh = VGREAT;
     const scalarField& V = mesh_.V();
