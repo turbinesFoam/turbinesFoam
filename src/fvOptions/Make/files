@@ -10,5 +10,6 @@ actuatorLineSource/actuatorLineElement/dynamicStallModels/LeishmanBeddoes3G/Leis
 actuatorLineSource/actuatorLineElement/dynamicStallModels/LeishmanBeddoesSGC/LeishmanBeddoesSGC.C
 /*actuatorLineSource/actuatorLineElement/dynamicStallModels/BoeingVertol/BoeingVertol.C*/
 actuatorLineSource/actuatorLineElement/profileData/profileData.C
+interpolate/interpolateUtils.C
 
 LIB = $(FOAM_USER_LIBBIN)/libturbinesFoam

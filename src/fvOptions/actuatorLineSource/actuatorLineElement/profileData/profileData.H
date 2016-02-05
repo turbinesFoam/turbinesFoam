@@ -75,7 +75,37 @@ class profileData
 
         //- Unmodified moment coefficient list
         List<scalar> momentCoefficientListOrg_;
+	
+        //- Unmodified angle of attack list for drag matrix (deg)
+        List<scalar> angleOfAttackListMatrixOrg_;
+	
+        //- Unmodified Reynolds number list for drag matrix (deg)
+        List<scalar> ReynoldsNumberListMatrixOrg_;
+        
+        //- Unmodified drag coefficient matrix
+        List<List<scalar> > dragCoefficientMatrixOrg_;
+        
+        //- Unmodified lift coefficient matrix
+        List<List<scalar> > liftCoefficientMatrixOrg_;
+        
+        //- Unmodified moment coefficient matrix
+        List<List<scalar> > momentCoefficientMatrixOrg_;
 
+        //- Static stall angle (deg)
+        List<scalar> staticStallAngleList_;
+        
+        //- Drag coefficient at zero lift
+        List<scalar> zeroLiftDragCoeffList_;
+        
+        //- Angle of attack at zero lift (deg)
+        List<scalar> zeroLiftAngleOfAttackList_;
+        
+        //- Moment coefficient at zero lift
+        List<scalar> zeroLiftMomentCoeffList_;
+        
+        //- Slope of normal force coefficient (1/rad)
+        List<scalar> normalCoeffSlopeList_;
+        
         //- Angle of attack list (deg)
         List<scalar> angleOfAttackList_;
 
@@ -111,7 +141,15 @@ class profileData
 
         //- Read dictionary
         void read();
-
+        
+        void readMatrix
+        (
+            List<scalar> &xvalues,
+            List<scalar> &yvalues,
+            List<List<scalar> > &data,
+            const char* keyword
+        );
+    
         //- Interpolate a scalar value
         scalar interpolate
         (
@@ -134,6 +172,24 @@ class profileData
 
         //- Calculate normal force coefficient slope
         void calcNormalCoeffSlope();
+
+        //calculate all five coefficients
+        void calculateCoefficients();
+
+        //calculate all five coefficients through interpolation from preconstructed lists
+        void getInterpolatedCoefficients();
+
+        //create lists for interpolation with getInterpolatedCoefficients
+        void buildReynoldsList();
+
+        //generate list for the functions liftCoefficientList, dragCoefficientList, momentCoefficientList
+        List<scalar> subList
+        (
+            scalar alphaDegStart,
+            scalar alphaDegStop,
+            List<scalar>& oldList,
+            List<List<scalar> >& oldMatrix
+        );
 
         //- Disallow default bitwise copy construct
         profileData(const profileData&);
