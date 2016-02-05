@@ -1,0 +1,138 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     |
+    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+
+\*---------------------------------------------------------------------------*/
+
+#include "interpolateUtils.H"
+
+size_t Foam::interpolateUtils::binarySearch
+(
+     const List<scalar>& list,
+     const scalar value
+)
+{
+    //finds the closest index with a list value below value using a binary search algorithm, which should find the value in O(ln(N)) time
+    //code is suitable for large lists
+    size_t index = 0;
+    size_t listsize = list.size();
+    for(size_t currentsize = listsize>>1;currentsize > 1 && index + currentsize < listsize; currentsize = ((currentsize+1)>>1))
+    {
+        if(value>list[index + currentsize])
+            index+=currentsize;
+    }
+    
+    //the last case has to be run separately, as currentsize==1 cannot be handled in the loop due to the currentsize decrement
+    if(index + 1 < listsize && value > list[index+1])
+        index += 1;
+    return index;
+}
+
+size_t Foam::interpolateUtils::linearSearch
+(
+    const List<scalar>& list,
+    const scalar value,
+    size_t startvalue
+)
+{
+    //finds the closest index with a list value below the value using a linear search algorithm, which should find the value in O(N) time
+    //code is suitable for small lists, or if a good startvalue is available
+    //result should be indentical to binarySearch
+    size_t listsize=list.size();
+    if(startvalue >= listsize)
+        startvalue = listsize - 1;
+    if(list[startvalue] < value)
+        for(;startvalue < listsize - 1 && list[startvalue+1] < value; startvalue++);
+    else
+        for(;startvalue > 0 && list[startvalue] >= value; startvalue--);
+    return startvalue;
+}
+
+//note: code does not work if any of the lists only contain one variable.
+double Foam::interpolateUtils::interpolate1d
+(
+    const scalar xNew,
+    const List<scalar>& xList,
+    const List<scalar>& data
+)
+{
+    size_t xIndex = binarySearch(xList, xNew);
+    scalar xPart;
+    
+    //if the value is outside the interpolation region, the edge value will be used
+    
+    //if value is smaller than lowest value, use the lowest value
+    if(xIndex == 0 && xNew<xList[0])
+        xPart = 0;
+    else if(xIndex + 1 == static_cast<size_t>(xList.size())) //if it is larger than largest value
+    {
+        xIndex--; //decrease value one step, but only use the final value, i.e. the highest value
+        xPart = 1;
+    }
+    else
+        xPart = (xNew-xList[xIndex]) / (xList[xIndex+1] - xList[xIndex]);
+    
+    return (data[xIndex]*(1-xPart) + data[xIndex+1]*xPart);
+}
+
+//note: code does not work if any of the lists only contain one variable.
+//the format of data should be data[y][x]
+double Foam::interpolateUtils::interpolate2d
+(
+    const scalar xNew,
+    const scalar yNew,
+    const List<scalar>& xList,
+    const List<scalar>& yList,
+    const List<List<scalar> >& data
+)
+{
+    size_t xIndex=binarySearch(xList,xNew);
+    size_t yIndex=binarySearch(yList,yNew);
+    scalar xPart, yPart;
+    
+    //if the value is outside the interpolation region, the edge value will be used
+    
+    //if value is smaller than lowest value, use the lowest value
+    if(xIndex == 0 && xNew < xList[0])
+        xPart = 0;
+    else if(xIndex + 1 == static_cast<size_t>(xList.size())) //if it is larger than largest value
+    {
+        xIndex--; //decrease value one step, but only use the final value, i.e. the highest value
+        xPart = 1;
+    }
+    else
+        xPart = (xNew - xList[xIndex]) / (xList[xIndex + 1] - xList[xIndex]);
+    
+    //same procedure for the y interpolation
+    if(yIndex == 0 && yNew < yList[0])
+        yPart = 0;
+    else if(yIndex + 1 == static_cast<size_t>(yList.size())) //if it is larger than largest value
+    {
+        yIndex--; //decrease value one step, but only use the final value, i.e. the highest value
+        yPart = 1;
+    }
+    else
+        yPart = (yNew - yList[yIndex]) / (yList[yIndex+1] - yList[yIndex]);
+    
+    return (data[yIndex][xIndex]*(1 - xPart) + data[yIndex][xIndex+1]*xPart)*(1 - yPart)+
+           (data[yIndex+1][xIndex]*(1 - xPart) + data[yIndex + 1][xIndex + 1]*xPart)*yPart;
+}
