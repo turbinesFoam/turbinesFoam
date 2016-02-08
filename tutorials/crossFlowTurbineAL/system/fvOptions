@@ -92,7 +92,7 @@ turbine
                 writeElementPerf true;
                 nElements   14;
                 endEffects  on;
-                elementProfiles (NACA0020);
+                elementProfiles (NACA0021);
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
                     (-0.5 0.5 0.0 0.14 0.5 0.0)
@@ -119,7 +119,7 @@ turbine
             {
                 writePerf   true;
                 nElements   6;
-                elementProfiles (NACA0020);
+                elementProfiles (NACA0021);
                 elementData
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
                     (0.0 0.05 0.0 0.14 0.3 0.0)
@@ -152,11 +152,19 @@ turbine
 
         profileData
         {
-            NACA0020
+            NACA0021
             {
                 data
                 (   // alpha C_l C_d
                     #include "../../resources/foilData/NACA0021_1.6e5"
+                );
+                dataCd
+		        (
+                    #include "../../resources/foilData/NACA0021CLift.txt"
+                );
+                dataCl
+		        ( 
+                    #include "../../resources/foilData/NACA0021CDrag.txt"
                 );
             }
             cylinder
