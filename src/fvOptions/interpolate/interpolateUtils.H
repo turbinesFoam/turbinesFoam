@@ -45,18 +45,18 @@ namespace Foam
     namespace interpolateUtils
     {
         //- Find index for interpolation
-        size_t binarySearch
+        label binarySearch
         (
             const List<scalar>& list,
             const scalar value
         );
         
         //- Find index for interpolation
-        size_t linearSearch
+        label linearSearch
         (
             const List<scalar>& list,
             const scalar value,
-            size_t startvalue=0
+            label startvalue=0
         );
         
         //interpolate from 1d data

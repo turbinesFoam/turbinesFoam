@@ -25,78 +25,99 @@ License
 
 #include "interpolateUtils.H"
 
-size_t Foam::interpolateUtils::binarySearch
+label Foam::interpolateUtils::binarySearch
 (
      const List<scalar>& list,
      const scalar value
 )
 {
-    //finds the closest index with a list value below value using a binary search algorithm, which should find the value in O(ln(N)) time
-    //code is suitable for large lists
-    size_t index = 0;
-    size_t listsize = list.size();
-    for(size_t currentsize = listsize>>1;currentsize > 1 && index + currentsize < listsize; currentsize = ((currentsize+1)>>1))
+    /* finds the closest index with a list value below value using a binary 
+    search algorithm, which should find the value in O(ln(N)) time
+    code is suitable for large lists */
+    label index = 0;
+    label listsize = list.size();
+    for
+    (
+        label currentsize = listsize >> 1;
+        currentsize > 1 && index + currentsize < listsize; 
+        currentsize = ((currentsize+1)>>1)
+    )
     {
-        if(value>list[index + currentsize])
-            index+=currentsize;
+        if (value > list[index + currentsize])
+            index += currentsize;
     }
     
-    //the last case has to be run separately, as currentsize==1 cannot be handled in the loop due to the currentsize decrement
-    if(index + 1 < listsize && value > list[index+1])
+    /*the last case has to be run separately, as currentsize==1 cannot be 
+    handled in the loop due to the currentsize decrement*/
+    if (index + 1 < listsize && value > list[index+1])
         index += 1;
     return index;
 }
 
-size_t Foam::interpolateUtils::linearSearch
+label Foam::interpolateUtils::linearSearch
 (
     const List<scalar>& list,
     const scalar value,
-    size_t startvalue
+    label startvalue
 )
 {
-    //finds the closest index with a list value below the value using a linear search algorithm, which should find the value in O(N) time
-    //code is suitable for small lists, or if a good startvalue is available
-    //result should be indentical to binarySearch
-    size_t listsize=list.size();
+    /*finds the closest index with a list value below the value using a linear 
+    search algorithm, which should find the value in O(N) time
+    code is suitable for small lists, or if a good startvalue is available
+    result should be indentical to binarySearch*/
+    label listsize = list.size();
     if(startvalue >= listsize)
         startvalue = listsize - 1;
     if(list[startvalue] < value)
-        for(;startvalue < listsize - 1 && list[startvalue+1] < value; startvalue++);
+        for 
+        (
+            ;
+            startvalue + 1 < listsize && list[startvalue+1] < value; 
+            startvalue++
+        );
     else
-        for(;startvalue > 0 && list[startvalue] >= value; startvalue--);
+        for
+        (
+            ;
+            startvalue > 0 && list[startvalue] >= value; 
+            startvalue--
+        );
     return startvalue;
 }
 
 //note: code does not work if any of the lists only contain one variable.
-double Foam::interpolateUtils::interpolate1d
+scalar Foam::interpolateUtils::interpolate1d
 (
     const scalar xNew,
     const List<scalar>& xList,
     const List<scalar>& data
 )
 {
-    size_t xIndex = binarySearch(xList, xNew);
+    label xIndex = binarySearch(xList, xNew);
     scalar xPart;
     
     //if the value is outside the interpolation region, the edge value will be used
     
     //if value is smaller than lowest value, use the lowest value
-    if(xIndex == 0 && xNew<xList[0])
+    if (xIndex == 0 && xNew<xList[0])
         xPart = 0;
-    else if(xIndex + 1 == static_cast<size_t>(xList.size())) //if it is larger than largest value
+    //if it is larger than largest value
+    else if (xIndex + 1 == xList.size()) 
     {
-        xIndex--; //decrease value one step, but only use the final value, i.e. the highest value
+        //decrease value one step, but only use the final value, 
+        //i.e. the highest value
+        xIndex--; 
         xPart = 1;
     }
     else
-        xPart = (xNew-xList[xIndex]) / (xList[xIndex+1] - xList[xIndex]);
+        xPart = (xNew - xList[xIndex])/(xList[xIndex+1] - xList[xIndex]);
     
-    return (data[xIndex]*(1-xPart) + data[xIndex+1]*xPart);
+    return (data[xIndex]*(1 - xPart) + data[xIndex + 1]*xPart);
 }
 
 //note: code does not work if any of the lists only contain one variable.
 //the format of data should be data[y][x]
-double Foam::interpolateUtils::interpolate2d
+scalar Foam::interpolateUtils::interpolate2d
 (
     const scalar xNew,
     const scalar yNew,
@@ -105,34 +126,43 @@ double Foam::interpolateUtils::interpolate2d
     const List<List<scalar> >& data
 )
 {
-    size_t xIndex=binarySearch(xList,xNew);
-    size_t yIndex=binarySearch(yList,yNew);
+    label xIndex = binarySearch(xList,xNew);
+    label yIndex = binarySearch(yList,yNew);
     scalar xPart, yPart;
     
-    //if the value is outside the interpolation region, the edge value will be used
+    //if the value is outside the interpolation region, 
+    //the edge value will be used
     
     //if value is smaller than lowest value, use the lowest value
-    if(xIndex == 0 && xNew < xList[0])
+    if (xIndex == 0 && xNew < xList[0])
         xPart = 0;
-    else if(xIndex + 1 == static_cast<size_t>(xList.size())) //if it is larger than largest value
+    //if it is larger than largest value
+    else if (xIndex + 1 == xList.size()) 
     {
-        xIndex--; //decrease value one step, but only use the final value, i.e. the highest value
+        //decrease value one step, but only use the final value, 
+        //i.e. the highest value
+        xIndex--; 
         xPart = 1;
     }
     else
         xPart = (xNew - xList[xIndex]) / (xList[xIndex + 1] - xList[xIndex]);
     
     //same procedure for the y interpolation
-    if(yIndex == 0 && yNew < yList[0])
+    if (yIndex == 0 && yNew < yList[0])
         yPart = 0;
-    else if(yIndex + 1 == static_cast<size_t>(yList.size())) //if it is larger than largest value
+    //if it is larger than largest value
+    else if (yIndex + 1 == yList.size()) 
     {
-        yIndex--; //decrease value one step, but only use the final value, i.e. the highest value
+        //decrease value one step, but only use the final value, 
+        //i.e. the highest value
+        yIndex--; 
         yPart = 1;
     }
     else
         yPart = (yNew - yList[yIndex]) / (yList[yIndex+1] - yList[yIndex]);
     
-    return (data[yIndex][xIndex]*(1 - xPart) + data[yIndex][xIndex+1]*xPart)*(1 - yPart)+
-           (data[yIndex+1][xIndex]*(1 - xPart) + data[yIndex + 1][xIndex + 1]*xPart)*yPart;
+    return (data[yIndex][xIndex]*(1 - xPart) + 
+            data[yIndex][xIndex+1]*xPart)*(1 - yPart) +
+           (data[yIndex+1][xIndex]*(1 - xPart) + 
+            data[yIndex + 1][xIndex + 1]*xPart)*yPart;
 }

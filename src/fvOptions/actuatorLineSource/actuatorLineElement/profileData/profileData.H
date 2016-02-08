@@ -147,7 +147,7 @@ class profileData
             List<scalar> &xvalues,
             List<scalar> &yvalues,
             List<List<scalar> > &data,
-            const char* keyword
+            word keyword
         );
     
         //- Interpolate a scalar value
@@ -176,13 +176,15 @@ class profileData
         //calculate all five coefficients
         void calculateCoefficients();
 
-        //calculate all five coefficients through interpolation from preconstructed lists
+        //calculate all five coefficients through interpolation from 
+        //preconstructed lists
         void getInterpolatedCoefficients();
 
         //create lists for interpolation with getInterpolatedCoefficients
         void buildReynoldsList();
 
-        //generate list for the functions liftCoefficientList, dragCoefficientList, momentCoefficientList
+        //generate list for the functions liftCoefficientList, 
+        //dragCoefficientList, momentCoefficientList
         List<scalar> subList
         (
             scalar alphaDegStart,
