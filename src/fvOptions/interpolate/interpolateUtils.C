@@ -85,53 +85,16 @@ label Foam::interpolateUtils::linearSearch
     return startvalue;
 }
 
-//note: code does not work if any of the lists only contain one variable.
-scalar Foam::interpolateUtils::interpolate1d
+scalar Foam::interpolateUtils::getPart
 (
     const scalar xNew,
     const List<scalar>& xList,
-    const List<scalar>& data
+    label xIndex
 )
 {
-    label xIndex = binarySearch(xList, xNew);
     scalar xPart;
     
     //if the value is outside the interpolation region, the edge value will be used
-    
-    //if value is smaller than lowest value, use the lowest value
-    if (xIndex == 0 && xNew<xList[0])
-        xPart = 0;
-    //if it is larger than largest value
-    else if (xIndex + 1 == xList.size()) 
-    {
-        //decrease value one step, but only use the final value, 
-        //i.e. the highest value
-        xIndex--; 
-        xPart = 1;
-    }
-    else
-        xPart = (xNew - xList[xIndex])/(xList[xIndex+1] - xList[xIndex]);
-    
-    return (data[xIndex]*(1 - xPart) + data[xIndex + 1]*xPart);
-}
-
-//note: code does not work if any of the lists only contain one variable.
-//the format of data should be data[y][x]
-scalar Foam::interpolateUtils::interpolate2d
-(
-    const scalar xNew,
-    const scalar yNew,
-    const List<scalar>& xList,
-    const List<scalar>& yList,
-    const List<List<scalar> >& data
-)
-{
-    label xIndex = binarySearch(xList,xNew);
-    label yIndex = binarySearch(yList,yNew);
-    scalar xPart, yPart;
-    
-    //if the value is outside the interpolation region, 
-    //the edge value will be used
     
     //if value is smaller than lowest value, use the lowest value
     if (xIndex == 0 && xNew < xList[0])
@@ -145,24 +108,118 @@ scalar Foam::interpolateUtils::interpolate2d
         xPart = 1;
     }
     else
-        xPart = (xNew - xList[xIndex]) / (xList[xIndex + 1] - xList[xIndex]);
-    
-    //same procedure for the y interpolation
-    if (yIndex == 0 && yNew < yList[0])
-        yPart = 0;
-    //if it is larger than largest value
-    else if (yIndex + 1 == yList.size()) 
-    {
-        //decrease value one step, but only use the final value, 
-        //i.e. the highest value
-        yIndex--; 
-        yPart = 1;
-    }
-    else
-        yPart = (yNew - yList[yIndex]) / (yList[yIndex+1] - yList[yIndex]);
-    
+        xPart = (xNew - xList[xIndex])/(xList[xIndex+1] - xList[xIndex]);
+
+    return xPart;
+}
+
+//note: code does not work if any of the lists only contain one variable.
+
+//function if index is known
+scalar Foam::interpolateUtils::interpolate1d
+(
+    const scalar xNew,
+    const List<scalar>& xList,
+    const List<scalar>& data,
+    label xIndex
+)
+{
+    return interpolate1d
+    (
+        getPart(xNew, xList, xIndex),
+        data,
+        xIndex
+    );
+}
+
+//function if interpolate fractions is known
+scalar Foam::interpolateUtils::interpolate1d
+(
+    const scalar xPart,
+    const List<scalar>& data,
+    label xIndex
+)
+{
+    return (data[xIndex]*(1 - xPart) + data[xIndex + 1]*xPart);
+}
+
+//general 1d interpolation
+scalar Foam::interpolateUtils::interpolate1d
+(
+    const scalar xNew,
+    const List<scalar>& xList,
+    const List<scalar>& data
+)
+{
+    return interpolate1d
+    (
+        xNew,
+        xList,
+        data,
+        binarySearch(xList, xNew)
+    );
+}
+
+//note: code does not work if any of the lists only contain one variable.
+//Applies for all interpolate2d functions
+//the format of data should be data[y][x]
+
+//function if index values are known
+scalar Foam::interpolateUtils::interpolate2d
+(
+    const scalar xNew,
+    const scalar yNew,
+    const List<scalar>& xList,
+    const List<scalar>& yList,
+    const List<List<scalar> >& data,
+    label xIndex,
+    label yIndex
+)
+{
+    return interpolate2d
+    (
+        getPart(xNew, xList, xIndex),
+        getPart(yNew, yList, yIndex),
+        data,
+        xIndex,
+        yIndex
+    );
+}
+
+//function if interpolation fractions have been calculated
+scalar Foam::interpolateUtils::interpolate2d
+(
+    const scalar xPart,
+    const scalar yPart,
+    const List<List<scalar> >& data,
+    label xIndex,
+    label yIndex
+)
+{
     return (data[yIndex][xIndex]*(1 - xPart) + 
             data[yIndex][xIndex+1]*xPart)*(1 - yPart) +
            (data[yIndex+1][xIndex]*(1 - xPart) + 
             data[yIndex + 1][xIndex + 1]*xPart)*yPart;
+}
+
+//general 2d interpolation
+scalar Foam::interpolateUtils::interpolate2d
+(
+    const scalar xNew,
+    const scalar yNew,
+    const List<scalar>& xList,
+    const List<scalar>& yList,
+    const List<List<scalar> >& data
+)
+{
+    return interpolate2d
+    (
+        xNew,
+        yNew,
+        xList,
+        yList,
+        data,
+        binarySearch(xList,xNew),
+        binarySearch(yList,yNew)
+    );
 }

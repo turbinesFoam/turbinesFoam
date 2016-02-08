@@ -42,42 +42,91 @@ SourceFiles
 
 namespace Foam
 {
-    namespace interpolateUtils
-    {
-        //- Find index for interpolation
-        label binarySearch
-        (
-            const List<scalar>& list,
-            const scalar value
-        );
-        
-        //- Find index for interpolation
-        label linearSearch
-        (
-            const List<scalar>& list,
-            const scalar value,
-            label startvalue=0
-        );
-        
-        //interpolate from 1d data
-        scalar interpolate1d
-        (
-            const scalar xNew,
-            const List<scalar>& xList,
-            const List<scalar>& data
-        );
-        
-        //interpolate from 2d data
-        scalar interpolate2d
-        (
-            const scalar xNew,
-            const scalar yNew,
-            const List<scalar>& xList,
-            const List<scalar>& yList,
-            const List<List<scalar> >& data
-        );
 
-    } //End namespace interpolateUtils
+namespace interpolateUtils
+{
+
+//- Find index for interpolation
+label binarySearch
+(
+    const List<scalar>& list,
+    const scalar value
+);
+        
+//- Find index for interpolation
+label linearSearch
+(
+    const List<scalar>& list,
+    const scalar value,
+    label startvalue=0
+);
+
+//get interpolation fraction
+scalar getPart
+(
+    const scalar xNew,
+    const List<scalar>& xList,
+    label xIndex
+);
+
+//interpolate from 1d data with known index
+scalar interpolate1d
+(
+    const scalar xNew,
+    const List<scalar>& xList,
+    const List<scalar>& data,
+    label xIndex
+);
+
+//interpolate from 1d data with known fraction
+scalar interpolate1d
+(
+    const scalar xPart,
+    const List<scalar>& data,
+    label xIndex
+);
+
+//interpolate from 1d data
+scalar interpolate1d
+(
+    const scalar xNew,
+    const List<scalar>& xList,
+    const List<scalar>& data
+);
+
+//interpolate from 2d data with known indices
+scalar interpolate2d
+(
+    const scalar xNew,
+    const scalar yNew,
+    const List<scalar>& xList,
+    const List<scalar>& yList,
+    const List<List<scalar> >& data,
+    label xIndex,
+    label yIndex
+);
+
+//interpolate from 2d data with known fractions
+scalar interpolate2d
+(
+    const scalar xPart,
+    const scalar yPart,
+    const List<List<scalar> >& data,
+    label xIndex,
+    label yIndex
+);
+        
+//interpolate from 2d data
+scalar interpolate2d
+(
+    const scalar xNew,
+    const scalar yNew,
+    const List<scalar>& xList,
+    const List<scalar>& yList,
+    const List<List<scalar> >& data
+);
+
+} //End namespace interpolateUtils
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
