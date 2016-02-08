@@ -160,11 +160,11 @@ turbine
                 );
                 dataCd
 		        (
-                    #include "../../resources/foilData/NACA0021CLift.txt"
+                    #include "../../resources/foilData/NACA0021CDrag.txt"
                 );
                 dataCl
 		        ( 
-                    #include "../../resources/foilData/NACA0021CDrag.txt"
+                    #include "../../resources/foilData/NACA0021CLift.txt"
                 );
             }
             cylinder
