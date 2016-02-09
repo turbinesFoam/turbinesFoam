@@ -351,7 +351,8 @@ void Foam::profileData::calculateCoefficients()
 
 void Foam::profileData::getInterpolatedCoefficients()
 {
-    //as interpolation 
+    //as Reynolds number list is the same for all interpolations, 
+    //precompute interpolation data for faster interpolation
     label interpIndex = 
         interpolateUtils::binarySearch(ReynoldsNumberListMatrixOrg_, Re_);
     scalar interpFraction = 
@@ -394,7 +395,8 @@ void Foam::profileData::getInterpolatedCoefficients()
     );
 }
 
-
+//sets up lists for interpolation if lift and drag data is given for 
+//different Reynolds numbers
 void Foam::profileData::buildReynoldsList()
 {
     scalar Re_old = Re_;
@@ -411,7 +413,9 @@ void Foam::profileData::buildReynoldsList()
     Re_ = Re_old;
 }
 
-
+//create a list of a part of the original lists, 
+//automatically checks which lists to create data from, depending on if
+//data for different Reynolds numbers is given or not
 Foam::List<scalar> Foam::profileData::subList
 (
     scalar alphaDegStart,
