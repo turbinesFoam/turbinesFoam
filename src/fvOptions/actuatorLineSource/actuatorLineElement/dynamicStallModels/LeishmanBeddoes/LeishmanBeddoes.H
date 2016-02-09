@@ -252,9 +252,49 @@ protected:
         
         //- Total moment coefficient
         scalar CM_;
+
+        // - Reynolds number that last static coefficients is based on
+        scalar Reold_;
+
+        // - Reynolds number list
+        List<scalar> ReList_;
+
+        // - List of alphaSS for interpolation
+        List<scalar> alphaSSList_;
+
+        // - List of CNAlpha for interpolation
+        List<scalar> CNAlphaList_;
+
+        // - List of alpha1 for interpolation
+        List<scalar> alpha1List_;
+
+        // - List of CN1 for interpolation
+        List<scalar> CN1List_;
+
+        // - List of CD0 for interpolation
+        List<scalar> CD0List_;
+
+        // - List of S1 for interpolation
+        List<scalar> S1List_;
+
+        // - List of S2 for interpolation
+        List<scalar> S2List_;
+
+        // - List of K1 for interpolation
+        List<scalar> K1List_;
+
+        // - List of K2 for interpolation
+        List<scalar> K2List_;
+
+        
         
         
     // Protected member functions
+
+        //- Read dictionary
+        void read();
+
+        bool readList(word keyword, List<scalar> &list);
     
         //- Calculate the equivalent angle of attack
         virtual void calcAlphaEquiv();
@@ -262,6 +302,13 @@ protected:
         //- Evaluate the static foil data, i.e., calculate CNAlpha, CN1, 
         // alpha1, and CD0
         virtual void evalStaticData();
+
+        //Builds the data required for evalStaticData
+        virtual void buildStaticData();
+
+        //creates the data required for evalStaticData through 
+        //Reynolds number interpolation
+        virtual void interpolateStaticData();
         
         //- Calculate unsteady quantities
         virtual void calcUnsteady();
