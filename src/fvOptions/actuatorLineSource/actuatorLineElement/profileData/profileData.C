@@ -351,35 +351,46 @@ void Foam::profileData::calculateCoefficients()
 
 void Foam::profileData::getInterpolatedCoefficients()
 {
+    //as interpolation 
+    label interpIndex = 
+        interpolateUtils::binarySearch(ReynoldsNumberListMatrixOrg_, Re_);
+    scalar interpFraction = 
+        interpolateUtils::getPart
+        (
+            Re_, 
+            ReynoldsNumberListMatrixOrg_, 
+            interpIndex
+        );
+
     staticStallAngle_ = interpolateUtils::interpolate1d
     (
-        Re_, 
-        ReynoldsNumberListMatrixOrg_, 
-        staticStallAngleList_
+        interpFraction, 
+        staticStallAngleList_,
+        interpIndex
     );
     zeroLiftDragCoeff_ = interpolateUtils::interpolate1d
     (
-        Re_, 
-        ReynoldsNumberListMatrixOrg_, 
-        zeroLiftDragCoeffList_
+        interpFraction,  
+        zeroLiftDragCoeffList_,
+        interpIndex
     );
     zeroLiftAngleOfAttack_ = interpolateUtils::interpolate1d
     (
-        Re_, 
-        ReynoldsNumberListMatrixOrg_, 
-        zeroLiftAngleOfAttackList_
+        interpFraction, 
+        zeroLiftAngleOfAttackList_,
+        interpIndex
     );
     zeroLiftMomentCoeff_ = interpolateUtils::interpolate1d
     (
-        Re_, 
-        ReynoldsNumberListMatrixOrg_, 
-        zeroLiftMomentCoeffList_
+        interpFraction, 
+        zeroLiftMomentCoeffList_,
+        interpIndex
     );
     normalCoeffSlope_ = interpolateUtils::interpolate1d
     (
-        Re_, 
-        ReynoldsNumberListMatrixOrg_, 
-        normalCoeffSlopeList_
+        interpFraction,  
+        normalCoeffSlopeList_,
+        interpIndex
     );
 }
 
