@@ -66,7 +66,7 @@ scalar getPart
 (
     const scalar xNew,
     const List<scalar>& xList,
-    label xIndex
+    label &xIndex
 );
 
 //interpolate from 1d data with known index

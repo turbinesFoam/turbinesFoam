@@ -89,7 +89,7 @@ scalar Foam::interpolateUtils::getPart
 (
     const scalar xNew,
     const List<scalar>& xList,
-    label xIndex
+    label &xIndex
 )
 {
     scalar xPart;
