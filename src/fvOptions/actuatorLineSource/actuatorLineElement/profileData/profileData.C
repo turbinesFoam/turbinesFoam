@@ -598,6 +598,8 @@ void Foam::profileData::updateRe(scalar Re)
 {
     if (correctRe_ and Re != Re_)
     {
+        Re_ = Re;
+
         // Correct drag coefficients
         scalar fReRef = Foam::pow((Foam::log(ReRef_) - 0.407), -2.64);
         scalar fRe = Foam::pow((Foam::log(Re) - 0.407), -2.64);
@@ -647,8 +649,15 @@ void Foam::profileData::updateRe(scalar Re)
         // Recalculate static stall angle, etc.
         analyze();
     }
-
-    Re_ = Re;
+    else if (liftCoefficientMatrixOrg_.size() > 0  and Re != Re_)
+    {
+        Re_ = Re;
+        analyze();
+    }
+    else
+    {
+        Re_ = Re;
+    }
 }
 
 
