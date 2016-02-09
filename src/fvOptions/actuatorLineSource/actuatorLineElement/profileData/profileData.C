@@ -132,7 +132,7 @@ void Foam::profileData::readMatrix
                 if(xvalues[i-1] != coefficientData[0][i])
                 {
                     word errorMessage = 
-                        string("Index elements in ") + keyword + 
+                        word("Index elements in ") + keyword + 
                         " must be identical to other coefficient lists";
                     error myerror(errorMessage);
                     myerror.abort();
@@ -140,8 +140,8 @@ void Foam::profileData::readMatrix
             }
             if (i > 1 && xvalues[i-1] < xvalues[i-2])
             {
-                std::string errorMessage = 
-                    string("Index elements in ") + keyword + 
+                word errorMessage = 
+                    word("Index elements in ") + keyword + 
                     " must be ordered with smallest element first";
                 error myerror(errorMessage);
                 myerror.abort();
@@ -155,8 +155,8 @@ void Foam::profileData::readMatrix
             {
                 if(yvalues[i-1] != coefficientData[i][0])
                 {
-                    std::string errorMessage = 
-                          string("Index elements in ") + keyword + 
+                    word errorMessage = 
+                          word("Index elements in ") + keyword + 
                           " must be identical to other coefficient lists";
                     error myerror(errorMessage);
                     myerror.abort();
@@ -164,8 +164,8 @@ void Foam::profileData::readMatrix
             }
             if (i > 1 && yvalues[i-1] < yvalues[i-2])
             {
-                std::string errorMessage = 
-                    string("Index elements in ") + keyword + 
+                word errorMessage = 
+                    word("Index elements in ") + keyword + 
                     " must be ordered with smallest element first";
                 error myerror(errorMessage);
                 myerror.abort();
@@ -173,8 +173,8 @@ void Foam::profileData::readMatrix
             data[i-1].setSize(coefficientData[i-1].size() - 1);
             if (coefficientData[i-1].size() != coefficientData[0].size())
             {
-                std::string errorMessage = 
-                    string("Element size of data in ") + keyword + 
+                word errorMessage = 
+                    word("Element size of data in ") + keyword + 
                     " varies in size, all elements must have equal size";
                 error myerror(errorMessage);
                 myerror.abort();
