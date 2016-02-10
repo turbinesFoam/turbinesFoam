@@ -609,6 +609,19 @@ Foam::scalar Foam::profileData::momentCoefficient(scalar angleOfAttackDeg)
 }
 
 
+Foam::scalar Foam::profileData::normalCoefficient(scalar angleOfAttackDeg)
+{
+    return   liftCoefficient(angleOfAttackDeg)*cos(angleOfAttackDeg)
+           + dragCoefficient(angleOfAttackDeg)*sin(angleOfAttackDeg);
+}
+
+
+Foam::scalar Foam::profileData::chordwiseCoefficient(scalar angleOfAttackDeg)
+{
+    return   liftCoefficient(angleOfAttackDeg)*sin(angleOfAttackDeg) -
+           - dragCoefficient(angleOfAttackDeg)*cos(angleOfAttackDeg);
+}
+
 void Foam::profileData::updateRe(scalar Re)
 {
     if (correctRe_ and Re != Re_)
