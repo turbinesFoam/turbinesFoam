@@ -301,6 +301,19 @@ Foam::scalar Foam::profileData::momentCoefficient(scalar angleOfAttackDeg)
 }
 
 
+Foam::scalar Foam::profileData::normalCoefficient(scalar angleOfAttackDeg)
+{
+    return   liftCoefficient(angleOfAttackDeg)*cos(angleOfAttackDeg)
+           + dragCoefficient(angleOfAttackDeg)*sin(angleOfAttackDeg);
+}
+
+
+Foam::scalar Foam::profileData::chordwiseCoefficient(scalar angleOfAttackDeg)
+{
+    return   liftCoefficient(angleOfAttackDeg)*sin(angleOfAttackDeg) -
+           - dragCoefficient(angleOfAttackDeg)*cos(angleOfAttackDeg);
+}
+
 void Foam::profileData::updateRe(scalar Re)
 {
     if (correctRe_ and Re != Re_)
@@ -494,7 +507,7 @@ Foam::List<scalar> Foam::profileData::normalCoefficientList
             newList.append
             (
                 liftCoefficientList_[i]*cos(degToRad(angleOfAttackList_[i]))
-              - dragCoefficientList_[i]*sin(degToRad(angleOfAttackList_[i]))
+              + dragCoefficientList_[i]*sin(degToRad(angleOfAttackList_[i]))
             );
         }
     }
