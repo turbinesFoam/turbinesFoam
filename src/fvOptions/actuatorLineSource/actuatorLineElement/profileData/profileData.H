@@ -158,7 +158,7 @@ class profileData
         scalar convertToCL
         (
             scalar cn,
-            scalar ct,
+            scalar cc,
             scalar angleOfAttackDeg
         );
 
@@ -166,7 +166,7 @@ class profileData
         scalar convertToCD
         (
             scalar cn,
-            scalar ct,
+            scalar cc,
             scalar angleOfAttackDeg
         );
 
