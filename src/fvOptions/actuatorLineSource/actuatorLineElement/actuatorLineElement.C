@@ -297,7 +297,16 @@ void Foam::fv::actuatorLineElement::applyForceField
     }
     if (debug)
     {
-        Info<< "    epsilon: " << epsilon << endl;
+        word epsilonMethod;
+        if (epsilon == chordLength_/2.0)
+        {
+            epsilonMethod = "chord-based";
+        }
+        else
+        {
+            epsilonMethod = "mesh-based";
+        }
+        Info<< "    epsilon (" << epsilonMethod << "): " << epsilon << endl;
     }
 
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
@@ -390,7 +399,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     dragCoefficient_(0.0),
     momentCoefficient_(0.0),
     profileName_(dict.lookup("profileName")),
-    profileData_(profileName_, dict.subDict("profileData")),
+    profileData_(profileName_, dict.subDict("profileData"), debug),
     dynamicStallActive_(false),
     omega_(0.0),
     chordMount_(0.25),

@@ -12,7 +12,7 @@ import sys
 
 def plot_cp(angle0=540.0):
     df = pd.read_csv("postProcessing/turbines/0/turbine.csv")
-    df = df.drop_duplicates("time", take_last=True)
+    df = df.drop_duplicates("time", keep="last")
     if df.angle_deg.max() < angle0:
         angle0 = 0.0
     print("Performance from {:.1f}--{:.1f} degrees:".format(angle0,

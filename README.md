@@ -47,6 +47,17 @@ Usage
 There are tutorials located in `turbinesFoam/tutorials`.
 
 
+Acknowledgements
+----------------
+
+OpenFOAM is free, open source software for computational fluid dynamics (CFD),
+developed primarily by [CFD Direct](http://cfd.direct), on behalf of the
+[OpenFOAM](http://openfoam.org) Foundation.
+
+Interpolation, Gaussian projection, and vector rotation functions adapted from
+NREL's [SOWFA](https://github.com/NREL/SOWFA).
+
+
 How to cite
 -----------
 
