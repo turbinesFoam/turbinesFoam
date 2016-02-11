@@ -195,14 +195,14 @@ void Foam::fv::actuatorLineElement::lookupCoefficients()
 
 Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
 {
-    // Provide ideal epsilon target
-    scalar epsilonThreshold = 0.25*chordLength_;
+    // Provide ideal epsilon target based on lift
+    scalar epsilonLift = 0.25*chordLength_;
 
-    // If drag coefficient is large, epsilon should be larger as well
-    if (dragCoefficient_ > 0.2)
-    {
-        epsilonThreshold = 1.0*chordLength_;
-    }
+    // Epsilon based on drag/momentum thickness
+    scalar epsilonDrag = dragCoefficient_*chordLength_/2.0;
+
+    // Threshold is based on lift or drag, whichever is larger
+    scalar epsilonThreshold = Foam::max(epsilonLift, epsilonDrag);
 
     scalar epsilon = VGREAT;
     scalar epsilonMesh = VGREAT;
@@ -240,9 +240,13 @@ Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
     {
         reduce(epsilonMesh, minOp<scalar>());
         word epsilonMethod;
-        if (epsilon == epsilonThreshold)
+        if (epsilon == epsilonLift)
         {
-            epsilonMethod = "chord-based";
+            epsilonMethod = "lift-based";
+        }
+        else if (epsilon == epsilonDrag)
+        {
+            epsilonMethod = "drag-based";
         }
         else if (epsilon == epsilonMesh)
         {
