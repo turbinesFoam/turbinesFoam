@@ -212,7 +212,7 @@ Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
     {
         // Projection width based on local cell size (from Troldborg (2008))
         epsilonMesh = 2.0*Foam::cbrt(V[posCellI]);
-        epsilonMesh *= 1.5; // Cell could have non-unity aspect ratio
+        epsilonMesh *= 2.0; // Cell could have non-unity aspect ratio
 
         if (epsilonMesh > epsilonThreshold)
         {
