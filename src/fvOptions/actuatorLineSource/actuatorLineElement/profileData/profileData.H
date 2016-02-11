@@ -138,6 +138,38 @@ class profileData
         //- Disallow default bitwise copy construct
         profileData(const profileData&);
 
+        //- Convert from lift and drag to normal coefficient
+        scalar convertToCN
+        (
+            scalar cl,
+            scalar cd,
+            scalar angleOfAttackDeg
+        );
+
+        //- Convert from lift and drag to chordwise coefficient
+        scalar convertToCC
+        (
+            scalar cl,
+            scalar cd,
+            scalar angleOfAttackDeg
+        );
+
+        //- Convert from normal and chordwise to lift coefficient
+        scalar convertToCL
+        (
+            scalar cn,
+            scalar cc,
+            scalar angleOfAttackDeg
+        );
+
+        //- Convert from normal and chordwise to drag coefficient
+        scalar convertToCD
+        (
+            scalar cn,
+            scalar cc,
+            scalar angleOfAttackDeg
+        );
+
 
 public:
 
