@@ -26,55 +26,6 @@ License
 #include "profileData.H"
 #include "simpleMatrix.H"
 
-
-// * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
-Foam::scalar Foam::profileData::convertToCN
-(
-    scalar cl, 
-    scalar cd, 
-    scalar angleOfAttackDeg
-)
-{
-    scalar angleOfAttackRad = degToRad(angleOfAttackDeg);
-    return cl*cos(angleOfAttackRad) + cd*sin(angleOfAttackRad);
-}
-
-
-Foam::scalar Foam::profileData::convertToCT
-(
-    scalar cl, 
-    scalar cd, 
-    scalar angleOfAttackDeg
-)
-{
-    scalar angleOfAttackRad = degToRad(angleOfAttackDeg);
-    return cl*sin(angleOfAttackRad) - cd*cos(angleOfAttackRad);
-}
-
-
-Foam::scalar Foam::profileData::convertToCL
-(
-    scalar cn, 
-    scalar ct, 
-    scalar angleOfAttackDeg
-)
-{
-    scalar angleOfAttackRad = degToRad(angleOfAttackDeg);
-    return cn*cos(angleOfAttackRad) + ct*sin(angleOfAttackRad);
-}
-
-
-Foam::scalar Foam::profileData::convertToCD
-(
-    scalar cn, 
-    scalar ct, 
-    scalar angleOfAttackDeg
-)
-{
-    scalar angleOfAttackRad = degToRad(angleOfAttackDeg);
-    return cn*sin(angleOfAttackRad) - ct*cos(angleOfAttackRad);
-}
-
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
 Foam::scalar Foam::profileData::interpolate
@@ -245,7 +196,52 @@ void Foam::profileData::calcNormalCoeffSlope()
 }
 
 
-// * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
+Foam::scalar Foam::profileData::convertToCN
+(
+    scalar cl,
+    scalar cd,
+    scalar angleOfAttackDeg
+)
+{
+    scalar angleOfAttackRad = degToRad(angleOfAttackDeg);
+    return cl*cos(angleOfAttackRad) + cd*sin(angleOfAttackRad);
+}
+
+
+Foam::scalar Foam::profileData::convertToCC
+(
+    scalar cl,
+    scalar cd,
+    scalar angleOfAttackDeg
+)
+{
+    scalar angleOfAttackRad = degToRad(angleOfAttackDeg);
+    return cl*sin(angleOfAttackRad) - cd*cos(angleOfAttackRad);
+}
+
+
+Foam::scalar Foam::profileData::convertToCL
+(
+    scalar cn,
+    scalar cc,
+    scalar angleOfAttackDeg
+)
+{
+    scalar angleOfAttackRad = degToRad(angleOfAttackDeg);
+    return cn*cos(angleOfAttackRad) + cc*sin(angleOfAttackRad);
+}
+
+
+Foam::scalar Foam::profileData::convertToCD
+(
+    scalar cn,
+    scalar cc,
+    scalar angleOfAttackDeg
+)
+{
+    scalar angleOfAttackRad = degToRad(angleOfAttackDeg);
+    return cn*sin(angleOfAttackRad) - cc*cos(angleOfAttackRad);
+}
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -359,7 +355,7 @@ Foam::scalar Foam::profileData::normalCoefficient(scalar angleOfAttackDeg)
 
 Foam::scalar Foam::profileData::chordwiseCoefficient(scalar angleOfAttackDeg)
 {
-    return convertToCT
+    return convertToCC
            (
                liftCoefficient(angleOfAttackDeg),
                dragCoefficient(angleOfAttackDeg),
@@ -590,7 +586,7 @@ Foam::List<scalar> Foam::profileData::chordwiseCoefficientList
         {
             newList.append
             (
-                convertToCT
+                convertToCC
                 (
                     liftCoefficientList_[i],
                     dragCoefficientList_[i],
