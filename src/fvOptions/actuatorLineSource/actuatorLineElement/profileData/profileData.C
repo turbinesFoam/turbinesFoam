@@ -28,7 +28,52 @@ License
 
 
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
+Foam::scalar Foam::profileData::convertToCN
+(
+    scalar cl, 
+    scalar cd, 
+    scalar angleOfAttackDeg
+)
+{
+    scalar angleOfAttackRad = degToRad(angleOfAttackDeg);
+    return cl*cos(angleOfAttackRad) + cd*sin(angleOfAttackRad);
+}
 
+
+Foam::scalar Foam::profileData::convertToCT
+(
+    scalar cl, 
+    scalar cd, 
+    scalar angleOfAttackDeg
+)
+{
+    scalar angleOfAttackRad = degToRad(angleOfAttackDeg);
+    return cl*sin(angleOfAttackRad) - cd*cos(angleOfAttackRad);
+}
+
+
+Foam::scalar Foam::profileData::convertToCL
+(
+    scalar cn, 
+    scalar ct, 
+    scalar angleOfAttackDeg
+)
+{
+    scalar angleOfAttackRad = degToRad(angleOfAttackDeg);
+    return cn*cos(angleOfAttackRad) + ct*sin(angleOfAttackRad);
+}
+
+
+Foam::scalar Foam::profileData::convertToCD
+(
+    scalar cn, 
+    scalar ct, 
+    scalar angleOfAttackDeg
+)
+{
+    scalar angleOfAttackRad = degToRad(angleOfAttackDeg);
+    return cn*sin(angleOfAttackRad) - ct*cos(angleOfAttackRad);
+}
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
@@ -303,15 +348,23 @@ Foam::scalar Foam::profileData::momentCoefficient(scalar angleOfAttackDeg)
 
 Foam::scalar Foam::profileData::normalCoefficient(scalar angleOfAttackDeg)
 {
-    return   liftCoefficient(angleOfAttackDeg)*cos(angleOfAttackDeg)
-           + dragCoefficient(angleOfAttackDeg)*sin(angleOfAttackDeg);
+    return convertToCN
+           (
+               liftCoefficient(angleOfAttackDeg),
+               dragCoefficient(angleOfAttackDeg),
+               angleOfAttackDeg
+           );
 }
 
 
 Foam::scalar Foam::profileData::chordwiseCoefficient(scalar angleOfAttackDeg)
 {
-    return   liftCoefficient(angleOfAttackDeg)*sin(angleOfAttackDeg) -
-           - dragCoefficient(angleOfAttackDeg)*cos(angleOfAttackDeg);
+    return convertToCT
+           (
+               liftCoefficient(angleOfAttackDeg),
+               dragCoefficient(angleOfAttackDeg),
+               angleOfAttackDeg
+           );
 }
 
 void Foam::profileData::updateRe(scalar Re)
@@ -506,8 +559,12 @@ Foam::List<scalar> Foam::profileData::normalCoefficientList
         {
             newList.append
             (
-                liftCoefficientList_[i]*cos(degToRad(angleOfAttackList_[i]))
-              + dragCoefficientList_[i]*sin(degToRad(angleOfAttackList_[i]))
+                convertToCN
+                (
+                    liftCoefficientList_[i],
+                    dragCoefficientList_[i],
+                    angleOfAttackList_[i]
+                )
             );
         }
     }
@@ -533,8 +590,12 @@ Foam::List<scalar> Foam::profileData::chordwiseCoefficientList
         {
             newList.append
             (
-                liftCoefficientList_[i]*sin(degToRad(angleOfAttackList_[i]))
-              - dragCoefficientList_[i]*cos(degToRad(angleOfAttackList_[i]))
+                convertToCT
+                (
+                    liftCoefficientList_[i],
+                    dragCoefficientList_[i],
+                    angleOfAttackList_[i]
+                )
             );
         }
     }
