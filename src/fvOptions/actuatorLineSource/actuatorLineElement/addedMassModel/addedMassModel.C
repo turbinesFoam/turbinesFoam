@@ -97,9 +97,9 @@ Foam::addedMassModel::~addedMassModel()
 
 void Foam::addedMassModel::correct
 (
-    scalar& liftCoeff,
-    scalar& dragCoeff,
-    scalar& momentCoeff,
+    scalar& liftCoefficient,
+    scalar& dragCoefficient,
+    scalar& momentCoefficient,
     scalar alphaRad,
     scalar chordwiseRelVel,
     scalar normalRelVel
@@ -145,23 +145,23 @@ void Foam::addedMassModel::correct
         Info<< "    cn: " << cn << endl;
         Info<< "    ct: " << ct << endl;
         Info<< "    cm: " << cm << endl << endl;
-        Info<< "Coeffs before added mass correction:" << endl;
-        Info<< "    cl: " << liftCoeff  << endl;
-        Info<< "    cd: " << dragCoeff << endl;
-        Info<< "    cm: " << momentCoeff << endl << endl;
+        Info<< "Coefficients before added mass correction:" << endl;
+        Info<< "    cl: " << liftCoefficient  << endl;
+        Info<< "    cd: " << dragCoefficient << endl;
+        Info<< "    cm: " << momentCoefficient << endl << endl;
     }
 
     // Modify lift and drag coefficients
-    liftCoeff += cn*cos(alpha_) + ct*sin(alpha_);
-    dragCoeff += cn*sin(alpha_) - ct*cos(alpha_);
-    momentCoeff += cm;
+    liftCoefficient += cn*cos(alpha_) + ct*sin(alpha_);
+    dragCoefficient += cn*sin(alpha_) - ct*cos(alpha_);
+    momentCoefficient += cm;
 
     if (debug)
     {
-        Info<< "Coeffs after added mass correction:" << endl;
-        Info<< "    cl: " << liftCoeff << endl;
-        Info<< "    cd: " << dragCoeff << endl;
-        Info<< "    cm: " << momentCoeff << endl << endl;
+        Info<< "Coefficients after added mass correction:" << endl;
+        Info<< "    cl: " << liftCoefficient << endl;
+        Info<< "    cd: " << dragCoefficient << endl;
+        Info<< "    cm: " << momentCoefficient << endl << endl;
     }
 }
 

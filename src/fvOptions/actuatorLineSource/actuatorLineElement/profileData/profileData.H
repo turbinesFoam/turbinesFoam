@@ -68,25 +68,25 @@ class profileData
         List<scalar> angleOfAttackListOrg_;
 
         //- Unmodified lift coefficient list
-        List<scalar> liftCoeffListOrg_;
+        List<scalar> liftCoefficientListOrg_;
 
         //- Unmodified drag coefficient list
-        List<scalar> dragCoeffListOrg_;
+        List<scalar> dragCoefficientListOrg_;
 
         //- Unmodified moment coefficient list
-        List<scalar> momentCoeffListOrg_;
+        List<scalar> momentCoefficientListOrg_;
 
         //- Angle of attack list (deg)
         List<scalar> angleOfAttackList_;
 
         //- Lift coefficient list
-        List<scalar> liftCoeffList_;
+        List<scalar> liftCoefficientList_;
 
         //- Drag coefficient list
-        List<scalar> dragCoeffList_;
+        List<scalar> dragCoefficientList_;
 
         //- Moment coefficient list
-        List<scalar> momentCoeffList_;
+        List<scalar> momentCoefficientList_;
 
         //- Switch for Reynolds number corrections
         bool correctRe_;
@@ -207,13 +207,13 @@ public:
             const List<scalar>& angleOfAttackList();
 
             //- Return const reference to lift coefficient list
-            const List<scalar>& liftCoeffList();
+            const List<scalar>& liftCoefficientList();
 
             //- Return reference to drag coefficient list
-            const List<scalar>& dragCoeffList();
+            const List<scalar>& dragCoefficientList();
 
             //- Return reference to moment coefficient list
-            const List<scalar>& momentCoeffList();
+            const List<scalar>& momentCoefficientList();
 
             //- Return subset of angle of attack list
             List<scalar> angleOfAttackList
@@ -223,54 +223,54 @@ public:
             );
 
             //- Return subset of lift coefficient list
-            List<scalar> liftCoeffList
+            List<scalar> liftCoefficientList
             (
                 scalar alphaDegStart,
                 scalar alphaDegStop
             );
 
             //- Return subset of drag coefficient list
-            List<scalar> dragCoeffList
+            List<scalar> dragCoefficientList
             (
                 scalar alphaDegStart,
                 scalar alphaDegStop
             );
 
             //- Return subset of moment coefficient list
-            List<scalar> momentCoeffList
+            List<scalar> momentCoefficientList
             (
                 scalar alphaDegStart,
                 scalar alphaDegStop
             );
 
             //- Return subset of normal force coefficient list
-            List<scalar> normalCoeffList
+            List<scalar> normalCoefficientList
             (
                 scalar alphaDegStart,
                 scalar alphaDegStop
             );
 
             //- Return subset of chordwise force coefficient list
-            List<scalar> chordwiseCoeffList
+            List<scalar> chordwiseCoefficientList
             (
                 scalar alphaDegStart,
                 scalar alphaDegStop
             );
 
             //- Lookup lift coefficient
-            scalar liftCoeff(scalar angleOfAttackDeg);
+            scalar liftCoefficient(scalar angleOfAttackDeg);
 
             //- Lookup drag coefficient
-            scalar dragCoeff(scalar angleOfAttackDeg);
+            scalar dragCoefficient(scalar angleOfAttackDeg);
 
             //- Lookup moment coefficient
-            scalar momentCoeff(scalar angleOfAttackDeg);
+            scalar momentCoefficient(scalar angleOfAttackDeg);
 
             //- Return normal force coefficient
-            scalar normalCoeff(scalar angleOfAttackDeg);
+            scalar normalCoefficient(scalar angleOfAttackDeg);
 
             //- Return chordwise force coefficient
-            scalar chordwiseCoeff(scalar angleOfAttackDeg);
+            scalar chordwiseCoefficient(scalar angleOfAttackDeg);
 
             //- Return static stall angle in radians
             scalar staticStallAngleRad();

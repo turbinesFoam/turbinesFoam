@@ -554,13 +554,13 @@ void Foam::fv::axialFlowTurbineALSource::addSup
     Info<< "Torque (per unit density) from " << name_ << ": " << torque_
         << endl;
 
-    torqueCoeff_ = torque_/(0.5*frontalArea_*rotorRadius_
+    torqueCoefficient_ = torque_/(0.5*frontalArea_*rotorRadius_
                        * magSqr(freeStreamVelocity_));
-    powerCoeff_ = torqueCoeff_*tipSpeedRatio_;
-    dragCoeff_ = force_ & freeStreamDirection_
+    powerCoefficient_ = torqueCoefficient_*tipSpeedRatio_;
+    dragCoefficient_ = force_ & freeStreamDirection_
                      / (0.5*frontalArea_*magSqr(freeStreamVelocity_));
 
-    Info<< "Power coefficient from " << name_ << ": " << powerCoeff_
+    Info<< "Power coefficient from " << name_ << ": " << powerCoefficient_
         << endl << endl;
 
     // Write performance data -- note this will write multiples if there are
@@ -632,13 +632,13 @@ void Foam::fv::axialFlowTurbineALSource::addSup
 
     scalar rhoRef;
     coeffs_.lookup("rhoRef") >> rhoRef;
-    torqueCoeff_ = torque_/(0.5*rhoRef*frontalArea_*rotorRadius_
+    torqueCoefficient_ = torque_/(0.5*rhoRef*frontalArea_*rotorRadius_
                        * magSqr(freeStreamVelocity_));
-    powerCoeff_ = torqueCoeff_*tipSpeedRatio_;
-    dragCoeff_ = force_ & freeStreamDirection_
+    powerCoefficient_ = torqueCoefficient_*tipSpeedRatio_;
+    dragCoefficient_ = force_ & freeStreamDirection_
                      / (0.5*rhoRef*frontalArea_*magSqr(freeStreamVelocity_));
 
-    Info<< "Power coefficient from " << name_ << ": " << powerCoeff_
+    Info<< "Power coefficient from " << name_ << ": " << powerCoefficient_
         << endl << endl;
 
     // Write performance data -- note this will write multiples if there are

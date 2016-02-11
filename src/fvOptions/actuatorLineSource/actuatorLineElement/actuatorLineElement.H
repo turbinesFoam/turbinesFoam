@@ -66,7 +66,7 @@ protected:
 
     // Protected data
 
-        //- Coeffs dictionary
+        //- Coefficients dictionary
         const dictionary dict_;
 
         //- Name of profile model
@@ -128,13 +128,13 @@ protected:
         scalar angleOfAttackGeom_;
 
         //- Lift coefficient
-        scalar liftCoeff_;
+        scalar liftCoefficient_;
 
         //- Drag coefficient;
-        scalar dragCoeff_;
+        scalar dragCoefficient_;
 
         //- 1/4 chord moment coefficient
-        scalar momentCoeff_;
+        scalar momentCoefficient_;
 
         //- Profile name
         word profileName_;
@@ -206,7 +206,7 @@ protected:
         label findCell(const point& location);
 
         //- Lookup force coefficients
-        void lookupCoeffs();
+        void lookupCoefficients();
 
         //- Calculate projection width epsilon
         scalar calcProjectionEpsilon();
@@ -295,13 +295,13 @@ public:
             scalar& angleOfAttackGeom();
 
             //- Return lift coefficient
-            scalar& liftCoeff();
+            scalar& liftCoefficient();
 
             //- Return drag coefficient
-            scalar& dragCoeff();
+            scalar& dragCoefficient();
 
             //- Return moment coefficient
-            scalar& momentCoeff();
+            scalar& momentCoefficient();
 
             //- Return nondimensional distance from actuator line root
             scalar& rootDistance();

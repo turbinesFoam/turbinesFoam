@@ -168,9 +168,9 @@ Foam::fv::turbineALSource::turbineALSource
         )
     ),
     frontalArea_(0.0),
-    powerCoeff_(0.0),
-    dragCoeff_(0.0),
-    torqueCoeff_(0.0)
+    powerCoefficient_(0.0),
+    dragCoefficient_(0.0),
+    torqueCoefficient_(0.0)
 {
     forceField_.write();
 }
@@ -250,8 +250,8 @@ void Foam::fv::turbineALSource::printCoeffs() const
 void Foam::fv::turbineALSource::writePerf()
 {
     *outputFile_<< time_.value() << "," << angleDeg_ << ","
-                << tipSpeedRatio_ << "," << powerCoeff_ << ","
-                << dragCoeff_ << "," << torqueCoeff_ << endl;
+                << tipSpeedRatio_ << "," << powerCoefficient_ << ","
+                << dragCoefficient_ << "," << torqueCoefficient_ << endl;
 }
 
 
