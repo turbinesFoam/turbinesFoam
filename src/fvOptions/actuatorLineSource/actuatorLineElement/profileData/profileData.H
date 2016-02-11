@@ -139,7 +139,7 @@ class profileData
         profileData(const profileData&);
 
         //- Convert from lift and drag to normal coefficient
-        static scalar convertToCN
+        scalar convertToCN
         (
             scalar cl,
             scalar cd,
@@ -147,7 +147,7 @@ class profileData
         );
 
         //- Convert from lift and drag to chordwise coefficient
-        static scalar convertToCC
+        scalar convertToCC
         (
             scalar cl,
             scalar cd,
@@ -155,7 +155,7 @@ class profileData
         );
 
         //- Convert from normal and chordwise to lift coefficient
-        static scalar convertToCL
+        scalar convertToCL
         (
             scalar cn,
             scalar ct,
@@ -163,7 +163,7 @@ class profileData
         );
 
         //- Convert from normal and chordwise to drag coefficient
-        static scalar convertToCD
+        scalar convertToCD
         (
             scalar cn,
             scalar ct,
