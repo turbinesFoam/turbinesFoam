@@ -185,7 +185,7 @@ void Foam::fv::LeishmanBeddoes::calcS1S2
     );
 
     // Least squares fit to find S1
-    List<scalar> cnList = profileData_.normalCoefficientList
+    List<scalar> cnList = profileData_.normalCoeffList
     (
         0.5,
         radToDeg(alpha1_)
@@ -205,7 +205,7 @@ void Foam::fv::LeishmanBeddoes::calcS1S2
             25.0
         )
     );
-    cnList = profileData_.normalCoefficientList
+    cnList = profileData_.normalCoeffList
     (
         radToDeg(alpha1_) + 0.001,
         25.0
@@ -228,8 +228,8 @@ void Foam::fv::LeishmanBeddoes::calcK1K2()
 {
     scalar pi = Foam::constant::mathematical::pi;
     List<scalar> alpha = degToRad(profileData_.angleOfAttackList(0.5, 25));
-    List<scalar> cn = profileData_.normalCoefficientList(0.5, 25);
-    List<scalar> cm = profileData_.momentCoefficientList(0.5, 25);
+    List<scalar> cn = profileData_.normalCoeffList(0.5, 25);
+    List<scalar> cm = profileData_.momentCoeffList(0.5, 25);
     List<scalar> f = cnToF(cn, alpha);
     scalar m = cmFitExponent_;
     simpleMatrix<scalar> A(2);

@@ -130,9 +130,9 @@ public:
             //- Correct coefficients for added mass effects
             void correct
             (
-                scalar& liftCoefficient,
-                scalar& dragCoefficient,
-                scalar& momentCoefficient,
+                scalar& liftCoeff,
+                scalar& dragCoeff,
+                scalar& momentCoeff,
                 scalar alphaRad,
                 scalar chordwiseRelVel,
                 scalar normalRelVel

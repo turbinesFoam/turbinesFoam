@@ -185,11 +185,11 @@ Foam::label Foam::fv::actuatorLineElement::findCell
 }
 
 
-void Foam::fv::actuatorLineElement::lookupCoefficients()
+void Foam::fv::actuatorLineElement::lookupCoeffs()
 {
-    liftCoefficient_ = profileData_.liftCoefficient(angleOfAttack_);
-    dragCoefficient_ = profileData_.dragCoefficient(angleOfAttack_);
-    momentCoefficient_ = profileData_.momentCoefficient(angleOfAttack_);
+    liftCoeff_ = profileData_.liftCoeff(angleOfAttack_);
+    dragCoeff_ = profileData_.dragCoeff(angleOfAttack_);
+    momentCoeff_ = profileData_.momentCoeff(angleOfAttack_);
 }
 
 
@@ -363,7 +363,7 @@ void Foam::fv::actuatorLineElement::writePerf()
     *outputFile_<< time << "," << position_.x() << "," << position_.y() << ","
                 << position_.z() << "," << mag(relativeVelocity_) << "," << Re_
                 << "," << angleOfAttack_ << "," << angleOfAttackGeom_ << ","
-                << liftCoefficient_ << "," << dragCoefficient_ << ","
+                << liftCoeff_ << "," << dragCoeff_ << ","
                 << forceVector_.x() << "," << forceVector_.y() << ","
                 << forceVector_.z() << endl;
 }
@@ -389,9 +389,9 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     relativeVelocityGeom_(vector::zero),
     angleOfAttack_(0.0),
     angleOfAttackGeom_(0.0),
-    liftCoefficient_(0.0),
-    dragCoefficient_(0.0),
-    momentCoefficient_(0.0),
+    liftCoeff_(0.0),
+    dragCoeff_(0.0),
+    momentCoeff_(0.0),
     profileName_(dict.lookup("profileName")),
     profileData_(profileName_, dict.subDict("profileData"), debug),
     dynamicStallActive_(false),
@@ -465,21 +465,21 @@ Foam::scalar& Foam::fv::actuatorLineElement::angleOfAttackGeom()
 }
 
 
-Foam::scalar& Foam::fv::actuatorLineElement::liftCoefficient()
+Foam::scalar& Foam::fv::actuatorLineElement::liftCoeff()
 {
-    return liftCoefficient_;
+    return liftCoeff_;
 }
 
 
-Foam::scalar& Foam::fv::actuatorLineElement::dragCoefficient()
+Foam::scalar& Foam::fv::actuatorLineElement::dragCoeff()
 {
-    return dragCoefficient_;
+    return dragCoeff_;
 }
 
 
-Foam::scalar& Foam::fv::actuatorLineElement::momentCoefficient()
+Foam::scalar& Foam::fv::actuatorLineElement::momentCoeff()
 {
-    return momentCoefficient_;
+    return momentCoeff_;
 }
 
 
@@ -570,7 +570,7 @@ void Foam::fv::actuatorLineElement::calculateForce
     profileData_.updateRe(Re_);
 
     // Lookup lift and drag coefficients
-    lookupCoefficients();
+    lookupCoeffs();
 
     if (debug)
     {
@@ -592,9 +592,9 @@ void Foam::fv::actuatorLineElement::calculateForce
         (
             mag(relativeVelocity_),
             angleOfAttack_,
-            liftCoefficient_,
-            dragCoefficient_,
-            momentCoefficient_
+            liftCoeff_,
+            dragCoeff_,
+            momentCoeff_
         );
     }
 
@@ -603,9 +603,9 @@ void Foam::fv::actuatorLineElement::calculateForce
     {
         addedMass_.correct
         (
-            liftCoefficient_,
-            dragCoefficient_,
-            momentCoefficient_,
+            liftCoeff_,
+            dragCoeff_,
+            momentCoeff_,
             degToRad(angleOfAttack_),
             mag(chordDirection_ & relativeVelocity_),
             mag(planformNormal_ & relativeVelocity_)
@@ -613,13 +613,13 @@ void Foam::fv::actuatorLineElement::calculateForce
     }
 
     // Apply end effect correction factor to lift coefficient
-    liftCoefficient_ *= endEffectFactor_;
+    liftCoeff_ *= endEffectFactor_;
 
     // Calculate force per unit density
     scalar area = chordLength_*spanLength_;
     scalar magSqrU = magSqr(relativeVelocity_);
-    scalar lift = 0.5*area*liftCoefficient_*magSqrU;
-    scalar drag = 0.5*area*dragCoefficient_*magSqrU;
+    scalar lift = 0.5*area*liftCoeff_*magSqrU;
+    scalar drag = 0.5*area*dragCoeff_*magSqrU;
     vector liftDirection = relativeVelocity_ ^ spanDirection_;
     liftDirection /= mag(liftDirection);
     vector dragDirection = relativeVelocity_/mag(relativeVelocity_);
@@ -819,7 +819,7 @@ Foam::vector Foam::fv::actuatorLineElement::moment(vector point)
     vector radius = position_ - point;
     vector moment = radius ^ forceVector_;
     vector pitchingMoment = 0.5*chordLength_*chordLength_*spanLength_
-                          * momentCoefficient_*magSqr(relativeVelocity_)
+                          * momentCoeff_*magSqr(relativeVelocity_)
                           * spanDirection_;
     return moment + pitchingMoment;
 }
@@ -932,7 +932,7 @@ void Foam::fv::actuatorLineElement::addTurbulence
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
 
     // Calculate TKE injection rate
-    scalar k = 0.1*mag(dragCoefficient_);
+    scalar k = 0.1*mag(dragCoeff_);
 
     // Add turbulence to the cells within the element's sphere of influence
     scalar sphereRadius = chordLength_ + projectionRadius;

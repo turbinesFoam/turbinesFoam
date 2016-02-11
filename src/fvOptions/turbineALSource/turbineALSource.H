@@ -126,13 +126,13 @@ protected:
         scalar frontalArea_;
 
         //- Nondimensional power coefficient
-        scalar powerCoefficient_;
+        scalar powerCoeff_;
 
         //- Nondimensional drag coefficient
-        scalar dragCoefficient_;
+        scalar dragCoeff_;
 
         //- Nondimensional torque coefficient
-        scalar torqueCoefficient_;
+        scalar torqueCoeff_;
 
         //- Output file stream
         OFstream* outputFile_;

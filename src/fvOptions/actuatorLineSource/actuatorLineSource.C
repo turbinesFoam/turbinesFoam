@@ -357,9 +357,9 @@ void Foam::fv::actuatorLineSource::writePerf()
         relVelMag += mag(elements_[i].relativeVelocity());
         alphaDeg += elements_[i].angleOfAttack();
         alphaGeom += elements_[i].angleOfAttackGeom();
-        cl += elements_[i].liftCoefficient();
-        cd += elements_[i].dragCoefficient();
-        cm += elements_[i].momentCoefficient();
+        cl += elements_[i].liftCoeff();
+        cd += elements_[i].dragCoeff();
+        cm += elements_[i].momentCoeff();
     }
 
     x /= nElements_; y /= nElements_; z /= nElements_;

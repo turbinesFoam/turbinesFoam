@@ -72,7 +72,7 @@ protected:
         //- Profile data reference
         profileData& profileData_;
         
-        //- Coefficients subdict
+        //- Coeffs subdict
         const dictionary coeffs_;
         
         //- Starting time for the model
