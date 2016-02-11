@@ -226,7 +226,38 @@ public:
 
 
     // Member Functions
+            
+            //- convert from cl and cd to cn
+            static scalar convertToCN
+            (
+                scalar cl, 
+                scalar cd, 
+                scalar angleOfAttackDeg
+            );
 
+            //- convert from cl and cd to ct
+            static scalar convertToCT
+            (
+                scalar cl, 
+                scalar cd, 
+                scalar angleOfAttackDeg
+            );
+
+            //- convert from cn and ct to cl
+            static scalar convertToCL
+            (
+                scalar cn, 
+                scalar ct, 
+                scalar angleOfAttackDeg
+            );
+
+            //- convert from cn and ct to cd
+            static scalar convertToCD
+            (
+                scalar cn, 
+                scalar ct, 
+                scalar angleOfAttackDeg
+            );
         // Access
 
             //- Return const reference to angle of attack list
