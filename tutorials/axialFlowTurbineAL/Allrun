@@ -13,7 +13,12 @@ runApplication topoSet
 
 if [ "$1" = "-parallel" ]
     then
-    nProc=$(getNumberOfProcessors)
+    if [ $WM_PROJECT_VERSION = "dev" ]
+        then
+        nProc=""
+    else
+        nProc=$(getNumberOfProcessors)
+    fi
     runApplication decomposePar
     ls -d processor* | xargs -I {} rm -rf ./{}/0
     ls -d processor* | xargs -I {} cp -r 0.org ./{}/0
