@@ -138,6 +138,38 @@ class profileData
         //- Disallow default bitwise copy construct
         profileData(const profileData&);
 
+        //- Convert from lift and drag to normal coefficient
+        scalar convertToCN
+        (
+            scalar cl,
+            scalar cd,
+            scalar angleOfAttackDeg
+        );
+
+        //- Convert from lift and drag to chordwise coefficient
+        scalar convertToCC
+        (
+            scalar cl,
+            scalar cd,
+            scalar angleOfAttackDeg
+        );
+
+        //- Convert from normal and chordwise to lift coefficient
+        scalar convertToCL
+        (
+            scalar cn,
+            scalar cc,
+            scalar angleOfAttackDeg
+        );
+
+        //- Convert from normal and chordwise to drag coefficient
+        scalar convertToCD
+        (
+            scalar cn,
+            scalar cc,
+            scalar angleOfAttackDeg
+        );
+
 
 public:
 
@@ -168,38 +200,7 @@ public:
 
 
     // Member Functions
-            
-            //- convert from cl and cd to cn
-            static scalar convertToCN
-            (
-                scalar cl, 
-                scalar cd, 
-                scalar angleOfAttackDeg
-            );
 
-            //- convert from cl and cd to ct
-            static scalar convertToCT
-            (
-                scalar cl, 
-                scalar cd, 
-                scalar angleOfAttackDeg
-            );
-
-            //- convert from cn and ct to cl
-            static scalar convertToCL
-            (
-                scalar cn, 
-                scalar ct, 
-                scalar angleOfAttackDeg
-            );
-
-            //- convert from cn and ct to cd
-            static scalar convertToCD
-            (
-                scalar cn, 
-                scalar ct, 
-                scalar angleOfAttackDeg
-            );
         // Access
 
             //- Return const reference to angle of attack list
