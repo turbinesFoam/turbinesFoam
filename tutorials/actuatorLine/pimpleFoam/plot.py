@@ -1,14 +1,11 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-Visualization for OpenFOAM actuatorLine simulation.
-"""
+"""Visualization for OpenFOAM actuatorLine simulation."""
+
 from __future__ import division, print_function
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-plt.style.use("fivethirtyeight")
 
 def loadperf():
     df = pd.read_csv("postProcessing/actuatorLines/0/foil.csv")
@@ -17,7 +14,8 @@ def loadperf():
     df["cn"] =  df.cl*np.cos(df.alpha_rad) - df.cd*np.sin(df.alpha_rad)
     df["cc"] = df.cl*np.sin(df.alpha_rad) - df.cd*np.cos(df.alpha_rad)
     return df
-    
+
+
 def plot_alpha():
     df = loadperf()
     plt.figure()
@@ -27,7 +25,8 @@ def plot_alpha():
     plt.ylabel("Angle of attack (deg)")
     plt.legend(loc="best")
     plt.tight_layout()
-    
+
+
 def plot_cn(t0=0.5):
     df = loadperf()
     plt.figure()
@@ -38,7 +37,8 @@ def plot_cn(t0=0.5):
     plt.xlim((0, None))
     plt.ylim((0, None))
     plt.tight_layout()
-    
+
+
 def plot_cc(t0=0.5):
     df = loadperf()
     plt.figure()
@@ -47,6 +47,7 @@ def plot_cc(t0=0.5):
     plt.xlabel(r"$\alpha$ (geometric, degrees)")
     plt.ylabel(r"$C_C$")
     plt.tight_layout()
+
 
 if __name__ == "__main__":
     plot_alpha()
