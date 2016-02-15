@@ -460,55 +460,55 @@ const Foam::scalar& Foam::fv::actuatorLineElement::chordLength() const
 }
 
 
-Foam::vector& Foam::fv::actuatorLineElement::position()
+const Foam::vector& Foam::fv::actuatorLineElement::position()
 {
     return position_;
 }
 
 
-Foam::vector& Foam::fv::actuatorLineElement::relativeVelocity()
+const Foam::vector& Foam::fv::actuatorLineElement::relativeVelocity()
 {
     return relativeVelocity_;
 }
 
 
-Foam::vector& Foam::fv::actuatorLineElement::relativeVelocityGeom()
+const Foam::vector& Foam::fv::actuatorLineElement::relativeVelocityGeom()
 {
     return relativeVelocityGeom_;
 }
 
 
-Foam::scalar& Foam::fv::actuatorLineElement::angleOfAttack()
+const Foam::scalar& Foam::fv::actuatorLineElement::angleOfAttack()
 {
     return angleOfAttack_;
 }
 
 
-Foam::scalar& Foam::fv::actuatorLineElement::angleOfAttackGeom()
+const Foam::scalar& Foam::fv::actuatorLineElement::angleOfAttackGeom()
 {
     return angleOfAttackGeom_;
 }
 
 
-Foam::scalar& Foam::fv::actuatorLineElement::liftCoefficient()
+const Foam::scalar& Foam::fv::actuatorLineElement::liftCoefficient()
 {
     return liftCoefficient_;
 }
 
 
-Foam::scalar& Foam::fv::actuatorLineElement::dragCoefficient()
+const Foam::scalar& Foam::fv::actuatorLineElement::dragCoefficient()
 {
     return dragCoefficient_;
 }
 
 
-Foam::scalar& Foam::fv::actuatorLineElement::momentCoefficient()
+const Foam::scalar& Foam::fv::actuatorLineElement::momentCoefficient()
 {
     return momentCoefficient_;
 }
 
 
-Foam::scalar& Foam::fv::actuatorLineElement::rootDistance()
+const Foam::scalar& Foam::fv::actuatorLineElement::rootDistance()
 {
     return rootDistance_;
 }
@@ -832,7 +832,7 @@ void Foam::fv::actuatorLineElement::scaleVelocity(scalar scale)
 }
 
 
-Foam::vector& Foam::fv::actuatorLineElement::force()
+const Foam::vector& Foam::fv::actuatorLineElement::force()
 {
     return forceVector_;
 }

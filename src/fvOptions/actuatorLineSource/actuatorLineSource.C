@@ -585,13 +585,13 @@ void Foam::fv::actuatorLineSource::setOmega(scalar omega)
 }
 
 
-Foam::vector& Foam::fv::actuatorLineSource::force()
+const Foam::vector& Foam::fv::actuatorLineSource::force()
 {
     return force_;
 }
 
 
-Foam::volVectorField& Foam::fv::actuatorLineSource::forceField()
+const Foam::volVectorField& Foam::fv::actuatorLineSource::forceField()
 {
     return forceField_;
 }
