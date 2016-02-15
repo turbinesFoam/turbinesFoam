@@ -195,11 +195,20 @@ void Foam::fv::actuatorLineElement::lookupCoefficients()
 
 Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
 {
-    // Provide ideal epsilon target based on lift
-    scalar epsilonLift = 0.25*chordLength_;
+    // Lookup Gaussian coeffs from profileData dict if present
+    dictionary GaussianCoeffs = profileData_.dict().subOrEmptyDict
+    (
+        "GaussianCoeffs"
+    );
+    scalar chordFactor = GaussianCoeffs.lookupOrDefault("chordFactor", 0.25);
+    scalar dragFactor = GaussianCoeffs.lookupOrDefault("dragFactor", 1.0);
+    scalar meshFactor = GaussianCoeffs.lookupOrDefault("meshFactor", 2.0);
+
+    // Provide ideal epsilon target for lift based on chord length
+    scalar epsilonLift = chordFactor*chordLength_;
 
     // Epsilon based on drag/momentum thickness
-    scalar epsilonDrag = dragCoefficient_*chordLength_/2.0;
+    scalar epsilonDrag = dragFactor*dragCoefficient_*chordLength_/2.0;
 
     // Threshold is based on lift or drag, whichever is larger
     scalar epsilonThreshold = Foam::max(epsilonLift, epsilonDrag);
@@ -212,7 +221,7 @@ Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
     {
         // Projection width based on local cell size (from Troldborg (2008))
         epsilonMesh = 2.0*Foam::cbrt(V[posCellI]);
-        epsilonMesh *= 2.0; // Cell could have non-unity aspect ratio
+        epsilonMesh *= meshFactor; // Cell could have non-unity aspect ratio
 
         if (epsilonMesh > epsilonThreshold)
         {
