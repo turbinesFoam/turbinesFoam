@@ -8,6 +8,10 @@ import os
 import numpy as np
 
 
+element_dir = "postProcessing/actuatorLineElements/0/"
+al_dir = "postProcessing/actuatorLines/0/"
+
+
 def setup():
     os.chdir("axialFlowTurbineALSource")
     out = subprocess.check_output("./getTutorialFiles.sh", shell=True)
@@ -17,6 +21,17 @@ def check_created():
     """Test that axialFlowTurbineALSource was created."""
     txt = "Selecting finite volume options model type axialFlowTurbineALSource"
     subprocess.check_output(["grep", txt, "log.pimpleFoam"])
+
+
+def check_al_file_exists():
+    """Test that the actuator line perf file was created."""
+    assert os.path.isfile(os.path.join(al_dir, "turbine.blade1.csv"))
+
+
+def check_element_file_exists():
+    """Test that the element perf file was created."""
+    assert os.path.isfile(os.path.join(element_dir,
+                                       "turbine.blade1.element0.csv"))
 
 
 def check_perf(angle0=540.0):
@@ -48,6 +63,8 @@ def test_serial():
                                        "log.pimpleFoam"]).decode())
         assert False
     check_created()
+    check_al_file_exists()
+    check_element_file_exists()
     check_perf()
     log_end = subprocess.check_output(["tail", "log.pimpleFoam"]).decode()
     print(log_end)
@@ -64,6 +81,8 @@ def test_parallel():
                                        "log.pimpleFoam"]).decode())
         assert False
     check_created()
+    check_al_file_exists()
+    check_element_file_exists()
     check_perf()
     log_end = subprocess.check_output(["tail", "log.pimpleFoam"]).decode()
     print(log_end)

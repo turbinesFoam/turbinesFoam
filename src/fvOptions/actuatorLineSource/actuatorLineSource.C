@@ -205,7 +205,7 @@ void Foam::fv::actuatorLineSource::createElements()
         std::stringstream ss;
         ss << i;
         string str = ss.str();
-        const word name = name_ + "Element" + str;
+        const word name = name_ + ".element" + str;
 
         // Actuator point geometry to be calculated from elementGeometry
         label geometrySegmentIndex = i/nElementsPerSegment;
