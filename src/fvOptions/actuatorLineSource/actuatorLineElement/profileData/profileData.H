@@ -261,6 +261,9 @@ public:
 
         // Access
 
+            //- Return const reference to dictionary
+            const dictionary& dict();
+
             //- Return const reference to angle of attack list
             const List<scalar>& angleOfAttackList();
 

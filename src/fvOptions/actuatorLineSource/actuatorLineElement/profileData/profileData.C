@@ -740,6 +740,12 @@ void Foam::profileData::updateRe(scalar Re)
 }
 
 
+const Foam::dictionary& Foam::profileData::dict()
+{
+    return dict_;
+}
+
+
 const Foam::List<scalar>& Foam::profileData::angleOfAttackList()
 {
     return angleOfAttackList_;

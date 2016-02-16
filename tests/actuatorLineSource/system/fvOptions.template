@@ -28,7 +28,7 @@ foil
         freeStreamVelocity  (1 0 0);
         nElements           {n_elements};
         writePerf           true;
-        writeElementPerf    false;
+        writeElementPerf    true;
         endEffects          off;
 
         elementGeometry // Will be interpolated linearly per nElements

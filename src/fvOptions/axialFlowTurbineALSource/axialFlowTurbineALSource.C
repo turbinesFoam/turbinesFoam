@@ -79,7 +79,7 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
 
     for (int i = 0; i < nBlades_; i++)
     {
-        word& bladeName = bladeNames_[i];
+        word bladeName = bladeNames_[i];
         // Create dictionary items for this blade
         dictionary bladeSubDict = bladesDict_.subDict(bladeName);
         bladeSubDict.lookup("nElements") >> nElements;
@@ -216,7 +216,7 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
 
         actuatorLineSource* blade = new actuatorLineSource
         (
-            bladeName,
+            name_ + "." + bladeName,
             modelType,
             dict,
             mesh_
@@ -308,7 +308,7 @@ void Foam::fv::axialFlowTurbineALSource::createHub()
 
     actuatorLineSource* hub = new actuatorLineSource
     (
-        "hub",
+        name_ + ".hub",
         "actuatorLineSource",
         dict,
         mesh_
@@ -393,7 +393,7 @@ void Foam::fv::axialFlowTurbineALSource::createTower()
 
     actuatorLineSource* tower = new actuatorLineSource
     (
-        "tower",
+        name_ + ".tower",
         "actuatorLineSource",
         dict,
         mesh_
