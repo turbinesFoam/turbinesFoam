@@ -188,6 +188,7 @@ void Foam::profileData::read()
     // Read reference Reynolds number, and if present turn on Reynolds number
     // corrections
     ReRef_ = dict_.lookupOrDefault("Re", VSMALL);
+    Re_ = ReRef_;
     correctRe_ = (ReRef_ > VSMALL);
     
     //Look up matrix data for Cl
