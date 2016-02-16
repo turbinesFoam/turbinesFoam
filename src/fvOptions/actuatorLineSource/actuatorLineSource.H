@@ -173,11 +173,11 @@ public:
 
         // Access
 
-            //- Return the total force vector
-            vector& force();
+            //- Return const reference to the total force vector
+            const vector& force();
 
-            //- Return the force field
-            volVectorField& forceField();
+            //- Return const reference to the force field
+            const volVectorField& forceField();
 
 
         // Edit

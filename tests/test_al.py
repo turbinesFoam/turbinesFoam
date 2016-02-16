@@ -11,6 +11,7 @@ from nose.tools import timed
 
 alpha_deg = 10.0
 output_fpath = "postProcessing/actuatorLines/0/foil.csv"
+element_dir = "postProcessing/actuatorLineElements/0/"
 
 
 def setup():
@@ -31,6 +32,11 @@ def check_created():
 def check_output_file_exists():
     """Test that actuatorLineSource output file exists."""
     assert os.path.isfile(output_fpath)
+
+
+def check_element_file_exists():
+    """Test that the element perf file was created."""
+    assert os.path.isfile(os.path.join(element_dir, "foil.element0.csv"))
 
 
 def check_geometric_alpha():
@@ -82,6 +88,7 @@ def test_2d():
     output_run = subprocess.check_output(["./Allrun", str(alpha_deg)])
     check_created()
     check_output_file_exists()
+    check_element_file_exists()
     check_geometric_alpha()
     check_re_corrections()
 
