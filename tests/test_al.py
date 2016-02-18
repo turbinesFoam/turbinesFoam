@@ -127,6 +127,12 @@ def test_parallel():
     assert "Finalising parallel run" in log_end
 
 
+def test_pitching():
+    """Test unsteady pitching actuator line."""
+    out = subprocess.check_output("./Allclean")
+    # Copy pimpleFoam AL tutorial files to subdirectory
+
+
 def teardown():
     """Move back into tests directory."""
     os.chdir("../")
