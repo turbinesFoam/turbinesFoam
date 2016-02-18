@@ -1,20 +1,42 @@
 #!/bin/sh
+# This script runs the actuator line tutorial. The args are:
+# $1: `2D` or `3D`
+# $2: angle of attack in degrees
+# $3: `-parallel` or nothing
+#
+# If no args are provided, the case will run in 3D, in serial, at 10 degrees
+# angle of attack.
+
 cd ${0%/*} || exit 1    # run from this directory
 
 # Source tutorial run functions
 . $WM_PROJECT_DIR/bin/tools/RunFunctions
 
+if [ "$1" = "" ]
+    then
+    D="3D"
+else
+    D=$1
+fi
+
+if [ "$1" = "3D" ]
+    then
+    d="-d"
+else
+    d=""
+fi
+
 # Copy initial conditions
 cp -rf 0.org 0
 
-runApplication blockMesh
+runApplication blockMesh -dict system/blockMeshDict-$D
 runApplication snappyHexMesh -overwrite
 runApplication extrudeMesh
 runApplication topoSet
 
-if [ "$1" = "-parallel" ]
+if [ "$3" = "-parallel" ]
     then
-    python scripts/set_alpha.py $2
+    python scripts/set_alpha.py $2 $d
     if [ $WM_PROJECT_VERSION = "dev" ]
         then
         nProc=""
@@ -27,6 +49,6 @@ if [ "$1" = "-parallel" ]
     runParallel simpleFoam  $nProc
     runApplication reconstructPar
 else
-    python scripts/set_alpha.py $1
+    python scripts/set_alpha.py $2 $d
     runApplication simpleFoam
 fi
