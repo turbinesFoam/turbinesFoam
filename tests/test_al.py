@@ -136,11 +136,34 @@ def test_parallel():
     assert "Finalising parallel run" in log_end
 
 
+def check_pitching_geom():
+    """Check that the geometric values of the pitch match those prescribed."""
+    # Read the pitching parameters from fvOptions
+    txt = subprocess.check_output("grep reducedFreq system/fvOptions",
+                                  shell=True).decode()
+    reduced_freq = float(txt.replace(";", " ").split()[1])
+    txt = subprocess.check_output("grep amplitude system/fvOptions",
+                                  shell=True).decode()
+    amp_deg = float(txt.replace(";", " ").split()[1])
+    free_stream = 29.9 # Not detected automatically
+    chord = 1.22 # Not detected automatically
+    offset = 15.0 # Not detected automatically
+    omega = reduced_freq*2.0*free_stream/chord
+    # Read values from CSV
+    df = pd.read_csv("postProcessing/actuatorLines/0/foil.csv")
+    # Calculate the prescribed values for alpha_geom_deg
+    amp_rad = np.deg2rad(amp_deg)
+    alpha_rad_prescribed = amp_rad*np.sin(omega*df.time) + np.deg2rad(offset)
+    alpha_deg_prescribed = np.rad2deg(alpha_rad_prescribed)
+    np.testing.assert_allclose(df.alpha_geom_deg, alpha_deg_prescribed)
+
+
 def test_pitching():
     """Test pitching actuator line."""
     get_tutorial_files(case="pitching")
     out = subprocess.check_output("./Allclean")
     out = subprocess.check_output("./Allrun")
+    check_pitching_geom()
 
 
 def teardown():
