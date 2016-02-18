@@ -8,9 +8,9 @@ TUTORIAL_DIR="../../tutorials/actuatorLine/static"
 
 # Copy files from tutorial
 cp -rf $TUTORIAL_DIR/0.org 0
-cp $TUTORIAL_DIR/constant/polyMesh/blockMeshDict constant/polyMesh/blockMeshDict-3D
+cp $TUTORIAL_DIR/system/blockMeshDict system/blockMeshDict-3D
 
-runApplication blockMesh -dict constant/polyMesh/blockMeshDict-3D
+runApplication blockMesh -dict system/blockMeshDict-3D
 runApplication snappyHexMesh -overwrite
 # runApplication refineMesh -overwrite -all
 runApplication topoSet
