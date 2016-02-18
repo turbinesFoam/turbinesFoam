@@ -7,21 +7,26 @@ cd ${0%/*} || exit 1    # run from this directory
 # Copy initial conditions
 cp -rf 0.org 0
 
-runApplication blockMesh
+runApplication blockMesh -dict system/blockMeshDict-2D
 runApplication snappyHexMesh -overwrite
+runApplication extrudeMesh
 runApplication topoSet
 
 if [ "$1" = "-parallel" ]
     then
-    nProc=$(getNumberOfProcessors)
+    python scripts/set_alpha.py $2
+    if [ $WM_PROJECT_VERSION = "dev" ]
+        then
+        nProc=""
+    else
+        nProc=$(getNumberOfProcessors)
+    fi
     runApplication decomposePar
     ls -d processor* | xargs -I {} rm -rf ./{}/0
     ls -d processor* | xargs -I {} cp -r 0.org ./{}/0
-    runParallel $nProc simpleFoam
+    runParallel simpleFoam  $nProc
     runApplication reconstructPar
-    rm -rf processor*
 else
+    python scripts/set_alpha.py $1
     runApplication simpleFoam
 fi
-
-runApplication vorticity

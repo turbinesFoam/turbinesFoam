@@ -6,44 +6,44 @@
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
-{
+{{
     version     2.0;
     format      ascii;
     class       dictionary;
     location    "system";
     object      fvOptions;
-}
+}}
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 foil
-{
+{{
     type            actuatorLineSource;
-    active          on;            // on/off switch
+    active          on;
 
     actuatorLineSourceCoeffs
-    {
+    {{
         fieldNames          (U);
-        selectionMode   cellSet;       // cellSet, points, cellZone
-        cellSet         foil;          // cellSet name
+        selectionMode       cellSet;    // cellSet, points, cellZone
+        cellSet             foil;       // cellSet name
         freeStreamVelocity  (1 0 0);
-        nElements           14;
+        nElements           {n_elements};
         writePerf           true;
         writeElementPerf    true;
-        endEffects          on;
+        endEffects          off;
 
         elementGeometry // Will be interpolated linearly per nElements
         ( // point spanDir chordLength chordRefDir chordMount pitch
-            ((0.0 0.0 -0.5) (0 0 1) (0.10) (-1 0 0) (0.25) (4.0))
-            ((0.0 0.0 0.0) (0 0 1) (0.20) (-1 0 0) (0.25) (4.0))
-            ((0.0 0.0 0.5) (0 0 1) (0.10) (-1 0 0) (0.25) (4.0))
+            ((0.0 0.0 -{semispan}) (0 0 1) (0.10) (-1 0 0) (0.25) ({alpha_deg}))
+            ((0.0 0.0 {semispan}) (0 0 1) (0.10) (-1 0 0) (0.25) ({alpha_deg}))
         );
 
         elementProfiles (profile0); // Will be distributed evenly
 
         profileData
-        {
+        {{
             profile0
-            {
+            {{
+                Re          9e4;
                 data
                 ( // alpha C_l C_d
                     (-90 1.45 0.21)
@@ -68,9 +68,9 @@ foil
                     (18 1.45 0.21)
                     (90 1.45 0.21)
                 );
-            }
-        }
-    }
-}
+            }}
+        }}
+    }}
+}}
 
 // ************************************************************************* //
