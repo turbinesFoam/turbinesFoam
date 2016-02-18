@@ -18,6 +18,11 @@ def setup():
     os.chdir("actuatorLineSource")
 
 
+def get_tutorial_files(case="static"):
+    cmd = "./getTutorialFiles.sh {}".format(case)
+    out = subprocess.check_output(cmd, shell=True)
+
+
 def load_output():
     """Load `actuatorLineSource` output file from CSV."""
     return pd.read_csv(output_fpath)
@@ -84,8 +89,9 @@ def check_re_corrections():
 
 def test_2d():
     """Test 2-D actuatorLineSource."""
+    get_tutorial_files(case="static")
     output_clean = subprocess.check_output("./Allclean")
-    output_run = subprocess.check_output(["./Allrun", str(alpha_deg)])
+    output_run = subprocess.check_output(["./Allrun", "2D", str(alpha_deg)])
     check_created()
     check_output_file_exists()
     check_element_file_exists()
@@ -95,6 +101,7 @@ def test_2d():
 
 def test_alpha_sweep():
     """Test 2-D actuatorLineSource angle of attack sweep."""
+    get_tutorial_files(case="static")
     out = subprocess.check_output(["python", "paramsweep.py", "-10", "11", "5"])
     df = pd.read_csv("processed/alpha_sweep.csv")
     mse = np.mean((df.alpha_geom_deg - df.alpha_deg)**2)
@@ -104,8 +111,9 @@ def test_alpha_sweep():
 
 def test_3d():
     """Test 3-D actuatorLineSource."""
+    get_tutorial_files(case="static")
     out = subprocess.check_output("./Allclean")
-    out = subprocess.check_output(["./Allrun3D", str(alpha_deg)])
+    out = subprocess.check_output(["./Allrun", "3D", str(alpha_deg)])
     log_end = subprocess.check_output(["tail", "log.simpleFoam"]).decode()
     print(log_end)
     assert log_end.split()[-1] == "End"
@@ -114,10 +122,11 @@ def test_3d():
 @timed(30) # Test must run faster than 30 seconds
 def test_parallel():
     """Test 3-D actuatorLineSource in parallel."""
+    get_tutorial_files(case="static")
     out = subprocess.check_output("./Allclean")
     try:
-        out = subprocess.check_output(["./Allrun3D", "-parallel",
-                                       str(alpha_deg)])
+        out = subprocess.check_output(["./Allrun", "3D", str(alpha_deg),
+                                       "-parallel"])
     except subprocess.CalledProcessError:
         print(subprocess.check_output(["tail", "-n", "200",
                                        "log.simpleFoam"]).decode())
@@ -128,9 +137,10 @@ def test_parallel():
 
 
 def test_pitching():
-    """Test unsteady pitching actuator line."""
+    """Test pitching actuator line."""
+    get_tutorial_files(case="pitching")
     out = subprocess.check_output("./Allclean")
-    # Copy pimpleFoam AL tutorial files to subdirectory
+    out = subprocess.check_output("./Allrun")
 
 
 def teardown():
