@@ -138,6 +138,9 @@ protected:
         //- Calculate end effects from lifting line theory
         void calcEndEffects();
 
+        //- Execute harmonic pitching for a single time step
+        void harmonicPitching();
+
 
 public:
 
