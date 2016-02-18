@@ -22,13 +22,11 @@ then
     cp -rfT $TUTORIAL_DIR/scripts scripts
 fi
 
-# Fix line in fvOptions
-sed -i 's/..\/..\/..\/resources\/foilData/..\/..\/..\/tutorials\/resources\/foilData/g' system/fvOptions
-
-# If running pimpleFoam, reduce endTime
+# If running pitching, reduce endTime and correct foilData dir
 if [ "$1" = "pitching" ]
 then
     sed -i '/endTime /c\endTime         0.1;' system/controlDict
+    sed -i 's/..\/..\/..\/resources\/foilData/..\/..\/..\/tutorials\/resources\/foilData/g' system/fvOptions
 fi
 
 # Add debug switches to controlDict
