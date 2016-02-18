@@ -159,7 +159,7 @@ def check_pitching_geom():
 
 
 def test_pitching():
-    """Test pitching actuator line."""
+    """Test actuatorLineSource harmonic pitching."""
     get_tutorial_files(case="pitching")
     out = subprocess.check_output("./Allclean")
     out = subprocess.check_output("./Allrun")
