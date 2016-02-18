@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-"""
-This script plots results from the turbinesFoam actuator line tutorial.
-"""
+"""This script plots results from the turbinesFoam actuator line tutorial."""
+
 from __future__ import division, print_function
 import matplotlib.pyplot as plt
 import pandas as pd
