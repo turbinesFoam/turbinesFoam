@@ -4,7 +4,7 @@ cd ${0%/*} || exit 1    # run from this directory
 # Source tutorial run functions
 . $WM_PROJECT_DIR/bin/tools/RunFunctions
 
-TUTORIAL_DIR="../../tutorials/actuatorLine/simpleFoam"
+TUTORIAL_DIR="../../tutorials/actuatorLine/static"
 
 # Copy files from tutorial
 cp -rf $TUTORIAL_DIR/0.org 0
