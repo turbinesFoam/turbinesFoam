@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-"""
-Run multiple simulations varying a single parameter.
-"""
+"""Run multiple 2-D simulations varying the angle of attack."""
 
 import numpy as np
 from subprocess import call
@@ -36,7 +34,7 @@ def alpha_sweep(start, stop, step, append=False):
                                    "epsilon", "nut", "z_turbulence"])
     for alpha in alpha_list:
         call("./Allclean")
-        call(["./Allrun", str(alpha)])
+        call(["./Allrun", "2D", str(alpha)])
         d = dict(read_force_coeffs())
         d.update(read_turbulence_fields())
         df = df.append(d, ignore_index=True)
