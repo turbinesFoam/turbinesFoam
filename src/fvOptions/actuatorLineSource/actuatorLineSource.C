@@ -447,6 +447,22 @@ void Foam::fv::actuatorLineSource::calcEndEffects()
 }
 
 
+void Foam::fv::actuatorLineSource::harmonicPitching()
+{
+    // Pitch the actuator line if time has changed
+    scalar t = mesh_.time().value();
+    if (t != lastMotionTime_)
+    {
+        scalar omega = reducedFreq_*2*mag(freeStreamVelocity_)/chordLength_;
+        scalar dt = mesh_.time().deltaT().value();
+        scalar deltaPitch = degToRad(pitchAmplitude_)*(sin(omega*t)
+                          - sin(omega*(t - dt)));
+        pitch(deltaPitch);
+        lastMotionTime_ = t;
+    }
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::fv::actuatorLineSource::actuatorLineSource
@@ -621,17 +637,10 @@ void Foam::fv::actuatorLineSource::addSup
     const label fieldI
 )
 {
-    // Pitch the actuator line if time has changed
-    scalar t = mesh_.time().value();
-    if (t != lastMotionTime_ and harmonicPitchingActive_)
+    // If harmonic pitching is active, do harmonic pitching
+    if (harmonicPitchingActive_)
     {
-        scalar pi = Foam::constant::mathematical::pi;
-        scalar omega = reducedFreq_*2*mag(freeStreamVelocity_)/chordLength_;
-        scalar dt = mesh_.time().deltaT().value();
-        scalar dpdt = pitchAmplitude_/180.0*pi*omega*cos(omega*t);
-        scalar deltaPitch = dpdt*dt;
-        pitch(deltaPitch);
-        lastMotionTime_ = t;
+        harmonicPitching();
     }
 
     // Zero out force field
@@ -663,6 +672,12 @@ void Foam::fv::actuatorLineSource::addSup
     const label fieldI
 )
 {
+    // If harmonic pitching is active, do harmonic pitching
+    if (harmonicPitchingActive_)
+    {
+        harmonicPitching();
+    }
+
     const volVectorField& U = mesh_.lookupObject<volVectorField>("U");
 
     word fieldName = fieldNames_[fieldI];
@@ -683,17 +698,10 @@ void Foam::fv::actuatorLineSource::addSup
     const label fieldI
 )
 {
-    // Pitch the actuator line if time has changed
-    scalar t = mesh_.time().value();
-    if (t != lastMotionTime_ and harmonicPitchingActive_)
+    // If harmonic pitching is active, do harmonic pitching
+    if (harmonicPitchingActive_)
     {
-        scalar pi = Foam::constant::mathematical::pi;
-        scalar omega = reducedFreq_*2*mag(freeStreamVelocity_)/chordLength_;
-        scalar dt = mesh_.time().deltaT().value();
-        scalar dpdt = pitchAmplitude_/180.0*pi*omega*cos(omega*t);
-        scalar deltaPitch = dpdt*dt;
-        pitch(deltaPitch);
-        lastMotionTime_ = t;
+        harmonicPitching();
     }
 
     // Check dimensions on force field and correct if necessary
