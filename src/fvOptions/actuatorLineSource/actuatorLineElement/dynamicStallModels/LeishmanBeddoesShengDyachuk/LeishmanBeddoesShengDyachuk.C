@@ -208,6 +208,38 @@ void Foam::fv::LeishmanBeddoesShengDyachuk::update()
 }
 
 
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+Foam::fv::LeishmanBeddoesShengDyachuk::LeishmanBeddoesShengDyachuk
+(
+    const dictionary& dict,
+    const word& modelName,
+    const Time& time,
+    profileData& profileData
+)
+:
+    LeishmanBeddoesSGC(dict, modelName, time, profileData),
+    CTCorrection_(coeffs_.lookupOrDefault("CTCorrection", true)),
+    alphaAttachedCorrection_
+    (
+        coeffs_.lookupOrDefault("alphaAttachedCorrection", true)
+    ),
+    crossFlowTurbine_(coeffs_.lookupOrDefault("crossFlowTurbine", false)),
+    deltaSPrev_(0.0),
+    CTStatic_(0.0)
+{}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::fv::LeishmanBeddoesShengDyachuk::~LeishmanBeddoesShengDyachuk()
+{}
+
+
+// * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
+
+
+
 void Foam::fv::LeishmanBeddoesShengDyachuk::correct
 (
     scalar magU,
@@ -260,37 +292,5 @@ void Foam::fv::LeishmanBeddoesShengDyachuk::correct
         cd = CN_*sin(alpha_) - CTVal*cos(alpha_) + CD0_*(1 - scaleFactor);
     }
 }
-
-
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
-
-Foam::fv::LeishmanBeddoesShengDyachuk::LeishmanBeddoesShengDyachuk
-(
-    const dictionary& dict,
-    const word& modelName,
-    const Time& time,
-    profileData& profileData
-)
-:
-    LeishmanBeddoesSGC(dict, modelName, time, profileData),
-    CTCorrection_(coeffs_.lookupOrDefault("CTCorrection", true)),
-    alphaAttachedCorrection_
-    (
-        coeffs_.lookupOrDefault("alphaAttachedCorrection", true)
-    ),
-    crossFlowTurbine_(coeffs_.lookupOrDefault("crossFlowTurbine", false)),
-    deltaSPrev_(0.0),
-    CTStatic_(0.0)
-{}
-
-
-// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
-
-Foam::fv::LeishmanBeddoesShengDyachuk::~LeishmanBeddoesShengDyachuk()
-{}
-
-
-// * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
-
 
 // ************************************************************************* //

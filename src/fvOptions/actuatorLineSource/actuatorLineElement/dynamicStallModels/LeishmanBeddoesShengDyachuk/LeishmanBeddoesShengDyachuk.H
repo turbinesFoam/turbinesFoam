@@ -86,16 +86,6 @@ protected:
         //- Update previous time step values
         virtual void update();
 
-        //- Correct lift and drag coefficients
-        virtual void correct
-        (
-            scalar magU,
-            scalar alphaDeg,
-            scalar& cl,
-            scalar& cd,
-            scalar& cm
-        );
-
 
 public:
 
@@ -133,15 +123,15 @@ public:
 
     // Member Functions
 
-        // Access
-
-        // Check
-
-        // Edit
-
-        // Write
-
-        // Evaluation
+        //- Correct lift, drag, and moment coefficients
+        virtual void correct
+        (
+            scalar magU,
+            scalar alphaDeg,
+            scalar& cl,
+            scalar& cd,
+            scalar& cm
+        );
 
 };
 
