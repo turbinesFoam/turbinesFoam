@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "LeishmanBeddoesShengDyachuk.H"
+#include "LeishmanBeddoesSD.H"
 #include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -32,11 +32,11 @@ namespace Foam
 {
 namespace fv
 {
-    defineTypeNameAndDebug(LeishmanBeddoesShengDyachuk, 0);
+    defineTypeNameAndDebug(LeishmanBeddoesSD, 0);
     addToRunTimeSelectionTable
     (
         dynamicStallModel,
-        LeishmanBeddoesShengDyachuk,
+        LeishmanBeddoesSD,
         dictionary
     );
 }
@@ -45,7 +45,7 @@ namespace fv
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
-void Foam::fv::LeishmanBeddoesShengDyachuk::calcUnsteady()
+void Foam::fv::LeishmanBeddoesSD::calcUnsteady()
 {
     if (not alphaAttachedCorrection_)
     {
@@ -101,7 +101,7 @@ void Foam::fv::LeishmanBeddoesShengDyachuk::calcUnsteady()
 }
 
 
-void Foam::fv::LeishmanBeddoesShengDyachuk::calcSeparated()
+void Foam::fv::LeishmanBeddoesSD::calcSeparated()
 {
     // Calculate lagged trailing-edge separation point
     if (mag(alphaPrime_) < alpha1_)
@@ -201,7 +201,7 @@ void Foam::fv::LeishmanBeddoesShengDyachuk::calcSeparated()
 }
 
 
-void Foam::fv::LeishmanBeddoesShengDyachuk::update()
+void Foam::fv::LeishmanBeddoesSD::update()
 {
     LeishmanBeddoesSGC::update();
     deltaSPrev_ = deltaS_;
@@ -210,7 +210,7 @@ void Foam::fv::LeishmanBeddoesShengDyachuk::update()
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::fv::LeishmanBeddoesShengDyachuk::LeishmanBeddoesShengDyachuk
+Foam::fv::LeishmanBeddoesSD::LeishmanBeddoesSD
 (
     const dictionary& dict,
     const word& modelName,
@@ -232,7 +232,7 @@ Foam::fv::LeishmanBeddoesShengDyachuk::LeishmanBeddoesShengDyachuk
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::fv::LeishmanBeddoesShengDyachuk::~LeishmanBeddoesShengDyachuk()
+Foam::fv::LeishmanBeddoesSD::~LeishmanBeddoesSD()
 {}
 
 
@@ -240,7 +240,7 @@ Foam::fv::LeishmanBeddoesShengDyachuk::~LeishmanBeddoesShengDyachuk()
 
 
 
-void Foam::fv::LeishmanBeddoesShengDyachuk::correct
+void Foam::fv::LeishmanBeddoesSD::correct
 (
     scalar magU,
     scalar alphaDeg,

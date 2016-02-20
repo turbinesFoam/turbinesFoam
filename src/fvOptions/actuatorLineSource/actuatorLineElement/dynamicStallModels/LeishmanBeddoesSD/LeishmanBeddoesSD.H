@@ -22,19 +22,19 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::fv::LeishmanBeddoesShengDyachuk
+    Foam::fv::LeishmanBeddoesSD
 
 Description
     Leishman-Beddoes dynamic stall model modified by Sheng et al. (2008),
     with modifications from Dyachuk's PhD thesis (2015).
 
 SourceFiles
-    LeishmanBeddoesShengDyachuk.C
+    LeishmanBeddoesSD.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef LeishmanBeddoesShengDyachuk_H
-#define LeishmanBeddoesShengDyachuk_H
+#ifndef LeishmanBeddoesSD_H
+#define LeishmanBeddoesSD_H
 
 #include "LeishmanBeddoesSGC.H"
 
@@ -49,7 +49,7 @@ namespace fv
                          Class LeishmanBeddoesSGC Declaration
 \*---------------------------------------------------------------------------*/
 
-class LeishmanBeddoesShengDyachuk
+class LeishmanBeddoesSD
 :
     public LeishmanBeddoesSGC
 {
@@ -91,13 +91,13 @@ protected:
 public:
 
     //- Runtime type information
-    TypeName("LeishmanBeddoesShengDyachuk");
+    TypeName("LeishmanBeddoesSD");
 
 
     // Constructors
 
         //- Construct from components
-        LeishmanBeddoesShengDyachuk
+        LeishmanBeddoesSD
         (
             const dictionary& dict,
             const word& modelName,
@@ -109,7 +109,7 @@ public:
     // Selectors
 
         //- Select from components
-        static autoPtr<LeishmanBeddoesShengDyachuk> New
+        static autoPtr<LeishmanBeddoesSD> New
         (
             const dictionary& dict,
             const word& modelName,
@@ -119,7 +119,7 @@ public:
 
 
     //- Destructor
-    ~LeishmanBeddoesShengDyachuk();
+    ~LeishmanBeddoesSD();
 
 
     // Member Functions
