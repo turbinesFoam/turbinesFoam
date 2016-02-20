@@ -22,13 +22,14 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::fv::LeishmanBeddoesSGC
+    Foam::fv::LeishmanBeddoesShengDyachuk
 
 Description
-    Leishman-Beddoes dynamic stall model modified by Sheng et al. (2008).
+    Leishman-Beddoes dynamic stall model modified by Sheng et al. (2008),
+    with modifications from Dyachuk's PhD thesis (2015).
 
 SourceFiles
-    LeishmanBeddoesSGC.C
+    LeishmanBeddoesShengDyachuk.C
 
 \*---------------------------------------------------------------------------*/
 
