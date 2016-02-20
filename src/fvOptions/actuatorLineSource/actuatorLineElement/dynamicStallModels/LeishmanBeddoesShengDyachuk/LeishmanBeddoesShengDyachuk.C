@@ -59,8 +59,7 @@ void Foam::fv::LeishmanBeddoesShengDyachuk::calcUnsteady()
         CNI_ = 0;
     }
 
-
-    //first part of the downwind size, accelerate stall for cross flow turbines
+    // First part of the downwind size, accelerate stall for cross flow turbines
     scalar TAlpha = TAlpha_;
     if (crossFlowTurbine_)
     {
@@ -124,7 +123,7 @@ void Foam::fv::LeishmanBeddoesShengDyachuk::calcSeparated()
         }
     }
 
-    //first part of the downwind size, accelerate stall for cross flow turbines
+    // First part of the downwind size, accelerate stall for cross flow turbines
     scalar Tf = Tf_;
     if (crossFlowTurbine_)
     {
@@ -159,8 +158,9 @@ void Foam::fv::LeishmanBeddoesShengDyachuk::calcSeparated()
          + CNI_;
 
     // Calculate tangential force coefficient
-    CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*(sqrt(fDoublePrime_) - E0_*pow(fDoublePrime_,1/Tv_));
-    
+    CT_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*(sqrt(fDoublePrime_)
+        - E0_*pow(fDoublePrime_, 1.0/Tv_));
+
 
     // Calculate static trailing-edge separation point
     scalar f;
@@ -226,8 +226,8 @@ void Foam::fv::LeishmanBeddoesShengDyachuk::correct
         cm
     );
 
-    //CTCorrection is a correction to ensure that the model reduces to static
-    //values when pitch rate and angle of attack is low enough.
+    // CTCorrection is a correction to ensure that the model reduces to static
+    // values when pitch rate and angle of attack is low enough.
     if (CTCorrection_)
     {
         const scalar CC_corr_const = 1;
@@ -238,13 +238,13 @@ void Foam::fv::LeishmanBeddoesShengDyachuk::correct
         scalar pi = Foam::constant::mathematical::pi;
         scalar alphaDeg = alpha_/180.0*pi;
 
-        scalar scaleFactorAlpha = 
+        scalar scaleFactorAlpha =
             (scaleEnd - fabs(alphaDeg))/(scaleEnd-scaleStart);
         if(scaleFactorAlpha > scaleEnd)
             scaleFactorAlpha = 0;
         if(scaleFactorAlpha < scaleStart)
             scaleFactorAlpha = 1;
-        
+
         scalar scaleFactor_r =
             (rScaleEnd - abs(r_))/(rScaleEnd-rScaleStart);
         if(scaleFactor_r > rScaleEnd)
@@ -255,7 +255,7 @@ void Foam::fv::LeishmanBeddoesShengDyachuk::correct
 
         scalar CTProfileData = profileData_.chordwiseCoefficient(alphaDeg);
         scalar CTVal = CT_ + (CTProfileData - CTStatic_)*scaleFactor;
-        
+
         cl = CN_*cos(alpha_) + CTVal*sin(alpha_);
         cd = CN_*sin(alpha_) - CTVal*cos(alpha_) + CD0_*(1 - scaleFactor);
     }
@@ -274,7 +274,10 @@ Foam::fv::LeishmanBeddoesShengDyachuk::LeishmanBeddoesShengDyachuk
 :
     LeishmanBeddoesSGC(dict, modelName, time, profileData),
     CTCorrection_(coeffs_.lookupOrDefault("CTCorrection", true)),
-    alphaAttachedCorrection_(coeffs_.lookupOrDefault("alphaAttachedCorrection", true)),
+    alphaAttachedCorrection_
+    (
+        coeffs_.lookupOrDefault("alphaAttachedCorrection", true)
+    ),
     crossFlowTurbine_(coeffs_.lookupOrDefault("crossFlowTurbine", false)),
     deltaSPrev_(0.0),
     CTStatic_(0.0)

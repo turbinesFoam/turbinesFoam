@@ -56,16 +56,16 @@ class LeishmanBeddoesShengDyachuk
 protected:
 
     // Protected data
-    
-        //- Correction to CC to make results reduce 
-        //  to static values for low angles of attack
+
+        //- Correction to CC to make results reduce to static values for low
+        //  angles of attack
         bool CTCorrection_;
 
         //- Correct angle of attack due to attached flow effects
         bool alphaAttachedCorrection_;
 
-        //- Cross flow turbine mode, adapts model to differences
-        //  between upwind and downwind regions
+        //- Cross flow turbine mode, adapts model to differences between upwind
+        //  and downwind regions
         bool crossFlowTurbine_;
 
         //- previous value of deltaS
@@ -73,16 +73,16 @@ protected:
 
         //- Approximately static value for CT
         scalar CTStatic_;
-        
-        
+
+
     // Protected member functions
-        
+
         //- Calculate unsteady quantities
         virtual void calcUnsteady();
-        
+
         //- Calculate separated flow quantities
         virtual void calcSeparated();
-    
+
         //- Update previous time step values
         virtual void update();
 
@@ -108,7 +108,7 @@ public:
         //- Construct from components
         LeishmanBeddoesShengDyachuk
         (
-            const dictionary& dict, 
+            const dictionary& dict,
             const word& modelName,
             const Time& time,
             profileData& profileData
@@ -117,7 +117,7 @@ public:
 
     // Selectors
 
-        //- Select null constructed
+        //- Select from components
         static autoPtr<LeishmanBeddoesShengDyachuk> New
         (
             const dictionary& dict,
@@ -140,7 +140,7 @@ public:
         // Edit
 
         // Write
-        
+
         // Evaluation
 
 };
