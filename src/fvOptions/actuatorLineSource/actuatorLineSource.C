@@ -104,7 +104,7 @@ void Foam::fv::actuatorLineSource::createOutputFile()
             / mesh_.time().timeName();
     }
 
-    if (!isDir(dir))
+    if (not isDir(dir))
     {
         mkDir(dir);
     }
