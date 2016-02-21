@@ -160,12 +160,12 @@ public:
 
     //- Constructor
     actuatorLineSource
-	(
-		const word& name,
-		const word& modelType,
-		const dictionary& dict,
-		const fvMesh& mesh
-	);
+    (
+        const word& name,
+        const word& modelType,
+        const dictionary& dict,
+        const fvMesh& mesh
+    );
 
 
     //- Destructor
