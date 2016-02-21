@@ -132,7 +132,10 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
     }
 
     // Evaluate vortex tracking time
-    if (not stalledPrev_) tau_ = 0.0;
+    if (not stalledPrev_)
+    {
+        tau_ = 0.0;
+    }
     else
     {
         if (tau_ == tauPrev_)
@@ -143,7 +146,10 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
 
     // Modify Tf time constant if necessary
     scalar Tf = Tf_;
-    if (tau_ > Tvl_) Tf = 0.5*Tf_;
+    if (tau_ > Tvl_)
+    {
+        Tf = 0.5*Tf_;
+    }
 
     // Calculate dynamic separation point
     scalar pi = Foam::constant::mathematical::pi;
@@ -166,8 +172,14 @@ void Foam::fv::LeishmanBeddoes3G::calcSeparated()
 
     // Calculate the separation point and limit to [0, 1]
     f3G_ = fDoublePrime_ - DF_*Vx_;
-    if (f3G_ < 0) f3G_ = 0.0;
-    else if (f3G_ > 1) f3G_ = 1.0;
+    if (f3G_ < 0)
+    {
+        f3G_ = 0.0;
+    }
+    else if (f3G_ > 1)
+    {
+        f3G_ = 1.0;
+    }
 
     // Calculate normal force coefficient including dynamic separation point
     CNF_ = CNAlpha_*alphaEquiv_*pow(((1.0 + sqrt(f3G_))/2.0), 2)
