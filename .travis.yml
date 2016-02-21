@@ -24,7 +24,7 @@ install:
 
 before_script:
     - source /opt/openfoam30/etc/bashrc
-    - ./checkStyle
 
 script:
     - ./Alltest
+    - ./checkStyle
