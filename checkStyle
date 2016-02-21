@@ -1,8 +1,18 @@
 #!/usr/bin/env bash
 # Check code style using vera++
+# https://bitbucket.org/verateam/vera/wiki
 
-# Check source files
-find . -path "*lnInclude*" -prune -o -name "*.C" -print | vera++ -e
+# Use all default rules except T016: Calls to min/max should be protected
+# against accidental macro substitution, T014: no reference to the Boost
+# software license found, F002: path name too long
 
-# Check headers
-find . -path "*lnInclude*" -prune -o -name "*.H" -print | vera++ -e
+rules=( F001 F002 L001 L002 L003 L004 L005 T001 T002 T003 T004 T005 T006 T007 T008 T009 T010 T011 T012 T013 T015 T017 T018 T019 )
+
+for rule in "${rules[@]}"
+do
+    # Check source files
+    find . -path "*lnInclude*" -prune -o -name "*.C" -print | vera++ -s -e -R $rule -P max-line-length=80 "$@"
+
+    # Check headers
+    find . -path "*lnInclude*" -prune -o -name "*.H" -print | vera++ -s -e -R $rule -P max-line-length=80 "$@"
+done
