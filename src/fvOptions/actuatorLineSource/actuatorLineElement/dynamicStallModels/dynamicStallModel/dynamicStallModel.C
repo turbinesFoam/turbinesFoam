@@ -97,7 +97,7 @@ Foam::scalar Foam::fv::dynamicStallModel::interpolate
     forAll(xOld, i)
     {
         scalar diff = mag(xNew - xOld[i]);
-        if(diff < error)
+        if (diff < error)
         {
             index = i;
             error = diff;
