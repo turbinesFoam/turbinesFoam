@@ -118,7 +118,7 @@ void Foam::fv::actuatorLineSource::createOutputFile()
 
 void Foam::fv::actuatorLineSource::createElements()
 {
-	elements_.setSize(nElements_);
+    elements_.setSize(nElements_);
 
     label nGeometryPoints = elementGeometry_.size();
     label nGeometrySegments = nGeometryPoints - 1;
