@@ -31,7 +31,7 @@ label Foam::interpolateUtils::binarySearch
      const scalar value
 )
 {
-    /* finds the closest index with a list value below value using a binary 
+    /* finds the closest index with a list value below value using a binary
     search algorithm, which should find the value in O(ln(N)) time
     code is suitable for large lists */
     label index = 0;
@@ -44,13 +44,17 @@ label Foam::interpolateUtils::binarySearch
     )
     {
         if (value > list[index + currentsize])
+        {
             index += currentsize;
+        }
     }
     
-    /*the last case has to be run separately, as currentsize==1 cannot be 
+    /*the last case has to be run separately, as currentsize==1 cannot be
     handled in the loop due to the currentsize decrement*/
     if (index + 1 < listsize && value > list[index+1])
+    {
         index += 1;
+    }
     return index;
 }
 
@@ -66,22 +70,28 @@ label Foam::interpolateUtils::linearSearch
     code is suitable for small lists, or if a good startvalue is available
     result should be indentical to binarySearch*/
     label listsize = list.size();
-    if(startvalue >= listsize)
+    if (startvalue >= listsize)
+    {
         startvalue = listsize - 1;
-    if(list[startvalue] < value)
+    }
+    if (list[startvalue] < value)
+    {
         for 
         (
             ;
             startvalue + 1 < listsize && list[startvalue+1] < value; 
             startvalue++
         );
+    }
     else
+    {
         for
         (
             ;
             startvalue > 0 && list[startvalue] >= value; 
             startvalue--
         );
+    }
     return startvalue;
 }
 
@@ -93,22 +103,26 @@ scalar Foam::interpolateUtils::getPart
 )
 {
     scalar xPart;
-    
+
     //if the value is outside the interpolation region, the edge value will be used
-    
+
     //if value is smaller than lowest value, use the lowest value
     if (xIndex == 0 && xNew < xList[0])
-        xPart = 0;
-    //if it is larger than largest value
-    else if (xIndex + 1 == xList.size()) 
     {
-        //decrease value one step, but only use the final value, 
+        xPart = 0;
+    }
+    //if it is larger than largest value
+    else if (xIndex + 1 == xList.size())
+    {
+        //decrease value one step, but only use the final value,
         //i.e. the highest value
         xIndex--; 
         xPart = 1;
     }
     else
+    {
         xPart = (xNew - xList[xIndex])/(xList[xIndex+1] - xList[xIndex]);
+    }
 
     return xPart;
 }
@@ -196,9 +210,9 @@ scalar Foam::interpolateUtils::interpolate2d
     label yIndex
 )
 {
-    return (data[yIndex][xIndex]*(1 - xPart) + 
+    return (data[yIndex][xIndex]*(1 - xPart) +
             data[yIndex][xIndex+1]*xPart)*(1 - yPart) +
-           (data[yIndex+1][xIndex]*(1 - xPart) + 
+           (data[yIndex+1][xIndex]*(1 - xPart) +
             data[yIndex + 1][xIndex + 1]*xPart)*yPart;
 }
 
@@ -219,7 +233,7 @@ scalar Foam::interpolateUtils::interpolate2d
         xList,
         yList,
         data,
-        binarySearch(xList,xNew),
-        binarySearch(yList,yNew)
+        binarySearch(xList, xNew),
+        binarySearch(yList, yNew)
     );
 }
