@@ -52,7 +52,7 @@ label binarySearch
     const List<scalar>& list,
     const scalar value
 );
-        
+
 //- Find index for interpolation
 label linearSearch
 (
@@ -115,7 +115,7 @@ scalar interpolate2d
     label xIndex,
     label yIndex
 );
-        
+
 //interpolate from 2d data
 scalar interpolate2d
 (
