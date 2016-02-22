@@ -104,7 +104,7 @@ void Foam::fv::actuatorLineSource::createOutputFile()
             / mesh_.time().timeName();
     }
 
-    if (!isDir(dir))
+    if (not isDir(dir))
     {
         mkDir(dir);
     }
@@ -499,7 +499,10 @@ Foam::fv::actuatorLineSource::actuatorLineSource
 {
     read(dict_);
     createElements();
-    if (writePerf_) createOutputFile();
+    if (writePerf_)
+    {
+        createOutputFile();
+    }
     forceField_.write();
     // Calculate end effects
     if (endEffectsActive_)
@@ -662,7 +665,10 @@ void Foam::fv::actuatorLineSource::addSup
     eqn += forceField_;
 
     // Write performance to file
-    if (writePerf_ and Pstream::master()) writePerf();
+    if (writePerf_ and Pstream::master())
+    {
+        writePerf();
+    }
 }
 
 
@@ -728,7 +734,10 @@ void Foam::fv::actuatorLineSource::addSup
     eqn += forceField_;
 
     // Write performance to file
-    if (writePerf_ and Pstream::master()) writePerf();
+    if (writePerf_ and Pstream::master())
+    {
+        writePerf();
+    }
 }
 
 // ************************************************************************* //

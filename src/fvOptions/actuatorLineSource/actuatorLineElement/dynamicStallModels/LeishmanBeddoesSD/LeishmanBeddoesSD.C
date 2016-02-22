@@ -63,7 +63,7 @@ void Foam::fv::LeishmanBeddoesSD::calcUnsteady()
     scalar TAlpha = TAlpha_;
     if (crossFlowTurbine_)
     {
-        if(alphaEquiv_ < 0 && deltaAlpha_ < 0)
+        if (alphaEquiv_ < 0 && deltaAlpha_ < 0)
         {
             TAlpha *= 0.1;
         }
@@ -114,7 +114,10 @@ void Foam::fv::LeishmanBeddoesSD::calcSeparated()
     }
 
     // Evaluate vortex tracking time
-    if (not stalledPrev_) tau_ = 0.0;
+    if (not stalledPrev_)
+    {
+        tau_ = 0.0;
+    }
     else
     {
         if (tau_ == tauPrev_)
@@ -127,7 +130,7 @@ void Foam::fv::LeishmanBeddoesSD::calcSeparated()
     scalar Tf = Tf_;
     if (crossFlowTurbine_)
     {
-        if(alphaEquiv_ < 0 && deltaAlpha_ < 0)
+        if (alphaEquiv_ < 0 && deltaAlpha_ < 0)
         {
             Tf *= 0.1;
         }
@@ -173,7 +176,8 @@ void Foam::fv::LeishmanBeddoesSD::calcSeparated()
         f = 0.02 + 0.58*exp((alpha1_ - mag(alpha_))/S2_);
     }
 
-    CTStatic_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*(sqrt(f) - E0_*pow(f,1/Tv_));
+    CTStatic_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*(sqrt(f)
+              - E0_*pow(f, 1.0/Tv_));
 
     // Evaluate vortex lift contributions
     CNV_ = B1_*(fDoublePrime_ - f)*Vx_;
@@ -238,8 +242,6 @@ Foam::fv::LeishmanBeddoesSD::~LeishmanBeddoesSD()
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
-
-
 void Foam::fv::LeishmanBeddoesSD::correct
 (
     scalar magU,
@@ -272,17 +274,25 @@ void Foam::fv::LeishmanBeddoesSD::correct
 
         scalar scaleFactorAlpha =
             (scaleEnd - fabs(alphaDeg))/(scaleEnd-scaleStart);
-        if(scaleFactorAlpha > scaleEnd)
+        if (scaleFactorAlpha > scaleEnd)
+        {
             scaleFactorAlpha = 0;
-        if(scaleFactorAlpha < scaleStart)
+        }
+        if (scaleFactorAlpha < scaleStart)
+        {
             scaleFactorAlpha = 1;
+        }
 
         scalar scaleFactor_r =
             (rScaleEnd - abs(r_))/(rScaleEnd-rScaleStart);
-        if(scaleFactor_r > rScaleEnd)
+        if (scaleFactor_r > rScaleEnd)
+        {
             scaleFactor_r = 0;
-        if(scaleFactor_r < rScaleStart)
+        }
+        if (scaleFactor_r < rScaleStart)
+        {
             scaleFactor_r = 1;
+        }
         scalar scaleFactor = scaleFactorAlpha*scaleFactor_r;
 
         scalar CTProfileData = profileData_.chordwiseCoefficient(alphaDeg);

@@ -42,7 +42,7 @@ Foam::scalar Foam::profileData::interpolate
     forAll(xOld, i)
     {
         scalar diff = mag(xNew - xOld[i]);
-        if(diff < error)
+        if (diff < error)
         {
             index = i;
             error = diff;
@@ -460,12 +460,8 @@ Foam::List<scalar> Foam::profileData::angleOfAttackList
     List<scalar> newList;
     forAll(angleOfAttackList_, i)
     {
-        if
-        (
-            angleOfAttackList_[i] >= alphaDegStart
-            and
-            angleOfAttackList_[i] <= alphaDegStop
-        )
+        if (angleOfAttackList_[i] >= alphaDegStart
+            and angleOfAttackList_[i] <= alphaDegStop)
         {
             newList.append(angleOfAttackList_[i]);
         }
@@ -483,12 +479,8 @@ Foam::List<scalar> Foam::profileData::liftCoefficientList
     List<scalar> newList;
     forAll(angleOfAttackList_, i)
     {
-        if
-        (
-            angleOfAttackList_[i] >= alphaDegStart
-            and
-            angleOfAttackList_[i] <= alphaDegStop
-        )
+        if (angleOfAttackList_[i] >= alphaDegStart
+            and angleOfAttackList_[i] <= alphaDegStop)
         {
             newList.append(liftCoefficientList_[i]);
         }
@@ -506,12 +498,8 @@ Foam::List<scalar> Foam::profileData::dragCoefficientList
     List<scalar> newList;
     forAll(angleOfAttackList_, i)
     {
-        if
-        (
-            angleOfAttackList_[i] >= alphaDegStart
-            and
-            angleOfAttackList_[i] <= alphaDegStop
-        )
+        if (angleOfAttackList_[i] >= alphaDegStart
+            and angleOfAttackList_[i] <= alphaDegStop)
         {
             newList.append(dragCoefficientList_[i]);
         }
@@ -529,12 +517,8 @@ Foam::List<scalar> Foam::profileData::momentCoefficientList
     List<scalar> newList;
     forAll(angleOfAttackList_, i)
     {
-        if
-        (
-            angleOfAttackList_[i] >= alphaDegStart
-            and
-            angleOfAttackList_[i] <= alphaDegStop
-        )
+        if (angleOfAttackList_[i] >= alphaDegStart
+            and angleOfAttackList_[i] <= alphaDegStop)
         {
             newList.append(momentCoefficientList_[i]);
         }
@@ -552,12 +536,8 @@ Foam::List<scalar> Foam::profileData::normalCoefficientList
     List<scalar> newList;
     forAll(angleOfAttackList_, i)
     {
-        if
-        (
-            angleOfAttackList_[i] >= alphaDegStart
-            and
-            angleOfAttackList_[i] <= alphaDegStop
-        )
+        if (angleOfAttackList_[i] >= alphaDegStart
+            and angleOfAttackList_[i] <= alphaDegStop)
         {
             newList.append
             (
@@ -583,12 +563,8 @@ Foam::List<scalar> Foam::profileData::chordwiseCoefficientList
     List<scalar> newList;
     forAll(angleOfAttackList_, i)
     {
-        if
-        (
-            angleOfAttackList_[i] >= alphaDegStart
-            and
-            angleOfAttackList_[i] <= alphaDegStop
-        )
+        if (angleOfAttackList_[i] >= alphaDegStart
+            and angleOfAttackList_[i] <= alphaDegStop)
         {
             newList.append
             (
