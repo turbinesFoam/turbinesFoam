@@ -76,23 +76,17 @@ label Foam::interpolateUtils::linearSearch
     }
     if (list[startvalue] < value)
     {
-        for
-        (
-            ;
-            startvalue + 1 < listsize && list[startvalue+1] < value;
-            startvalue++
-        )
-        {}
+        while (startvalue + 1 < listsize && list[startvalue+1] < value)
+        {
+            startvalue++;
+        }
     }
     else
     {
-        for
-        (
-            ;
-            startvalue > 0 && list[startvalue] >= value;
-            startvalue--
-        )
-        {}
+        while (startvalue > 0 && list[startvalue] >= value)
+        {
+            startvalue--;
+        }
     }
     return startvalue;
 }
