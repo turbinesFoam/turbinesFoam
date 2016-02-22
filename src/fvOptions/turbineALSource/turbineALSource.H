@@ -30,7 +30,7 @@ Description
 SourceFiles
     turbineALSource.C
 
-\*-----------------------------------------this should make this line too long----------------------------------*/
+\*---------------------------------------------------------------------------*/
 
 #ifndef turbineALSource_H
 #define turbineALSource_H
