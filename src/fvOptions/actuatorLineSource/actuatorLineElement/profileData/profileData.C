@@ -426,12 +426,8 @@ Foam::List<scalar> Foam::profileData::subList
     {
         forAll(angleOfAttackListMatrixOrg_, i)
         {
-            if 
-            (
-                angleOfAttackListMatrixOrg_[i] >= alphaDegStart
-                and
-                angleOfAttackListMatrixOrg_[i] <= alphaDegStop
-            )
+            if (angleOfAttackListMatrixOrg_[i] >= alphaDegStart
+                and angleOfAttackListMatrixOrg_[i] <= alphaDegStop)
             {
                 newList.append
                 (
@@ -449,12 +445,8 @@ Foam::List<scalar> Foam::profileData::subList
     {
         forAll(angleOfAttackList_, i)
         {
-            if 
-            (
-                angleOfAttackList_[i] >= alphaDegStart
-                and
-                angleOfAttackList_[i] <= alphaDegStop
-            )
+            if (angleOfAttackList_[i] >= alphaDegStart
+                and angleOfAttackList_[i] <= alphaDegStop)
             {
                 newList.append(oldList[i]);
             }
@@ -781,8 +773,8 @@ Foam::List<scalar> Foam::profileData::angleOfAttackList
     {
         forAll(angleOfAttackListMatrixOrg_, i)
         {
-            if (angleOfAttackList_[i] >= alphaDegStart
-                and angleOfAttackList_[i] <= alphaDegStop)
+            if (angleOfAttackListMatrixOrg_[i] >= alphaDegStart
+                and angleOfAttackListMatrixOrg_[i] <= alphaDegStop)
             {
                 newList.append(angleOfAttackListMatrixOrg_[i]);
             }
@@ -862,8 +854,8 @@ Foam::List<scalar> Foam::profileData::normalCoefficientList
     {
         forAll(angleOfAttackListMatrixOrg_, i)
         {
-            if (angleOfAttackList_[i] >= alphaDegStart
-                and angleOfAttackList_[i] <= alphaDegStop)
+            if (angleOfAttackListMatrixOrg_[i] >= alphaDegStart
+                and angleOfAttackListMatrixOrg_[i] <= alphaDegStop)
             {
                 newList.append
                 (
@@ -920,10 +912,10 @@ Foam::List<scalar> Foam::profileData::chordwiseCoefficientList
     List<scalar> newList;
     if(liftCoefficientMatrixOrg_.size() > 0)
     {
-        forAll(angleOfAttackList_, i)
+        forAll(angleOfAttackListMatrixOrg_, i)
         {
-            if (angleOfAttackList_[i] >= alphaDegStart
-                and angleOfAttackList_[i] <= alphaDegStop)
+            if (angleOfAttackListMatrixOrg_[i] >= alphaDegStart
+                and angleOfAttackListMatrixOrg_[i] <= alphaDegStop)
             {
                 newList.append
                 (
@@ -951,12 +943,8 @@ Foam::List<scalar> Foam::profileData::chordwiseCoefficientList
     {
         forAll(angleOfAttackList_, i)
         {
-            if 
-            (
-                angleOfAttackList_[i] >= alphaDegStart
-                and
-                angleOfAttackList_[i] <= alphaDegStop
-            )
+            if (angleOfAttackList_[i] >= alphaDegStart
+                and angleOfAttackList_[i] <= alphaDegStop)
             {
                 newList.append
                 (
