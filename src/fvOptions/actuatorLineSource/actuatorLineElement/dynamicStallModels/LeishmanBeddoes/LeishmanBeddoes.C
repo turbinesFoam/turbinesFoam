@@ -54,54 +54,54 @@ void Foam::fv::LeishmanBeddoes::read()
     if (ReList_.size() > 0)
     {
         //check if data is given as input
-        bool hasalphaSSList = readList("alphaSS",alphaSSList_);
-        bool hasCNAlphaList = readList("CNAlpha",CNAlphaList_);
-        bool hasalpha1List = readList("alpha1",alpha1List_);
-        bool hasCN1List = readList("CN1",CN1List_);
-        bool hasCD0List = readList("CD0",CD0List_);
-        bool hasS1List = readList("S1",S1List_);
-        bool hasS2List = readList("S2",S2List_);
-        bool hasK1List = readList("K1",K1List_);
-        bool hasK2List = readList("K2",K2List_);
+        bool hasalphaSSList = readList("alphaSS", alphaSSList_);
+        bool hasCNAlphaList = readList("CNAlpha", CNAlphaList_);
+        bool hasalpha1List = readList("alpha1", alpha1List_);
+        bool hasCN1List = readList("CN1", CN1List_);
+        bool hasCD0List = readList("CD0", CD0List_);
+        bool hasS1List = readList("S1", S1List_);
+        bool hasS2List = readList("S2", S2List_);
+        bool hasK1List = readList("K1", K1List_);
+        bool hasK2List = readList("K2", K2List_);
         scalar oldRe = profileData_.Re();
         forAll(ReList_, i)
         {
             //calculate coefficients for all variables not given as input
             profileData_.updateRe(ReList_[i]);
             buildStaticData();
-            if(not hasalphaSSList)
+            if (not hasalphaSSList)
             {
                alphaSSList_[i] = alphaSS_;
             }
-            if(not hasCNAlphaList)
+            if (not hasCNAlphaList)
             {
                CNAlphaList_[i] = CNAlpha_;
             }
-            if(not hasalpha1List)
+            if (not hasalpha1List)
             {
                alpha1List_[i] = alpha1_;
             }
-            if(not hasCN1List)
+            if (not hasCN1List)
             {
                CN1List_[i] = CN1_;
             }
-            if(not hasCD0List)
+            if (not hasCD0List)
             {
                CD0List_[i] = CD0_;
             }
-            if(not hasS1List)
+            if (not hasS1List)
             {
                S1List_[i] = S1_;
             }
-            if(not hasS2List)
+            if (not hasS2List)
             {
                S2List_[i] = S2_;
             }
-            if(not hasK1List)
+            if (not hasK1List)
             {
                K1List_[i] = K1_;
             }
-            if(not hasK2List)
+            if (not hasK2List)
             {
                K2List_[i] = K2_;
             }
@@ -145,8 +145,8 @@ bool Foam::fv::LeishmanBeddoes::readList
     //Ensure that lists are of equal size as Re,
     if (list.size() != ReList_.size())
     {
-        word errorMessage = 
-            word("Number of elements in ") + keyword + 
+        word errorMessage =
+            word("Number of elements in ") + keyword +
             " must be indentical to number of elements in Re";
          error myerror(errorMessage);
          myerror.abort();
@@ -261,64 +261,64 @@ void Foam::fv::LeishmanBeddoes::interpolateStaticData()
 {
     scalar Re = profileData_.Re();
 
-    //for speed issues, calculate interpolate information once and use same 
+    //for speed issues, calculate interpolate information once and use same
     //data for all interpolations
-    label interpIndex = 
+    label interpIndex =
         interpolateUtils::binarySearch(ReList_, Re);
-    scalar interpFraction = 
+    scalar interpFraction =
         interpolateUtils::getPart(Re, ReList_, interpIndex);
 
     alphaSS_ = interpolateUtils::interpolate1d
     (
-        interpFraction, 
+        interpFraction,
         alphaSSList_,
         interpIndex
     );
     CNAlpha_ = interpolateUtils::interpolate1d
     (
-        interpFraction, 
+        interpFraction,
         CNAlphaList_,
         interpIndex
     );
     alpha1_ = interpolateUtils::interpolate1d
     (
-        interpFraction, 
+        interpFraction,
         alpha1List_,
         interpIndex
     );
     CN1_ = interpolateUtils::interpolate1d
     (
-        interpFraction, 
+        interpFraction,
         CN1List_,
         interpIndex
     );
     CD0_ = interpolateUtils::interpolate1d
     (
-        interpFraction, 
+        interpFraction,
         CD0List_,
         interpIndex
     );
     S1_ = interpolateUtils::interpolate1d
     (
-        interpFraction, 
+        interpFraction,
         S1List_,
         interpIndex
     );
     S2_ = interpolateUtils::interpolate1d
     (
-        interpFraction, 
+        interpFraction,
         S2List_,
         interpIndex
     );
     K1_ = interpolateUtils::interpolate1d
     (
-        interpFraction, 
+        interpFraction,
         K1List_,
         interpIndex
     );
     K2_ = interpolateUtils::interpolate1d
     (
-        interpFraction, 
+        interpFraction,
         K2List_,
         interpIndex
     );

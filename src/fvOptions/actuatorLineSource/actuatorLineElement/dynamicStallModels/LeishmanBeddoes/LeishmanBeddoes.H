@@ -286,16 +286,14 @@ protected:
         //- List of K2 for interpolation
         List<scalar> K2List_;
 
-        
-        
-        
+
     // Protected member functions
 
         //- Read dictionary
         void read();
 
         bool readList(word keyword, List<scalar> &list);
-    
+
         //- Calculate the equivalent angle of attack
         virtual void calcAlphaEquiv();
 
@@ -306,7 +304,7 @@ protected:
         //Builds the data required for evalStaticData
         virtual void buildStaticData();
 
-        //creates the data required for evalStaticData through 
+        //creates the data required for evalStaticData through
         //Reynolds number interpolation
         virtual void interpolateStaticData();
 
