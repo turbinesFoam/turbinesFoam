@@ -94,7 +94,10 @@ void Foam::fv::LeishmanBeddoesSGC::calcSeparated()
     }
 
     // Evaluate vortex tracking time
-    if (not stalledPrev_) tau_ = 0.0;
+    if (not stalledPrev_)
+    {
+        tau_ = 0.0;
+    }
     else
     {
         if (tau_ == tauPrev_)

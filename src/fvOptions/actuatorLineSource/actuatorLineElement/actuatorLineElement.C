@@ -368,7 +368,7 @@ void Foam::fv::actuatorLineElement::createOutputFile()
             / mesh_.time().timeName();
     }
 
-    if (!isDir(dir))
+    if (not isDir(dir))
     {
         mkDir(dir);
     }
@@ -720,7 +720,10 @@ void Foam::fv::actuatorLineElement::rotate
     spanDirection_ = RM & spanDirection_;
 
     // Rotate the element's velocity vector if specified
-    if (rotateVelocity) velocity_ = RM & velocity_;
+    if (rotateVelocity)
+    {
+        velocity_ = RM & velocity_;
+    }
 
     if (debug)
     {
@@ -881,7 +884,10 @@ void Foam::fv::actuatorLineElement::addSup
     forceField += forceFieldI;
 
     // Write performance to file
-    if (writePerf_ and Pstream::master()) writePerf();
+    if (writePerf_ and Pstream::master())
+    {
+        writePerf();
+    }
 }
 
 
@@ -923,7 +929,10 @@ void Foam::fv::actuatorLineElement::addSup
     forceField += forceFieldI;
 
     // Write performance to file
-    if (writePerf_ and Pstream::master()) writePerf();
+    if (writePerf_ and Pstream::master())
+    {
+        writePerf();
+    }
 }
 
 

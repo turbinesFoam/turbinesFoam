@@ -431,9 +431,18 @@ Foam::fv::axialFlowTurbineALSource::axialFlowTurbineALSource
     read(dict);
     createCoordinateSystem();
     createBlades();
-    if (hasHub_) createHub();
-    if (hasTower_) createTower();
-    if (hasNacelle_) createNacelle();
+    if (hasHub_)
+    {
+        createHub();
+    }
+    if (hasTower_)
+    {
+        createTower();
+    }
+    if (hasNacelle_)
+    {
+        createNacelle();
+    }
     createOutputFile();
 
     // Rotate turbine to azimuthalOffset if necessary
@@ -536,7 +545,10 @@ void Foam::fv::axialFlowTurbineALSource::addSup
         // Add source for tower actuator line
         tower_->addSup(eqn, fieldI);
         forceField_ += tower_->forceField();
-        if (includeTowerDrag_) force_ += tower_->force();
+        if (includeTowerDrag_)
+        {
+            force_ += tower_->force();
+        }
     }
 
     if (hasNacelle_)
@@ -544,7 +556,10 @@ void Foam::fv::axialFlowTurbineALSource::addSup
         // Add source for tower actuator line
         nacelle_->addSup(eqn, fieldI);
         forceField_ += nacelle_->forceField();
-        if (includeNacelleDrag_) force_ += nacelle_->force();
+        if (includeNacelleDrag_)
+        {
+            force_ += nacelle_->force();
+        }
     }
 
     // Torque is the projection of the moment from all blades on the axis
@@ -565,7 +580,10 @@ void Foam::fv::axialFlowTurbineALSource::addSup
 
     // Write performance data -- note this will write multiples if there are
     // multiple PIMPLE loops
-    if (Pstream::master()) writePerf();
+    if (Pstream::master())
+    {
+        writePerf();
+    }
 }
 
 
@@ -612,7 +630,10 @@ void Foam::fv::axialFlowTurbineALSource::addSup
         // Add source for tower actuator line
         tower_->addSup(rho, eqn, fieldI);
         forceField_ += tower_->forceField();
-        if (includeTowerDrag_) force_ += tower_->force();
+        if (includeTowerDrag_)
+        {
+            force_ += tower_->force();
+        }
     }
 
     if (hasNacelle_)
@@ -620,7 +641,10 @@ void Foam::fv::axialFlowTurbineALSource::addSup
         // Add source for tower actuator line
         nacelle_->addSup(rho, eqn, fieldI);
         forceField_ += nacelle_->forceField();
-        if (includeNacelleDrag_) force_ += nacelle_->force();
+        if (includeNacelleDrag_)
+        {
+            force_ += nacelle_->force();
+        }
     }
 
     // Torque is the projection of the moment from all blades on the axis
@@ -643,7 +667,10 @@ void Foam::fv::axialFlowTurbineALSource::addSup
 
     // Write performance data -- note this will write multiples if there are
     // multiple PIMPLE loops
-    if (Pstream::master()) writePerf();
+    if (Pstream::master())
+    {
+        writePerf();
+    }
 }
 
 
@@ -699,11 +726,17 @@ bool Foam::fv::axialFlowTurbineALSource::read(const dictionary& dict)
 
         // Get hub information
         hubDict_ = coeffs_.subOrEmptyDict("hub");
-        if (hubDict_.keys().size() > 0) hasHub_ = true;
+        if (hubDict_.keys().size() > 0)
+        {
+            hasHub_ = true;
+        }
 
         // Get tower information
         towerDict_ = coeffs_.subOrEmptyDict("tower");
-        if (towerDict_.keys().size() > 0) hasTower_ = true;
+        if (towerDict_.keys().size() > 0)
+        {
+            hasTower_ = true;
+        }
         includeTowerDrag_ = towerDict_.lookupOrDefault
         (
             "includeInTotalDrag",
@@ -712,7 +745,10 @@ bool Foam::fv::axialFlowTurbineALSource::read(const dictionary& dict)
 
         // Get nacelle information
         nacelleDict_ = coeffs_.subOrEmptyDict("nacelle");
-        if (nacelleDict_.keys().size() > 0) hasNacelle_ = true;
+        if (nacelleDict_.keys().size() > 0)
+        {
+            hasNacelle_ = true;
+        }
         includeNacelleDrag_ = nacelleDict_.lookupOrDefault
         (
             "includeInTotalDrag",
