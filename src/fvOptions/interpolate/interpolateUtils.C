@@ -39,7 +39,7 @@ label Foam::interpolateUtils::binarySearch
     for
     (
         label currentsize = listsize >> 1;
-        currentsize > 1 && index + currentsize < listsize; 
+        currentsize > 1 && index + currentsize < listsize;
         currentsize = ((currentsize+1)>>1)
     )
     {
@@ -65,7 +65,7 @@ label Foam::interpolateUtils::linearSearch
     label startvalue
 )
 {
-    /*finds the closest index with a list value below the value using a linear 
+    /*finds the closest index with a list value below the value using a linear
     search algorithm, which should find the value in O(N) time
     code is suitable for small lists, or if a good startvalue is available
     result should be indentical to binarySearch*/
@@ -76,21 +76,23 @@ label Foam::interpolateUtils::linearSearch
     }
     if (list[startvalue] < value)
     {
-        for 
+        for
         (
             ;
-            startvalue + 1 < listsize && list[startvalue+1] < value; 
+            startvalue + 1 < listsize && list[startvalue+1] < value;
             startvalue++
-        );
+        )
+        {}
     }
     else
     {
         for
         (
             ;
-            startvalue > 0 && list[startvalue] >= value; 
+            startvalue > 0 && list[startvalue] >= value;
             startvalue--
-        );
+        )
+        {}
     }
     return startvalue;
 }
@@ -104,7 +106,8 @@ scalar Foam::interpolateUtils::getPart
 {
     scalar xPart;
 
-    //if the value is outside the interpolation region, the edge value will be used
+    //if the value is outside the interpolation region,
+    //the edge value will be used
 
     //if value is smaller than lowest value, use the lowest value
     if (xIndex == 0 && xNew < xList[0])
@@ -116,7 +119,7 @@ scalar Foam::interpolateUtils::getPart
     {
         //decrease value one step, but only use the final value,
         //i.e. the highest value
-        xIndex--; 
+        xIndex--;
         xPart = 1;
     }
     else

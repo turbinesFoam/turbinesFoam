@@ -131,7 +131,7 @@ void Foam::profileData::readMatrix
             }
             else
             {
-                if(xvalues[i-1] != coefficientData[0][i])
+                if (xvalues[i-1] != coefficientData[0][i])
                 {
                     word errorMessage =
                         word("Index elements in ") + keyword +
@@ -367,8 +367,8 @@ void Foam::profileData::getInterpolatedCoefficients()
     scalar interpFraction =
         interpolateUtils::getPart
         (
-            Re_, 
-            ReynoldsNumberListMatrixOrg_, 
+            Re_,
+            ReynoldsNumberListMatrixOrg_,
             interpIndex
         );
 
@@ -575,9 +575,13 @@ Foam::profileData::~profileData()
 void Foam::profileData::analyze()
 {
     if (staticStallAngleList_.size() > 0) //if interpolated tables exist
+    {
         getInterpolatedCoefficients();
+    }
     else
+    {
         calculateCoefficients();
+    }
 }
 
 
