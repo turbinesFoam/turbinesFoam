@@ -25,7 +25,7 @@ Class
     Foam::fv::LeishmanBeddoes3G
 
 Description
-    Leishman-Beddoes 3rd generation dynamic stall model for use with 
+    Leishman-Beddoes 3rd generation dynamic stall model for use with
     actuatorLineElement.
 
 SourceFiles
@@ -57,76 +57,76 @@ class LeishmanBeddoes3G
 protected:
 
     // Protected data
-    
+
         //- Additional deficiency function for equivalent angle of attack
         scalar Z_;
-        
+
         //- Previous value of Z
         scalar ZPrev_;
-        
+
         //- Circulatory forcing term associated with pitching motion
         scalar etaL_;
-        
+
         //- Previous value of etaL
         scalar etaLPrev_;
-        
+
         //- Constant in Z calculation
         scalar A3_;
-        
+
         //- Time constant in Z calculation
         scalar T1_;
-        
+
         //- Time constant in Z calculation
         scalar T2_;
-        
+
         //- Time constant in Z calculation
         scalar T3_;
-        
+
         //- Deficiency function for the impulsive normal coefficient
         scalar H_;
-        
+
         //- Previous value of H
         scalar HPrev_;
-        
+
         //- Impulsive forcing term for pitching around quarter axis
         scalar lambdaL_;
-        
+
         //- Previous value of lambdaL
         scalar lambdaLPrev_;
-        
+
         //- Deficiency function for impulsive moment coefficient
         scalar J_;
-        
+
         //- Previous value of J
         scalar JPrev_;
-        
+
         //- Impulsive forcing term for pitching moment
         scalar lambdaM_;
-        
+
         //- Previous value of lambdaM
         scalar lambdaMPrev_;
-        
+
         //- Modified trailing edge separation point
         scalar f3G_;
-        
+
         //- Modulation parameter for the f3G deficiency function
         scalar Vx_;
-        
+
         //- Circulatory moment coefficient
         scalar CMC_;
-        
+
         //- Impulsive moment coefficient
         scalar CMI_;
-        
-        
+
+
     // Protected member functions
-    
+
         //- Calculate the equivalent angle of attack
         virtual void calcAlphaEquiv();
-        
+
         //- Calculate unsteady quantities
         virtual void calcUnsteady();
-        
+
         //- Calculate S1 and S2 constants
         virtual void calcS1S2
         (
@@ -134,10 +134,10 @@ protected:
             scalar C=0.02,
             scalar D=0.58
         );
-        
+
         //- Calculate separated flow quantities
         virtual void calcSeparated();
-    
+
         //- Update previous time step values
         virtual void update();
 
@@ -153,7 +153,7 @@ public:
         //- Construct from components
         LeishmanBeddoes3G
         (
-            const dictionary& dict, 
+            const dictionary& dict,
             const word& modelName,
             const Time& time,
             profileData& profileData
@@ -162,7 +162,7 @@ public:
 
     // Selectors
 
-        //- Select null constructed
+        //- Select from components
         static autoPtr<LeishmanBeddoes3G> New
         (
             const dictionary& dict,
@@ -174,19 +174,6 @@ public:
 
     //- Destructor
     ~LeishmanBeddoes3G();
-
-
-    // Member Functions
-
-        // Access
-
-        // Check
-
-        // Edit
-
-        // Write
-        
-        // Evaluation
 
 };
 

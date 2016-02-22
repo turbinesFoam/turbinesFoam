@@ -166,7 +166,10 @@ Foam::List<scalar> Foam::fv::LeishmanBeddoes::cnToF
 
     forAll(cnList, i)
     {
-        if (alphaRadList[i] == 0.0) alphaRadList[i] = SMALL;
+        if (alphaRadList[i] == 0.0)
+        {
+            alphaRadList[i] = SMALL;
+        }
         fList[i] = magSqr
         (
             2*Foam::sqrt(mag(cnList[i]) /
@@ -175,8 +178,14 @@ Foam::List<scalar> Foam::fv::LeishmanBeddoes::cnToF
         );
         if (limit)
         {
-            if (fList[i] >= 1) fList[i] = 1.0 - SMALL;
-            if (fList[i] <= 0) fList[i] = SMALL;
+            if (fList[i] >= 1)
+            {
+                fList[i] = 1.0 - SMALL;
+            }
+            if (fList[i] <= 0)
+            {
+                fList[i] = SMALL;
+            }
         }
     }
     return fList;
@@ -447,8 +456,14 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
 
     // Modify Tf time constant if necessary
     scalar Tf = Tf_;
-    if (tau_ > 0 and tau_ <= Tvl_) Tf = 0.5*Tf_;
-    else if (tau_ > Tvl_ and tau_ <= 2.0*Tvl_) Tf = 4.0*Tf_;
+    if (tau_ > 0 and tau_ <= Tvl_)
+    {
+        Tf = 0.5*Tf_;
+    }
+    else if (tau_ > Tvl_ and tau_ <= 2.0*Tvl_)
+    {
+        Tf = 4.0*Tf_;
+    }
     if (mag(alpha_) < mag(alphaPrev_) and mag(CNPrime_) < CN1_)
     {
         Tf = 0.5*Tf_;
@@ -489,7 +504,10 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
 
     // Compute vortex shedding process if stalled
     // Evaluate vortex tracking time
-    if (not stalledPrev_) tau_ = 0.0;
+    if (not stalledPrev_)
+    {
+        tau_ = 0.0;
+    }
     else
     {
         if (tau_ == tauPrev_)
@@ -501,7 +519,10 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     // Calculate Strouhal number time constant and set tau to zero to
     // allow multiple vortex shedding
     scalar Tst = 2.0*(1.0 - fDoublePrime_)/0.19;
-    if (tau_ > (Tvl_ + Tst)) tau_ = 0.0;
+    if (tau_ > (Tvl_ + Tst))
+    {
+        tau_ = 0.0;
+    }
 
     // Evaluate vortex lift contributions, which are only increasing if angle
     // of attack increased in magnitude beyond a threshold
@@ -509,7 +530,10 @@ void Foam::fv::LeishmanBeddoes::calcSeparated()
     if (tau_ < Tvl_ and (mag(alpha_) > mag(alphaPrev_)))
     {
         // Halve Tv if dAlpha/dt changes sign
-        if (sign(deltaAlpha_) != sign(deltaAlphaPrev_)) Tv = 0.5*Tv_;
+        if (sign(deltaAlpha_) != sign(deltaAlphaPrev_))
+        {
+            Tv = 0.5*Tv_;
+        }
         scalar KN = magSqr((1.0 + sqrt(fDoublePrime_)))/4.0;
         CV_ = CNC_*(1.0 - KN);
         CNV_ = CNVPrev_*exp(-deltaS_/Tv)

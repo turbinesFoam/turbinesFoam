@@ -73,7 +73,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
 
     forAll(blades_, i)
     {
-        word& bladeName = bladeNames_[i];
+        word bladeName = bladeNames_[i];
         // Create dictionary items for this blade
         dictionary bladeSubDict;
         bladeSubDict = bladesDict_.subDict(bladeName);
@@ -224,7 +224,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
 
         actuatorLineSource* blade = new actuatorLineSource
         (
-            bladeName,
+            name_ + "." + bladeName,
             modelType,
             dict,
             mesh_
@@ -250,7 +250,7 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
 
     forAll(struts_, i)
     {
-        word& strutName = strutNames[i];
+        word strutName = strutNames[i];
         // Create dictionary items for this strut
         dictionary strutSubDict;
         strutSubDict = strutsDict_.subDict(strutName);
@@ -372,7 +372,7 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
 
         actuatorLineSource* strut = new actuatorLineSource
         (
-            strutName,
+            name_ + "." + strutName,
             modelType,
             dict,
             mesh_
@@ -454,7 +454,7 @@ void Foam::fv::crossFlowTurbineALSource::createShaft()
 
     actuatorLineSource* shaft = new actuatorLineSource
     (
-        "shaft",
+        name_ + ".shaft",
         "actuatorLineSource",
         dict,
         mesh_
@@ -481,8 +481,14 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     read(dict);
     createCoordinateSystem();
     createBlades();
-    if (hasStruts_) createStruts();
-    if (hasShaft_) createShaft();
+    if (hasStruts_)
+    {
+        createStruts();
+    }
+    if (hasShaft_)
+    {
+        createShaft();
+    }
     createOutputFile();
 
     // Rotate turbine to azimuthalOffset if necessary
@@ -619,7 +625,10 @@ void Foam::fv::crossFlowTurbineALSource::addSup
 
     // Write performance data -- note this will write multiples if there are
     // multiple PIMPLE loops
-    if (Pstream::master()) writePerf();
+    if (Pstream::master())
+    {
+        writePerf();
+    }
 }
 
 
@@ -699,7 +708,10 @@ void Foam::fv::crossFlowTurbineALSource::addSup
 
     // Write performance data -- note this will write multiples if there are
     // multiple PIMPLE loops
-    if (Pstream::master()) writePerf();
+    if (Pstream::master())
+    {
+        writePerf();
+    }
 }
 
 
@@ -752,11 +764,17 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
 
         // Get struts information
         strutsDict_ = coeffs_.subOrEmptyDict("struts");
-        if (strutsDict_.keys().size() > 0) hasStruts_ = true;
+        if (strutsDict_.keys().size() > 0)
+        {
+            hasStruts_ = true;
+        }
 
         // Get shaft information
         shaftDict_ = coeffs_.subOrEmptyDict("shaft");
-        if (shaftDict_.keys().size() > 0) hasShaft_ = true;
+        if (shaftDict_.keys().size() > 0)
+        {
+            hasShaft_ = true;
+        }
 
         if (debug)
         {

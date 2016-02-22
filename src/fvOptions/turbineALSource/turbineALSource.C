@@ -120,7 +120,7 @@ void Foam::fv::turbineALSource::createOutputFile()
             / time_.timeName();
     }
 
-    if (!isDir(dir))
+    if (not isDir(dir))
     {
         mkDir(dir);
     }

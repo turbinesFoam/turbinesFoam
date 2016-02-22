@@ -58,43 +58,43 @@ public:
 protected:
 
     // Protected data
-        
+
         //- Switch for struts
         bool hasStruts_;
-        
+
         //- Switch for shaft
         bool hasShaft_;
-        
+
         //- List of actuator lines as struts
         PtrList<actuatorLineSource> struts_;
-        
+
         //- Actuator line for shaft
         autoPtr<actuatorLineSource> shaft_;
-        
+
         //- Strut definitions dictionary
         dictionary strutsDict_;
-        
+
         //- Shaft dictionary
         dictionary shaftDict_;
 
 
     // Protected Member Functions
-        
+
         //- Create actuator lines for blades
         virtual void createBlades();
-        
+
         //- Create actuator lines for struts
         void createStruts();
-        
+
         //- Create actuator line for shaft
         void createShaft();
 
         //- Create the co-ordinate system
         virtual void createCoordinateSystem();
-        
+
         //- Rotate the turbine according to its angular velocity and time step
         virtual void rotate();
-        
+
         //- Rotate the turbine a specified angle about its axis
         virtual void rotate(scalar radians);
 
@@ -142,7 +142,7 @@ public:
                 fvMatrix<vector>& eqn,
                 const label fieldI
             );
-            
+
             //- Add source term to turbulence model equation
             virtual void addSup
             (
@@ -155,7 +155,7 @@ public:
 
             //- Read source dictionary
             virtual bool read(const dictionary& dict);
-            
+
             //- Print dictionary values
             virtual void printCoeffs() const;
 };

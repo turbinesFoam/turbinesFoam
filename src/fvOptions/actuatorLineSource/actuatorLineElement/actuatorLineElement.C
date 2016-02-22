@@ -195,27 +195,76 @@ void Foam::fv::actuatorLineElement::lookupCoefficients()
 
 Foam::scalar Foam::fv::actuatorLineElement::calcProjectionEpsilon()
 {
+    // Lookup Gaussian coeffs from profileData dict if present
+    dictionary GaussianCoeffs = profileData_.dict().subOrEmptyDict
+    (
+        "GaussianCoeffs"
+    );
+    scalar chordFactor = GaussianCoeffs.lookupOrDefault("chordFactor", 0.25);
+    scalar dragFactor = GaussianCoeffs.lookupOrDefault("dragFactor", 1.0);
+    scalar meshFactor = GaussianCoeffs.lookupOrDefault("meshFactor", 2.0);
+
+    // Provide ideal epsilon target for lift based on chord length
+    scalar epsilonLift = chordFactor*chordLength_;
+
+    // Epsilon based on drag/momentum thickness
+    scalar epsilonDrag = dragFactor*dragCoefficient_*chordLength_/2.0;
+
+    // Threshold is based on lift or drag, whichever is larger
+    scalar epsilonThreshold = Foam::max(epsilonLift, epsilonDrag);
+
     scalar epsilon = VGREAT;
+    scalar epsilonMesh = VGREAT;
     const scalarField& V = mesh_.V();
     label posCellI = findCell(position_);
     if (posCellI >= 0)
     {
         // Projection width based on local cell size (from Troldborg (2008))
-        epsilon = 2*Foam::cbrt(V[posCellI]);
+        epsilonMesh = 2.0*Foam::cbrt(V[posCellI]);
+        epsilonMesh *= meshFactor; // Cell could have non-unity aspect ratio
 
-        if (epsilon > (chordLength_/2.0))
+        if (epsilonMesh > epsilonThreshold)
         {
-            return epsilon;
+            epsilon = epsilonMesh;
         }
         else
         {
-            return chordLength_/2.0;
+            epsilon = epsilonThreshold;
         }
     }
-    else
+
+    // Reduce epsilon over all processors
+    reduce(epsilon, minOp<scalar>());
+
+    // If epsilon is not reduced, position is not in the mesh
+    if (not (epsilon < VGREAT))
     {
-        return epsilon;
+        // Raise fatal error since mesh size cannot be detected
+        FatalErrorIn("void actuatorLineElement::applyForceField()")
+            << "Position of " << name_  << " not found in mesh"
+            << abort(FatalError);
     }
+
+    if (debug)
+    {
+        reduce(epsilonMesh, minOp<scalar>());
+        word epsilonMethod;
+        if (epsilon == epsilonLift)
+        {
+            epsilonMethod = "lift-based";
+        }
+        else if (epsilon == epsilonDrag)
+        {
+            epsilonMethod = "drag-based";
+        }
+        else if (epsilon == epsilonMesh)
+        {
+            epsilonMethod = "mesh-based";
+        }
+        Info<< "    epsilon (" << epsilonMethod << "): " << epsilon << endl;
+    }
+
+    return epsilon;
 }
 
 
@@ -280,30 +329,6 @@ void Foam::fv::actuatorLineElement::applyForceField
 {
     // Calculate projection width
     scalar epsilon = calcProjectionEpsilon();
-    reduce(epsilon, minOp<scalar>());
-
-    // If epsilon is not reduced, position is not in the mesh
-    if (not (epsilon < VGREAT))
-    {
-        // Raise fatal error since mesh size cannot be detected
-        FatalErrorIn("void actuatorLineElement::applyForceField()")
-            << "Position of " << name_  << " not found in mesh"
-            << abort(FatalError);
-    }
-    if (debug)
-    {
-        word epsilonMethod;
-        if (epsilon == chordLength_/2.0)
-        {
-            epsilonMethod = "chord-based";
-        }
-        else
-        {
-            epsilonMethod = "mesh-based";
-        }
-        Info<< "    epsilon (" << epsilonMethod << "): " << epsilon << endl;
-    }
-
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
 
     // Apply force to the cells within the element's sphere of influence
@@ -343,7 +368,7 @@ void Foam::fv::actuatorLineElement::createOutputFile()
             / mesh_.time().timeName();
     }
 
-    if (!isDir(dir))
+    if (not isDir(dir))
     {
         mkDir(dir);
     }
@@ -435,55 +460,55 @@ const Foam::scalar& Foam::fv::actuatorLineElement::chordLength() const
 }
 
 
-Foam::vector& Foam::fv::actuatorLineElement::position()
+const Foam::vector& Foam::fv::actuatorLineElement::position()
 {
     return position_;
 }
 
 
-Foam::vector& Foam::fv::actuatorLineElement::relativeVelocity()
+const Foam::vector& Foam::fv::actuatorLineElement::relativeVelocity()
 {
     return relativeVelocity_;
 }
 
 
-Foam::vector& Foam::fv::actuatorLineElement::relativeVelocityGeom()
+const Foam::vector& Foam::fv::actuatorLineElement::relativeVelocityGeom()
 {
     return relativeVelocityGeom_;
 }
 
 
-Foam::scalar& Foam::fv::actuatorLineElement::angleOfAttack()
+const Foam::scalar& Foam::fv::actuatorLineElement::angleOfAttack()
 {
     return angleOfAttack_;
 }
 
 
-Foam::scalar& Foam::fv::actuatorLineElement::angleOfAttackGeom()
+const Foam::scalar& Foam::fv::actuatorLineElement::angleOfAttackGeom()
 {
     return angleOfAttackGeom_;
 }
 
 
-Foam::scalar& Foam::fv::actuatorLineElement::liftCoefficient()
+const Foam::scalar& Foam::fv::actuatorLineElement::liftCoefficient()
 {
     return liftCoefficient_;
 }
 
 
-Foam::scalar& Foam::fv::actuatorLineElement::dragCoefficient()
+const Foam::scalar& Foam::fv::actuatorLineElement::dragCoefficient()
 {
     return dragCoefficient_;
 }
 
 
-Foam::scalar& Foam::fv::actuatorLineElement::momentCoefficient()
+const Foam::scalar& Foam::fv::actuatorLineElement::momentCoefficient()
 {
     return momentCoefficient_;
 }
 
 
-Foam::scalar& Foam::fv::actuatorLineElement::rootDistance()
+const Foam::scalar& Foam::fv::actuatorLineElement::rootDistance()
 {
     return rootDistance_;
 }
@@ -695,7 +720,10 @@ void Foam::fv::actuatorLineElement::rotate
     spanDirection_ = RM & spanDirection_;
 
     // Rotate the element's velocity vector if specified
-    if (rotateVelocity) velocity_ = RM & velocity_;
+    if (rotateVelocity)
+    {
+        velocity_ = RM & velocity_;
+    }
 
     if (debug)
     {
@@ -807,7 +835,7 @@ void Foam::fv::actuatorLineElement::scaleVelocity(scalar scale)
 }
 
 
-Foam::vector& Foam::fv::actuatorLineElement::force()
+const Foam::vector& Foam::fv::actuatorLineElement::force()
 {
     return forceVector_;
 }
@@ -856,7 +884,10 @@ void Foam::fv::actuatorLineElement::addSup
     forceField += forceFieldI;
 
     // Write performance to file
-    if (writePerf_ and Pstream::master()) writePerf();
+    if (writePerf_ and Pstream::master())
+    {
+        writePerf();
+    }
 }
 
 
@@ -898,7 +929,10 @@ void Foam::fv::actuatorLineElement::addSup
     forceField += forceFieldI;
 
     // Write performance to file
-    if (writePerf_ and Pstream::master()) writePerf();
+    if (writePerf_ and Pstream::master())
+    {
+        writePerf();
+    }
 }
 
 
