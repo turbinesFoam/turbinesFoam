@@ -20,7 +20,7 @@ before_install:
 
 install:
     - source /opt/openfoam30/etc/bashrc
-    - ./Allwmake
+    - ./Allwmake -j2
 
 before_script:
     - source /opt/openfoam30/etc/bashrc
