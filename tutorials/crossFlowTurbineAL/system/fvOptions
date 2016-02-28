@@ -32,7 +32,7 @@ turbine
         freeStreamVelocity  (1 0 0);
         tipSpeedRatio       1.9;
         tsrAmplitude        0.19;       // Amplitude for TSR oscillation
-        tsrPhase            0.70;       // Angle of first peak (rad)
+        tsrPhase            1.9;        // Angle of first peak (rad)
 
         dynamicStall
         {
