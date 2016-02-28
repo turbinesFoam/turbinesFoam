@@ -43,13 +43,13 @@ namespace fv
 Foam::autoPtr<Foam::fv::dynamicStallModel>
 Foam::fv::dynamicStallModel::New
 (
-    const dictionary& dict, 
+    const dictionary& dict,
     const word& modelName,
     const Time& time,
     profileData& profileData
 )
 {
-    
+
     dictionaryConstructorTable::iterator cstrIter =
         dictionaryConstructorTablePtr_->find(modelName);
 
@@ -65,8 +65,8 @@ Foam::fv::dynamicStallModel::New
 
     return autoPtr<dynamicStallModel>(cstrIter()
     (
-        dict, 
-        modelName, 
+        dict,
+        modelName,
         time,
         profileData
     ));
@@ -77,8 +77,8 @@ Foam::fv::dynamicStallModel::New
 
 Foam::scalar Foam::fv::dynamicStallModel::interpolate
 (
-    scalar xNew, 
-    List<scalar>& xOld, 
+    scalar xNew,
+    List<scalar>& xOld,
     List<scalar>& yOld
 )
 {
@@ -89,7 +89,7 @@ Foam::scalar Foam::fv::dynamicStallModel::interpolate
         Info<< "xOld: " << xOld << endl;
         Info<< "yOld: " << yOld << endl;
     }
-    
+
     label index = 0;
     label indexP = 0;
     label indexM = 0;
@@ -97,7 +97,7 @@ Foam::scalar Foam::fv::dynamicStallModel::interpolate
     forAll(xOld, i)
     {
         scalar diff = mag(xNew - xOld[i]);
-        if(diff < error)
+        if (diff < error)
         {
             index = i;
             error = diff;
@@ -115,9 +115,9 @@ Foam::scalar Foam::fv::dynamicStallModel::interpolate
             indexP = index;
             indexM = indexP - 1;
         }
-        return yOld[indexM] 
-               + ((yOld[indexP] 
-               - yOld[indexM])/(xOld[indexP] 
+        return yOld[indexM]
+               + ((yOld[indexP]
+               - yOld[indexM])/(xOld[indexP]
                - xOld[indexM]))*(xNew - xOld[indexM]);
     }
     else if (xNew > xOld[index])
@@ -132,8 +132,8 @@ Foam::scalar Foam::fv::dynamicStallModel::interpolate
             indexP = index + 1;
             indexM = indexP - 1;
         }
-        return yOld[indexM] + ((yOld[indexP] 
-               - yOld[indexM])/(xOld[indexP] 
+        return yOld[indexM] + ((yOld[indexP]
+               - yOld[indexM])/(xOld[indexP]
                - xOld[indexM]))*(xNew - xOld[indexM]);
     }
     else if (xNew == xOld[index])

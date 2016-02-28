@@ -55,37 +55,37 @@ namespace fv
 
 class dynamicStallModel
 {
-    
+
 protected:
 
     // Protected data
-    
+
         //- Dictionary
         const dictionary dict_;
-    
+
         //- Model name
         const word modelName_;
-        
+
         //- Runtime reference
         const Time& time_;
-        
+
         //- Profile data reference
         profileData& profileData_;
-        
+
         //- Coefficients subdict
         const dictionary coeffs_;
-        
+
         //- Starting time for the model
         scalar startTime_;
-        
+
 
     // Protected member functions
-    
+
         //- Interpolate a scalar value
         scalar interpolate
         (
-            scalar xNew, 
-            List<scalar>& xOld, 
+            scalar xNew,
+            List<scalar>& xOld,
             List<scalar>& yOld
         );
 
@@ -115,7 +115,7 @@ public:
         //- Construct from components
         dynamicStallModel
         (
-            const dictionary&, 
+            const dictionary&,
             const word& modelName,
             const Time& time,
             profileData& profileData
@@ -127,7 +127,7 @@ public:
         //- Select from components
         static autoPtr<dynamicStallModel> New
         (
-            const dictionary& dict, 
+            const dictionary& dict,
             const word& modelName,
             const Time& time,
             profileData& profileData
@@ -145,12 +145,12 @@ public:
         // Check
 
         // Edit
-        
+
         // Evaluation
-        
+
             //- Correct lift and drag coefficients
             virtual void correct(scalar alphaDeg, scalar& cl, scalar& cd);
-            
+
             //- Correct lift and drag coefficients
             virtual void correct
             (
@@ -162,9 +162,9 @@ public:
             );
 
         // Write
-        
+
         // Parallel running
-        
+
             //- Reduce to set values equal on all processors
             virtual void reduceParallel(bool inMesh);
 

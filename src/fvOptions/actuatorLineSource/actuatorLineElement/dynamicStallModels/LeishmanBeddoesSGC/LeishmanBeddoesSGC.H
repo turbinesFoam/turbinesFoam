@@ -56,52 +56,52 @@ class LeishmanBeddoesSGC
 protected:
 
     // Protected data
-    
+
         //- Time constant associated with delayed angle of attack
         scalar TAlpha_;
-        
+
         //- Previous value of alphaPrime
         scalar alphaPrimePrev_;
-        
+
         //- Critical angle of attack
         scalar alphaCrit_;
-        
+
         //- Dynamic stall angle of attack for high pitch rate
         scalar alphaDS0_;
-        
+
         //- Reduced pitch rate
         scalar r_;
-        
+
         //- Threshold value of reduced pitch rate
         scalar r0_;
-        
+
         //- Constant associated with vortex lift
         scalar B1_;
-        
+
         //- Constant associated with vortex moment
         scalar B2_;
-        
+
         //- Constant associated with the tangential force
         scalar E0_;
-        
+
         //- Difference between alphaDS0 and alphaSS (degrees)
         scalar alphaDS0DiffDeg_;
-        
+
         //- Deficiency function for alphaPrime
         scalar DAlpha_;
-        
+
         //- Previous value of DAlpha
         scalar DAlphaPrev_;
 
-        
+
     // Protected member functions
-        
+
         //- Calculate unsteady quantities
         virtual void calcUnsteady();
-        
+
         //- Calculate separated flow quantities
         virtual void calcSeparated();
-    
+
         //- Update previous time step values
         virtual void update();
 
@@ -117,7 +117,7 @@ public:
         //- Construct from components
         LeishmanBeddoesSGC
         (
-            const dictionary& dict, 
+            const dictionary& dict,
             const word& modelName,
             const Time& time,
             profileData& profileData
@@ -126,7 +126,7 @@ public:
 
     // Selectors
 
-        //- Select null constructed
+        //- Select from components
         static autoPtr<LeishmanBeddoesSGC> New
         (
             const dictionary& dict,
@@ -138,19 +138,6 @@ public:
 
     //- Destructor
     ~LeishmanBeddoesSGC();
-
-
-    // Member Functions
-
-        // Access
-
-        // Check
-
-        // Edit
-
-        // Write
-        
-        // Evaluation
 
 };
 
