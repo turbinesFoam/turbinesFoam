@@ -169,7 +169,7 @@ Foam::label Foam::fv::actuatorLineElement::findCell
                     << meshBoundBox_ << endl;
             }
             meshSearch ms(mesh_);
-            return ms.findCell(location, cellI_);
+            return ms.findCell(location, 0);
             // return mesh_.findCell(location);
         }
         else
