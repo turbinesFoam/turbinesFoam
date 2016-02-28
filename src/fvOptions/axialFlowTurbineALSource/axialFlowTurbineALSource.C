@@ -465,22 +465,6 @@ Foam::fv::axialFlowTurbineALSource::~axialFlowTurbineALSource()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void Foam::fv::axialFlowTurbineALSource::rotate()
-{
-    // Update tip speed ratio and omega
-    scalar t = time_.value();
-    tipSpeedRatio_ = meanTSR_ + tsrAmplitude_
-                   *cos(nBlades_/rotorRadius_*(meanTSR_*t - tsrPhase_));
-    omega_ = tipSpeedRatio_*mag(freeStreamVelocity_)/rotorRadius_;
-
-    scalar deltaT = time_.deltaT().value();
-    scalar radians = omega_*deltaT;
-    rotate(radians);
-    angleDeg_ += radToDeg(radians);
-    lastRotationTime_ = time_.value();
-}
-
-
 void Foam::fv::axialFlowTurbineALSource::rotate(scalar radians)
 {
     if (debug)

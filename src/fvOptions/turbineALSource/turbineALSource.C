@@ -202,12 +202,30 @@ Foam::scalar& Foam::fv::turbineALSource::torque()
 }
 
 
+void Foam::fv::turbineALSource::updateTSROmega()
+{
+    // Update tip speed ratio and omega
+    scalar theta = degToRad(angleDeg_);
+    tipSpeedRatio_ = meanTSR_ + tsrAmplitude_*cos(nBlades_*(theta - tsrPhase_));
+    omega_ = tipSpeedRatio_*mag(freeStreamVelocity_)/rotorRadius_;
+}
+
+
 void Foam::fv::turbineALSource::rotate()
-{}
+{
+    scalar deltaT = time_.deltaT().value();
+    scalar radians = omega_*deltaT;
+    rotate(radians);
+    angleDeg_ += radToDeg(radians);
+    lastRotationTime_ = time_.value();
+    updateTSROmega();
+}
 
 
 void Foam::fv::turbineALSource::rotate(scalar radians)
-{}
+{
+    // Should be defined for each turbine type
+}
 
 
 void Foam::fv::turbineALSource::addSup
@@ -285,10 +303,7 @@ bool Foam::fv::turbineALSource::read(const dictionary& dict)
         bladeNames_ = bladesDict_.toc();
 
         // Set tip speed ratio and omega
-        scalar t = time_.value();
-        tipSpeedRatio_ = meanTSR_
-                       + tsrAmplitude_*cos(nBlades_*(meanTSR_*t - tsrPhase_));
-        omega_ = tipSpeedRatio_*mag(freeStreamVelocity_)/rotorRadius_;
+        updateTSROmega();
 
         // Get dynamic stall subdict
         dynamicStallDict_ = coeffs_.subOrEmptyDict("dynamicStall");

@@ -167,6 +167,9 @@ protected:
         //- Create the co-ordinate system
         virtual void createCoordinateSystem();
 
+        //- Update tip speed ratio and angular velocity
+        virtual void updateTSROmega();
+
         //- Rotate the turbine according to its angular velocity and time step
         virtual void rotate();
 
