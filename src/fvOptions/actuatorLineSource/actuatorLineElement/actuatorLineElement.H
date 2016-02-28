@@ -69,7 +69,7 @@ protected:
         //- Coefficients dictionary
         const dictionary dict_;
 
-        //- Name of profile model
+        //- Name of element
         const word name_;
 
         //- Reference to the mesh
