@@ -548,10 +548,6 @@ void Foam::fv::axialFlowTurbineALSource::addSup
 
     // Torque is the projection of the moment from all blades on the axis
     torque_ = moment & axis_;
-    Info<< "Azimuthal angle (degrees) of " << name_ << ": " << angleDeg_
-        << endl;
-    Info<< "Torque (per unit density) from " << name_ << ": " << torque_
-        << endl;
 
     torqueCoefficient_ = torque_/(0.5*frontalArea_*rotorRadius_
                        * magSqr(freeStreamVelocity_));
@@ -559,8 +555,8 @@ void Foam::fv::axialFlowTurbineALSource::addSup
     dragCoefficient_ = force_ & freeStreamDirection_
                      / (0.5*frontalArea_*magSqr(freeStreamVelocity_));
 
-    Info<< "Power coefficient from " << name_ << ": " << powerCoefficient_
-        << endl << endl;
+    // Print performance to terminal
+    printPerf();
 
     // Write performance data -- note this will write multiples if there are
     // multiple PIMPLE loops
@@ -633,10 +629,6 @@ void Foam::fv::axialFlowTurbineALSource::addSup
 
     // Torque is the projection of the moment from all blades on the axis
     torque_ = moment & axis_;
-    Info<< "Azimuthal angle (degrees) of " << name_ << ": " << angleDeg_
-        << endl;
-    Info<< "Torque from " << name_ << ": " << torque_
-        << endl;
 
     scalar rhoRef;
     coeffs_.lookup("rhoRef") >> rhoRef;
@@ -646,8 +638,8 @@ void Foam::fv::axialFlowTurbineALSource::addSup
     dragCoefficient_ = force_ & freeStreamDirection_
                      / (0.5*rhoRef*frontalArea_*magSqr(freeStreamVelocity_));
 
-    Info<< "Power coefficient from " << name_ << ": " << powerCoefficient_
-        << endl << endl;
+    // Print performance to terminal
+    printPerf();
 
     // Write performance data -- note this will write multiples if there are
     // multiple PIMPLE loops

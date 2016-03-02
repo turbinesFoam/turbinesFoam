@@ -176,6 +176,9 @@ protected:
         //- Rotate the turbine a specified angle about its axis
         virtual void rotate(scalar radians);
 
+        //- Print performance
+        virtual void printPerf();
+
 
 public:
 
