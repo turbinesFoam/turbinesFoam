@@ -697,6 +697,12 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     const label fieldI
 )
 {
+    // Rotate the turbine if time value has changed
+    if (time_.value() != lastRotationTime_)
+    {
+        rotate();
+    }
+
     // Add scalar source term from blades
     forAll(blades_, i)
     {
@@ -717,6 +723,72 @@ void Foam::fv::crossFlowTurbineALSource::addSup
         // Add source for shaft actuator line
         shaft_->addSup(eqn, fieldI);
     }
+}
+
+
+void Foam::fv::crossFlowTurbineALSource::constrain
+(
+    fvMatrix<scalar>& eqn,
+    const label fieldI
+)
+{
+    // // Rotate the turbine if time value has changed
+    // if (time_.value() != lastRotationTime_)
+    // {
+    //     rotate();
+    // }
+    //
+    // // Add scalar source term from blades
+    // forAll(blades_, i)
+    // {
+    //     blades_[i].constrain(eqn, fieldI);
+    // }
+    //
+    // if (hasStruts_)
+    // {
+    //     // Add source for strut actuator lines
+    //     forAll(struts_, i)
+    //     {
+    //         struts_[i].constrain(eqn, fieldI);
+    //     }
+    // }
+    //
+    // if (hasShaft_)
+    // {
+    //     // Add source for shaft actuator line
+    //     shaft_->constrain(eqn, fieldI);
+    // }
+}
+
+
+void Foam::fv::crossFlowTurbineALSource::correct(volScalarField& field)
+{
+    // // Rotate the turbine if time value has changed
+    // if (time_.value() != lastRotationTime_)
+    // {
+    //     rotate();
+    // }
+    //
+    // // Add scalar source term from blades
+    // forAll(blades_, i)
+    // {
+    //     blades_[i].correct(field);
+    // }
+    //
+    // if (hasStruts_)
+    // {
+    //     // Add source for strut actuator lines
+    //     forAll(struts_, i)
+    //     {
+    //         struts_[i].correct(field);
+    //     }
+    // }
+    //
+    // if (hasShaft_)
+    // {
+    //     // Add source for shaft actuator line
+    //     shaft_->correct(field);
+    // }
 }
 
 

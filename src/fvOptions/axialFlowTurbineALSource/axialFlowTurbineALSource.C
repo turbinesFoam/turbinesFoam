@@ -656,6 +656,12 @@ void Foam::fv::axialFlowTurbineALSource::addSup
     const label fieldI
 )
 {
+    // Rotate the turbine if time value has changed
+    if (time_.value() != lastRotationTime_)
+    {
+        rotate();
+    }
+
     // Add scalar source term from blades
     forAll(blades_, i)
     {
@@ -680,6 +686,18 @@ void Foam::fv::axialFlowTurbineALSource::addSup
         nacelle_->addSup(eqn, fieldI);
     }
 }
+
+
+void Foam::fv::axialFlowTurbineALSource::constrain
+(
+    fvMatrix<scalar>& eqn,
+    const label fieldI
+)
+{}
+
+
+void Foam::fv::axialFlowTurbineALSource::correct(volScalarField& field)
+{}
 
 
 void Foam::fv::axialFlowTurbineALSource::printCoeffs() const
