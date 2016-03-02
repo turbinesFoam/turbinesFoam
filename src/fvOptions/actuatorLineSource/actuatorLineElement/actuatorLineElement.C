@@ -957,10 +957,16 @@ Foam::scalar Foam::fv::actuatorLineElement::calcTurbulence
     word maxName = quantity + "max";
     scalar maxValue = turbDict.lookupOrDefault(maxName, 0.0);
     scalar val = Foam::min((slope*dragCoefficient_ + intercept), maxValue);
-    // k *= Foam::magSqr(relativeVelocity_);
-    // epsilonTurb *= magSqr(relativeVelocity_) * mag(relativeVelocity_);
-    // epsilonTurb /= chordLength_;
-    val = mag(val);
+    // Make value dimensional, since inputs are not
+    if (quantity == "k")
+    {
+        val *= Foam::magSqr(relativeVelocity_);
+    }
+    else if (quantity == "epsilon")
+    {
+        val *= magSqr(relativeVelocity_) * mag(relativeVelocity_);
+        val /= chordLength_;
+    }
 
     if (debug)
     {
