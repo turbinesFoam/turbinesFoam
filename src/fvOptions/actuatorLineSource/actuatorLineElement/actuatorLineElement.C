@@ -956,7 +956,22 @@ Foam::scalar Foam::fv::actuatorLineElement::calcTurbulence
     scalar intercept = turbDict.lookupOrDefault(interceptName, 0.0);
     word maxName = quantity + "max";
     scalar maxValue = turbDict.lookupOrDefault(maxName, 0.0);
-    scalar val = Foam::min((slope*dragCoefficient_ + intercept), maxValue);
+    scalar val = Foam::min((slope*mag(dragCoefficient_) + intercept), maxValue);
+
+    if (debug)
+    {
+        if (val == maxValue)
+        {
+            Info<< quantity << " injection (nondimensional, limited): " << val
+                << endl;
+        }
+        else
+        {
+            Info<< quantity << " injection (nondimensional, C_d-based): " << val
+                << endl;
+        }
+    }
+
     // Make value dimensional, since inputs are not
     if (quantity == "k")
     {
@@ -966,18 +981,6 @@ Foam::scalar Foam::fv::actuatorLineElement::calcTurbulence
     {
         val *= magSqr(relativeVelocity_) * mag(relativeVelocity_);
         val /= chordLength_;
-    }
-
-    if (debug)
-    {
-        if (val == maxValue)
-        {
-            Info<< quantity << " injection (limited): " << val << endl;
-        }
-        else
-        {
-            Info<< quantity << " injection (C_d-based): " << val << endl;
-        }
     }
 
     return val;
@@ -1015,9 +1018,6 @@ void Foam::fv::actuatorLineElement::addTurbulence
 
     // Calculate turbulence value
     scalar turbVal = calcTurbulence(fieldName);
-
-    Info<< "Adding " << fieldName << " source from " << name_ << ": "
-        << turbVal << endl;
 
     // Add turbulence to the cells within the element's sphere of influence
     scalar sphereRadius = chordLength_ + projectionRadius;
