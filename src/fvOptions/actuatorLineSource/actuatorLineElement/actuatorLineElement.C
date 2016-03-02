@@ -867,7 +867,10 @@ void Foam::fv::actuatorLineElement::addSup
         (
             "force." + name_,
             mesh_.time().timeName(),
-            mesh_
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE,
+            false // Do not register object
         ),
         mesh_,
         dimensionedVector
@@ -906,7 +909,10 @@ void Foam::fv::actuatorLineElement::addSup
         (
             "force." + name_,
             mesh_.time().timeName(),
-            mesh_
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE,
+            false // Do not register object
         ),
         mesh_,
         dimensionedVector
@@ -1001,7 +1007,8 @@ void Foam::fv::actuatorLineElement::addTurbulence
             mesh_.time().timeName(),
             mesh_,
             IOobject::NO_READ,
-            IOobject::NO_WRITE
+            IOobject::NO_WRITE,
+            false // Do not register object
         ),
         mesh_,
         dimensionedScalar
