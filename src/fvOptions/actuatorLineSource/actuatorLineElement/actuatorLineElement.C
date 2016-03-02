@@ -949,6 +949,11 @@ Foam::scalar Foam::fv::actuatorLineElement::calcTurbulence
     word quantity
 )
 {
+    if (debug)
+    {
+        Info<< "Calculating " << quantity " injection from " << name_ << endl;
+    }
+
     // Lookup turbulence injection properties
     dictionary turbDict = profileData_.dict().subOrEmptyDict
     (
@@ -956,40 +961,48 @@ Foam::scalar Foam::fv::actuatorLineElement::calcTurbulence
     );
 
     // Read slope, intercept and max value
-    word slopeName = quantity + "Slope";
-    scalar slope = turbDict.lookupOrDefault(slopeName, 0.0);
-    word interceptName = quantity + "intercept";
-    scalar intercept = turbDict.lookupOrDefault(interceptName, 0.0);
-    word maxName = quantity + "max";
-    scalar maxValue = turbDict.lookupOrDefault(maxName, 0.0);
-    scalar val = Foam::min((slope*mag(dragCoefficient_) + intercept), maxValue);
+    scalar kSlope = turbDict.lookupOrDefault("kSlope", 0.0);
+    scalar kIntercept = turbDict.lookupOrDefault("kIntercept", 0.0);
+    scalar kMax = turbDict.lookupOrDefault("kMax", 0.0);
+    scalar k = Foam::min
+    (
+        mag((kSlope*mag(dragCoefficient_) + kIntercept)),
+        kMax
+    );
 
     if (debug)
     {
-        if (val == maxValue)
+        if (k == kMax)
         {
-            Info<< quantity << " injection (nondimensional, limited): " << val
-                << endl;
+            Info<< "    " << quantity << " injection limited by kMax" << endl;
         }
         else
         {
-            Info<< quantity << " injection (nondimensional, C_d-based): " << val
+            Info<< "    " << quantity << " injection based on drag coefficient"
                 << endl;
         }
     }
 
-    // Make value dimensional, since inputs are not
-    if (quantity == "k")
+    // Make k dimensional, since inputs are not
+    k *= Foam::magSqr(relativeVelocity_);
+
+    if (quantity == "epsilon")
     {
-        val *= Foam::magSqr(relativeVelocity_);
-    }
-    else if (quantity == "epsilon")
-    {
-        val *= magSqr(relativeVelocity_) * mag(relativeVelocity_);
-        val /= chordLength_;
+        // Set based on k
+        scalar cmu = 0.2;
+        scalar epsilon = cmu*k*mag(relativeVelocity_)/chordLength_;
+        if (debug)
+        {
+            Info<< "    epsilon injection value (k-based): " << epsilon << endl;
+        }
+        return epsilon;
     }
 
-    return val;
+    if (debug)
+    {
+        Info<< "    " << quantity << " injection value: " << k << endl;
+    }
+    return k;
 }
 
 
