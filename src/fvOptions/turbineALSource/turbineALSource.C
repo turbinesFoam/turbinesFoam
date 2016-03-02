@@ -222,24 +222,6 @@ Foam::fv::turbineALSource::~turbineALSource()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-Foam::vector& Foam::fv::turbineALSource::force()
-{
-    return force_;
-}
-
-
-Foam::volVectorField& Foam::fv::turbineALSource::forceField()
-{
-    return forceField_;
-}
-
-
-Foam::scalar& Foam::fv::turbineALSource::torque()
-{
-    return torque_;
-}
-
-
 void Foam::fv::turbineALSource::addSup
 (
     fvMatrix<vector>& eqn,

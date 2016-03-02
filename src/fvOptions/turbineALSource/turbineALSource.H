@@ -212,18 +212,6 @@ public:
             //- Return the reference density for incompressible case
             inline scalar rhoRef() const;
 
-            //- Return the rotational speed (rad/s)
-            inline scalar omega() const;
-
-            //- Return force vector
-            vector& force();
-
-            //- Return force field
-            volVectorField& forceField();
-
-            //- Return torque
-            scalar& torque();
-
 
         // Source term addition
 
@@ -273,10 +261,6 @@ public:
 
 } // End namespace fv
 } // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#include "turbineALSourceI.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
