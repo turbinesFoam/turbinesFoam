@@ -243,20 +243,6 @@ public:
                 fvMatrix<vector>& eqn,
                 const label fieldI
             );
-
-
-        // Constrain turbulence model equation
-
-            virtual void constrain
-            (
-                fvMatrix<scalar>& eqn,
-                const label fieldI
-            );
-
-
-        // Correction to turbulence model equation
-
-            virtual void correct(volScalarField& field);
 };
 
 
