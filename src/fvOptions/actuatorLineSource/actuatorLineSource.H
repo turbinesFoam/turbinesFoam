@@ -138,6 +138,9 @@ protected:
         //- Calculate end effects from lifting line theory
         void calcEndEffects();
 
+        //- Execute harmonic pitching for a single time step
+        void harmonicPitching();
+
 
 public:
 
@@ -157,12 +160,12 @@ public:
 
     //- Constructor
     actuatorLineSource
-	(
-		const word& name,
-		const word& modelType,
-		const dictionary& dict,
-		const fvMesh& mesh
-	);
+    (
+        const word& name,
+        const word& modelType,
+        const dictionary& dict,
+        const fvMesh& mesh
+    );
 
 
     //- Destructor
@@ -173,11 +176,11 @@ public:
 
         // Access
 
-            //- Return the total force vector
-            vector& force();
+            //- Return const reference to the total force vector
+            const vector& force();
 
-            //- Return the force field
-            volVectorField& forceField();
+            //- Return const reference to the force field
+            const volVectorField& forceField();
 
 
         // Edit

@@ -167,11 +167,17 @@ protected:
         //- Create the co-ordinate system
         virtual void createCoordinateSystem();
 
+        //- Update tip speed ratio and angular velocity
+        virtual void updateTSROmega();
+
         //- Rotate the turbine according to its angular velocity and time step
         virtual void rotate();
 
         //- Rotate the turbine a specified angle about its axis
         virtual void rotate(scalar radians);
+
+        //- Print performance
+        virtual void printPerf();
 
 
 public:
@@ -205,18 +211,6 @@ public:
 
             //- Return the reference density for incompressible case
             inline scalar rhoRef() const;
-
-            //- Return the rotational speed (rad/s)
-            inline scalar omega() const;
-
-            //- Return force vector
-            vector& force();
-
-            //- Return force field
-            volVectorField& forceField();
-
-            //- Return torque
-            scalar& torque();
 
 
         // Source term addition
@@ -281,10 +275,6 @@ public:
 
 } // End namespace fv
 } // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#include "turbineALSourceI.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

@@ -6,6 +6,11 @@ import subprocess
 import pandas as pd
 import os
 import numpy as np
+from numpy.testing import assert_array_almost_equal
+
+
+element_dir = "postProcessing/actuatorLineElements/0/"
+al_dir = "postProcessing/actuatorLines/0/"
 
 
 def setup():
@@ -17,6 +22,17 @@ def check_created():
     """Test that axialFlowTurbineALSource was created."""
     txt = "Selecting finite volume options model type axialFlowTurbineALSource"
     subprocess.check_output(["grep", txt, "log.pimpleFoam"])
+
+
+def check_al_file_exists():
+    """Test that the actuator line perf file was created."""
+    assert os.path.isfile(os.path.join(al_dir, "turbine.blade1.csv"))
+
+
+def check_element_file_exists():
+    """Test that the element perf file was created."""
+    assert os.path.isfile(os.path.join(element_dir,
+                                       "turbine.blade1.element0.csv"))
 
 
 def check_perf(angle0=540.0):
@@ -38,6 +54,19 @@ def check_perf(angle0=540.0):
     assert 0.5 < mean_cd < 1.0
 
 
+def check_periodic_tsr():
+    """Check that the periodic TSR oscillation was set properly."""
+    df = pd.read_csv("postProcessing/turbines/0/turbine.csv")
+    df = df.drop_duplicates("time", keep="last")
+    theta_rad = np.deg2rad(df.angle_deg)
+    tsr_amp = 0.0
+    tsr_phase = 0.0
+    tsr_mean = df.tsr.mean()
+    nblades = 3
+    tsr_ref = tsr_amp*np.cos(nblades*(theta_rad - tsr_phase)) + tsr_mean
+    assert_array_almost_equal(df.tsr, tsr_ref)
+
+
 def test_serial():
     """Test axialFlowTurbineALSource in serial."""
     output_clean = subprocess.check_output("./Allclean")
@@ -48,7 +77,10 @@ def test_serial():
                                        "log.pimpleFoam"]).decode())
         assert False
     check_created()
+    check_al_file_exists()
+    check_element_file_exists()
     check_perf()
+    check_periodic_tsr()
     log_end = subprocess.check_output(["tail", "log.pimpleFoam"]).decode()
     print(log_end)
     assert log_end.split()[-1] == "End"
@@ -64,7 +96,10 @@ def test_parallel():
                                        "log.pimpleFoam"]).decode())
         assert False
     check_created()
+    check_al_file_exists()
+    check_element_file_exists()
     check_perf()
+    check_periodic_tsr()
     log_end = subprocess.check_output(["tail", "log.pimpleFoam"]).decode()
     print(log_end)
     assert "Finalising parallel run" in log_end

@@ -73,7 +73,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
 
     forAll(blades_, i)
     {
-        word& bladeName = bladeNames_[i];
+        word bladeName = bladeNames_[i];
         // Create dictionary items for this blade
         dictionary bladeSubDict;
         bladeSubDict = bladesDict_.subDict(bladeName);
@@ -224,7 +224,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
 
         actuatorLineSource* blade = new actuatorLineSource
         (
-            bladeName,
+            name_ + "." + bladeName,
             modelType,
             dict,
             mesh_
@@ -250,7 +250,7 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
 
     forAll(struts_, i)
     {
-        word& strutName = strutNames[i];
+        word strutName = strutNames[i];
         // Create dictionary items for this strut
         dictionary strutSubDict;
         strutSubDict = strutsDict_.subDict(strutName);
@@ -372,7 +372,7 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
 
         actuatorLineSource* strut = new actuatorLineSource
         (
-            strutName,
+            name_ + "." + strutName,
             modelType,
             dict,
             mesh_
@@ -454,7 +454,7 @@ void Foam::fv::crossFlowTurbineALSource::createShaft()
 
     actuatorLineSource* shaft = new actuatorLineSource
     (
-        "shaft",
+        name_ + ".shaft",
         "actuatorLineSource",
         dict,
         mesh_
@@ -481,8 +481,14 @@ Foam::fv::crossFlowTurbineALSource::crossFlowTurbineALSource
     read(dict);
     createCoordinateSystem();
     createBlades();
-    if (hasStruts_) createStruts();
-    if (hasShaft_) createShaft();
+    if (hasStruts_)
+    {
+        createStruts();
+    }
+    if (hasShaft_)
+    {
+        createShaft();
+    }
     createOutputFile();
 
     // Rotate turbine to azimuthalOffset if necessary
@@ -504,22 +510,6 @@ Foam::fv::crossFlowTurbineALSource::~crossFlowTurbineALSource()
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-void Foam::fv::crossFlowTurbineALSource::rotate()
-{
-    // Update tip speed ratio and omega
-    scalar t = time_.value();
-    tipSpeedRatio_ = meanTSR_ + tsrAmplitude_
-                   *cos(nBlades_/rotorRadius_*(meanTSR_*t - tsrPhase_));
-    omega_ = tipSpeedRatio_*mag(freeStreamVelocity_)/rotorRadius_;
-
-    scalar deltaT = time_.deltaT().value();
-    scalar radians = omega_*deltaT;
-    rotate(radians);
-    angleDeg_ += radToDeg(radians);
-    lastRotationTime_ = time_.value();
-}
-
 
 void Foam::fv::crossFlowTurbineALSource::rotate(scalar radians)
 {
@@ -603,10 +593,6 @@ void Foam::fv::crossFlowTurbineALSource::addSup
 
     // Torque is the projection of the moment from all blades on the axis
     torque_ = moment & axis_;
-    Info<< "Azimuthal angle (degrees) of " << name_ << ": " << angleDeg_
-        << endl;
-    Info<< "Torque (per unit density) from " << name_ << ": " << torque_
-        << endl;
 
     torqueCoefficient_ = torque_/(0.5*frontalArea_*rotorRadius_
                        * magSqr(freeStreamVelocity_));
@@ -614,12 +600,15 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     dragCoefficient_ = force_ & freeStreamDirection_
                      / (0.5*frontalArea_*magSqr(freeStreamVelocity_));
 
-    Info<< "Power coefficient from " << name_ << ": " << powerCoefficient_
-        << endl << endl;
+    // Print performance to terminal
+    printPerf();
 
     // Write performance data -- note this will write multiples if there are
     // multiple PIMPLE loops
-    if (Pstream::master()) writePerf();
+    if (Pstream::master())
+    {
+        writePerf();
+    }
 }
 
 
@@ -681,10 +670,6 @@ void Foam::fv::crossFlowTurbineALSource::addSup
 
     // Torque is the projection of the moment from all blades on the axis
     torque_ = moment & axis_;
-    Info<< "Azimuthal angle (degrees) of " << name_ << ": " << angleDeg_
-        << endl;
-    Info<< "Torque from " << name_ << ": " << torque_
-        << endl;
 
     scalar rhoRef;
     coeffs_.lookup("rhoRef") >> rhoRef;
@@ -694,12 +679,15 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     dragCoefficient_ = force_ & freeStreamDirection_
                      / (0.5*rhoRef*frontalArea_*magSqr(freeStreamVelocity_));
 
-    Info<< "Power coefficient from " << name_ << ": " << powerCoefficient_
-        << endl << endl;
+    // Print performance to terminal
+    printPerf();
 
     // Write performance data -- note this will write multiples if there are
     // multiple PIMPLE loops
-    if (Pstream::master()) writePerf();
+    if (Pstream::master())
+    {
+        writePerf();
+    }
 }
 
 
@@ -818,11 +806,17 @@ bool Foam::fv::crossFlowTurbineALSource::read(const dictionary& dict)
 
         // Get struts information
         strutsDict_ = coeffs_.subOrEmptyDict("struts");
-        if (strutsDict_.keys().size() > 0) hasStruts_ = true;
+        if (strutsDict_.keys().size() > 0)
+        {
+            hasStruts_ = true;
+        }
 
         // Get shaft information
         shaftDict_ = coeffs_.subOrEmptyDict("shaft");
-        if (shaftDict_.keys().size() > 0) hasShaft_ = true;
+        if (shaftDict_.keys().size() > 0)
+        {
+            hasShaft_ = true;
+        }
 
         if (debug)
         {
