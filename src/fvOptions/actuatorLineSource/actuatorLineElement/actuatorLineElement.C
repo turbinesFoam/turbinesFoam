@@ -966,7 +966,7 @@ Foam::scalar Foam::fv::actuatorLineElement::calcTurbulence
     scalar kSlope = turbDict.lookupOrDefault("kSlope", 0.0);
     scalar kIntercept = turbDict.lookupOrDefault("kIntercept", 0.0);
     scalar kMax = turbDict.lookupOrDefault("kMax", 0.0);
-    scalar kRateFactor = turbDict.lookupOrDefault("kRateFactor", 0.15);
+    scalar ck = turbDict.lookupOrDefault("ck", 1e-2);
     scalar k = Foam::min
     (
         mag((kSlope*mag(dragCoefficient_) + kIntercept)),
@@ -987,16 +987,19 @@ Foam::scalar Foam::fv::actuatorLineElement::calcTurbulence
     }
 
     // Make k dimensional, since inputs are not
-    k *= Foam::magSqr(relativeVelocity_)*kRateFactor;
+    k *= Foam::magSqr(relativeVelocity_);
 
-    // Make k into a rate by dividing by a typical time scale
-    // k *= Foam::magSqr(relativeVelocity_)/chordLength_;
+    // Make k into a rate by dividing by a time scale
+    k *= Foam::magSqr(relativeVelocity_)/chordLength_;
+
+    // Multiply k by the the tuning factor C_k
+    k *= ck;
 
     if (quantity == "epsilon")
     {
         // Set based on k
         scalar ce = turbDict.lookupOrDefault("cEpsilon", 1.0);
-        scalar epsilon = ce*k*mag(relativeVelocity_)/chordLength_;
+        scalar epsilon = ce*Foam::pow(k, 1.5)/chordLength_;
         if (debug)
         {
             Info<< "    epsilon injection value (k-based): " << epsilon << endl;
@@ -1038,8 +1041,8 @@ void Foam::fv::actuatorLineElement::addTurbulence
         )
     );
 
-    // Calculate projection radius
-    scalar epsilon = calcProjectionEpsilon();
+    // Calculate projection radius (use half of that used for momentum)
+    scalar epsilon = calcProjectionEpsilon()/2.0;
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
 
     // Calculate turbulence value
@@ -1113,21 +1116,40 @@ void Foam::fv::actuatorLineElement::correctTurbulence
     scalar epsilon = calcProjectionEpsilon();
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
 
-    scalar turbVal = calcTurbulence(fieldName)/100.0;
+    scalar turbVal = calcTurbulence(fieldName);
+
+    label valsKept = 0;
+    label valsReplaced = 0;
+
+    vector injectionCenter = position_;
 
     // Add turbulence to the cells within the element's sphere of influence
     scalar sphereRadius = chordLength_ + projectionRadius;
     forAll(cells_, i)
     {
         label cellI = cells_[i];
-        scalar dis = mag(mesh_.C()[cellI] - position_);
+        scalar dis = mag(mesh_.C()[cellI] - injectionCenter);
         if (dis <= sphereRadius)
         {
             scalar factor = Foam::exp(-Foam::sqr(dis/epsilon))
                           / (Foam::pow(epsilon, 3)
                           * Foam::pow(Foam::constant::mathematical::pi, 1.5));
-            field[cellI] = max(factor*turbVal, field[cellI]);
+            if (Foam::max(factor*turbVal, field[cellI]) == field[cellI])
+            {
+                valsKept++;
+            }
+            else
+            {
+                valsReplaced++;
+            }
+            field[cellI] = Foam::max(factor*turbVal, field[cellI]);
         }
+    }
+
+    if (debug)
+    {
+        scalar pr = 100.0*valsReplaced/(valsKept + valsReplaced);
+        Info<< "    Percent values replaced: " << pr << endl;
     }
 }
 
