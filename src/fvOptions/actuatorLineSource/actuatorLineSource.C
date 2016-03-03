@@ -750,8 +750,8 @@ void Foam::fv::actuatorLineSource::constrain
     //
     // if (debug)
     // {
-    //     Info<< endl << "Constraining " << fieldName << " from " << name_ << endl
-    //         << endl;
+        // Info<< endl << "Constraining " << fieldName << " from " << name_
+        //     << endl << endl;
     // }
     //
     // forAll(elements_, i)
@@ -767,8 +767,8 @@ void Foam::fv::actuatorLineSource::correct(volScalarField& field)
     //
     // if (debug)
     // {
-    //     Info<< endl << "Correcting " << fieldName << " from " << name_ << endl
-    //         << endl;
+        // Info<< endl << "Correcting " << fieldName << " from " << name_
+        //     << endl << endl;
     // }
     //
     // forAll(elements_, i)
