@@ -989,9 +989,6 @@ Foam::scalar Foam::fv::actuatorLineElement::calcTurbulence
     // Make k dimensional, since inputs are not
     k *= Foam::magSqr(relativeVelocity_);
 
-    // Make k into a rate by dividing by a time scale
-    k *= Foam::magSqr(relativeVelocity_)/chordLength_;
-
     // Multiply k by the the tuning factor C_k
     k *= ck;
 
@@ -1047,6 +1044,9 @@ void Foam::fv::actuatorLineElement::addTurbulence
 
     // Calculate turbulence value
     scalar turbVal = calcTurbulence(fieldName);
+
+    // Make turbVal into a rate by dividing by a time scale
+    turbVal *= Foam::magSqr(relativeVelocity_)/chordLength_;
 
     // Add turbulence to the cells within the element's sphere of influence
     scalar sphereRadius = chordLength_ + projectionRadius;
