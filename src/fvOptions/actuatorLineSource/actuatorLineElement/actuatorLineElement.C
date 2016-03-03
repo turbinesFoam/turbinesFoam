@@ -995,7 +995,7 @@ Foam::scalar Foam::fv::actuatorLineElement::calcTurbulence
     if (quantity == "epsilon")
     {
         // Set based on k
-        scalar ce = turbDict.lookupOrDefault("cEpsilon", 0.1);
+        scalar ce = turbDict.lookupOrDefault("cEpsilon", 1.0);
         scalar epsilon = ce*k*mag(relativeVelocity_)/chordLength_;
         if (debug)
         {
