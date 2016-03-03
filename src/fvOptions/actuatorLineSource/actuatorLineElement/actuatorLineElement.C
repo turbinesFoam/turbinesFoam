@@ -966,7 +966,7 @@ Foam::scalar Foam::fv::actuatorLineElement::calcTurbulence
     scalar kSlope = turbDict.lookupOrDefault("kSlope", 0.0);
     scalar kIntercept = turbDict.lookupOrDefault("kIntercept", 0.0);
     scalar kMax = turbDict.lookupOrDefault("kMax", 0.0);
-    scalar kRateFactor = turbDict.lookupOrDefault("kRateFactor", 0.5);
+    scalar kRateFactor = turbDict.lookupOrDefault("kRateFactor", 0.15);
     scalar k = Foam::min
     (
         mag((kSlope*mag(dragCoefficient_) + kIntercept)),
@@ -995,7 +995,7 @@ Foam::scalar Foam::fv::actuatorLineElement::calcTurbulence
     if (quantity == "epsilon")
     {
         // Set based on k
-        scalar ce = turbDict.lookupOrDefault("cEpsilon", 1.1);
+        scalar ce = turbDict.lookupOrDefault("cEpsilon", 0.1);
         scalar epsilon = ce*k*mag(relativeVelocity_)/chordLength_;
         if (debug)
         {
