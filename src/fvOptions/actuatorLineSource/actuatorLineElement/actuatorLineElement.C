@@ -435,7 +435,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     addedMass_(mesh.time(), dict.lookupOrDefault("chordLength", 1.0), debug)
 {
     // Inflate the bounding box by the approximate length of the first cell
-    meshBoundBox_.inflate(Foam::cbrt(mesh_.V()[cells_[0]]));
+    meshBoundBox_.inflate(Foam::cbrt(mesh_.V()[0]));
     read();
     if (writePerf_)
     {
