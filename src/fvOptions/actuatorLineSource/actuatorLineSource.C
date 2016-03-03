@@ -727,15 +727,18 @@ void Foam::fv::actuatorLineSource::addSup
 {
     word fieldName = fieldNames_[fieldI];
 
-    if (debug)
+    if (fieldName == "k" or fieldName == "epsilon")
     {
-        Info<< endl << "Adding " << fieldName << " from " << name_ << endl
-            << endl;
-    }
+        if (debug)
+        {
+            Info<< endl << "Adding " << fieldName << " from " << name_ << endl
+                << endl;
+        }
 
-    forAll(elements_, i)
-    {
-        elements_[i].addTurbulence(eqn, fieldName);
+        forAll(elements_, i)
+        {
+            elements_[i].addTurbulence(eqn, fieldName);
+        }
     }
 }
 
@@ -765,15 +768,18 @@ void Foam::fv::actuatorLineSource::correct(volScalarField& field)
 {
     // word fieldName = field.name();
     //
-    // if (debug)
+    // if (fieldName == "k" or fieldName == "epsilon")
     // {
-    //     Info<< endl << "Correcting " << fieldName << " from " << name_
-    //         << endl << endl;
-    // }
+    //     if (debug)
+    //     {
+    //         Info<< endl << "Correcting " << fieldName << " from " << name_
+    //             << endl << endl;
+    //     }
     //
-    // forAll(elements_, i)
-    // {
-    //     elements_[i].correctTurbulence(field);
+    //     forAll(elements_, i)
+    //     {
+    //         elements_[i].correctTurbulence(field);
+    //     }
     // }
 }
 
