@@ -746,8 +746,6 @@ void Foam::fv::actuatorLineSource::constrain
     const label fieldI
 )
 {
-    // const volVectorField& U = mesh_.lookupObject<volVectorField>("U");
-    //
     // word fieldName = fieldNames_[fieldI];
     //
     // if (debug)
@@ -758,7 +756,6 @@ void Foam::fv::actuatorLineSource::constrain
     //
     // forAll(elements_, i)
     // {
-    //     elements_[i].calculateForce(U);
     //     elements_[i].constrainTurbulence(eqn, fieldName);
     // }
 }
@@ -766,19 +763,16 @@ void Foam::fv::actuatorLineSource::constrain
 
 void Foam::fv::actuatorLineSource::correct(volScalarField& field)
 {
-    // const volVectorField& U = mesh_.lookupObject<volVectorField>("U");
-
     // word fieldName = field.name();
-
+    //
     // if (debug)
     // {
     //     Info<< endl << "Correcting " << fieldName << " from " << name_ << endl
     //         << endl;
     // }
-
+    //
     // forAll(elements_, i)
     // {
-    //     elements_[i].calculateForce(U);
     //     elements_[i].correctTurbulence(field);
     // }
 }

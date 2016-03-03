@@ -408,7 +408,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     name_(name),
     mesh_(mesh),
     cells_(cells),
-    meshBoundBox_(mesh_.points(), false),
+    meshBoundBox_(mesh_.points(), cells_, false),
     planformNormal_(vector::zero),
     velocity_(vector::zero),
     forceVector_(vector::zero),
@@ -434,7 +434,8 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     addedMassActive_(dict.lookupOrDefault("addedMass", false)),
     addedMass_(mesh.time(), dict.lookupOrDefault("chordLength", 1.0), debug)
 {
-    meshBoundBox_.inflate(1e-6);
+    // Inflate the bounding box by the approximate length of the first cell
+    meshBoundBox_.inflate(Foam::cbrt(mesh_.V()[cells_[0]]));
     read();
     if (writePerf_)
     {
@@ -951,7 +952,8 @@ Foam::scalar Foam::fv::actuatorLineElement::calcTurbulence
 {
     if (debug)
     {
-        Info<< "Calculating " << quantity " injection from " << name_ << endl;
+        Info<< "Calculating " << quantity << " injection from " << name_
+            << endl;
     }
 
     // Lookup turbulence injection properties
@@ -964,6 +966,7 @@ Foam::scalar Foam::fv::actuatorLineElement::calcTurbulence
     scalar kSlope = turbDict.lookupOrDefault("kSlope", 0.0);
     scalar kIntercept = turbDict.lookupOrDefault("kIntercept", 0.0);
     scalar kMax = turbDict.lookupOrDefault("kMax", 0.0);
+    scalar kRateFactor = turbDict.lookupOrDefault("kRateFactor", 0.5);
     scalar k = Foam::min
     (
         mag((kSlope*mag(dragCoefficient_) + kIntercept)),
@@ -984,13 +987,16 @@ Foam::scalar Foam::fv::actuatorLineElement::calcTurbulence
     }
 
     // Make k dimensional, since inputs are not
-    k *= Foam::magSqr(relativeVelocity_);
+    k *= Foam::magSqr(relativeVelocity_)*kRateFactor;
+
+    // Make k into a rate by dividing by a typical time scale
+    // k *= Foam::magSqr(relativeVelocity_)/chordLength_;
 
     if (quantity == "epsilon")
     {
         // Set based on k
-        scalar cmu = 0.2;
-        scalar epsilon = cmu*k*mag(relativeVelocity_)/chordLength_;
+        scalar ce = turbDict.lookupOrDefault("cEpsilon", 1.1);
+        scalar epsilon = ce*k*mag(relativeVelocity_)/chordLength_;
         if (debug)
         {
             Info<< "    epsilon injection value (k-based): " << epsilon << endl;
@@ -1107,7 +1113,7 @@ void Foam::fv::actuatorLineElement::correctTurbulence
     scalar epsilon = calcProjectionEpsilon();
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
 
-    scalar turbVal = calcTurbulence(fieldName);
+    scalar turbVal = calcTurbulence(fieldName)/100.0;
 
     // Add turbulence to the cells within the element's sphere of influence
     scalar sphereRadius = chordLength_ + projectionRadius;

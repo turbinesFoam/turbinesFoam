@@ -697,12 +697,6 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     const label fieldI
 )
 {
-    // Rotate the turbine if time value has changed
-    if (time_.value() != lastRotationTime_)
-    {
-        rotate();
-    }
-
     // Add scalar source term from blades
     forAll(blades_, i)
     {
@@ -732,12 +726,6 @@ void Foam::fv::crossFlowTurbineALSource::constrain
     const label fieldI
 )
 {
-    // // Rotate the turbine if time value has changed
-    // if (time_.value() != lastRotationTime_)
-    // {
-    //     rotate();
-    // }
-    //
     // // Add scalar source term from blades
     // forAll(blades_, i)
     // {
@@ -763,12 +751,6 @@ void Foam::fv::crossFlowTurbineALSource::constrain
 
 void Foam::fv::crossFlowTurbineALSource::correct(volScalarField& field)
 {
-    // // Rotate the turbine if time value has changed
-    // if (time_.value() != lastRotationTime_)
-    // {
-    //     rotate();
-    // }
-    //
     // // Add scalar source term from blades
     // forAll(blades_, i)
     // {

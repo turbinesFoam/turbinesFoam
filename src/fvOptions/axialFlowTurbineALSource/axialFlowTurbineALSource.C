@@ -656,12 +656,6 @@ void Foam::fv::axialFlowTurbineALSource::addSup
     const label fieldI
 )
 {
-    // Rotate the turbine if time value has changed
-    if (time_.value() != lastRotationTime_)
-    {
-        rotate();
-    }
-
     // Add scalar source term from blades
     forAll(blades_, i)
     {
