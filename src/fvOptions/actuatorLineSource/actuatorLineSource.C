@@ -731,8 +731,8 @@ void Foam::fv::actuatorLineSource::addSup
     {
         if (debug)
         {
-            Info<< endl << "Adding " << fieldName << " from " << name_ << endl
-                << endl;
+            Info<< endl << "Adding " << fieldName << " from " << name_
+                << endl << endl;
         }
 
         forAll(elements_, i)

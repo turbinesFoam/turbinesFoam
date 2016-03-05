@@ -1047,7 +1047,7 @@ void Foam::fv::actuatorLineElement::addTurbulence
     );
 
     // Calculate projection radius (use half of that used for momentum)
-    scalar epsilon = calcProjectionEpsilon()/2.0;
+    scalar epsilon = calcProjectionEpsilon();
     scalar projectionRadius = (epsilon*Foam::sqrt(Foam::log(1.0/0.001)));
 
     // Calculate turbulence value
