@@ -585,7 +585,18 @@ void Foam::fv::actuatorLineElement::calculateForce
     // Apply flow curvature correction to angle of attack
     if (flowCurvatureActive_)
     {
+        scalar alphaOrg = angleOfAttackRad;
         correctFlowCurvature(angleOfAttackRad);
+        // Rotate relative velocity according to change in angle of attack due
+        // to flow curvature
+        scalar deltaAlpha = angleOfAttackRad - alphaOrg;
+        rotateVector
+        (
+            relativeVelocity_,
+            vector::zero,
+            spanDirection_,
+            deltaAlpha
+        );
     }
 
     // Calculate angle of attack in degrees
