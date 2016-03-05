@@ -400,13 +400,15 @@ Foam::fv::actuatorLineElement::actuatorLineElement
 (
     const word& name,
     const dictionary& dict,
-    const fvMesh& mesh
+    const fvMesh& mesh,
+    const labelList& cells
 )
 :
     dict_(dict),
     name_(name),
     mesh_(mesh),
-    meshBoundBox_(mesh_.points(), false),
+    cells_(cells),
+    meshBoundBox_(mesh_.C(), cells_, false),
     planformNormal_(vector::zero),
     velocity_(vector::zero),
     forceVector_(vector::zero),
@@ -432,7 +434,8 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     addedMassActive_(dict.lookupOrDefault("addedMass", false)),
     addedMass_(mesh.time(), dict.lookupOrDefault("chordLength", 1.0), debug)
 {
-    meshBoundBox_.inflate(1e-6);
+    // Inflate bounding box by half the approximate length of the first cell
+    meshBoundBox_.inflate(Foam::cbrt(mesh_.V()[0])/2.0);
     read();
     if (writePerf_)
     {

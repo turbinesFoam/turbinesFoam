@@ -327,7 +327,10 @@ void Foam::fv::actuatorLineSource::createElements()
 
         actuatorLineElement* element = new actuatorLineElement
         (
-            name, dict, mesh_
+            name,
+            dict,
+            mesh_,
+            cells_
         );
         elements_.set(i, element);
         pitch = pitch/180.0*Foam::constant::mathematical::pi;

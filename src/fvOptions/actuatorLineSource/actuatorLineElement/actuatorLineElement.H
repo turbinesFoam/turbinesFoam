@@ -75,6 +75,9 @@ protected:
         //- Reference to the mesh
         const fvMesh& mesh_;
 
+        //- Reference to the list of cell indices
+        const labelList& cells_;
+
         //- Mesh bounding box
         boundBox meshBoundBox_;
 
@@ -258,7 +261,8 @@ public:
     (
         const word& name,
         const dictionary& dict,
-        const fvMesh& mesh
+        const fvMesh& mesh,
+        const labelList& cells
     );
 
 
