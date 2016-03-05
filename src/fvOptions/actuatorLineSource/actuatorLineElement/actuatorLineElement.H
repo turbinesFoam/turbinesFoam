@@ -43,6 +43,7 @@ SourceFiles
 #include "volFieldsFwd.H"
 #include "fvMesh.H"
 #include "fvMatrices.H"
+#include "meshSearch.H"
 #include "dynamicStallModel.H"
 #include "interpolationCellPoint.H"
 #include "profileData.H"
@@ -77,6 +78,9 @@ protected:
 
         //- Mesh bounding box
         boundBox meshBoundBox_;
+
+        //- Mesh search object
+        meshSearch meshSearch_;
 
         //- Chord direction
         vector chordDirection_;

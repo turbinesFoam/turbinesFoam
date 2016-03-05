@@ -167,7 +167,7 @@ Foam::label Foam::fv::actuatorLineElement::findCell
                     << " inside bounding box:" << endl
                     << meshBoundBox_ << endl;
             }
-            return mesh_.findCell(location);
+            return meshSearch_.findCell(location);
         }
         else
         {
@@ -180,7 +180,7 @@ Foam::label Foam::fv::actuatorLineElement::findCell
     }
     else
     {
-        return mesh_.findCell(location);;
+        return meshSearch_.findCell(location);;
     }
 }
 
@@ -407,6 +407,7 @@ Foam::fv::actuatorLineElement::actuatorLineElement
     name_(name),
     mesh_(mesh),
     meshBoundBox_(mesh_.points(), false),
+    meshSearch_(mesh_),
     planformNormal_(vector::zero),
     velocity_(vector::zero),
     forceVector_(vector::zero),
