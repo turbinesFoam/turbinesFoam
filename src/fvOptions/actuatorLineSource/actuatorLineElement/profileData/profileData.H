@@ -95,34 +95,34 @@ protected:
         //- 2-D array of lift coefficient values for multiple Re dataset
         List<List<scalar> > liftCoefficientLists_;
 
-        //- Unmodified moment coefficient matrix
+        //- 2-D array of moment coefficient values for multiple Re dataset
         List<List<scalar> > momentCoefficientLists_;
 
-        //- Static stall angle (deg)
+        //- List of static stall angles (deg) for multiple Re dataset
         List<scalar> staticStallAngleList_;
 
-        //- Drag coefficient at zero lift
+        //- List of zero lift drag coefficients for multiple Re dataset
         List<scalar> zeroLiftDragCoeffList_;
 
-        //- Angle of attack at zero lift (deg)
+        //- List of zero lift AoAs (deg) for multiple Re dataset
         List<scalar> zeroLiftAngleOfAttackList_;
 
-        //- Moment coefficient at zero lift
+        //- List of moment coefficients at zero lift for multiple Re dataset
         List<scalar> zeroLiftMomentCoeffList_;
 
-        //- Slope of normal force coefficient (1/rad)
+        //- List of normal coefficient slopes (1/rad) for multiple Re dataset
         List<scalar> normalCoeffSlopeList_;
 
-        //- Angle of attack list (deg)
+        //- Angle of attack list (deg) at current Re
         List<scalar> angleOfAttackList_;
 
-        //- Lift coefficient list
+        //- Lift coefficient list at current Re
         List<scalar> liftCoefficientList_;
 
-        //- Drag coefficient list
+        //- Drag coefficient list at current Re
         List<scalar> dragCoefficientList_;
 
-        //- Moment coefficient list
+        //- Moment coefficient list at current Re
         List<scalar> momentCoefficientList_;
 
         //- Switch for Reynolds number corrections
