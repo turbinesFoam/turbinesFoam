@@ -316,19 +316,19 @@ void Foam::profileData::interpCoeffLists()
     // Create lists for lift, drag, and moment coefficient at current Re
     forAll(angleOfAttackList_, i)
     {
-        liftCoefficientList_[i] = interpolateUtils::interpolate1d
+        liftCoefficientList_[i] = interpolateUtils::interpolate1D
         (
             Re_,
             ReList_,
             liftCoefficientLists_[i]
         );
-        dragCoefficientList_[i] = interpolateUtils::interpolate1d
+        dragCoefficientList_[i] = interpolateUtils::interpolate1D
         (
             Re_,
             ReList_,
             dragCoefficientLists_[i]
         );
-        momentCoefficientList_[i] = interpolateUtils::interpolate1d
+        momentCoefficientList_[i] = interpolateUtils::interpolate1D
         (
             Re_,
             ReList_,
@@ -350,31 +350,31 @@ void Foam::profileData::interpPropsMultiRe()
         interpIndex
     );
 
-    staticStallAngle_ = interpolateUtils::interpolate1d
+    staticStallAngle_ = interpolateUtils::interpolate1D
     (
         interpFraction,
         staticStallAngleList_,
         interpIndex
     );
-    zeroLiftDragCoeff_ = interpolateUtils::interpolate1d
+    zeroLiftDragCoeff_ = interpolateUtils::interpolate1D
     (
         interpFraction,
         zeroLiftDragCoeffList_,
         interpIndex
     );
-    zeroLiftAngleOfAttack_ = interpolateUtils::interpolate1d
+    zeroLiftAngleOfAttack_ = interpolateUtils::interpolate1D
     (
         interpFraction,
         zeroLiftAngleOfAttackList_,
         interpIndex
     );
-    zeroLiftMomentCoeff_ = interpolateUtils::interpolate1d
+    zeroLiftMomentCoeff_ = interpolateUtils::interpolate1D
     (
         interpFraction,
         zeroLiftMomentCoeffList_,
         interpIndex
     );
-    normalCoeffSlope_ = interpolateUtils::interpolate1d
+    normalCoeffSlope_ = interpolateUtils::interpolate1D
     (
         interpFraction,
         normalCoeffSlopeList_,
@@ -784,13 +784,13 @@ Foam::List<scalar> Foam::profileData::normalCoefficientList
                 (
                     convertToCN
                     (
-                        interpolateUtils::interpolate1d
+                        interpolateUtils::interpolate1D
                         (
                             Re_,
                             ReList_,
                             liftCoefficientLists_[i]
                         ),
-                        interpolateUtils::interpolate1d
+                        interpolateUtils::interpolate1D
                         (
                             Re_,
                             ReList_,
@@ -843,13 +843,13 @@ Foam::List<scalar> Foam::profileData::chordwiseCoefficientList
                 (
                     convertToCC
                     (
-                        interpolateUtils::interpolate1d
+                        interpolateUtils::interpolate1D
                         (
                             Re_,
                             ReList_,
                             liftCoefficientLists_[i]
                         ),
-                        interpolateUtils::interpolate1d
+                        interpolateUtils::interpolate1D
                         (
                             Re_,
                             ReList_,

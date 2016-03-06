@@ -73,7 +73,7 @@ namespace interpolateUtils
     //- 1-D iterpolation functions
 
         //- Interpolate from 1-D data with known index
-        scalar interpolate1d
+        scalar interpolate1D
         (
             const scalar xNew,
             const List<scalar>& xList,
@@ -82,7 +82,7 @@ namespace interpolateUtils
         );
 
         //- Interpolate from 1-D data with known fraction
-        scalar interpolate1d
+        scalar interpolate1D
         (
             const scalar xPart,
             const List<scalar>& data,
@@ -90,7 +90,7 @@ namespace interpolateUtils
         );
 
         //- Interpolate from 1-D data
-        scalar interpolate1d
+        scalar interpolate1D
         (
             const scalar xNew,
             const List<scalar>& xList,
@@ -103,7 +103,7 @@ namespace interpolateUtils
     //  The format of data should be data[y][x]
 
         //- Interpolate from 2-D data with known indices
-        scalar interpolate2d
+        scalar interpolate2D
         (
             const scalar xNew,
             const scalar yNew,
@@ -115,7 +115,7 @@ namespace interpolateUtils
         );
 
         //- Interpolate from 2-D data with known fractions
-        scalar interpolate2d
+        scalar interpolate2D
         (
             const scalar xPart,
             const scalar yPart,
@@ -125,7 +125,7 @@ namespace interpolateUtils
         );
 
         //- Interpolate from 2-D data
-        scalar interpolate2d
+        scalar interpolate2D
         (
             const scalar xNew,
             const scalar yNew,

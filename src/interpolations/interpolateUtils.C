@@ -125,7 +125,7 @@ scalar Foam::interpolateUtils::getPart
 }
 
 
-scalar Foam::interpolateUtils::interpolate1d
+scalar Foam::interpolateUtils::interpolate1D
 (
     const scalar xNew,
     const List<scalar>& xList,
@@ -134,7 +134,7 @@ scalar Foam::interpolateUtils::interpolate1d
 )
 {
     // Index is known
-    return interpolate1d
+    return interpolate1D
     (
         getPart(xNew, xList, xIndex),
         data,
@@ -143,7 +143,7 @@ scalar Foam::interpolateUtils::interpolate1d
 }
 
 
-scalar Foam::interpolateUtils::interpolate1d
+scalar Foam::interpolateUtils::interpolate1D
 (
     const scalar xPart,
     const List<scalar>& data,
@@ -155,7 +155,7 @@ scalar Foam::interpolateUtils::interpolate1d
 }
 
 
-scalar Foam::interpolateUtils::interpolate1d
+scalar Foam::interpolateUtils::interpolate1D
 (
     const scalar xNew,
     const List<scalar>& xList,
@@ -163,7 +163,7 @@ scalar Foam::interpolateUtils::interpolate1d
 )
 {
     // General 1-D interpolation
-    return interpolate1d
+    return interpolate1D
     (
         xNew,
         xList,
@@ -173,7 +173,7 @@ scalar Foam::interpolateUtils::interpolate1d
 }
 
 
-scalar Foam::interpolateUtils::interpolate2d
+scalar Foam::interpolateUtils::interpolate2D
 (
     const scalar xNew,
     const scalar yNew,
@@ -185,7 +185,7 @@ scalar Foam::interpolateUtils::interpolate2d
 )
 {
     // Index values are known
-    return interpolate2d
+    return interpolate2D
     (
         getPart(xNew, xList, xIndex),
         getPart(yNew, yList, yIndex),
@@ -196,7 +196,7 @@ scalar Foam::interpolateUtils::interpolate2d
 }
 
 
-scalar Foam::interpolateUtils::interpolate2d
+scalar Foam::interpolateUtils::interpolate2D
 (
     const scalar xPart,
     const scalar yPart,
@@ -213,7 +213,7 @@ scalar Foam::interpolateUtils::interpolate2d
 }
 
 
-scalar Foam::interpolateUtils::interpolate2d
+scalar Foam::interpolateUtils::interpolate2D
 (
     const scalar xNew,
     const scalar yNew,
@@ -222,7 +222,7 @@ scalar Foam::interpolateUtils::interpolate2d
     const List<List<scalar> >& data
 )
 {
-    return interpolate2d
+    return interpolate2D
     (
         xNew,
         yNew,
