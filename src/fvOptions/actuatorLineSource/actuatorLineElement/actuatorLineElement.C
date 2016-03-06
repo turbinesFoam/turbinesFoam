@@ -532,7 +532,7 @@ void Foam::fv::actuatorLineElement::calculateForce
     }
 
     // Calculate vector normal to chord--span plane
-    vector planformNormal_ = -chordDirection_ ^ spanDirection_;
+    planformNormal_ = -chordDirection_ ^ spanDirection_;
     planformNormal_ /= mag(planformNormal_);
 
     // Find local flow velocity by interpolating to element location
