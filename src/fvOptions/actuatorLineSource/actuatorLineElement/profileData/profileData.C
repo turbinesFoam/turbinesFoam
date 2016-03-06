@@ -93,9 +93,6 @@ Foam::scalar Foam::profileData::interpolate
 }
 
 
-/*reads matrix data from file, data is assumed to have index values in
-first row and column, where the row will be read to xvalues and the column
-to y values, and data is given as data[y][x]*/
 void Foam::profileData::readMatrix
 (
     List<scalar> &xvalues,
@@ -112,8 +109,8 @@ void Foam::profileData::readMatrix
 
     if (coefficientData.size() > 0)
     {
-        //for simplicity, we use the same index lists for all coefficients,
-        //hence if the lists are constructed
+        // For simplicity, we use the same index lists for all coefficients,
+        // hence if the lists are constructed
         if (buildXList)
         {
             yvalues.setSize(coefficientData.size() - 1);
@@ -191,6 +188,7 @@ void Foam::profileData::readMatrix
     }
 }
 
+
 void Foam::profileData::read()
 {
     // Read reference Reynolds number, and if present turn on Reynolds number
@@ -199,7 +197,7 @@ void Foam::profileData::read()
     Re_ = ReRef_;
     correctRe_ = (ReRef_ > VSMALL);
 
-    //Look up matrix data for Cl
+    // Look up matrix data for Cl
     readMatrix
     (
         ReynoldsNumberListMatrixOrg_,
@@ -208,7 +206,7 @@ void Foam::profileData::read()
         "dataCl"
     );
 
-    //Look up matrix data for Cd
+    // Look up matrix data for Cd
     readMatrix
     (
         ReynoldsNumberListMatrixOrg_,
@@ -226,8 +224,8 @@ void Foam::profileData::read()
         );
         myerror.abort();
     }
-    
-    //Look up matrix data for Moment
+
+    // Look up matrix data for Moment
     readMatrix
     (
         ReynoldsNumberListMatrixOrg_,
@@ -235,7 +233,7 @@ void Foam::profileData::read()
         momentCoefficientMatrixOrg_,
         "dataMoment"
     );
-    
+
     // Look up sectional coefficient data
     List<List<scalar> > coefficientData = dict_.lookup("data");
 
@@ -360,8 +358,8 @@ void Foam::profileData::calculateCoefficients()
 
 void Foam::profileData::getInterpolatedCoefficients()
 {
-    //as Reynolds number list is the same for all interpolations,
-    //precompute interpolation data for faster interpolation
+    // Since Reynolds number list is the same for all interpolations,
+    // precompute interpolation data for faster interpolation
     label interpIndex =
         interpolateUtils::binarySearch(ReynoldsNumberListMatrixOrg_, Re_);
     scalar interpFraction =
@@ -404,8 +402,7 @@ void Foam::profileData::getInterpolatedCoefficients()
     );
 }
 
-//sets up lists for interpolation if lift and drag data is given for
-//different Reynolds numbers
+
 void Foam::profileData::buildReynoldsList()
 {
     scalar Re_old = Re_;
@@ -422,9 +419,7 @@ void Foam::profileData::buildReynoldsList()
     Re_ = Re_old;
 }
 
-//create a list of a part of the original lists,
-//automatically checks which lists to create data from, depending on if
-//data for different Reynolds numbers is given or not
+
 Foam::List<scalar> Foam::profileData::subList
 (
     scalar alphaDegStart,
@@ -468,7 +463,6 @@ Foam::List<scalar> Foam::profileData::subList
 }
 
 
-// * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 Foam::scalar Foam::profileData::convertToCN
 (
     scalar cl,
@@ -574,7 +568,7 @@ Foam::profileData::~profileData()
 
 void Foam::profileData::analyze()
 {
-    if (staticStallAngleList_.size() > 0) //if interpolated tables exist
+    if (staticStallAngleList_.size() > 0) // If interpolated tables exist
     {
         getInterpolatedCoefficients();
     }
@@ -680,6 +674,7 @@ Foam::scalar Foam::profileData::chordwiseCoefficient(scalar angleOfAttackDeg)
                angleOfAttackDeg
            );
 }
+
 
 void Foam::profileData::updateRe(scalar Re)
 {

@@ -143,6 +143,10 @@ class profileData
         //- Read dictionary
         void read();
 
+        //- Read matrix data from file
+        // Data is assumed to have index values in first row and column, where
+        // the row will be read to xvalues and the column to y values, and data
+        // is given as data[y][x]
         void readMatrix
         (
             List<scalar> &xvalues,
@@ -174,18 +178,22 @@ class profileData
         //- Calculate normal force coefficient slope
         void calcNormalCoeffSlope();
 
-        //calculate all five coefficients
+        //- Calculate all five coefficients
         void calculateCoefficients();
 
-        //calculate all five coefficients through interpolation from
-        //preconstructed lists
+        //- Calculate all five coefficients through interpolation from
+        //  preconstructed lists
         void getInterpolatedCoefficients();
 
-        //create lists for interpolation with getInterpolatedCoefficients
+        //- Create lists for interpolation with getInterpolatedCoefficients
+        // Sets up lists for interpolation if lift and drag data is given for
+        // different Reynolds numbers
         void buildReynoldsList();
 
-        //generate list for the functions liftCoefficientList,
-        //dragCoefficientList, momentCoefficientList
+        //- Generate sublist
+        // Create a list of a part of the original lists, automatically checking
+        // which lists to create data from, depending on if data for different
+        // Reynolds numbers is given or not
         List<scalar> subList
         (
             scalar alphaDegStart,
@@ -366,11 +374,6 @@ public:
 
             //- Update Reynolds number
             void updateRe(scalar Re);
-
-
-        // Write
-
-
 };
 
 
