@@ -379,39 +379,20 @@ Foam::List<scalar> Foam::profileData::subList
 (
     scalar alphaDegStart,
     scalar alphaDegStop,
-    List<scalar>& oldList,
-    List<List<scalar> >& oldMatrix
+    const List<scalar>& fullList
 )
 {
     List<scalar> newList;
-    if (oldMatrix.size() > 0)
+    forAll(angleOfAttackList_, i)
     {
-        forAll(angleOfAttackList_, i)
+        if
+        (
+            angleOfAttackList_[i] >= alphaDegStart
+            and
+            angleOfAttackList_[i] <= alphaDegStop
+        )
         {
-            if (angleOfAttackList_[i] >= alphaDegStart
-                and angleOfAttackList_[i] <= alphaDegStop)
-            {
-                newList.append
-                (
-                    interpolateUtils::interpolate1d
-                    (
-                        Re_,
-                        ReList_,
-                        oldMatrix[i]
-                    )
-                );
-            }
-        }
-    }
-    else
-    {
-        forAll(angleOfAttackList_, i)
-        {
-            if (angleOfAttackList_[i] >= alphaDegStart
-                and angleOfAttackList_[i] <= alphaDegStop)
-            {
-                newList.append(oldList[i]);
-            }
+            newList.append(fullList[i]);
         }
     }
     return newList;
@@ -747,30 +728,12 @@ Foam::List<scalar> Foam::profileData::angleOfAttackList
     scalar alphaDegStop
 )
 {
-    List<scalar> newList;
-    if (liftCoefficientLists_.size() > 0)
-    {
-        forAll(angleOfAttackList_, i)
-        {
-            if (angleOfAttackList_[i] >= alphaDegStart
-                and angleOfAttackList_[i] <= alphaDegStop)
-            {
-                newList.append(angleOfAttackList_[i]);
-            }
-        }
-    }
-    else
-    {
-        forAll(angleOfAttackList_, i)
-        {
-            if (angleOfAttackList_[i] >= alphaDegStart
-                and angleOfAttackList_[i] <= alphaDegStop)
-            {
-                newList.append(angleOfAttackList_[i]);
-            }
-        }
-    }
-    return newList;
+    return subList
+    (
+        alphaDegStart,
+        alphaDegStop,
+        angleOfAttackList_
+    );
 }
 
 
@@ -784,8 +747,7 @@ Foam::List<scalar> Foam::profileData::liftCoefficientList
     (
         alphaDegStart,
         alphaDegStop,
-        liftCoefficientList_,
-        liftCoefficientLists_
+        liftCoefficientList_
     );
 }
 
@@ -800,8 +762,7 @@ Foam::List<scalar> Foam::profileData::dragCoefficientList
     (
         alphaDegStart,
         alphaDegStop,
-        dragCoefficientList_,
-        dragCoefficientLists_
+        dragCoefficientList_
     );
 }
 
@@ -816,8 +777,7 @@ Foam::List<scalar> Foam::profileData::momentCoefficientList
     (
         alphaDegStart,
         alphaDegStop,
-        momentCoefficientList_,
-        momentCoefficientLists_
+        momentCoefficientList_
     );
 }
 

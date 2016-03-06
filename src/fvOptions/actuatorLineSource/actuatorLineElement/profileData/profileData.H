@@ -197,16 +197,12 @@ protected:
         // Only needs to be called once
         void analyzeMultiRe();
 
-        //- Generate sublist
-        // Create a list of a part of the original lists, automatically checking
-        // which lists to create data from, depending on if data for different
-        // Reynolds numbers is given or not
+        //- Generate sublist from current Re data
         List<scalar> subList
         (
             scalar alphaDegStart,
             scalar alphaDegStop,
-            List<scalar>& oldList,
-            List<List<scalar> >& oldMatrix
+            const List<scalar>& fullList
         );
 
         //- Disallow default bitwise copy construct
