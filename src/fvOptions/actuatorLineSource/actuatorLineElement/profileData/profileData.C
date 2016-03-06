@@ -512,6 +512,7 @@ Foam::profileData::profileData
     name_(name),
     dict_(dict),
     debug(debug),
+    tableType_(dict.lookupOrDefault("tableType", word("singleRe"))),
     Re_(VSMALL),
     ReRef_(VSMALL),
     correctRe_(false),
@@ -521,6 +522,13 @@ Foam::profileData::profileData
     zeroLiftMomentCoeff_(VGREAT),
     normalCoeffSlope_(VGREAT)
 {
+    if (tableType_ != "singleRe" and tableType_ != "multiRe")
+    {
+        FatalErrorIn("Foam::profileData::profileData")
+            << "Unknown profileData tableType " << tableType_
+            << ". Must be either 'singleRe' or 'multiRe'"
+            << exit(FatalError);
+    }
     read();
 }
 

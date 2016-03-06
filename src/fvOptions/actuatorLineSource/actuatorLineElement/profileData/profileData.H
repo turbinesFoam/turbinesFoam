@@ -59,6 +59,9 @@ class profileData
         //- Debug level
         const label& debug;
 
+        //- Table type: "singleRe" (default) or "multiRe"
+        const word tableType_;
+
         //- Specified Reynolds number
         scalar Re_;
 
