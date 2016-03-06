@@ -132,10 +132,10 @@ void Foam::addedMassModel::correct
     }
 
     // Calculate added mass coefficients for a flat plate
-    scalar ct = pi/8.0*chordLength_*alphaDot*normalRelVel_/relVelMagSqr;
-    scalar cn = pi/8.0*chordLength_*normVelDot/relVelMagSqr;
+    scalar cc = pi/8.0*chordLength_*alphaDot*normalRelVel_/relVelMagSqr;
+    scalar cn = -pi/8.0*chordLength_*normVelDot/relVelMagSqr;
     // Moment coefficient is at quarter chord
-    scalar cm = cn/4.0 - pi/8.0*normalRelVel_*chordwiseRelVel_/relVelMagSqr;
+    scalar cm = -cn/4.0 - pi/8.0*normalRelVel_*chordwiseRelVel_/relVelMagSqr;
 
     if (debug)
     {
@@ -143,7 +143,7 @@ void Foam::addedMassModel::correct
         Info<< "    alphaDot: " << alphaDot << endl;
         Info<< "    normVelDot: " << normVelDot << endl;
         Info<< "    cn: " << cn << endl;
-        Info<< "    ct: " << ct << endl;
+        Info<< "    cc: " << cc << endl;
         Info<< "    cm: " << cm << endl << endl;
         Info<< "Coefficients before added mass correction:" << endl;
         Info<< "    cl: " << liftCoefficient  << endl;
@@ -152,8 +152,8 @@ void Foam::addedMassModel::correct
     }
 
     // Modify lift and drag coefficients
-    liftCoefficient += cn*cos(alpha_) + ct*sin(alpha_);
-    dragCoefficient += cn*sin(alpha_) - ct*cos(alpha_);
+    liftCoefficient += cn*cos(alpha_) + cc*sin(alpha_);
+    dragCoefficient += cn*sin(alpha_) - cc*cos(alpha_);
     momentCoefficient += cm;
 
     if (debug)

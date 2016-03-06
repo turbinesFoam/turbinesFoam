@@ -131,6 +131,44 @@ void Foam::fv::turbineALSource::createOutputFile()
 }
 
 
+void Foam::fv::turbineALSource::updateTSROmega()
+{
+    // Update tip speed ratio and omega
+    scalar theta = degToRad(angleDeg_);
+    tipSpeedRatio_ = meanTSR_ + tsrAmplitude_*cos(nBlades_*(theta - tsrPhase_));
+    omega_ = tipSpeedRatio_*mag(freeStreamVelocity_)/rotorRadius_;
+}
+
+
+void Foam::fv::turbineALSource::rotate()
+{
+    scalar deltaT = time_.deltaT().value();
+    scalar radians = omega_*deltaT;
+    rotate(radians);
+    angleDeg_ += radToDeg(radians);
+    lastRotationTime_ = time_.value();
+    updateTSROmega();
+}
+
+
+void Foam::fv::turbineALSource::rotate(scalar radians)
+{
+    // Should be defined for each turbine type
+}
+
+
+void Foam::fv::turbineALSource::printPerf()
+{
+    Info<< "Azimuthal angle (degrees) of " << name_ << ": " << angleDeg_
+        << endl;
+    Info<< "Tip speed ratio of " << name_ << ": " << tipSpeedRatio_ << endl;
+    Info<< "Power coefficient from " << name_ << ": " << powerCoefficient_
+        << endl;
+    Info<< "Rotor drag coefficient from " << name_ << ": " << dragCoefficient_
+        << endl << endl;
+}
+
+
 // * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
 Foam::fv::turbineALSource::turbineALSource
@@ -183,32 +221,6 @@ Foam::fv::turbineALSource::~turbineALSource()
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-Foam::vector& Foam::fv::turbineALSource::force()
-{
-    return force_;
-}
-
-
-Foam::volVectorField& Foam::fv::turbineALSource::forceField()
-{
-    return forceField_;
-}
-
-
-Foam::scalar& Foam::fv::turbineALSource::torque()
-{
-    return torque_;
-}
-
-
-void Foam::fv::turbineALSource::rotate()
-{}
-
-
-void Foam::fv::turbineALSource::rotate(scalar radians)
-{}
-
 
 void Foam::fv::turbineALSource::addSup
 (
@@ -285,10 +297,7 @@ bool Foam::fv::turbineALSource::read(const dictionary& dict)
         bladeNames_ = bladesDict_.toc();
 
         // Set tip speed ratio and omega
-        scalar t = time_.value();
-        tipSpeedRatio_ = meanTSR_
-                       + tsrAmplitude_*cos(nBlades_*(meanTSR_*t - tsrPhase_));
-        omega_ = tipSpeedRatio_*mag(freeStreamVelocity_)/rotorRadius_;
+        updateTSROmega();
 
         // Get dynamic stall subdict
         dynamicStallDict_ = coeffs_.subOrEmptyDict("dynamicStall");
