@@ -83,9 +83,6 @@ protected:
         //- Unmodified moment coefficient list
         List<scalar> momentCoefficientListOrg_;
 
-        //- Angle of attack list for multiple Re dataset
-        List<scalar> angleOfAttackListMultiRe_;
-
         //- Reynolds number list for multiple Re dataset
         List<scalar> ReList_;
 
@@ -113,7 +110,7 @@ protected:
         //- List of normal coefficient slopes (1/rad) for multiple Re dataset
         List<scalar> normalCoeffSlopeList_;
 
-        //- Angle of attack list (deg) at current Re
+        //- Angle of attack list (deg)
         List<scalar> angleOfAttackList_;
 
         //- Lift coefficient list at current Re
@@ -152,14 +149,15 @@ protected:
         //- Read coefficients for multiple Reynolds number dataset
         void readMultiRe();
 
-        //- Read matrix data from file
-        // Data is assumed to have index values in first row and column, where
+        //- Read angle of attack list from first column of a 2-D array
+        List<scalar> readAngleOfAttackList(word keyword);
+
+        //- Read 2-D array of coefficient data
+        // Data is assumed to have angle of attack values in first column, where
         // the row will be read to xvalues and the column to y values, and data
         // is given as data[y][x]
-        void readMatrix
+        void read2DArray
         (
-            List<scalar> &xvalues,
-            List<scalar> &yvalues,
             List<List<scalar> > &data,
             word keyword
         );
@@ -187,17 +185,17 @@ protected:
         //- Calculate normal force coefficient slope
         void calcNormalCoeffSlope();
 
-        //- Calculate all five coefficients
-        void calculateCoefficients();
+        //- Set coefficient lists for current Reynolds number by interpolating
+        //  the 2-D coefficient arrays
+        void interpCoeffLists();
 
-        //- Calculate all five coefficients through interpolation from
-        //  preconstructed lists
-        void getInterpolatedCoefficients();
+        //- Set properties (static stall angle, etc.) through interpolation
+        //  from preconstructed lists
+        void interpPropsMultiRe();
 
-        //- Create lists for interpolation with getInterpolatedCoefficients
-        // Sets up lists for interpolation if lift and drag data is given for
-        // different Reynolds numbers
-        void buildReynoldsList();
+        //- Create lists for interpolation with interpPropsMultiRe
+        // Only needs to be called once
+        void analyzeMultiRe();
 
         //- Generate sublist
         // Create a list of a part of the original lists, automatically checking
