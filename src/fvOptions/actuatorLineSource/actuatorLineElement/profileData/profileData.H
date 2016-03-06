@@ -25,6 +25,7 @@ Class
     Foam::profileData
 
 Description
+    Object to store force and moment coefficient data for a 2-D profile.
 
 SourceFiles
     profileData.C
