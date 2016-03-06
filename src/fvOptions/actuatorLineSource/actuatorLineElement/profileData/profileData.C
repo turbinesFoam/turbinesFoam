@@ -27,7 +27,7 @@ License
 #include "interpolateUtils.H"
 #include "simpleMatrix.H"
 
-// * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
+// * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
 Foam::scalar Foam::profileData::interpolate
 (

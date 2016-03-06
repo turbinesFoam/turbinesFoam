@@ -48,7 +48,10 @@ namespace Foam
 
 class profileData
 {
-    // Private data
+
+protected:
+
+    // Protected data
 
         //- Profile name
         const word name_;
@@ -141,7 +144,7 @@ class profileData
         scalar normalCoeffSlope_;
 
 
-    // Private Member Functions
+    // Protected Member Functions
 
         //- Read dictionary
         void read();
