@@ -185,6 +185,11 @@ void Foam::profileData::readMultiRe()
             << abort(FatalError);
     }
 
+    // Set sizes of coefficient lists
+    liftCoefficientList_.setSize(angleOfAttackList_.size());
+    dragCoefficientList_.setSize(angleOfAttackList_.size());
+    momentCoefficientList_.setSize(angleOfAttackList_.size());
+
     // Look up 2-D array of lift coefficient data
     read2DArray
     (
@@ -207,11 +212,22 @@ void Foam::profileData::readMultiRe()
     }
 
     // Look up 2-D array of moment coefficient data if available
-    read2DArray
-    (
-        momentCoefficientLists_,
-        cmKeyword
-    );
+    if (dict_.found(cmKeyword))
+    {
+        read2DArray
+        (
+            momentCoefficientLists_,
+            cmKeyword
+        );
+    }
+    else
+    {
+        momentCoefficientLists_ = liftCoefficientLists_;
+        forAll(momentCoefficientLists_, i)
+        {
+            momentCoefficientLists_[i] = liftCoefficientLists_[i]*0.0;
+        }
+    }
 
     // Calculate static stall angle, zero lift AoA, etc. for all Re
     analyzeMultiRe();
@@ -300,13 +316,23 @@ void Foam::profileData::interpCoeffLists()
     // Create lists for lift, drag, and moment coefficient at current Re
     forAll(angleOfAttackList_, i)
     {
-        liftCoefficientList_[i] = interpolateUtils::interpolate2d
+        liftCoefficientList_[i] = interpolateUtils::interpolate1d
         (
             Re_,
-            angleOfAttackList_[i],
             ReList_,
-            angleOfAttackList_,
-            liftCoefficientLists_
+            liftCoefficientLists_[i]
+        );
+        dragCoefficientList_[i] = interpolateUtils::interpolate1d
+        (
+            Re_,
+            ReList_,
+            dragCoefficientLists_[i]
+        );
+        momentCoefficientList_[i] = interpolateUtils::interpolate1d
+        (
+            Re_,
+            ReList_,
+            momentCoefficientLists_[i]
         );
     }
 }
@@ -529,98 +555,56 @@ void Foam::profileData::analyze()
 
 Foam::scalar Foam::profileData::liftCoefficient(scalar angleOfAttackDeg)
 {
-    if (tableType_ == "multiRe")
-    {
-        return interpolateUtils::interpolate2d
-        (
-            Re_,
-            angleOfAttackDeg,
-            ReList_,
-            angleOfAttackList_,
-            liftCoefficientLists_
-        );
-    }
-    else
-    {
-        return interpolate
-        (
-            angleOfAttackDeg,
-            angleOfAttackList_,
-            liftCoefficientList_
-        );
-    }
+    return interpolate
+    (
+        angleOfAttackDeg,
+        angleOfAttackList_,
+        liftCoefficientList_
+    );
 }
 
 
 Foam::scalar Foam::profileData::dragCoefficient(scalar angleOfAttackDeg)
 {
-    if (dragCoefficientLists_.size() > 0)
-    {
-        return interpolateUtils::interpolate2d
-        (
-            Re_,
-            angleOfAttackDeg,
-            ReList_,
-            angleOfAttackList_,
-            dragCoefficientLists_
-        );
-    }
-    else
-    {
-        return interpolate
-        (
-            angleOfAttackDeg,
-            angleOfAttackList_,
-            dragCoefficientList_
-        );
-    }
+    return interpolate
+    (
+        angleOfAttackDeg,
+        angleOfAttackList_,
+        dragCoefficientList_
+    );
 }
 
 
 Foam::scalar Foam::profileData::momentCoefficient(scalar angleOfAttackDeg)
 {
-    if (momentCoefficientLists_.size() > 0)
-    {
-        return interpolateUtils::interpolate2d
-        (
-            Re_,
-            angleOfAttackDeg,
-            ReList_,
-            angleOfAttackList_,
-            momentCoefficientLists_
-        );
-    }
-    else
-    {
-        return interpolate
-        (
-            angleOfAttackDeg,
-            angleOfAttackList_,
-            momentCoefficientList_
-        );
-    }
+    return interpolate
+    (
+        angleOfAttackDeg,
+        angleOfAttackList_,
+        momentCoefficientList_
+    );
 }
 
 
 Foam::scalar Foam::profileData::normalCoefficient(scalar angleOfAttackDeg)
 {
     return convertToCN
-           (
-               liftCoefficient(angleOfAttackDeg),
-               dragCoefficient(angleOfAttackDeg),
-               angleOfAttackDeg
-           );
+    (
+       liftCoefficient(angleOfAttackDeg),
+       dragCoefficient(angleOfAttackDeg),
+       angleOfAttackDeg
+    );
 }
 
 
 Foam::scalar Foam::profileData::chordwiseCoefficient(scalar angleOfAttackDeg)
 {
     return convertToCC
-           (
-               liftCoefficient(angleOfAttackDeg),
-               dragCoefficient(angleOfAttackDeg),
-               angleOfAttackDeg
-           );
+    (
+       liftCoefficient(angleOfAttackDeg),
+       dragCoefficient(angleOfAttackDeg),
+       angleOfAttackDeg
+    );
 }
 
 
