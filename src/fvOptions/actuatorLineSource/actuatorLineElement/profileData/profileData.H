@@ -146,8 +146,11 @@ protected:
 
     // Protected Member Functions
 
-        //- Read dictionary
-        void read();
+        //- Read coefficients for single Reynolds number dataset
+        void readSingleRe();
+
+        //- Read coefficients for multiple Reynolds number dataset
+        void readMultiRe();
 
         //- Read matrix data from file
         // Data is assumed to have index values in first row and column, where

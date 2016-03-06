@@ -181,47 +181,13 @@ void Foam::profileData::readMatrix
 }
 
 
-void Foam::profileData::read()
+void Foam::profileData::readSingleRe()
 {
     // Read reference Reynolds number, and if present turn on Reynolds number
     // corrections
     ReRef_ = dict_.lookupOrDefault("Re", VSMALL);
     Re_ = ReRef_;
     correctRe_ = (ReRef_ > VSMALL);
-
-    // Look up matrix data for Cl
-    readMatrix
-    (
-        ReynoldsNumberListMatrixOrg_,
-        angleOfAttackListMatrixOrg_,
-        liftCoefficientMatrixOrg_,
-        "dataCl"
-    );
-
-    // Look up matrix data for Cd
-    readMatrix
-    (
-        ReynoldsNumberListMatrixOrg_,
-        angleOfAttackListMatrixOrg_,
-        dragCoefficientMatrixOrg_,
-        "dataCd"
-    );
-
-    if (liftCoefficientMatrixOrg_.size() != dragCoefficientMatrixOrg_.size())
-    {
-        FatalErrorIn("void profileData::read()")
-            << "Lift and drag coefficient data must be the same size"
-            << abort(FatalError);
-    }
-
-    // Look up matrix data for Moment
-    readMatrix
-    (
-        ReynoldsNumberListMatrixOrg_,
-        angleOfAttackListMatrixOrg_,
-        momentCoefficientMatrixOrg_,
-        "dataMoment"
-    );
 
     // Look up sectional coefficient data
     List<List<scalar> > coefficientData = dict_.lookup("data");
@@ -252,6 +218,54 @@ void Foam::profileData::read()
     liftCoefficientList_ = liftCoefficientListOrg_;
     dragCoefficientList_ = dragCoefficientListOrg_;
     momentCoefficientList_ = momentCoefficientListOrg_;
+}
+
+
+void Foam::profileData::readMultiRe()
+{
+    // Turn off Reynolds number corrections since these will be interpolated
+    correctRe_ = false;
+
+    // Read list of Reynolds numbers for dataset
+
+    // Define keywords for coefficient data
+    word clKeyword = "clData";
+    word cdKeyword = "cdData";
+    word cmKeyword = "cmData";
+
+    // Look up matrix data for Cl
+    readMatrix
+    (
+        ReynoldsNumberListMatrixOrg_,
+        angleOfAttackListMatrixOrg_,
+        liftCoefficientMatrixOrg_,
+        clKeyword
+    );
+
+    // Look up matrix data for Cd
+    readMatrix
+    (
+        ReynoldsNumberListMatrixOrg_,
+        angleOfAttackListMatrixOrg_,
+        dragCoefficientMatrixOrg_,
+        cdKeyword
+    );
+
+    if (liftCoefficientMatrixOrg_.size() != dragCoefficientMatrixOrg_.size())
+    {
+        FatalErrorIn("void profileData::read()")
+            << "Lift and drag coefficient data must be the same size"
+            << abort(FatalError);
+    }
+
+    // Look up matrix data for moment coefficient if available
+    readMatrix
+    (
+        ReynoldsNumberListMatrixOrg_,
+        angleOfAttackListMatrixOrg_,
+        momentCoefficientMatrixOrg_,
+        cmKeyword
+    );
 
     if (liftCoefficientMatrixOrg_.size())
     {
@@ -522,14 +536,21 @@ Foam::profileData::profileData
     zeroLiftMomentCoeff_(VGREAT),
     normalCoeffSlope_(VGREAT)
 {
-    if (tableType_ != "singleRe" and tableType_ != "multiRe")
+    if (tableType_ == "singleRe")
+    {
+        readSingleRe();
+    }
+    else if (tableType_ == "multiRe")
+    {
+        readMultiRe();
+    }
+    else
     {
         FatalErrorIn("Foam::profileData::profileData")
             << "Unknown profileData tableType " << tableType_
             << ". Must be either 'singleRe' or 'multiRe'"
             << exit(FatalError);
     }
-    read();
 }
 
 
