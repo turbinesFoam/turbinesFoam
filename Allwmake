@@ -3,4 +3,4 @@
 # Parse arguments for library compilation without documentation by default
 . $WM_PROJECT_DIR/wmake/scripts/AllwmakeParseArguments
 
-wmake libso src/fvOptions
+wmake libso src

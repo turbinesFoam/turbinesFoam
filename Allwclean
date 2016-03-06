@@ -2,4 +2,4 @@
 
 echo "Cleaning turbinesFoam"
 
-wclean src/fvOptions
+wclean src
