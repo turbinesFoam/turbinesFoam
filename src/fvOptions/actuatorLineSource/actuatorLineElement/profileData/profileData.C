@@ -130,20 +130,17 @@ void Foam::profileData::readMatrix
             {
                 if (xvalues[i-1] != coefficientData[0][i])
                 {
-                    word errorMessage =
-                        word("Index elements in ") + keyword +
-                        " must be identical to other coefficient lists";
-                    error myerror(errorMessage);
-                    myerror.abort();
+                    FatalErrorIn("void profileData::readMatrix()")
+                        << keyword + " indices not identical to other "
+                        << "coefficient lists"
+                        << abort(FatalError);
                 }
             }
             if (i > 1 && xvalues[i-1] < xvalues[i-2])
             {
-                word errorMessage =
-                    word("Index elements in ") + keyword +
-                    " must be ordered with smallest element first";
-                error myerror(errorMessage);
-                myerror.abort();
+                FatalErrorIn("void profileData::readMatrix()")
+                    << keyword + " indices not in ascending order"
+                    << abort(FatalError);
             }
         }
         for (int i = 1; i < coefficientData.size(); i++)
@@ -156,29 +153,24 @@ void Foam::profileData::readMatrix
             {
                 if (yvalues[i-1] != coefficientData[i][0])
                 {
-                    word errorMessage =
-                          word("Index elements in ") + keyword +
-                          " must be identical to other coefficient lists";
-                    error myerror(errorMessage);
-                    myerror.abort();
+                    FatalErrorIn("void profileData::readMatrix()")
+                        << keyword + " indices not identical to other "
+                        << "coefficient lists"
+                        << abort(FatalError);
                 }
             }
             if (i > 1 && yvalues[i-1] < yvalues[i-2])
             {
-                word errorMessage =
-                    word("Index elements in ") + keyword +
-                    " must be ordered with smallest element first";
-                error myerror(errorMessage);
-                myerror.abort();
+                FatalErrorIn("void profileData::readMatrix()")
+                    << keyword + " indices not in ascending order"
+                    << abort(FatalError);
             }
             data[i-1].setSize(coefficientData[i-1].size() - 1);
             if (coefficientData[i-1].size() != coefficientData[0].size())
             {
-                word errorMessage =
-                    word("Element size of data in ") + keyword +
-                    " varies in size, all elements must have equal size";
-                error myerror(errorMessage);
-                myerror.abort();
+                FatalErrorIn("void profileData::readMatrix()")
+                    << keyword + " shape not consistent"
+                    << abort(FatalError);
             }
             for (int j = 1; j < coefficientData[i].size(); j++)
             {
@@ -217,12 +209,9 @@ void Foam::profileData::read()
 
     if (liftCoefficientMatrixOrg_.size() != dragCoefficientMatrixOrg_.size())
     {
-        error myerror
-        (
-            "if lift and drag data is given in matrix form, "
-            "both lift and drag data has to be given in this form"
-        );
-        myerror.abort();
+        FatalErrorIn("void profileData::read()")
+            << "Lift and drag coefficient data must be the same size"
+            << abort(FatalError);
     }
 
     // Look up matrix data for Moment
