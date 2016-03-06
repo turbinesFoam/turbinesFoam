@@ -83,20 +83,20 @@ protected:
         //- Unmodified moment coefficient list
         List<scalar> momentCoefficientListOrg_;
 
-        //- Unmodified angle of attack list for drag matrix (deg)
-        List<scalar> angleOfAttackListMatrixOrg_;
+        //- Angle of attack list for multiple Re dataset
+        List<scalar> angleOfAttackListMultiRe_;
 
-        //- Unmodified Reynolds number list for drag matrix (deg)
-        List<scalar> ReynoldsNumberListMatrixOrg_;
+        //- Reynolds number list for multiple Re dataset
+        List<scalar> ReList_;
 
-        //- Unmodified drag coefficient matrix
-        List<List<scalar> > dragCoefficientMatrixOrg_;
+        //- 2-D array of drag coefficient values for multiple Re dataset
+        List<List<scalar> > dragCoefficientLists_;
 
-        //- Unmodified lift coefficient matrix
-        List<List<scalar> > liftCoefficientMatrixOrg_;
+        //- 2-D array of lift coefficient values for multiple Re dataset
+        List<List<scalar> > liftCoefficientLists_;
 
         //- Unmodified moment coefficient matrix
-        List<List<scalar> > momentCoefficientMatrixOrg_;
+        List<List<scalar> > momentCoefficientLists_;
 
         //- Static stall angle (deg)
         List<scalar> staticStallAngleList_;

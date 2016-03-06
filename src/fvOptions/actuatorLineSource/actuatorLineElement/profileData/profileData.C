@@ -236,22 +236,22 @@ void Foam::profileData::readMultiRe()
     // Look up matrix data for Cl
     readMatrix
     (
-        ReynoldsNumberListMatrixOrg_,
-        angleOfAttackListMatrixOrg_,
-        liftCoefficientMatrixOrg_,
+        ReList_,
+        angleOfAttackListMultiRe_,
+        liftCoefficientLists_,
         clKeyword
     );
 
     // Look up matrix data for Cd
     readMatrix
     (
-        ReynoldsNumberListMatrixOrg_,
-        angleOfAttackListMatrixOrg_,
-        dragCoefficientMatrixOrg_,
+        ReList_,
+        angleOfAttackListMultiRe_,
+        dragCoefficientLists_,
         cdKeyword
     );
 
-    if (liftCoefficientMatrixOrg_.size() != dragCoefficientMatrixOrg_.size())
+    if (liftCoefficientLists_.size() != dragCoefficientLists_.size())
     {
         FatalErrorIn("void profileData::read()")
             << "Lift and drag coefficient data must be the same size"
@@ -261,13 +261,13 @@ void Foam::profileData::readMultiRe()
     // Look up matrix data for moment coefficient if available
     readMatrix
     (
-        ReynoldsNumberListMatrixOrg_,
-        angleOfAttackListMatrixOrg_,
-        momentCoefficientMatrixOrg_,
+        ReList_,
+        angleOfAttackListMultiRe_,
+        momentCoefficientLists_,
         cmKeyword
     );
 
-    if (liftCoefficientMatrixOrg_.size())
+    if (liftCoefficientLists_.size())
     {
         buildReynoldsList();
     }
@@ -281,9 +281,9 @@ void Foam::profileData::calcStaticStallAngle()
     scalar threshold = 0.03;
     scalar alpha=GREAT, cd0, cd1, slope, dAlpha;
     List<scalar>* angleOfAttackListptr;
-    if (dragCoefficientMatrixOrg_.size() > 0)
+    if (dragCoefficientLists_.size() > 0)
     {
-        angleOfAttackListptr = &angleOfAttackListMatrixOrg_;
+        angleOfAttackListptr = &angleOfAttackListMultiRe_;
     }
     else
     {
@@ -364,12 +364,12 @@ void Foam::profileData::getInterpolatedCoefficients()
     // Since Reynolds number list is the same for all interpolations,
     // precompute interpolation data for faster interpolation
     label interpIndex =
-        interpolateUtils::binarySearch(ReynoldsNumberListMatrixOrg_, Re_);
+        interpolateUtils::binarySearch(ReList_, Re_);
     scalar interpFraction =
         interpolateUtils::getPart
         (
             Re_,
-            ReynoldsNumberListMatrixOrg_,
+            ReList_,
             interpIndex
         );
 
@@ -409,9 +409,9 @@ void Foam::profileData::getInterpolatedCoefficients()
 void Foam::profileData::buildReynoldsList()
 {
     scalar Re_old = Re_;
-    forAll(ReynoldsNumberListMatrixOrg_, i)
+    forAll(ReList_, i)
     {
-        Re_ = ReynoldsNumberListMatrixOrg_[i];
+        Re_ = ReList_[i];
         calculateCoefficients();
         staticStallAngleList_.append(staticStallAngle_);
         zeroLiftDragCoeffList_.append(zeroLiftDragCoeff_);
@@ -434,17 +434,17 @@ Foam::List<scalar> Foam::profileData::subList
     List<scalar> newList;
     if (oldMatrix.size() > 0)
     {
-        forAll(angleOfAttackListMatrixOrg_, i)
+        forAll(angleOfAttackListMultiRe_, i)
         {
-            if (angleOfAttackListMatrixOrg_[i] >= alphaDegStart
-                and angleOfAttackListMatrixOrg_[i] <= alphaDegStop)
+            if (angleOfAttackListMultiRe_[i] >= alphaDegStart
+                and angleOfAttackListMultiRe_[i] <= alphaDegStop)
             {
                 newList.append
                 (
                     interpolateUtils::interpolate1d
                     (
                         Re_,
-                        ReynoldsNumberListMatrixOrg_,
+                        ReList_,
                         oldMatrix[i]
                     )
                 );
@@ -599,15 +599,15 @@ void Foam::profileData::analyze()
 
 Foam::scalar Foam::profileData::liftCoefficient(scalar angleOfAttackDeg)
 {
-    if (liftCoefficientMatrixOrg_.size() > 0)
+    if (liftCoefficientLists_.size() > 0)
     {
         return interpolateUtils::interpolate2d
         (
             Re_,
             angleOfAttackDeg,
-            ReynoldsNumberListMatrixOrg_,
-            angleOfAttackListMatrixOrg_,
-            liftCoefficientMatrixOrg_
+            ReList_,
+            angleOfAttackListMultiRe_,
+            liftCoefficientLists_
         );
     }
     else
@@ -624,15 +624,15 @@ Foam::scalar Foam::profileData::liftCoefficient(scalar angleOfAttackDeg)
 
 Foam::scalar Foam::profileData::dragCoefficient(scalar angleOfAttackDeg)
 {
-    if (dragCoefficientMatrixOrg_.size() > 0)
+    if (dragCoefficientLists_.size() > 0)
     {
         return interpolateUtils::interpolate2d
         (
             Re_,
             angleOfAttackDeg,
-            ReynoldsNumberListMatrixOrg_,
-            angleOfAttackListMatrixOrg_,
-            dragCoefficientMatrixOrg_
+            ReList_,
+            angleOfAttackListMultiRe_,
+            dragCoefficientLists_
         );
     }
     else
@@ -649,15 +649,15 @@ Foam::scalar Foam::profileData::dragCoefficient(scalar angleOfAttackDeg)
 
 Foam::scalar Foam::profileData::momentCoefficient(scalar angleOfAttackDeg)
 {
-    if (momentCoefficientMatrixOrg_.size() > 0)
+    if (momentCoefficientLists_.size() > 0)
     {
         return interpolateUtils::interpolate2d
         (
             Re_,
             angleOfAttackDeg,
-            ReynoldsNumberListMatrixOrg_,
-            angleOfAttackListMatrixOrg_,
-            momentCoefficientMatrixOrg_
+            ReList_,
+            angleOfAttackListMultiRe_,
+            momentCoefficientLists_
         );
     }
     else
@@ -749,7 +749,7 @@ void Foam::profileData::updateRe(scalar Re)
         // Recalculate static stall angle, etc.
         analyze();
     }
-    else if (liftCoefficientMatrixOrg_.size() > 0  and Re != Re_)
+    else if (liftCoefficientLists_.size() > 0  and Re != Re_)
     {
         Re_ = Re;
         analyze();
@@ -798,14 +798,14 @@ Foam::List<scalar> Foam::profileData::angleOfAttackList
 )
 {
     List<scalar> newList;
-    if (liftCoefficientMatrixOrg_.size() > 0)
+    if (liftCoefficientLists_.size() > 0)
     {
-        forAll(angleOfAttackListMatrixOrg_, i)
+        forAll(angleOfAttackListMultiRe_, i)
         {
-            if (angleOfAttackListMatrixOrg_[i] >= alphaDegStart
-                and angleOfAttackListMatrixOrg_[i] <= alphaDegStop)
+            if (angleOfAttackListMultiRe_[i] >= alphaDegStart
+                and angleOfAttackListMultiRe_[i] <= alphaDegStop)
             {
-                newList.append(angleOfAttackListMatrixOrg_[i]);
+                newList.append(angleOfAttackListMultiRe_[i]);
             }
         }
     }
@@ -835,7 +835,7 @@ Foam::List<scalar> Foam::profileData::liftCoefficientList
         alphaDegStart,
         alphaDegStop,
         liftCoefficientList_,
-        liftCoefficientMatrixOrg_
+        liftCoefficientLists_
     );
 }
 
@@ -851,7 +851,7 @@ Foam::List<scalar> Foam::profileData::dragCoefficientList
         alphaDegStart,
         alphaDegStop,
         dragCoefficientList_,
-        dragCoefficientMatrixOrg_
+        dragCoefficientLists_
     );
 }
 
@@ -867,7 +867,7 @@ Foam::List<scalar> Foam::profileData::momentCoefficientList
         alphaDegStart,
         alphaDegStop,
         momentCoefficientList_,
-        momentCoefficientMatrixOrg_
+        momentCoefficientLists_
     );
 }
 
@@ -879,12 +879,12 @@ Foam::List<scalar> Foam::profileData::normalCoefficientList
 )
 {
     List<scalar> newList;
-    if (liftCoefficientMatrixOrg_.size() > 0)
+    if (liftCoefficientLists_.size() > 0)
     {
-        forAll(angleOfAttackListMatrixOrg_, i)
+        forAll(angleOfAttackListMultiRe_, i)
         {
-            if (angleOfAttackListMatrixOrg_[i] >= alphaDegStart
-                and angleOfAttackListMatrixOrg_[i] <= alphaDegStop)
+            if (angleOfAttackListMultiRe_[i] >= alphaDegStart
+                and angleOfAttackListMultiRe_[i] <= alphaDegStop)
             {
                 newList.append
                 (
@@ -893,16 +893,16 @@ Foam::List<scalar> Foam::profileData::normalCoefficientList
                         interpolateUtils::interpolate1d
                         (
                             Re_,
-                            ReynoldsNumberListMatrixOrg_,
-                            liftCoefficientMatrixOrg_[i]
+                            ReList_,
+                            liftCoefficientLists_[i]
                         ),
                         interpolateUtils::interpolate1d
                         (
                             Re_,
-                            ReynoldsNumberListMatrixOrg_,
-                            dragCoefficientMatrixOrg_[i]
+                            ReList_,
+                            dragCoefficientLists_[i]
                         ),
-                        angleOfAttackListMatrixOrg_[i]
+                        angleOfAttackListMultiRe_[i]
                     )
                 );
             }
@@ -938,12 +938,12 @@ Foam::List<scalar> Foam::profileData::chordwiseCoefficientList
 )
 {
     List<scalar> newList;
-    if (liftCoefficientMatrixOrg_.size() > 0)
+    if (liftCoefficientLists_.size() > 0)
     {
-        forAll(angleOfAttackListMatrixOrg_, i)
+        forAll(angleOfAttackListMultiRe_, i)
         {
-            if (angleOfAttackListMatrixOrg_[i] >= alphaDegStart
-                and angleOfAttackListMatrixOrg_[i] <= alphaDegStop)
+            if (angleOfAttackListMultiRe_[i] >= alphaDegStart
+                and angleOfAttackListMultiRe_[i] <= alphaDegStop)
             {
                 newList.append
                 (
@@ -952,16 +952,16 @@ Foam::List<scalar> Foam::profileData::chordwiseCoefficientList
                         interpolateUtils::interpolate1d
                         (
                             Re_,
-                            ReynoldsNumberListMatrixOrg_,
-                            liftCoefficientMatrixOrg_[i]
+                            ReList_,
+                            liftCoefficientLists_[i]
                         ),
                         interpolateUtils::interpolate1d
                         (
                             Re_,
-                            ReynoldsNumberListMatrixOrg_,
-                            dragCoefficientMatrixOrg_[i]
+                            ReList_,
+                            dragCoefficientLists_[i]
                         ),
-                        angleOfAttackListMatrixOrg_[i]
+                        angleOfAttackListMultiRe_[i]
                     )
                 );
             }
