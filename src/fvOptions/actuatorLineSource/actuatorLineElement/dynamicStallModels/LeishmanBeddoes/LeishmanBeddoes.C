@@ -268,55 +268,55 @@ void Foam::fv::LeishmanBeddoes::interpolateStaticData()
     scalar interpFraction =
         interpolateUtils::getPart(Re, ReList_, interpIndex);
 
-    alphaSS_ = interpolateUtils::interpolate1d
+    alphaSS_ = interpolateUtils::interpolate1D
     (
         interpFraction,
         alphaSSList_,
         interpIndex
     );
-    CNAlpha_ = interpolateUtils::interpolate1d
+    CNAlpha_ = interpolateUtils::interpolate1D
     (
         interpFraction,
         CNAlphaList_,
         interpIndex
     );
-    alpha1_ = interpolateUtils::interpolate1d
+    alpha1_ = interpolateUtils::interpolate1D
     (
         interpFraction,
         alpha1List_,
         interpIndex
     );
-    CN1_ = interpolateUtils::interpolate1d
+    CN1_ = interpolateUtils::interpolate1D
     (
         interpFraction,
         CN1List_,
         interpIndex
     );
-    CD0_ = interpolateUtils::interpolate1d
+    CD0_ = interpolateUtils::interpolate1D
     (
         interpFraction,
         CD0List_,
         interpIndex
     );
-    S1_ = interpolateUtils::interpolate1d
+    S1_ = interpolateUtils::interpolate1D
     (
         interpFraction,
         S1List_,
         interpIndex
     );
-    S2_ = interpolateUtils::interpolate1d
+    S2_ = interpolateUtils::interpolate1D
     (
         interpFraction,
         S2List_,
         interpIndex
     );
-    K1_ = interpolateUtils::interpolate1d
+    K1_ = interpolateUtils::interpolate1D
     (
         interpFraction,
         K1List_,
         interpIndex
     );
-    K2_ = interpolateUtils::interpolate1d
+    K2_ = interpolateUtils::interpolate1D
     (
         interpFraction,
         K2List_,
