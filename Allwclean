@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-startDir=$PWD
-
 echo "Cleaning turbinesFoam"
 
-cd src/fvOptions
-wclean
-cd $startDir
+wclean src

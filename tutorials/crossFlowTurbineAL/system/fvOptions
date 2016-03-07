@@ -32,7 +32,7 @@ turbine
         freeStreamVelocity  (1 0 0);
         tipSpeedRatio       1.9;
         tsrAmplitude        0.19;       // Amplitude for TSR oscillation
-        tsrPhase            0.70;       // Angle of first peak (rad)
+        tsrPhase            1.9;        // Angle of first peak (rad)
 
         dynamicStall
         {
@@ -154,17 +154,23 @@ turbine
         {
             NACA0021
             {
-                data
+                tableType   singleRe; // singleRe (default) || multiRe
+                Re          1.6e5; // For tableType = singleRe
+                data // For tableType = singleRe
                 (   // alpha C_l C_d
                     #include "../../resources/foilData/NACA0021_1.6e5"
                 );
-                dataCd
-		        (
-                    #include "../../resources/foilData/NACA0021CDrag.txt"
+                ReList // For tableType = multiRe
+                (
+                    #include "../../resources/foilData/NACA0021_multiRe_Re"
                 );
-                dataCl
-		        ( 
-                    #include "../../resources/foilData/NACA0021CLift.txt"
+                clData // For tableType = multiRe
+		        (
+                    #include "../../resources/foilData/NACA0021_multiRe_cl"
+                );
+                cdData // For tableType = multiRe
+		        (
+                    #include "../../resources/foilData/NACA0021_multiRe_cd"
                 );
             }
             cylinder

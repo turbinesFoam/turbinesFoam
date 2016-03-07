@@ -6,6 +6,7 @@ import subprocess
 import pandas as pd
 import os
 import numpy as np
+from numpy.testing import assert_array_almost_equal
 
 
 element_dir = "postProcessing/actuatorLineElements/0/"
@@ -53,6 +54,19 @@ def check_perf(angle0=540.0):
     assert 0.8 < mean_cd < 1.8
 
 
+def check_periodic_tsr():
+    """Check that the periodic TSR oscillation was set properly."""
+    df = pd.read_csv("postProcessing/turbines/0/turbine.csv")
+    df = df.drop_duplicates("time", keep="last")
+    theta_rad = np.deg2rad(df.angle_deg)
+    tsr_amp = 0.19
+    tsr_phase = 1.9
+    tsr_mean = 1.9
+    nblades = 3
+    tsr_ref = tsr_amp*np.cos(nblades*(theta_rad - tsr_phase)) + tsr_mean
+    assert_array_almost_equal(df.tsr, tsr_ref)
+
+
 def test_serial():
     """Test crossFlowTurbineALSource in serial."""
     output_clean = subprocess.check_output("./Allclean")
@@ -66,6 +80,7 @@ def test_serial():
     check_al_file_exists()
     check_element_file_exists()
     check_perf()
+    check_periodic_tsr()
     log_end = subprocess.check_output(["tail", "log.pimpleFoam"]).decode()
     print(log_end)
     assert log_end.split()[-1] == "End"
@@ -84,9 +99,21 @@ def test_parallel():
     check_al_file_exists()
     check_element_file_exists()
     check_perf()
+    check_periodic_tsr()
     log_end = subprocess.check_output(["tail", "log.pimpleFoam"]).decode()
     print(log_end)
     assert "Finalising parallel run" in log_end
+
+
+def test_multi_re():
+    """Test crossFlowTurbineALSource with multiRe profileData."""
+    # Switch on change profileData tableType to multiRe
+    with open("system/fvOptions") as f:
+        txt = f.read()
+    txt = txt.replace("tableType   singleRe;", "tableType   multiRe;")
+    with open("system/fvOptions", "w") as f:
+        f.write(txt)
+    test_serial()
 
 
 def teardown():

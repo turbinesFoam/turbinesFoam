@@ -269,27 +269,26 @@ void Foam::fv::LeishmanBeddoesSD::correct
         const scalar scaleEnd = CC_corr_const * alphaSS_;
         const scalar rScaleStart = 0.01;
         const scalar rScaleEnd = 0.02;
-        scalar pi = Foam::constant::mathematical::pi;
-        scalar alphaDeg = alpha_/180.0*pi;
+        scalar alphaDeg = radToDeg(alpha_);
 
         scalar scaleFactorAlpha =
             (scaleEnd - fabs(alphaDeg))/(scaleEnd-scaleStart);
-        if (scaleFactorAlpha > scaleEnd)
+        if (scaleFactorAlpha < 0)
         {
             scaleFactorAlpha = 0;
         }
-        if (scaleFactorAlpha < scaleStart)
+        if (scaleFactorAlpha > 1)
         {
             scaleFactorAlpha = 1;
         }
 
         scalar scaleFactor_r =
             (rScaleEnd - abs(r_))/(rScaleEnd-rScaleStart);
-        if (scaleFactor_r > rScaleEnd)
+        if (scaleFactor_r < 0)
         {
             scaleFactor_r = 0;
         }
-        if (scaleFactor_r < rScaleStart)
+        if (scaleFactor_r > 1)
         {
             scaleFactor_r = 1;
         }

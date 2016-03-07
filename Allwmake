@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-startDir=$PWD
+# Parse arguments for library compilation without documentation by default
+. $WM_PROJECT_DIR/wmake/scripts/AllwmakeParseArguments
 
-cd src/fvOptions
-wmake libso
-cd $startDir
+wmake libso src

@@ -25,6 +25,7 @@ Class
     Foam::profileData
 
 Description
+    Object to store force and moment coefficient data for a 2-D profile.
 
 SourceFiles
     profileData.C
@@ -47,7 +48,10 @@ namespace Foam
 
 class profileData
 {
-    // Private data
+
+protected:
+
+    // Protected data
 
         //- Profile name
         const word name_;
@@ -57,6 +61,9 @@ class profileData
 
         //- Debug level
         const label& debug;
+
+        //- Table type: "singleRe" (default) or "multiRe"
+        const word tableType_;
 
         //- Specified Reynolds number
         scalar Re_;
@@ -76,46 +83,43 @@ class profileData
         //- Unmodified moment coefficient list
         List<scalar> momentCoefficientListOrg_;
 
-        //- Unmodified angle of attack list for drag matrix (deg)
-        List<scalar> angleOfAttackListMatrixOrg_;
+        //- Reynolds number list for multiple Re dataset
+        List<scalar> ReList_;
 
-        //- Unmodified Reynolds number list for drag matrix (deg)
-        List<scalar> ReynoldsNumberListMatrixOrg_;
+        //- 2-D array of drag coefficient values for multiple Re dataset
+        List<List<scalar> > dragCoefficientLists_;
 
-        //- Unmodified drag coefficient matrix
-        List<List<scalar> > dragCoefficientMatrixOrg_;
+        //- 2-D array of lift coefficient values for multiple Re dataset
+        List<List<scalar> > liftCoefficientLists_;
 
-        //- Unmodified lift coefficient matrix
-        List<List<scalar> > liftCoefficientMatrixOrg_;
+        //- 2-D array of moment coefficient values for multiple Re dataset
+        List<List<scalar> > momentCoefficientLists_;
 
-        //- Unmodified moment coefficient matrix
-        List<List<scalar> > momentCoefficientMatrixOrg_;
-
-        //- Static stall angle (deg)
+        //- List of static stall angles (deg) for multiple Re dataset
         List<scalar> staticStallAngleList_;
 
-        //- Drag coefficient at zero lift
+        //- List of zero lift drag coefficients for multiple Re dataset
         List<scalar> zeroLiftDragCoeffList_;
 
-        //- Angle of attack at zero lift (deg)
+        //- List of zero lift AoAs (deg) for multiple Re dataset
         List<scalar> zeroLiftAngleOfAttackList_;
 
-        //- Moment coefficient at zero lift
+        //- List of moment coefficients at zero lift for multiple Re dataset
         List<scalar> zeroLiftMomentCoeffList_;
 
-        //- Slope of normal force coefficient (1/rad)
+        //- List of normal coefficient slopes (1/rad) for multiple Re dataset
         List<scalar> normalCoeffSlopeList_;
 
         //- Angle of attack list (deg)
         List<scalar> angleOfAttackList_;
 
-        //- Lift coefficient list
+        //- Lift coefficient list at current Re
         List<scalar> liftCoefficientList_;
 
-        //- Drag coefficient list
+        //- Drag coefficient list at current Re
         List<scalar> dragCoefficientList_;
 
-        //- Moment coefficient list
+        //- Moment coefficient list at current Re
         List<scalar> momentCoefficientList_;
 
         //- Switch for Reynolds number corrections
@@ -137,15 +141,23 @@ class profileData
         scalar normalCoeffSlope_;
 
 
-    // Private Member Functions
+    // Protected Member Functions
 
-        //- Read dictionary
-        void read();
+        //- Read coefficients for single Reynolds number dataset
+        void readSingleRe();
 
-        void readMatrix
+        //- Read coefficients for multiple Reynolds number dataset
+        void readMultiRe();
+
+        //- Read angle of attack list from first column of a 2-D array
+        List<scalar> readAngleOfAttackList(word keyword);
+
+        //- Read 2-D array of coefficient data
+        // Data is assumed to have angle of attack values in first column, where
+        // the row will be read to xvalues and the column to y values, and data
+        // is given as data[y][x]
+        void read2DArray
         (
-            List<scalar> &xvalues,
-            List<scalar> &yvalues,
             List<List<scalar> > &data,
             word keyword
         );
@@ -173,24 +185,24 @@ class profileData
         //- Calculate normal force coefficient slope
         void calcNormalCoeffSlope();
 
-        //calculate all five coefficients
-        void calculateCoefficients();
+        //- Set coefficient lists for current Reynolds number by interpolating
+        //  the 2-D coefficient arrays
+        void interpCoeffLists();
 
-        //calculate all five coefficients through interpolation from
-        //preconstructed lists
-        void getInterpolatedCoefficients();
+        //- Set properties (static stall angle, etc.) through interpolation
+        //  from preconstructed lists
+        void interpPropsMultiRe();
 
-        //create lists for interpolation with getInterpolatedCoefficients
-        void buildReynoldsList();
+        //- Create lists for interpolation with interpPropsMultiRe
+        // Only needs to be called once
+        void analyzeMultiRe();
 
-        //generate list for the functions liftCoefficientList,
-        //dragCoefficientList, momentCoefficientList
+        //- Generate sublist from current Re data
         List<scalar> subList
         (
             scalar alphaDegStart,
             scalar alphaDegStop,
-            List<scalar>& oldList,
-            List<List<scalar> >& oldMatrix
+            const List<scalar>& fullList
         );
 
         //- Disallow default bitwise copy construct
@@ -365,11 +377,6 @@ public:
 
             //- Update Reynolds number
             void updateRe(scalar Re);
-
-
-        // Write
-
-
 };
 
 
