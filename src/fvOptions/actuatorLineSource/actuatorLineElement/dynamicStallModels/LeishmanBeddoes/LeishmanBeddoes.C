@@ -47,113 +47,6 @@ namespace fv
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
-void Foam::fv::LeishmanBeddoes::read()
-{
-    List<scalar> empty;
-    ReList_ = coeffs_.lookupOrDefault<List<scalar> >("Re", empty);
-    if (ReList_.size() > 0)
-    {
-        //check if data is given as input
-        bool hasalphaSSList = readList("alphaSS", alphaSSList_);
-        bool hasCNAlphaList = readList("CNAlpha", CNAlphaList_);
-        bool hasalpha1List = readList("alpha1", alpha1List_);
-        bool hasCN1List = readList("CN1", CN1List_);
-        bool hasCD0List = readList("CD0", CD0List_);
-        bool hasS1List = readList("S1", S1List_);
-        bool hasS2List = readList("S2", S2List_);
-        bool hasK1List = readList("K1", K1List_);
-        bool hasK2List = readList("K2", K2List_);
-        scalar oldRe = profileData_.Re();
-        forAll(ReList_, i)
-        {
-            //calculate coefficients for all variables not given as input
-            profileData_.updateRe(ReList_[i]);
-            buildStaticData();
-            if (not hasalphaSSList)
-            {
-               alphaSSList_[i] = alphaSS_;
-            }
-            if (not hasCNAlphaList)
-            {
-               CNAlphaList_[i] = CNAlpha_;
-            }
-            if (not hasalpha1List)
-            {
-               alpha1List_[i] = alpha1_;
-            }
-            if (not hasCN1List)
-            {
-               CN1List_[i] = CN1_;
-            }
-            if (not hasCD0List)
-            {
-               CD0List_[i] = CD0_;
-            }
-            if (not hasS1List)
-            {
-               S1List_[i] = S1_;
-            }
-            if (not hasS2List)
-            {
-               S2List_[i] = S2_;
-            }
-            if (not hasK1List)
-            {
-               K1List_[i] = K1_;
-            }
-            if (not hasK2List)
-            {
-               K2List_[i] = K2_;
-            }
-        }
-        profileData_.updateRe(oldRe);
-
-        if (debug)
-        {
-            forAll(ReList_, i)
-            {
-                Info << "Re: " << ReList_[i]
-                     << "\nalphaSS: " << alphaSSList_[i]
-                     << "\nCNalpha: " << CNAlphaList_[i]
-                     << "\nalpha1: " << alpha1List_[i]
-                     << "\nCN1: " << CN1List_[i]
-                     << "\nCD0: " << CD0List_[i]
-                     << "\nS1: " << S1List_[i]
-                     << "\nS2: " << S2List_[i]
-                     << "\nK1: " << K1List_[i]
-                     << "\nK2: " << K2List_[i] << endl;
-            }
-        }
-    }
-}
-bool Foam::fv::LeishmanBeddoes::readList
-(
-    word keyword,
-    List<scalar> &list
-)
-{
-    List<scalar> empty;
-    list = coeffs_.lookupOrDefault<List<scalar> >(keyword, empty);
-
-    //no list was read, preallocate the list for speed
-    if (list.size() == 0)
-    {
-        list.setSize(ReList_.size());
-        return false;
-    }
-
-    //Ensure that lists are of equal size as Re,
-    if (list.size() != ReList_.size())
-    {
-        word errorMessage =
-            word("Number of elements in ") + keyword +
-            " must be indentical to number of elements in Re";
-         error myerror(errorMessage);
-         myerror.abort();
-    }
-    return true;
-}
-
 Foam::List<scalar> Foam::fv::LeishmanBeddoes::cnToF
 (
     List<scalar> cnList,
@@ -205,20 +98,6 @@ void Foam::fv::LeishmanBeddoes::calcAlphaEquiv()
 
 void Foam::fv::LeishmanBeddoes::evalStaticData()
 {
-    Reold_ = profileData_.Re();
-    if (ReList_.size() == 0)
-    {
-        buildStaticData();
-    }
-    else
-    {
-        interpolateStaticData();
-    }
-}
-
-
-void Foam::fv::LeishmanBeddoes::buildStaticData()
-{
     // Get static stall angle in radians
     alphaSS_ = profileData_.staticStallAngleRad();
 
@@ -250,54 +129,27 @@ void Foam::fv::LeishmanBeddoes::buildStaticData()
         Info<< "    alpha1: " << alpha1_ << endl;
     }
 
-    // Calculate S1 and S2 constants for the separation point curve
-    calcS1S2();
+    if (calcFits_)
+    {
+        // Calculate S1 and S2 constants for the separation point curve
+        calcS1S2();
 
-    // Calculate the K1 and K2 constants for the moment coefficient
-    calcK1K2();
+        // Calculate the K1 and K2 constants for the moment coefficient
+        calcK1K2();
+    }
+    else
+    {
+        interpolateFits();
+    }
 }
 
-void Foam::fv::LeishmanBeddoes::interpolateStaticData()
+
+void Foam::fv::LeishmanBeddoes::interpolateFits()
 {
     scalar Re = profileData_.Re();
+    label interpIndex = interpolateUtils::binarySearch(ReList_, Re);
+    scalar interpFraction = interpolateUtils::getPart(Re, ReList_, interpIndex);
 
-    //for speed issues, calculate interpolate information once and use same
-    //data for all interpolations
-    label interpIndex =
-        interpolateUtils::binarySearch(ReList_, Re);
-    scalar interpFraction =
-        interpolateUtils::getPart(Re, ReList_, interpIndex);
-
-    alphaSS_ = interpolateUtils::interpolate1D
-    (
-        interpFraction,
-        alphaSSList_,
-        interpIndex
-    );
-    CNAlpha_ = interpolateUtils::interpolate1D
-    (
-        interpFraction,
-        CNAlphaList_,
-        interpIndex
-    );
-    alpha1_ = interpolateUtils::interpolate1D
-    (
-        interpFraction,
-        alpha1List_,
-        interpIndex
-    );
-    CN1_ = interpolateUtils::interpolate1D
-    (
-        interpFraction,
-        CN1List_,
-        interpIndex
-    );
-    CD0_ = interpolateUtils::interpolate1D
-    (
-        interpFraction,
-        CD0List_,
-        interpIndex
-    );
     S1_ = interpolateUtils::interpolate1D
     (
         interpFraction,
@@ -323,6 +175,8 @@ void Foam::fv::LeishmanBeddoes::interpolateStaticData()
         interpIndex
     );
 }
+
+
 void Foam::fv::LeishmanBeddoes::calcUnsteady()
 {
     // Calculate the circulatory normal force coefficient
@@ -599,6 +453,7 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
 )
 :
     dynamicStallModel(dict, modelName, time, profileData),
+    calcFits_(coeffs_.lookupOrDefault("calcFits", true)),
     X_(0.0),
     XPrev_(0.0),
     Y_(0.0),
@@ -644,11 +499,18 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     K2_(0.0),
     cmFitExponent_(coeffs_.lookupOrDefault("cmFitExponent", 2)),
     CM_(0.0),
-    Reold_(0.0)
+    Re_(0.0)
 {
     dict_.lookup("chordLength") >> c_;
 
-    read();
+    if (not calcFits_)
+    {
+        ReList_ = coeffs_.lookup("ReList");
+        S1List_ = coeffs_.lookup("S1List");
+        S2List_ = coeffs_.lookup("S2List");
+        K1List_ = coeffs_.lookup("K1List");
+        K2List_ = coeffs_.lookup("K2List");
+    }
 
     if (debug)
     {
@@ -726,7 +588,7 @@ void Foam::fv::LeishmanBeddoes::correct
     calcAlphaEquiv();
     // Evaluate static coefficient data if it has changed, e.g., from a
     // Reynolds number correction
-    if (profileData_.Re() != Reold_)
+    if (profileData_.staticStallAngleRad() != alphaSS_ or not calcFits_)
     {
         evalStaticData();
     }

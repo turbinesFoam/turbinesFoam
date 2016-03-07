@@ -57,6 +57,10 @@ protected:
 
     // Protected data
 
+        //- Switch for automatically calculating separation point fits
+        //  default is true
+        bool calcFits_;
+
         //- Chord length in meters
         scalar c_;
 
@@ -253,26 +257,11 @@ protected:
         //- Total moment coefficient
         scalar CM_;
 
-        //- Reynolds number that last static coefficients is based on
-        scalar Reold_;
+        //- Reynolds number
+        scalar Re_;
 
-        //- Reynolds number list
+        //- Reynolds number list for supplied fits
         List<scalar> ReList_;
-
-        //- List of alphaSS for interpolation
-        List<scalar> alphaSSList_;
-
-        //- List of CNAlpha for interpolation
-        List<scalar> CNAlphaList_;
-
-        //- List of alpha1 for interpolation
-        List<scalar> alpha1List_;
-
-        //- List of CN1 for interpolation
-        List<scalar> CN1List_;
-
-        //- List of CD0 for interpolation
-        List<scalar> CD0List_;
 
         //- List of S1 for interpolation
         List<scalar> S1List_;
@@ -289,11 +278,6 @@ protected:
 
     // Protected member functions
 
-        //- Read dictionary
-        void read();
-
-        bool readList(word keyword, List<scalar> &list);
-
         //- Calculate the equivalent angle of attack
         virtual void calcAlphaEquiv();
 
@@ -301,12 +285,8 @@ protected:
         // alpha1, and CD0
         virtual void evalStaticData();
 
-        //Builds the data required for evalStaticData
-        virtual void buildStaticData();
-
-        //creates the data required for evalStaticData through
-        //Reynolds number interpolation
-        virtual void interpolateStaticData();
+        //- Interpolate separation point curve fits based on Re
+        virtual void interpolateFits();
 
         //- Calculate unsteady quantities
         virtual void calcUnsteady();
