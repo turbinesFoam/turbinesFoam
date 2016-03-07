@@ -460,6 +460,12 @@ const Foam::scalar& Foam::fv::actuatorLineElement::chordLength() const
 }
 
 
+const Foam::scalar& Foam::fv::actuatorLineElement::spanLength()
+{
+    return spanLength_;
+}
+
+
 const Foam::vector& Foam::fv::actuatorLineElement::position()
 {
     return position_;

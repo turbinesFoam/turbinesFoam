@@ -340,6 +340,7 @@ void Foam::fv::actuatorLineSource::createElements()
 void Foam::fv::actuatorLineSource::writePerf()
 {
     scalar time = mesh_.time().value();
+    scalar totalArea = 0.0;
     scalar x = 0.0;
     scalar y = 0.0;
     scalar z = 0.0;
@@ -352,21 +353,23 @@ void Foam::fv::actuatorLineSource::writePerf()
 
     forAll(elements_, i)
     {
+        scalar area = elements_[i].chordLength()*elements_[i].spanLength();
+        totalArea += area;
         vector pos = elements_[i].position();
         x += pos[0]; y += pos[1]; z += pos[2];
-        relVelMag += mag(elements_[i].relativeVelocity());
-        alphaDeg += elements_[i].angleOfAttack();
-        alphaGeom += elements_[i].angleOfAttackGeom();
-        cl += elements_[i].liftCoefficient();
-        cd += elements_[i].dragCoefficient();
-        cm += elements_[i].momentCoefficient();
+        relVelMag += mag(elements_[i].relativeVelocity())*area;
+        alphaDeg += elements_[i].angleOfAttack()*area;
+        alphaGeom += elements_[i].angleOfAttackGeom()*area;
+        cl += elements_[i].liftCoefficient()*area;
+        cd += elements_[i].dragCoefficient()*area;
+        cm += elements_[i].momentCoefficient()*area;
     }
 
     x /= nElements_; y /= nElements_; z /= nElements_;
-    relVelMag /= nElements_;
-    alphaDeg /= nElements_;
-    alphaGeom /= nElements_;
-    cl /= nElements_; cd /= nElements_; cm /= nElements_;
+    relVelMag /= totalArea;
+    alphaDeg /= totalArea;
+    alphaGeom /= totalArea;
+    cl /= totalArea; cd /= totalArea; cm /= totalArea;
 
     // write time,x,y,z,rel_vel_mag,alpha_deg,alpha_geom_deg,cl,cd,cm
     *outputFile_<< time << "," << x << "," << y << "," << z << "," << relVelMag
