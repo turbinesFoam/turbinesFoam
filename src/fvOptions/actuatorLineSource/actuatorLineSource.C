@@ -74,6 +74,17 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
         reducedFreq_ = pitchDict.lookupOrDefault("reducedFreq", 0.0);
         pitchAmplitude_ = pitchDict.lookupOrDefault("amplitude", 0.0);
 
+        // Read option for writing forceField
+        bool writeForceField = coeffs_.lookupOrDefault
+        (
+            "writeForceField",
+            true
+        );
+        if (not writeForceField)
+        {
+            forceField_.writeOpt() = IOobject::NO_WRITE;
+        }
+
         if (debug)
         {
             Info<< "Debugging for actuatorLineSource on" << endl;
@@ -506,7 +517,10 @@ Foam::fv::actuatorLineSource::actuatorLineSource
     {
         createOutputFile();
     }
-    forceField_.write();
+    if (forceField_.writeOpt() == IOobject::AUTO_WRITE)
+    {
+        forceField_.write();
+    }
     // Calculate end effects
     if (endEffectsActive_)
     {

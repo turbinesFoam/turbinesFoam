@@ -209,6 +209,9 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
         bladeSubDict.add("selectionMode", coeffs_.lookup("selectionMode"));
         bladeSubDict.add("cellSet", coeffs_.lookup("cellSet"));
 
+        // Do not write force from individual actuator line unless specified
+        bladeSubDict.lookupOrAddDefault("writeForceField", false);
+
         dictionary dict;
         dict.add("actuatorLineSourceCoeffs", bladeSubDict);
         dict.add("type", "actuatorLineSource");
@@ -301,6 +304,9 @@ void Foam::fv::axialFlowTurbineALSource::createHub()
     hubSubDict.add("selectionMode", coeffs_.lookup("selectionMode"));
     hubSubDict.add("cellSet", coeffs_.lookup("cellSet"));
 
+    // Do not write force from individual actuator line unless specified
+    hubSubDict.lookupOrAddDefault("writeForceField", false);
+
     dictionary dict;
     dict.add("actuatorLineSourceCoeffs", hubSubDict);
     dict.add("type", "actuatorLineSource");
@@ -385,6 +391,9 @@ void Foam::fv::axialFlowTurbineALSource::createTower()
     towerSubDict.add("freeStreamVelocity", freeStreamVelocity_);
     towerSubDict.add("selectionMode", coeffs_.lookup("selectionMode"));
     towerSubDict.add("cellSet", coeffs_.lookup("cellSet"));
+
+    // Do not write force from individual actuator line unless specified
+    towerSubDict.lookupOrAddDefault("writeForceField", false);
 
     dictionary dict;
     dict.add("actuatorLineSourceCoeffs", towerSubDict);
