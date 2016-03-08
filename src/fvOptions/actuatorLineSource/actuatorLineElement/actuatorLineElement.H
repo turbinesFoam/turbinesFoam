@@ -276,6 +276,9 @@ public:
             //- Return the element chord length
             const scalar& chordLength() const;
 
+            //- Return the element span length
+            const scalar& spanLength();
+
             //- Return the element location
             const vector& position();
 

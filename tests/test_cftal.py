@@ -105,6 +105,17 @@ def test_parallel():
     assert "Finalising parallel run" in log_end
 
 
+def test_multi_re():
+    """Test crossFlowTurbineALSource with multiRe profileData."""
+    # Switch on change profileData tableType to multiRe
+    with open("system/fvOptions") as f:
+        txt = f.read()
+    txt = txt.replace("tableType   singleRe;", "tableType   multiRe;")
+    with open("system/fvOptions", "w") as f:
+        f.write(txt)
+    test_serial()
+
+
 def teardown():
     """Move back into tests directory."""
     os.chdir("../")

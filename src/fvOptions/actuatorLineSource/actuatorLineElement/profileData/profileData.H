@@ -25,6 +25,7 @@ Class
     Foam::profileData
 
 Description
+    Object to store force and moment coefficient data for a 2-D profile.
 
 SourceFiles
     profileData.C
@@ -47,7 +48,10 @@ namespace Foam
 
 class profileData
 {
-    // Private data
+
+protected:
+
+    // Protected data
 
         //- Profile name
         const word name_;
@@ -57,6 +61,9 @@ class profileData
 
         //- Debug level
         const label& debug;
+
+        //- Table type: "singleRe" (default) or "multiRe"
+        const word tableType_;
 
         //- Specified Reynolds number
         scalar Re_;
@@ -76,16 +83,43 @@ class profileData
         //- Unmodified moment coefficient list
         List<scalar> momentCoefficientListOrg_;
 
+        //- Reynolds number list for multiple Re dataset
+        List<scalar> ReList_;
+
+        //- 2-D array of drag coefficient values for multiple Re dataset
+        List<List<scalar> > dragCoefficientLists_;
+
+        //- 2-D array of lift coefficient values for multiple Re dataset
+        List<List<scalar> > liftCoefficientLists_;
+
+        //- 2-D array of moment coefficient values for multiple Re dataset
+        List<List<scalar> > momentCoefficientLists_;
+
+        //- List of static stall angles (deg) for multiple Re dataset
+        List<scalar> staticStallAngleList_;
+
+        //- List of zero lift drag coefficients for multiple Re dataset
+        List<scalar> zeroLiftDragCoeffList_;
+
+        //- List of zero lift AoAs (deg) for multiple Re dataset
+        List<scalar> zeroLiftAngleOfAttackList_;
+
+        //- List of moment coefficients at zero lift for multiple Re dataset
+        List<scalar> zeroLiftMomentCoeffList_;
+
+        //- List of normal coefficient slopes (1/rad) for multiple Re dataset
+        List<scalar> normalCoeffSlopeList_;
+
         //- Angle of attack list (deg)
         List<scalar> angleOfAttackList_;
 
-        //- Lift coefficient list
+        //- Lift coefficient list at current Re
         List<scalar> liftCoefficientList_;
 
-        //- Drag coefficient list
+        //- Drag coefficient list at current Re
         List<scalar> dragCoefficientList_;
 
-        //- Moment coefficient list
+        //- Moment coefficient list at current Re
         List<scalar> momentCoefficientList_;
 
         //- Switch for Reynolds number corrections
@@ -107,10 +141,26 @@ class profileData
         scalar normalCoeffSlope_;
 
 
-    // Private Member Functions
+    // Protected Member Functions
 
-        //- Read dictionary
-        void read();
+        //- Read coefficients for single Reynolds number dataset
+        void readSingleRe();
+
+        //- Read coefficients for multiple Reynolds number dataset
+        void readMultiRe();
+
+        //- Read angle of attack list from first column of a 2-D array
+        List<scalar> readAngleOfAttackList(word keyword);
+
+        //- Read 2-D array of coefficient data
+        // Data is assumed to have angle of attack values in first column, where
+        // the row will be read to xvalues and the column to y values, and data
+        // is given as data[y][x]
+        void read2DArray
+        (
+            List<List<scalar> > &data,
+            word keyword
+        );
 
         //- Interpolate a scalar value
         scalar interpolate
@@ -134,6 +184,26 @@ class profileData
 
         //- Calculate normal force coefficient slope
         void calcNormalCoeffSlope();
+
+        //- Set coefficient lists for current Reynolds number by interpolating
+        //  the 2-D coefficient arrays
+        void interpCoeffLists();
+
+        //- Set properties (static stall angle, etc.) through interpolation
+        //  from preconstructed lists
+        void interpPropsMultiRe();
+
+        //- Create lists for interpolation with interpPropsMultiRe
+        // Only needs to be called once
+        void analyzeMultiRe();
+
+        //- Generate sublist from current Re data
+        List<scalar> subList
+        (
+            scalar alphaDegStart,
+            scalar alphaDegStop,
+            const List<scalar>& fullList
+        );
 
         //- Disallow default bitwise copy construct
         profileData(const profileData&);
@@ -307,11 +377,6 @@ public:
 
             //- Update Reynolds number
             void updateRe(scalar Re);
-
-
-        // Write
-
-
 };
 
 
