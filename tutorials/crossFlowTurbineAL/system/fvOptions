@@ -38,31 +38,6 @@ turbine
         {
             active              on;
             dynamicStallModel   LeishmanBeddoesSGC;
-            LeishmanBeddoesCoeffs
-            {
-                A1          0.3;        // Default = 0.3
-                A2          0.7;        // Default = 0.7
-                b1          0.14;       // Default = 0.14
-                b2          0.53;       // Default = 0.53
-                eta         0.95;       // Default = 0.95
-                Tp          1.7;        // Default = 1.7
-                Tf          3.0;        // Default = 3.0
-                Tv          6.0;        // Default = 6.0
-                Tvl         7.0;        // Default = 7.0
-            }
-            LeishmanBeddoes3GCoeffs
-            {
-                Tp          1.7;        // Default = 1.7
-                Tf          3.0;        // Default = 3.0
-                T1          20;         // Default = 20
-                T2          4.5;        // Default = 4.5
-                Tv          10.0;       // Default = 10.0
-                Tvl         8.0;        // Default = 8.0
-                A1          0.165;      // Default = 0.165
-                A2          0.335;      // Default = 0.335
-                A3          0.5;        // Default = 0.5
-                eta         0.95;       // Default = 0.95
-            }
             LeishmanBeddoesSGCCoeffs
             {
                 Tp          1.7;        // Default = 1.7
