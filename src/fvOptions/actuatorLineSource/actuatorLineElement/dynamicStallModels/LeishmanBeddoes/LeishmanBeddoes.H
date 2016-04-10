@@ -57,10 +57,6 @@ protected:
 
     // Protected data
 
-        //- Switch for automatically calculating separation point fits
-        //  default is true
-        bool calcFits_;
-
         //- Chord length in meters
         scalar c_;
 
@@ -260,21 +256,6 @@ protected:
         //- Reynolds number
         scalar Re_;
 
-        //- Reynolds number list for supplied fits
-        List<scalar> ReList_;
-
-        //- List of S1 for interpolation
-        List<scalar> S1List_;
-
-        //- List of S2 for interpolation
-        List<scalar> S2List_;
-
-        //- List of K1 for interpolation
-        List<scalar> K1List_;
-
-        //- List of K2 for interpolation
-        List<scalar> K2List_;
-
 
     // Protected member functions
 
@@ -285,8 +266,8 @@ protected:
         // alpha1, and CD0
         virtual void evalStaticData();
 
-        //- Interpolate separation point curve fits based on Re
-        virtual void interpolateFits();
+        //- Interpolate static profile data based on Reynolds number
+        scalar interpolateStaticParam(word paramName);
 
         //- Calculate unsteady quantities
         virtual void calcUnsteady();
