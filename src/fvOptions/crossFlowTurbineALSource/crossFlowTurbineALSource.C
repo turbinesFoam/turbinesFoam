@@ -69,14 +69,13 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
     List<List<scalar> > elementData;
     List<List<scalar> > profileData;
     word modelType = "actuatorLineSource";
-    List<scalar> frontalAreas(nBlades); // frontal area from each blade
+    List<scalar> frontalAreas(nBlades); // Frontal area from each blade
 
     forAll(blades_, i)
     {
         word bladeName = bladeNames_[i];
         // Create dictionary items for this blade
-        dictionary bladeSubDict;
-        bladeSubDict = bladesDict_.subDict(bladeName);
+        dictionary bladeSubDict = bladesDict_.subDict(bladeName);
         bladeSubDict.lookup("nElements") >> nElements;
         bladeSubDict.lookup("elementData") >> elementData;
         scalar azimuthalOffset = bladeSubDict.lookupOrDefault
@@ -217,6 +216,9 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
         );
         bladeSubDict.add("flowCurvature", fcDict);
 
+        // Do not write force from individual actuator line unless specified
+        bladeSubDict.lookupOrAddDefault("writeForceField", false);
+
         dictionary dict;
         dict.add("actuatorLineSourceCoeffs", bladeSubDict);
         dict.add("type", "actuatorLineSource");
@@ -252,8 +254,7 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
     {
         word strutName = strutNames[i];
         // Create dictionary items for this strut
-        dictionary strutSubDict;
-        strutSubDict = strutsDict_.subDict(strutName);
+        dictionary strutSubDict = strutsDict_.subDict(strutName);
         strutSubDict.lookup("nElements") >> nElements;
         strutSubDict.lookup("elementData") >> elementData;
         scalar azimuthalOffset = strutSubDict.lookupOrDefault
@@ -365,6 +366,9 @@ void Foam::fv::crossFlowTurbineALSource::createStruts()
         strutSubDict.add("selectionMode", coeffs_.lookup("selectionMode"));
         strutSubDict.add("cellSet", coeffs_.lookup("cellSet"));
 
+        // Do not write force from individual actuator line unless specified
+        strutSubDict.lookupOrAddDefault("writeForceField", false);
+
         dictionary dict;
         dict.add("actuatorLineSourceCoeffs", strutSubDict);
         dict.add("type", "actuatorLineSource");
@@ -446,6 +450,9 @@ void Foam::fv::crossFlowTurbineALSource::createShaft()
     shaftSubDict.add("freeStreamVelocity", freeStreamVelocity_);
     shaftSubDict.add("selectionMode", coeffs_.lookup("selectionMode"));
     shaftSubDict.add("cellSet", coeffs_.lookup("cellSet"));
+
+    // Do not write force from individual actuator line unless specified
+    shaftSubDict.lookupOrAddDefault("writeForceField", false);
 
     dictionary dict;
     dict.add("actuatorLineSourceCoeffs", shaftSubDict);

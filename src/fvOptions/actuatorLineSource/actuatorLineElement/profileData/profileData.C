@@ -772,56 +772,22 @@ Foam::List<scalar> Foam::profileData::normalCoefficientList
     scalar alphaDegStop
 )
 {
-    List<scalar> newList;
-    if (liftCoefficientLists_.size() > 0)
+    List<scalar> cnList(liftCoefficientList_.size());
+    forAll(cnList, i)
     {
-        forAll(angleOfAttackList_, i)
-        {
-            if (angleOfAttackList_[i] >= alphaDegStart
-                and angleOfAttackList_[i] <= alphaDegStop)
-            {
-                newList.append
-                (
-                    convertToCN
-                    (
-                        interpolateUtils::interpolate1D
-                        (
-                            Re_,
-                            ReList_,
-                            liftCoefficientLists_[i]
-                        ),
-                        interpolateUtils::interpolate1D
-                        (
-                            Re_,
-                            ReList_,
-                            dragCoefficientLists_[i]
-                        ),
-                        angleOfAttackList_[i]
-                    )
-                );
-            }
-        }
+        cnList[i] = convertToCN
+        (
+            liftCoefficientList_[i],
+            dragCoefficientList_[i],
+            angleOfAttackList_[i]
+        );
     }
-    else
-    {
-        forAll(angleOfAttackList_, i)
-        {
-            if (angleOfAttackList_[i] >= alphaDegStart
-                and angleOfAttackList_[i] <= alphaDegStop)
-            {
-                newList.append
-                (
-                    convertToCN
-                    (
-                        liftCoefficientList_[i],
-                        dragCoefficientList_[i],
-                        angleOfAttackList_[i]
-                    )
-                );
-            }
-        }
-    }
-    return newList;
+    return subList
+    (
+        alphaDegStart,
+        alphaDegStop,
+        cnList
+    );
 }
 
 
@@ -831,56 +797,22 @@ Foam::List<scalar> Foam::profileData::chordwiseCoefficientList
     scalar alphaDegStop
 )
 {
-    List<scalar> newList;
-    if (liftCoefficientLists_.size() > 0)
+    List<scalar> ccList(liftCoefficientList_.size());
+    forAll(ccList, i)
     {
-        forAll(angleOfAttackList_, i)
-        {
-            if (angleOfAttackList_[i] >= alphaDegStart
-                and angleOfAttackList_[i] <= alphaDegStop)
-            {
-                newList.append
-                (
-                    convertToCC
-                    (
-                        interpolateUtils::interpolate1D
-                        (
-                            Re_,
-                            ReList_,
-                            liftCoefficientLists_[i]
-                        ),
-                        interpolateUtils::interpolate1D
-                        (
-                            Re_,
-                            ReList_,
-                            dragCoefficientLists_[i]
-                        ),
-                        angleOfAttackList_[i]
-                    )
-                );
-            }
-        }
+        ccList[i] = convertToCC
+        (
+            liftCoefficientList_[i],
+            dragCoefficientList_[i],
+            angleOfAttackList_[i]
+        );
     }
-    else
-    {
-        forAll(angleOfAttackList_, i)
-        {
-            if (angleOfAttackList_[i] >= alphaDegStart
-                and angleOfAttackList_[i] <= alphaDegStop)
-            {
-                newList.append
-                (
-                    convertToCC
-                    (
-                        liftCoefficientList_[i],
-                        dragCoefficientList_[i],
-                        angleOfAttackList_[i]
-                    )
-                );
-            }
-        }
-    }
-    return newList;
+    return subList
+    (
+        alphaDegStart,
+        alphaDegStop,
+        ccList
+    );
 }
 
 

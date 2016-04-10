@@ -585,7 +585,15 @@ void Foam::fv::LeishmanBeddoes::correct
         Info<< "    Initial moment coefficient: " << cm << endl;
     }
 
-    calcAlphaEquiv();
+    bool doCalcAlphaEquiv = coeffs_.lookupOrDefault("calcAlphaEquiv", true);
+    if (doCalcAlphaEquiv)
+    {
+        calcAlphaEquiv();
+    }
+    else
+    {
+        alphaEquiv_ = alpha_;
+    }
     // Evaluate static coefficient data if it has changed, e.g., from a
     // Reynolds number correction
     if (profileData_.staticStallAngleRad() != alphaSS_ or not calcFits_)

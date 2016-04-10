@@ -301,6 +301,14 @@ void Foam::fv::actuatorLineElement::correctFlowCurvature
 
         angleOfAttackRad += atan2((1.0 - cos(beta/2.0)), sin(beta/2.0));
     }
+    else if (flowCurvatureModelName_ == "constantOffset")
+    {
+        dictionary fcDict = dict_.subDict("flowCurvature");
+        dictionary coeffs = fcDict.subDict(flowCurvatureModelName_ + "Coeffs");
+        scalar offsetDeg = 0.0;
+        coeffs.lookup("offsetDeg") >> offsetDeg;
+        angleOfAttackRad += degToRad(offsetDeg);
+    }
 }
 
 
@@ -457,6 +465,12 @@ const Foam::word& Foam::fv::actuatorLineElement::name() const
 const Foam::scalar& Foam::fv::actuatorLineElement::chordLength() const
 {
     return chordLength_;
+}
+
+
+const Foam::scalar& Foam::fv::actuatorLineElement::spanLength()
+{
+    return spanLength_;
 }
 
 
