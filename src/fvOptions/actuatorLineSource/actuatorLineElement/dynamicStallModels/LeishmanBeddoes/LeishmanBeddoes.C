@@ -602,7 +602,7 @@ void Foam::fv::LeishmanBeddoes::correct
         Info<< "    Initial moment coefficient: " << cm << endl;
     }
 
-    bool doCalcAlphaEquiv = coeffs_.lookupOrDefault("calcAlphaEquiv", true);
+    bool doCalcAlphaEquiv = coeffs_.lookupOrDefault("calcAlphaEquiv", false);
     if (doCalcAlphaEquiv)
     {
         calcAlphaEquiv();
