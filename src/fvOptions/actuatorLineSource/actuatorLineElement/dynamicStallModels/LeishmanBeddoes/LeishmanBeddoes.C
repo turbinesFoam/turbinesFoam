@@ -182,7 +182,7 @@ void Foam::fv::LeishmanBeddoes::evalStaticData()
     }
     else
     {
-        calcK1K2();        
+        calcK1K2();
     }
 }
 
