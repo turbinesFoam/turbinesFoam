@@ -31,7 +31,10 @@ cp -rf 0.org 0
 
 runApplication blockMesh -dict system/blockMeshDict-$D
 runApplication snappyHexMesh -overwrite
-runApplication extrudeMesh
+if [ "$D" = "2D" ]
+    then
+    runApplication extrudeMesh
+fi
 runApplication topoSet
 
 if [ "$3" = "-parallel" ]
