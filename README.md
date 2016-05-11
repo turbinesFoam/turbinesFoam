@@ -47,9 +47,9 @@ Usage
 -----
 There are tutorials located in `turbinesFoam/tutorials`.
 
-
 Acknowledgements
 ----------------
+This work was funded through a National Science Foundation CAREER award, principal investigator Martin Wosnik ([NSF CBET 1150797](http://www.nsf.gov/awardsearch/showAward?AWD_ID=1150797), Energy for Sustainability, original program manager Geoffrey A. Prentice, current program manager Gregory L. Rorrer).
 
 OpenFOAM is free, open source software for computational fluid dynamics (CFD),
 developed primarily by [CFD Direct](http://cfd.direct), on behalf of the
