@@ -45,7 +45,20 @@ cd turbinesFoam
 
 Usage
 -----
+
 There are tutorials located in `turbinesFoam/tutorials`.
+
+
+Publications
+------------
+
+Bachant, P., Goude, A., and Wosnik, M. (2016) [Actuator line modeling of vertical-axis turbines](https://arxiv.org/abs/1605.01449). arXiv preprint 1605.01449, submitted to _Wind Energy_
+
+
+How to cite
+-----------
+
+The latest release of turbinesFoam can be cited via DOI thanks to Zenodo: [![DOI](https://zenodo.org/badge/4234/turbinesFoam/turbinesFoam.svg)](https://zenodo.org/badge/latestdoi/4234/turbinesFoam/turbinesFoam)
 
 
 Acknowledgements
@@ -63,9 +76,3 @@ developed primarily by [CFD Direct](http://cfd.direct), on behalf of the
 
 Interpolation, Gaussian projection, and vector rotation functions adapted from
 NREL's [SOWFA](https://github.com/NREL/SOWFA).
-
-
-How to cite
------------
-
-The latest release of turbinesFoam can be cited via DOI thanks to Zenodo: [![DOI](https://zenodo.org/badge/4234/turbinesFoam/turbinesFoam.svg)](https://zenodo.org/badge/latestdoi/4234/turbinesFoam/turbinesFoam)
