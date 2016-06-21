@@ -480,6 +480,12 @@ const Foam::vector& Foam::fv::actuatorLineElement::position()
 }
 
 
+const Foam::vector& Foam::fv::actuatorLineElement::velocity()
+{
+    return velocity_;
+}
+
+
 const Foam::vector& Foam::fv::actuatorLineElement::relativeVelocity()
 {
     return relativeVelocity_;
