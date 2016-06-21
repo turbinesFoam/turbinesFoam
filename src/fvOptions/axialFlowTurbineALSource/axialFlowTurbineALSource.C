@@ -76,6 +76,8 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
     List<List<scalar> > elementData;
     word modelType = "actuatorLineSource";
     List<scalar> frontalAreas(nBlades); // frontal area from each blade
+    dictionary endEffectsDict = coeffs_.subOrEmptyDict("endEffects");
+    bool endEffectsActive = endEffectsDict.lookupOrDefault("active", false);
 
     for (int i = 0; i < nBlades_; i++)
     {
@@ -93,6 +95,13 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
         bladeSubDict.add("freeStreamVelocity", freeStreamVelocity_);
         bladeSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
         bladeSubDict.add("profileData", profileData_);
+
+        // Disable individual lifting line end effects model if rotor-level
+        // end effects model is active
+        if (bladeSubDict.found("endEffects") and endEffectsActive)
+        {
+            bladeSubDict.set("endEffects", false);
+        }
 
         if (debug)
         {
