@@ -35,8 +35,14 @@ turbine
 
         dynamicStall
         {
-            active              off;
-            dynamicStallModel   LeishmanBeddoes;
+            active          off;
+            dynamicStallModel LeishmanBeddoes;
+        }
+
+        endEffects
+        {
+            active          on;
+            endEffectsModel Glauert; // Glauert || Shen || liftingLine
         }
 
         blades
@@ -45,7 +51,6 @@ turbine
             {
                 writePerf   true;
                 writeElementPerf true;
-                endEffects  on;
                 nElements   28;
                 elementProfiles
                 (
