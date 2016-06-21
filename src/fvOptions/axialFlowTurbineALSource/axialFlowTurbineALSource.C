@@ -76,8 +76,6 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
     List<List<scalar> > elementData;
     word modelType = "actuatorLineSource";
     List<scalar> frontalAreas(nBlades); // frontal area from each blade
-    dictionary endEffectsDict = coeffs_.subOrEmptyDict("endEffects");
-    bool endEffectsActive = endEffectsDict.lookupOrDefault("active", false);
 
     for (int i = 0; i < nBlades_; i++)
     {
@@ -98,7 +96,7 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
 
         // Disable individual lifting line end effects model if rotor-level
         // end effects model is active
-        if (bladeSubDict.found("endEffects") and endEffectsActive)
+        if (bladeSubDict.found("endEffects") and endEffectsActive_)
         {
             bladeSubDict.set("endEffects", false);
         }
@@ -427,6 +425,32 @@ void Foam::fv::axialFlowTurbineALSource::createNacelle()
 }
 
 
+void Foam::fv::axialFlowTurbineALSource::calcEndEffects()
+{
+    // Calculate rotor-level end effects correction
+    scalar pi = Foam::constant::mathematical::pi;
+    forAll(blades_, i)
+    {
+        forAll(blades_[i].elements(), j)
+        {
+            scalar rootDist = blades_[i].elements()[j].rootDistance();
+            // Calculate angle between rotor plane and inflow velocity
+            scalar phi = 0.0;
+            // Calculate end effect factor for this element
+            scalar f = 1.0;
+            if (endEffectsModel_ == "Glauert")
+            {
+                f = 2.0/pi*Foam::acos
+                (
+                    Foam::exp(nBlades_/2.0*rootDist/sin(phi))
+                );
+            }
+            blades_[i].elements()[j].setEndEffectFactor(f);
+        }
+    }
+}
+
+
 // * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
 Foam::fv::axialFlowTurbineALSource::axialFlowTurbineALSource
@@ -748,6 +772,11 @@ bool Foam::fv::axialFlowTurbineALSource::read(const dictionary& dict)
             "includeInTotalDrag",
             false
         );
+
+        // Read end effects subdictionary
+        dictionary endEffectsDict = coeffs_.subOrEmptyDict("endEffects");
+        endEffectsDict.lookup("active") >> endEffectsActive_;
+        endEffectsDict.lookup("endEffectsModel") >> endEffectsModel_;
 
         if (debug)
         {

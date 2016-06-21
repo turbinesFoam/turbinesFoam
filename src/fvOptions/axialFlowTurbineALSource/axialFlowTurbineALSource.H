@@ -96,6 +96,12 @@ protected:
         //- Switch to include nacelle drag in turbine drag coefficient
         bool includeNacelleDrag_;
 
+        //- Switch to activate rotor-level end effects model
+        bool endEffectsActive_;
+
+        //- End effects model name
+        word endEffectsModel_;
+
 
     // Protected Member Functions
 
@@ -113,6 +119,9 @@ protected:
 
         //- Create actuator line for nacelle
         void createNacelle();
+
+        //- Calculate end end effects at rotor level
+        void calcEndEffects();
 
         //- Use turbine base class rotate method
         using turbineALSource::rotate;

@@ -633,6 +633,12 @@ const Foam::volVectorField& Foam::fv::actuatorLineSource::forceField()
 }
 
 
+PtrList<Foam::fv::actuatorLineElement>& Foam::fv::actuatorLineSource::elements()
+{
+    return elements_;
+}
+
+
 Foam::vector Foam::fv::actuatorLineSource::moment(vector point)
 {
     vector moment(vector::zero);
