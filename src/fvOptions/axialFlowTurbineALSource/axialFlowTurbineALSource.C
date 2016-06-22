@@ -436,7 +436,7 @@ void Foam::fv::axialFlowTurbineALSource::createNacelle()
 
 void Foam::fv::axialFlowTurbineALSource::calcEndEffects()
 {
-    if(debug)
+    if (debug)
     {
         Info<< "Calculating end effects for " << name_ << endl;
     }
