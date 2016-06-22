@@ -579,7 +579,7 @@ void Foam::fv::axialFlowTurbineALSource::addSup
     // Create local moment vector
     vector moment(vector::zero);
 
-    if (endEffectsActive_)
+    if (endEffectsActive_ and endEffectsModel_ != "liftingLine")
     {
         // Calculate end effects for next time step
         calcEndEffects();
@@ -666,7 +666,7 @@ void Foam::fv::axialFlowTurbineALSource::addSup
     // Create local moment vector
     vector moment(vector::zero);
 
-    if (endEffectsActive_)
+    if (endEffectsActive_ and endEffectsModel_ != "liftingLine")
     {
         // Calculate end effects for next time step
         calcEndEffects();
@@ -747,7 +747,7 @@ void Foam::fv::axialFlowTurbineALSource::addSup
         rotate();
     }
 
-    if (endEffectsActive_)
+    if (endEffectsActive_ and endEffectsModel_ != "liftingLine")
     {
         // Calculate end effects for next time step
         calcEndEffects();
