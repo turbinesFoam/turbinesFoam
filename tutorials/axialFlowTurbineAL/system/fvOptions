@@ -42,7 +42,7 @@ turbine
         endEffects
         {
             active          on;
-            endEffectsModel Glauert; // Glauert || Shen || liftingLine
+            endEffectsModel Glauert; // Glauert || liftingLine
         }
 
         blades

@@ -96,9 +96,18 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
 
         // Disable individual lifting line end effects model if rotor-level
         // end effects model is active
-        if (bladeSubDict.found("endEffects") and endEffectsActive_)
+        if
+        (
+            bladeSubDict.found("endEffects")
+            and endEffectsActive_
+            and endEffectsModel_ != "liftingLine"
+        )
         {
             bladeSubDict.set("endEffects", false);
+        }
+        else if (endEffectsModel_ == "liftingLine" and endEffectsActive_)
+        {
+            bladeSubDict.add("endEffects", true);
         }
 
         if (debug)
@@ -427,6 +436,10 @@ void Foam::fv::axialFlowTurbineALSource::createNacelle()
 
 void Foam::fv::axialFlowTurbineALSource::calcEndEffects()
 {
+    if(debug)
+    {
+        Info<< "Calculating end effects for " << name_ << endl;
+    }
     // Calculate rotor-level end effects correction
     scalar pi = Foam::constant::mathematical::pi;
     forAll(blades_, i)
@@ -434,16 +447,31 @@ void Foam::fv::axialFlowTurbineALSource::calcEndEffects()
         forAll(blades_[i].elements(), j)
         {
             scalar rootDist = blades_[i].elements()[j].rootDistance();
-            // Calculate angle between rotor plane and inflow velocity
-            scalar phi = 0.0;
+            vector relVel = blades_[i].elements()[j].relativeVelocity();
+            if (debug)
+            {
+                Info<< "    rootDist: " << rootDist << endl;
+                Info<< "    relVel: " << relVel << endl;
+            }
+            // Calculate angle between rotor plane and relative velocity
+            scalar phi = pi/2.0;
+            if (mag(relVel) > VSMALL)
+            {
+                phi = asin((-axis_ & relVel)/(mag(axis_)*mag(relVel)));
+            }
+            if (debug)
+            {
+                Info<< "    phi: " << phi << endl;
+            }
             // Calculate end effect factor for this element
             scalar f = 1.0;
             if (endEffectsModel_ == "Glauert")
             {
-                f = 2.0/pi*Foam::acos
-                (
-                    Foam::exp(nBlades_/2.0*rootDist/sin(phi))
-                );
+                f = 2.0/pi*acos(Foam::exp(-nBlades_/2.0*rootDist/sin(phi)));
+            }
+            if (debug)
+            {
+                Info<< "    f: " << f << endl;
             }
             blades_[i].elements()[j].setEndEffectFactor(f);
         }
@@ -548,6 +576,12 @@ void Foam::fv::axialFlowTurbineALSource::addSup
     // Create local moment vector
     vector moment(vector::zero);
 
+    if (endEffectsActive_)
+    {
+        // Calculate end effects for next time step
+        calcEndEffects();
+    }
+
     // Add source for blade actuator lines
     forAll(blades_, i)
     {
@@ -629,6 +663,12 @@ void Foam::fv::axialFlowTurbineALSource::addSup
     // Create local moment vector
     vector moment(vector::zero);
 
+    if (endEffectsActive_)
+    {
+        // Calculate end effects for next time step
+        calcEndEffects();
+    }
+
     // Add source for blade actuator lines
     forAll(blades_, i)
     {
@@ -702,6 +742,12 @@ void Foam::fv::axialFlowTurbineALSource::addSup
     if (time_.value() != lastRotationTime_)
     {
         rotate();
+    }
+
+    if (endEffectsActive_)
+    {
+        // Calculate end effects for next time step
+        calcEndEffects();
     }
 
     // Add scalar source term from blades
