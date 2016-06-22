@@ -467,7 +467,10 @@ void Foam::fv::axialFlowTurbineALSource::calcEndEffects()
             scalar f = 1.0;
             if (endEffectsModel_ == "Glauert")
             {
-                f = 2.0/pi*acos(Foam::exp(-nBlades_/2.0*rootDist/sin(phi)));
+                f = 2.0/pi*acos(Foam::exp
+                (
+                    -nBlades_/2.0*(1.0/rootDist - 1)/sin(phi))
+                );
             }
             if (debug)
             {
