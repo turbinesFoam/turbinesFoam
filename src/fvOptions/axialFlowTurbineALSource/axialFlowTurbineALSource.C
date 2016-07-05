@@ -461,7 +461,8 @@ void Foam::fv::axialFlowTurbineALSource::calcEndEffects()
             }
             if (debug)
             {
-                Info<< "    phi: " << phi << endl;
+                scalar phiDeg = Foam::radToDeg(phi);
+                Info<< "    phi (degrees): " << phiDeg << endl;
             }
             // Calculate end effect factor for this element
             scalar f = 1.0;
@@ -581,7 +582,7 @@ void Foam::fv::axialFlowTurbineALSource::addSup
 
     if (endEffectsActive_ and endEffectsModel_ != "liftingLine")
     {
-        // Calculate end effects for next time step
+        // Calculate end effects based on current velocity field
         calcEndEffects();
     }
 
@@ -668,7 +669,7 @@ void Foam::fv::axialFlowTurbineALSource::addSup
 
     if (endEffectsActive_ and endEffectsModel_ != "liftingLine")
     {
-        // Calculate end effects for next time step
+        // Calculate end effects based on current velocity field
         calcEndEffects();
     }
 
@@ -749,7 +750,7 @@ void Foam::fv::axialFlowTurbineALSource::addSup
 
     if (endEffectsActive_ and endEffectsModel_ != "liftingLine")
     {
-        // Calculate end effects for next time step
+        // Calculate end effects based on current velocity field
         calcEndEffects();
     }
 
