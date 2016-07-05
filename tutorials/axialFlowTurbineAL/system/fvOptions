@@ -42,9 +42,16 @@ turbine
         endEffects
         {
             active          on;
-            endEffectsModel Glauert; // Glauert || liftingLine
+            endEffectsModel Shen; // Glauert || Shen || liftingLine
             GlauertCoeffs
             {
+                tipEffects  on;
+                rootEffects on;
+            }
+            ShenCoeffs
+            {
+                c1          0.125;
+                c2          21;
                 tipEffects  on;
                 rootEffects on;
             }

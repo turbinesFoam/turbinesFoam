@@ -87,7 +87,7 @@ def check_end_effects():
         cl[i] = df.cl.iloc[-1]
     print("End effect factor at tip:", f[-1])
     assert 0 < f[-1] < 0.5
-    assert cl[-1] < 0.5
+    assert cl[-1] < 0.6
     assert np.all(root_dist >= 0.0)
     assert np.all(root_dist <= 1.0)
 
