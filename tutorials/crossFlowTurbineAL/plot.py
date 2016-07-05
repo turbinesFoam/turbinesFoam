@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-"""
-This script plots results from the turbinesFoam cross-flow turbine actuator
+"""This script plots results from the turbinesFoam cross-flow turbine actuator
 line tutorial.
 """
 
@@ -8,6 +7,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import sys
+
+try:
+    import seaborn
+except ImportError:
+    plt.style.use("ggplot")
 
 
 def plot_cp(angle0=540.0):
@@ -27,6 +31,5 @@ def plot_cp(angle0=540.0):
 
 
 if __name__ == "__main__":
-    plt.style.use("fivethirtyeight")
     plot_cp()
     plt.show()

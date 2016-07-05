@@ -182,6 +182,9 @@ public:
             //- Return const reference to the force field
             const volVectorField& forceField();
 
+            //- Return reference to element pointer list
+            PtrList<actuatorLineElement>& elements();
+
 
         // Edit
 

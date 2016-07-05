@@ -94,6 +94,22 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
         bladeSubDict.add("fieldNames", coeffs_.lookup("fieldNames"));
         bladeSubDict.add("profileData", profileData_);
 
+        // Disable individual lifting line end effects model if rotor-level
+        // end effects model is active
+        if
+        (
+            bladeSubDict.found("endEffects")
+            and endEffectsActive_
+            and endEffectsModel_ != "liftingLine"
+        )
+        {
+            bladeSubDict.set("endEffects", false);
+        }
+        else if (endEffectsModel_ == "liftingLine" and endEffectsActive_)
+        {
+            bladeSubDict.add("endEffects", true);
+        }
+
         if (debug)
         {
             Info<< "Creating actuator line blade " << bladeName << endl;
@@ -418,6 +434,93 @@ void Foam::fv::axialFlowTurbineALSource::createNacelle()
 }
 
 
+void Foam::fv::axialFlowTurbineALSource::calcEndEffects()
+{
+    if (debug)
+    {
+        Info<< "Calculating end effects for " << name_ << endl;
+    }
+    // Calculate rotor-level end effects correction
+    scalar pi = Foam::constant::mathematical::pi;
+    forAll(blades_, i)
+    {
+        forAll(blades_[i].elements(), j)
+        {
+            scalar rootDist = blades_[i].elements()[j].rootDistance();
+            vector relVel = blades_[i].elements()[j].relativeVelocity();
+            if (debug)
+            {
+                Info<< "    rootDist: " << rootDist << endl;
+                Info<< "    relVel: " << relVel << endl;
+            }
+            // Calculate angle between rotor plane and relative velocity
+            scalar phi = pi/2.0;
+            if (mag(relVel) > VSMALL)
+            {
+                phi = asin((-axis_ & relVel)/(mag(axis_)*mag(relVel)));
+            }
+            if (debug)
+            {
+                scalar phiDeg = Foam::radToDeg(phi);
+                Info<< "    phi (degrees): " << phiDeg << endl;
+            }
+            // Calculate end effect factor for this element
+            scalar f = 1.0;
+            dictionary endEffectsCoeffs = endEffectsDict_.subOrEmptyDict
+            (
+                endEffectsModel_ + "Coeffs"
+            );
+            if (endEffectsModel_ == "Glauert")
+            {
+                if (endEffectsCoeffs.lookupOrDefault("tipEffects", true))
+                {
+                    f = 2.0/pi*acos(Foam::exp
+                    (
+                        -nBlades_/2.0*(1.0/rootDist - 1)/sin(phi))
+                    );
+                }
+                if (endEffectsCoeffs.lookupOrDefault("rootEffects", false))
+                {
+                    scalar tipDist = 1.0 - rootDist;
+                    f *= 2.0/pi*acos(Foam::exp
+                    (
+                        -nBlades_/2.0*(1.0/tipDist - 1)/sin(phi))
+                    );
+                }
+            }
+            else if (endEffectsModel_ == "Shen")
+            {
+                scalar c1;
+                endEffectsCoeffs.lookup("c1") >> c1;
+                scalar c2;
+                endEffectsCoeffs.lookup("c2") >> c2;
+                scalar g = Foam::exp(-c1*(nBlades_*tipSpeedRatio_ - c2)) + 0.1;
+                if (endEffectsCoeffs.lookupOrDefault("tipEffects", true))
+                {
+                    f = 2.0/pi*acos(Foam::exp
+                    (
+                        -g*nBlades_/2.0*(1.0/rootDist - 1)/sin(phi))
+                    );
+                }
+                if (endEffectsCoeffs.lookupOrDefault("rootEffects", false))
+                {
+                    scalar tipDist = 1.0 - rootDist;
+                    f *= 2.0/pi*acos(Foam::exp
+                    (
+                        -g*nBlades_/2.0*(1.0/tipDist - 1)/sin(phi))
+                    );
+                }
+            }
+            if (debug)
+            {
+                Info<< "    f: " << f << endl;
+            }
+            blades_[i].elements()[j].setEndEffectFactor(f);
+        }
+    }
+}
+
+
 // * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
 Foam::fv::axialFlowTurbineALSource::axialFlowTurbineALSource
@@ -515,6 +618,12 @@ void Foam::fv::axialFlowTurbineALSource::addSup
     // Create local moment vector
     vector moment(vector::zero);
 
+    if (endEffectsActive_ and endEffectsModel_ != "liftingLine")
+    {
+        // Calculate end effects based on current velocity field
+        calcEndEffects();
+    }
+
     // Add source for blade actuator lines
     forAll(blades_, i)
     {
@@ -596,6 +705,12 @@ void Foam::fv::axialFlowTurbineALSource::addSup
     // Create local moment vector
     vector moment(vector::zero);
 
+    if (endEffectsActive_ and endEffectsModel_ != "liftingLine")
+    {
+        // Calculate end effects based on current velocity field
+        calcEndEffects();
+    }
+
     // Add source for blade actuator lines
     forAll(blades_, i)
     {
@@ -671,6 +786,12 @@ void Foam::fv::axialFlowTurbineALSource::addSup
         rotate();
     }
 
+    if (endEffectsActive_ and endEffectsModel_ != "liftingLine")
+    {
+        // Calculate end effects based on current velocity field
+        calcEndEffects();
+    }
+
     // Add scalar source term from blades
     forAll(blades_, i)
     {
@@ -739,6 +860,11 @@ bool Foam::fv::axialFlowTurbineALSource::read(const dictionary& dict)
             "includeInTotalDrag",
             false
         );
+
+        // Read end effects subdictionary
+        endEffectsDict_ = coeffs_.subOrEmptyDict("endEffects");
+        endEffectsDict_.lookup("active") >> endEffectsActive_;
+        endEffectsDict_.lookup("endEffectsModel") >> endEffectsModel_;
 
         if (debug)
         {

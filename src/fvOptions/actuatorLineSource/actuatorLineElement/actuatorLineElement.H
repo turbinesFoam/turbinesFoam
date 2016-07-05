@@ -282,6 +282,9 @@ public:
             //- Return the element location
             const vector& position();
 
+            //- Return the element velocity
+            const vector& velocity();
+
             //- Return force vector from element
             const vector& force();
 
