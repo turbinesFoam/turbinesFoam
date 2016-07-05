@@ -43,6 +43,11 @@ turbine
         {
             active          on;
             endEffectsModel Glauert; // Glauert || liftingLine
+            GlauertCoeffs
+            {
+                tipEffects  on;
+                rootEffects on;
+            }
         }
 
         blades

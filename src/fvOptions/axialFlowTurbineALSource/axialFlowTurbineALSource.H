@@ -96,6 +96,9 @@ protected:
         //- Switch to include nacelle drag in turbine drag coefficient
         bool includeNacelleDrag_;
 
+        //- End effects dictionary
+        dictionary endEffectsDict_;
+
         //- Switch to activate rotor-level end effects model
         bool endEffectsActive_;
 

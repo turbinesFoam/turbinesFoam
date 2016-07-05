@@ -466,12 +466,27 @@ void Foam::fv::axialFlowTurbineALSource::calcEndEffects()
             }
             // Calculate end effect factor for this element
             scalar f = 1.0;
+            dictionary endEffectsCoeffs = endEffectsDict_.subOrEmptyDict
+            (
+                endEffectsModel_ + "Coeffs"
+            );
             if (endEffectsModel_ == "Glauert")
             {
-                f = 2.0/pi*acos(Foam::exp
-                (
-                    -nBlades_/2.0*(1.0/rootDist - 1)/sin(phi))
-                );
+                if (endEffectsCoeffs.lookupOrDefault("tipEffects", true))
+                {
+                    f = 2.0/pi*acos(Foam::exp
+                    (
+                        -nBlades_/2.0*(1.0/rootDist - 1)/sin(phi))
+                    );
+                }
+                if (endEffectsCoeffs.lookupOrDefault("rootEffects", false))
+                {
+                    scalar tipDist = 1.0 - rootDist;
+                    f *= 2.0/pi*acos(Foam::exp
+                    (
+                        -nBlades_/2.0*(1.0/tipDist - 1)/sin(phi))
+                    );
+                }
             }
             if (debug)
             {
@@ -824,9 +839,9 @@ bool Foam::fv::axialFlowTurbineALSource::read(const dictionary& dict)
         );
 
         // Read end effects subdictionary
-        dictionary endEffectsDict = coeffs_.subOrEmptyDict("endEffects");
-        endEffectsDict.lookup("active") >> endEffectsActive_;
-        endEffectsDict.lookup("endEffectsModel") >> endEffectsModel_;
+        endEffectsDict_ = coeffs_.subOrEmptyDict("endEffects");
+        endEffectsDict_.lookup("active") >> endEffectsActive_;
+        endEffectsDict_.lookup("endEffectsModel") >> endEffectsModel_;
 
         if (debug)
         {
