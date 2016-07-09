@@ -100,11 +100,11 @@ protected:
         //- Switch for writing VTK
         bool writeVTK_;
 
-		//- VTK output directory name
-		fileName vtkDir_;
+        //- VTK output directory name
+        fileName vtkDir_;
 
-		//- VTK file counter
-		label vtkFileSequence_;
+        //- VTK file counter
+        label vtkFileSequence_;
 
         //- vtk file ptr
         mutable autoPtr<OFstream> vtkFilePtr_;
@@ -157,8 +157,8 @@ protected:
         //- Execute harmonic pitching for a single time step
         void harmonicPitching();
 
-		//- actuator line VTk writer
-		void writeVTK();
+        //- actuator line VTk writer
+        void writeVTK();
 
 
 public:

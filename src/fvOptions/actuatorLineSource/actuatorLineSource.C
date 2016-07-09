@@ -528,7 +528,7 @@ Foam::fv::actuatorLineSource::actuatorLineSource
     ),
     writePerf_(coeffs_.lookupOrDefault("writePerf", false)),
     writeVTK_(coeffs_.lookupOrDefault("writeVTK", false)),
-	vtkFileSequence_(0),
+    vtkFileSequence_(0),
     vtkFilePtr_(NULL),
     lastMotionTime_(mesh.time().value()),
     endEffectsActive_(false)
@@ -719,16 +719,16 @@ void Foam::fv::actuatorLineSource::addSup
         writePerf();
     }
 
-	// write the VTK file
-	if
-	(
-		writeVTK_ && 
-		mesh_.time().outputTime() && 
-		Pstream::master()
-	) 
-	{
-		writeVTK();
-	}
+    // write the VTK file
+    if
+    (
+        writeVTK_ &&
+        mesh_.time().outputTime() &&
+        Pstream::master()
+    )
+    {
+        writeVTK();
+    }
 }
 
 
@@ -799,11 +799,11 @@ void Foam::fv::actuatorLineSource::addSup
         writePerf();
     }
 
-	// write the VTK file
-	if(mesh_.time().outputTime() && Pstream::master()) 
-	{
-		writeVTK();
-	}
+    // write the VTK file
+    if (mesh_.time().outputTime() && Pstream::master())
+    {
+        writeVTK();
+    }
 
 }
 
@@ -812,99 +812,99 @@ void Foam::fv::actuatorLineSource::writeVTK()
 
     fileName vtkFileName;
 
-	// pad the integer name for the VTK reader
+    // pad the integer name for the VTK reader
     std::ostringstream cfc;
-    cfc 	<< std::setw(12) 
-		<< std::setfill('0') 
-		<< vtkFileSequence_;
+    cfc     << std::setw(12)
+        << std::setfill('0')
+        << vtkFileSequence_;
 
-	// construct file name
-	vtkFileName = vtkDir_+"/"+name_+"_"+cfc.str()+".vtk";
+    // construct file name
+    vtkFileName = vtkDir_+"/"+name_+"_"+cfc.str()+".vtk";
 
-	// reset the file pointer to the soon to be written vtk
+    // reset the file pointer to the soon to be written vtk
     vtkFilePtr_.reset
     (
         new OFstream(vtkFileName)
     );
 
-	// write header and time
+    // write header and time
     vtkFilePtr_()
         << "# vtk DataFile Version 3.0" << nl
         << "actuator line "<<name_<< nl
         << "ASCII" << nl
         << "DATASET POLYDATA" << nl;
 
-	// write Points
-	vtkFilePtr_()
-		<< "POINTS "<<elements_.size()<<" double"<< nl;
+    // write Points
+    vtkFilePtr_()
+        << "POINTS "<<elements_.size()<<" double"<< nl;
 
-		forAll(elements_, i)
-		{
-			vector ePosition (elements_[i].position());
-			vtkFilePtr_() 
-				<< ePosition[0]
-				<< " "
-				<< ePosition[1]
-				<< " "
-				<< ePosition[2]
-				<< nl;
-		}
+        forAll(elements_, i)
+        {
+            vector ePosition (elements_[i].position());
+            vtkFilePtr_()
+                << ePosition[0]
+                << " "
+                << ePosition[1]
+                << " "
+                << ePosition[2]
+                << nl;
+        }
 
 
-		// write lines connecting nodes
-	vtkFilePtr_()<< "LINES 1 "<<elements_.size()+1<< nl;
-	vtkFilePtr_()<<elements_.size()<<" ";
+        // write lines connecting nodes
+    vtkFilePtr_()<< "LINES 1 "<<elements_.size()+1<< nl;
+    vtkFilePtr_()<<elements_.size()<<" ";
 
-	for(int i = 0; i<elements_.size();i++)
-	{
-		vtkFilePtr_()<<i<<" ";
-	}
-	vtkFilePtr_() << nl;
-	vtkFilePtr_() << endl;
+    for (int i = 0; i<elements_.size();i++)
+    {
+        vtkFilePtr_()<<i<<" ";
+    }
+    vtkFilePtr_() << nl;
+    vtkFilePtr_() << endl;
 
-	// tell VTK there is element data next
-	vtkFilePtr_()
-		<< nl
-		<< "POINT_DATA "<<elements_.size()<<nl;
+    // tell VTK there is element data next
+    vtkFilePtr_()
+        << nl
+        << "POINT_DATA "<<elements_.size()<<nl;
 
-	// write element velocity
-	vtkFilePtr_()
-		<< "VECTORS Velocity double "<<nl;
+    // write element velocity
+    vtkFilePtr_()
+        << "VECTORS Velocity double "<<nl;
 
-		forAll(elements_, i)
-		{
-			vector eVel (elements_[i].velocity());
-			vtkFilePtr_() 
-				<< eVel[0]
-				<< " "
-				<< eVel[1]
-				<< " "
-				<< eVel[2]
-				<< nl;
-		}
+        forAll(elements_, i)
+        {
+            vector eVel (elements_[i].velocity());
+            vtkFilePtr_()
+                << eVel[0]
+                << " "
+                << eVel[1]
+                << " "
+                << eVel[2]
+                << nl;
+        }
 
-	vtkFilePtr_() << endl;
+    vtkFilePtr_() << endl;
 
-	// write element force
-	vtkFilePtr_()
-		<< "VECTORS Force double "<<nl;
+    // write element force
+    vtkFilePtr_()
+        << "VECTORS Force double "<<nl;
 
-		forAll(elements_, i)
-		{
-			vector eForce (elements_[i].force());
-			vtkFilePtr_() 
-				<< eForce[0]
-				<< " "
-				<< eForce[1]
-				<< " "
-				<< eForce[2]
-				<< nl;
-		}
+        forAll(elements_, i)
+        {
+            vector eForce (elements_[i].force());
+            vtkFilePtr_()
+                << eForce[0]
+                << " "
+                << eForce[1]
+                << " "
+                << eForce[2]
+                << nl;
+        }
 
-	vtkFilePtr_() << endl;
+    vtkFilePtr_() << endl;
 
-	// add to the sequence
-	vtkFileSequence_++;
+    // add to the sequence
+    vtkFileSequence_++;
 }
 
 // ************************************************************************* //
