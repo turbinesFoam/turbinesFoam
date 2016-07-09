@@ -28,6 +28,7 @@ foil
         freeStreamVelocity  (1 0 0);
         nElements           {n_elements};
         writePerf           true;
+		writeVTK			true;
         writeElementPerf    true;
         endEffects          off;
 
