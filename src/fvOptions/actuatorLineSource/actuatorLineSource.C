@@ -117,13 +117,32 @@ void Foam::fv::actuatorLineSource::createOutputFile()
 
     if (not isDir(dir))
     {
-        mkDir(dir);
+        Foam::mkDir(dir);
     }
 
     outputFile_ = new OFstream(dir/name_ + ".csv");
 
     *outputFile_<< "time,x,y,z,rel_vel_mag,alpha_deg,alpha_geom_deg,cl,cd,cm"
                 << endl;
+}
+
+void Foam::fv::actuatorLineSource::createOutputDir()
+{
+    if (Pstream::parRun())
+    {
+        vtkDir_ = mesh_.time().path()/"../postProcessing/actuatorLines"
+            / mesh_.time().timeName()/"VTK";
+    }
+    else
+    {
+        vtkDir_ = mesh_.time().path()/"postProcessing/actuatorLines"
+            / mesh_.time().timeName()/"VTK";
+    }
+
+    if (not isDir(vtkDir_))
+    {
+        Foam::mkDir(vtkDir_);
+    }
 }
 
 
@@ -508,6 +527,9 @@ Foam::fv::actuatorLineSource::actuatorLineSource
         )
     ),
     writePerf_(coeffs_.lookupOrDefault("writePerf", false)),
+    writeVTK_(coeffs_.lookupOrDefault("writeVTK", false)),
+    vtkFileSequence_(0),
+    vtkFilePtr_(NULL),
     lastMotionTime_(mesh.time().value()),
     endEffectsActive_(false)
 {
@@ -516,6 +538,10 @@ Foam::fv::actuatorLineSource::actuatorLineSource
     if (writePerf_)
     {
         createOutputFile();
+    }
+    if (writeVTK_)
+    {
+        createOutputDir();
     }
     if (forceField_.writeOpt() == IOobject::AUTO_WRITE)
     {
@@ -692,6 +718,17 @@ void Foam::fv::actuatorLineSource::addSup
     {
         writePerf();
     }
+
+    // write the VTK file
+    if
+    (
+        writeVTK_ &&
+        mesh_.time().outputTime() &&
+        Pstream::master()
+    )
+    {
+        writeVTK();
+    }
 }
 
 
@@ -761,6 +798,113 @@ void Foam::fv::actuatorLineSource::addSup
     {
         writePerf();
     }
+
+    // write the VTK file
+    if (mesh_.time().outputTime() && Pstream::master())
+    {
+        writeVTK();
+    }
+
+}
+
+void Foam::fv::actuatorLineSource::writeVTK()
+{
+
+    fileName vtkFileName;
+
+    // Pad the integer name for the VTK reader
+    std::ostringstream cfc;
+    cfc     << std::setw(12)
+        << std::setfill('0')
+        << vtkFileSequence_;
+
+    // Construct file name
+    vtkFileName = vtkDir_+"/"+name_+"_"+cfc.str()+".vtk";
+
+    // Reset the file pointer to the soon to be written vtk
+    vtkFilePtr_.reset
+    (
+        new OFstream(vtkFileName)
+    );
+
+    // Write header and time
+    vtkFilePtr_()
+        << "# vtk DataFile Version 3.0" << nl
+        << "actuator line "<<name_<< nl
+        << "ASCII" << nl
+        << "DATASET POLYDATA" << nl;
+
+    // Write Points
+    vtkFilePtr_()
+        << "POINTS "<<elements_.size()<<" double"<< nl;
+
+        forAll(elements_, i)
+        {
+            vector ePosition (elements_[i].position());
+            vtkFilePtr_()
+                << ePosition[0]
+                << " "
+                << ePosition[1]
+                << " "
+                << ePosition[2]
+                << nl;
+        }
+
+
+    // Write lines connecting nodes
+    vtkFilePtr_()<< "LINES 1 "<<elements_.size()+1<< nl;
+    vtkFilePtr_()<<elements_.size()<<" ";
+
+    for (int i = 0; i<elements_.size();i++)
+    {
+        vtkFilePtr_()<<i<<" ";
+    }
+    vtkFilePtr_() << nl;
+    vtkFilePtr_() << endl;
+
+    // Tell VTK there is element data next
+    vtkFilePtr_()
+        << nl
+        << "POINT_DATA "<<elements_.size()<<nl;
+
+    // Write element velocity
+    vtkFilePtr_()
+        << "VECTORS Velocity double "<<nl;
+
+        forAll(elements_, i)
+        {
+            vector eVel (elements_[i].velocity());
+            vtkFilePtr_()
+                << eVel[0]
+                << " "
+                << eVel[1]
+                << " "
+                << eVel[2]
+                << nl;
+        }
+
+    vtkFilePtr_() << endl;
+
+    // Write element force
+    vtkFilePtr_()
+        << "VECTORS Force double "<<nl;
+
+        forAll(elements_, i)
+        {
+            vector eForce (elements_[i].force());
+            vtkFilePtr_()
+                << eForce[0]
+                << " "
+                << eForce[1]
+                << " "
+                << eForce[2]
+                << nl;
+        }
+
+    vtkFilePtr_() << endl;
+
+    // Add to the VTK sequence counter
+    vtkFileSequence_++;
 }
 
 // ************************************************************************* //
