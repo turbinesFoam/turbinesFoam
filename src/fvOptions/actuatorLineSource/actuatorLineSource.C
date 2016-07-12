@@ -812,29 +812,29 @@ void Foam::fv::actuatorLineSource::writeVTK()
 
     fileName vtkFileName;
 
-    // pad the integer name for the VTK reader
+    // Pad the integer name for the VTK reader
     std::ostringstream cfc;
     cfc     << std::setw(12)
         << std::setfill('0')
         << vtkFileSequence_;
 
-    // construct file name
+    // Construct file name
     vtkFileName = vtkDir_+"/"+name_+"_"+cfc.str()+".vtk";
 
-    // reset the file pointer to the soon to be written vtk
+    // Reset the file pointer to the soon to be written vtk
     vtkFilePtr_.reset
     (
         new OFstream(vtkFileName)
     );
 
-    // write header and time
+    // Write header and time
     vtkFilePtr_()
         << "# vtk DataFile Version 3.0" << nl
         << "actuator line "<<name_<< nl
         << "ASCII" << nl
         << "DATASET POLYDATA" << nl;
 
-    // write Points
+    // Write Points
     vtkFilePtr_()
         << "POINTS "<<elements_.size()<<" double"<< nl;
 
@@ -851,7 +851,7 @@ void Foam::fv::actuatorLineSource::writeVTK()
         }
 
 
-        // write lines connecting nodes
+    // Write lines connecting nodes
     vtkFilePtr_()<< "LINES 1 "<<elements_.size()+1<< nl;
     vtkFilePtr_()<<elements_.size()<<" ";
 
@@ -862,12 +862,12 @@ void Foam::fv::actuatorLineSource::writeVTK()
     vtkFilePtr_() << nl;
     vtkFilePtr_() << endl;
 
-    // tell VTK there is element data next
+    // Tell VTK there is element data next
     vtkFilePtr_()
         << nl
         << "POINT_DATA "<<elements_.size()<<nl;
 
-    // write element velocity
+    // Write element velocity
     vtkFilePtr_()
         << "VECTORS Velocity double "<<nl;
 
@@ -885,7 +885,7 @@ void Foam::fv::actuatorLineSource::writeVTK()
 
     vtkFilePtr_() << endl;
 
-    // write element force
+    // Write element force
     vtkFilePtr_()
         << "VECTORS Force double "<<nl;
 
@@ -903,7 +903,7 @@ void Foam::fv::actuatorLineSource::writeVTK()
 
     vtkFilePtr_() << endl;
 
-    // add to the sequence
+    // Add to the VTK sequence counter
     vtkFileSequence_++;
 }
 

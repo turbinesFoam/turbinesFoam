@@ -72,7 +72,7 @@ turbine
             blade1
             {
                 writePerf   true;
-				writeVTK	true;
+                writeVTK    true;
                 writeElementPerf true;
                 nElements   14;
                 endEffects  on;
@@ -87,7 +87,7 @@ turbine
             {
                 $blade1;
                 writePerf   false;
-				writeVTK	true;
+                writeVTK    true;
                 writeElementPerf false;
                 azimuthalOffset 120.0; // Degrees
             }
@@ -103,7 +103,7 @@ turbine
             strut1
             {
                 writePerf   true;
-				writeVTK	true;
+                writeVTK    true;
                 nElements   6;
                 elementProfiles (NACA0021);
                 elementData
@@ -116,7 +116,7 @@ turbine
             {
                 $strut1;
                 writePerf   false;
-				writeVTK	true;
+                writeVTK    true;
                 azimuthalOffset 120.0;
             }
             strut3
@@ -152,11 +152,11 @@ turbine
                     #include "../../resources/foilData/NACA0021_multiRe_Re"
                 );
                 clData // For tableType = multiRe
-		        (
+                (
                     #include "../../resources/foilData/NACA0021_multiRe_cl"
                 );
                 cdData // For tableType = multiRe
-		        (
+                (
                     #include "../../resources/foilData/NACA0021_multiRe_cd"
                 );
             }

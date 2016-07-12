@@ -106,7 +106,7 @@ protected:
         //- VTK file counter
         label vtkFileSequence_;
 
-        //- vtk file ptr
+        //- VTK file ptr
         mutable autoPtr<OFstream> vtkFilePtr_;
 
         //- Output file stream
@@ -157,7 +157,7 @@ protected:
         //- Execute harmonic pitching for a single time step
         void harmonicPitching();
 
-        //- actuator line VTk writer
+        //- Actuator line VTK writer
         void writeVTK();
 
 

@@ -28,7 +28,7 @@ foil
         freeStreamVelocity  (29.9 0 0); // M = 0.381
         nElements           4;
         writePerf           true;
-		writeVTK			true;
+        writeVTK            true;
 
         elementGeometry // Will be interpolated linearly per nElements
         ( // point spanDir chordLength chordRefDir chordMount pitch
