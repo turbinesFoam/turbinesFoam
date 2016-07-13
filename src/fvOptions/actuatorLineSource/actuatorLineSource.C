@@ -719,7 +719,7 @@ void Foam::fv::actuatorLineSource::addSup
         writePerf();
     }
 
-    // write the VTK file
+    // Write the VTK file
     if
     (
         writeVTK_ &&
@@ -799,8 +799,13 @@ void Foam::fv::actuatorLineSource::addSup
         writePerf();
     }
 
-    // write the VTK file
-    if (mesh_.time().outputTime() && Pstream::master())
+    // Write the VTK file
+    if
+    (
+        writeVTK_ &&
+        mesh_.time().outputTime() &&
+        Pstream::master()
+    )
     {
         writeVTK();
     }
