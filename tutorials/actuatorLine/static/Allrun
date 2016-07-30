@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # This script runs the actuator line tutorial. The args are:
 # $1: `2D` or `3D`
 # $2: angle of attack in degrees
