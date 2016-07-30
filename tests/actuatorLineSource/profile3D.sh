@@ -17,11 +17,11 @@ runApplication topoSet
 if [ "$1" = "-parallel" ]
     then
     python scripts/set_alpha.py $2 -d
-    if [ $WM_PROJECT_VERSION = "dev" ]
+    if [ $WM_PROJECT_VERSION = "3.*" ]
         then
-        nProc=""
-    else
         nProc=$(getNumberOfProcessors)
+    else
+        nProc=""
     fi
     runApplication decomposePar
     ls -d processor* | xargs -I {} rm -rf ./{}/0
