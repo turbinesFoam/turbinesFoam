@@ -17,7 +17,7 @@ runApplication topoSet
 if [ "$1" = "-parallel" ]
     then
     python scripts/set_alpha.py $2 -d
-    if [ $WM_PROJECT_VERSION = "3."* ]
+    if [[ $WM_PROJECT_VERSION == "3."* ]]
         then
         nProc=$(getNumberOfProcessors)
     else
