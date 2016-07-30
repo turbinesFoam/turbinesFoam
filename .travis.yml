@@ -4,10 +4,15 @@ sudo: required
 dist: trusty
 language: cpp
 
+env:
+    - OF_VERS=30
+    - OF_VERS=4
+
 before_install:
-    - sudo add-apt-repository http://www.openfoam.org/download/ubuntu
+    - sudo add-apt-repository http://dl.openfoam.org/ubuntu
+    - sudo sh -c "wget -O - http://dl.openfoam.org/gpg.key | apt-key add -"
     - sudo apt-get update -qq
-    - sudo apt-get install -qq openfoam30 --allow-unauthenticated
+    - sudo apt-get install -qq openfoam${OF_VERS}
     - sudo apt-get install -qq vera++
     # http://conda.pydata.org/docs/travis.html#the-travis-yml-file
     - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
@@ -19,11 +24,11 @@ before_install:
     - conda install -q pandas numpy nose
 
 install:
-    - source /opt/openfoam30/etc/bashrc
+    - source /opt/openfoam${OF_VERS}/etc/bashrc
     - ./Allwmake
 
 before_script:
-    - source /opt/openfoam30/etc/bashrc
+    - source /opt/openfoam${OF_VERS}/etc/bashrc
 
 script:
     - ./Alltest
