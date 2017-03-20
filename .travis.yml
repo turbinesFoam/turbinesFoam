@@ -32,4 +32,4 @@ before_script:
 
 script:
     - ./Alltest
-    - ./checkStyle
+    - ./foamStyleCheck/checkStyle
