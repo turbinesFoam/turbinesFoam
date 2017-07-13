@@ -168,7 +168,7 @@ void Foam::profileData::readMultiRe()
     correctRe_ = false;
 
     // Read list of Reynolds numbers for dataset
-    ReList_ = dict_.lookup("ReList");
+    dict_.lookup("ReList") >> ReList_;
 
     // Define keywords for coefficient data
     word clKeyword = "clData";
