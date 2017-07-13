@@ -5,7 +5,7 @@ OF_VERS="$1"
 
 if [ "$OF_VERS" = "1706" ]; then
     wget https://sourceforge.net/projects/openfoamplus/files/v1706/OpenFOAM-v1706-windows10.tgz
-    sudo tar -xvzf  OpenFOAM-v1706-Windows10.tgz -C /opt/
+    sudo tar -xvzf  OpenFOAM-v1706-windows10.tgz -C /opt/
     sudo mv /opt/OpenFOAM/OpenFOAM-v1706 /opt/openfoam1706
 else
     sudo add-apt-repository http://dl.openfoam.org/ubuntu

@@ -10,7 +10,7 @@ env:
     - OF_VERS=1706
 
 before_install:
-    - sudo ./bin/install-of-ubuntu.sh $OF_VERS
+    - ./bin/install-of-ubuntu.sh $OF_VERS
     - sudo apt-get install -qq vera++
     # http://conda.pydata.org/docs/travis.html#the-travis-yml-file
     - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
