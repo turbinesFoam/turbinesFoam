@@ -5,9 +5,9 @@ dist: trusty
 language: cpp
 
 env:
-    - OF_VERS=30
-    - OF_VERS=4
-    - OF_VERS=1706
+    - OF_VERS=30 OF_BASHRC=/opt/openfoam${OF_VERS}/etc/bashrc
+    - OF_VERS=4 OF_BASHRC=/opt/openfoam${OF_VERS}/etc/bashrc
+    - OF_VERS=1706 OF_BASHRC=/opt/OpenFOAM/OpenFOAM-v${OF_VERS}/etc/bashrc
 
 before_install:
     - ./bin/install-of-ubuntu.sh $OF_VERS
@@ -22,11 +22,11 @@ before_install:
     - conda install -q pandas numpy nose
 
 install:
-    - source /opt/openfoam${OF_VERS}/etc/bashrc
+    - source $OF_BASHRC
     - ./Allwmake
 
 before_script:
-    - source /opt/openfoam${OF_VERS}/etc/bashrc
+    - source $OF_BASHRC
 
 script:
     - ./Alltest
