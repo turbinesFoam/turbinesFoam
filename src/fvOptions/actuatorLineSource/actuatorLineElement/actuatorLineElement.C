@@ -281,7 +281,7 @@ void Foam::fv::actuatorLineElement::correctFlowCurvature
 
     if (flowCurvatureModelName_ == "Goude")
     {
-        angleOfAttackRad += omega_*(chordMount_ - 0.25)
+        angleOfAttackRad += omega_*(chordMount_ + 0.25)
                           * chordLength_/mag(relativeVelocity_);
         angleOfAttackRad += omega_*chordLength_/(4*mag(relativeVelocity_));
     }
