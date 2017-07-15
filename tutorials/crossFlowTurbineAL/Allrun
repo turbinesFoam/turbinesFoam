@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 cd ${0%/*} || exit 1    # run from this directory
 
 # Source tutorial run functions
@@ -13,11 +13,11 @@ runApplication topoSet
 
 if [ "$1" = "-parallel" ]
     then
-    if [ $WM_PROJECT_VERSION = "dev" ]
+    if [[ $WM_PROJECT_VERSION == "3."* ]]
         then
-        nProc=""
-    else
         nProc=$(getNumberOfProcessors)
+    else
+        nProc=""
     fi
     runApplication decomposePar
     ls -d processor* | xargs -I {} rm -rf ./{}/0

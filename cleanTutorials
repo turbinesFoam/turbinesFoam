@@ -8,10 +8,8 @@ cd $startDir/tutorials/crossFlowTurbineAL
 cd $startDir/tutorials/axialFlowTurbineAL
 ./Allclean
 
-cd $startDir/tutorials/actuatorLine/simpleFoam
+cd $startDir/tutorials/actuatorLine/pitching
 ./Allclean
 
-cd $startDir/tutorials/actuatorLine/pimpleFoam
+cd $startDir/tutorials/actuatorLine/static
 ./Allclean
-
-cd $startDir
