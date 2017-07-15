@@ -170,6 +170,21 @@ void Foam::profileData::readMultiRe()
     // Read list of Reynolds numbers for dataset
     dict_.lookup("ReList") >> ReList_;
 
+    // Scale Reynolds numbers if desired
+    // This functionality can be used to approximate full scale loading without
+    // changing the flow Reynolds number
+    // Lookup table will effectively use Reynolds numbers ReScale times
+    // larger than the computed element Reynolds number
+    if (dict_.found("ReScale"))
+    {
+        scalar ReScale = 1.0;
+        dict_.lookup("ReScale") >> ReScale;
+        forAll(ReList_, i)
+        {
+            ReList_[i] = ReList_[i] / ReScale;
+        }
+    }
+
     // Define keywords for coefficient data
     word clKeyword = "clData";
     word cdKeyword = "cdData";
