@@ -38,31 +38,6 @@ turbine
         {
             active              on;
             dynamicStallModel   LeishmanBeddoesSGC;
-            LeishmanBeddoesCoeffs
-            {
-                A1          0.3;        // Default = 0.3
-                A2          0.7;        // Default = 0.7
-                b1          0.14;       // Default = 0.14
-                b2          0.53;       // Default = 0.53
-                eta         0.95;       // Default = 0.95
-                Tp          1.7;        // Default = 1.7
-                Tf          3.0;        // Default = 3.0
-                Tv          6.0;        // Default = 6.0
-                Tvl         7.0;        // Default = 7.0
-            }
-            LeishmanBeddoes3GCoeffs
-            {
-                Tp          1.7;        // Default = 1.7
-                Tf          3.0;        // Default = 3.0
-                T1          20;         // Default = 20
-                T2          4.5;        // Default = 4.5
-                Tv          10.0;       // Default = 10.0
-                Tvl         8.0;        // Default = 8.0
-                A1          0.165;      // Default = 0.165
-                A2          0.335;      // Default = 0.335
-                A3          0.5;        // Default = 0.5
-                eta         0.95;       // Default = 0.95
-            }
             LeishmanBeddoesSGCCoeffs
             {
                 Tp          1.7;        // Default = 1.7
@@ -75,6 +50,14 @@ turbine
                 B1          0.5;
                 eta         0.98;
                 E0          0.16;
+                // Uncomment lists below to disable automatic calculations
+                // ReList      (4e4 8e4 1.6e5 3.6e5 7e5 1e6 2e6 5e6);
+                // CNAlphaList (3.2397 4.7255 5.2274 5.6084 5.8048 5.8904 5.9625 6.2771);
+                // CD0List     (0.0232 0.0177 0.0139 0.0111 0.0094 0.0089 0.0082 0.0078);
+                // CN1List     (0.34311 0.57438 0.72628 0.87407 0.97478 1.0264 1.1324 1.2367);
+                // alpha1List  (7.7466 9.0006 10.2013 11.3078 12.1635 12.6109 13.7035 14.0118);
+                // S1List      (0.70707 1.2121 1.8182 2.1212 2.4242 2.5253 2.8283 4.2424);
+                // S2List      (1.5152 2.4242 3.7374 5.1515 5.8586 6.1616 6.6667 6.6667);
             }
         }
 

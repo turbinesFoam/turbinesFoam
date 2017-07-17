@@ -253,6 +253,9 @@ protected:
         //- Total moment coefficient
         scalar CM_;
 
+        //- Reynolds number
+        scalar Re_;
+
 
     // Protected member functions
 
@@ -262,6 +265,9 @@ protected:
         //- Evaluate the static foil data, i.e., calculate CNAlpha, CN1,
         // alpha1, and CD0
         virtual void evalStaticData();
+
+        //- Interpolate static profile data based on Reynolds number
+        scalar interpolateStaticParam(word paramName);
 
         //- Calculate unsteady quantities
         virtual void calcUnsteady();

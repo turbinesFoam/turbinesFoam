@@ -26,6 +26,7 @@ License
 #include "LeishmanBeddoes.H"
 #include "addToRunTimeSelectionTable.H"
 #include "simpleMatrix.H"
+#include "interpolateUtils.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -98,16 +99,44 @@ void Foam::fv::LeishmanBeddoes::calcAlphaEquiv()
 void Foam::fv::LeishmanBeddoes::evalStaticData()
 {
     // Get static stall angle in radians
-    alphaSS_ = profileData_.staticStallAngleRad();
+    if (coeffs_.found("alphaSSList"))
+    {
+        alphaSS_ = interpolateStaticParam("alphaSS");
+    }
+    else
+    {
+        alphaSS_ = profileData_.staticStallAngleRad();
+    }
 
     // Get normal coefficient slope CNAlpha
-    CNAlpha_ = profileData_.normalCoeffSlope();
+    if (coeffs_.found("CNAlphaList"))
+    {
+        CNAlpha_ = interpolateStaticParam("CNAlpha");
+    }
+    else
+    {
+        CNAlpha_ = profileData_.normalCoeffSlope();
+    }
 
     // Calculate CN1 using normal coefficient slope and critical f value
     // alpha1 is 87% of the static stall angle
     scalar f = fCrit_;
-    alpha1_ = alphaSS_*0.87;
-    CN1_ = CNAlpha_*alpha1_*pow((1.0 + sqrt(f))/2.0, 2);
+    if (coeffs_.found("alpha1List"))
+    {
+        alpha1_ = interpolateStaticParam("alpha1");
+    }
+    else
+    {
+        alpha1_ = alphaSS_*0.87;
+    }
+    if (coeffs_.found("CN1List"))
+    {
+        CN1_ = interpolateStaticParam("CN1");
+    }
+    else
+    {
+        CN1_ = CNAlpha_*alpha1_*pow((1.0 + sqrt(f))/2.0, 2);
+    }
 
     if (debug)
     {
@@ -120,8 +149,14 @@ void Foam::fv::LeishmanBeddoes::evalStaticData()
     }
 
     // Get CD0
-    CD0_ = profileData_.zeroLiftDragCoeff();
-
+    if (coeffs_.found("CD0List"))
+    {
+        CD0_ = interpolateStaticParam("CD0");
+    }
+    else
+    {
+        CD0_ = profileData_.zeroLiftDragCoeff();
+    }
     if (debug)
     {
         Info<< "    Cd_0: " << CD0_ << endl;
@@ -129,10 +164,43 @@ void Foam::fv::LeishmanBeddoes::evalStaticData()
     }
 
     // Calculate S1 and S2 constants for the separation point curve
-    calcS1S2();
+    if (coeffs_.found("S1List") and coeffs_.found("S2List"))
+    {
+        S1_ = interpolateStaticParam("S1");
+        S2_ = interpolateStaticParam("S2");
+    }
+    else
+    {
+        calcS1S2();
+    }
 
     // Calculate the K1 and K2 constants for the moment coefficient
-    calcK1K2();
+    if (coeffs_.found("K1List") and coeffs_.found("K2List"))
+    {
+        K1_ = interpolateStaticParam("K1");
+        K2_ = interpolateStaticParam("K2");
+    }
+    else
+    {
+        calcK1K2();
+    }
+}
+
+
+scalar Foam::fv::LeishmanBeddoes::interpolateStaticParam(word paramName)
+{
+    scalar Re = profileData_.Re();
+    List<scalar> ReList = coeffs_.lookup("ReList");
+    label interpIndex = interpolateUtils::binarySearch(ReList, Re);
+    scalar interpFraction = interpolateUtils::getPart(Re, ReList, interpIndex);
+    List<scalar> paramList = coeffs_.lookup(paramName + "List");
+
+    return interpolateUtils::interpolate1D
+    (
+        interpFraction,
+        paramList,
+        interpIndex
+    );
 }
 
 
@@ -456,7 +524,8 @@ Foam::fv::LeishmanBeddoes::LeishmanBeddoes
     K1_(0.0),
     K2_(0.0),
     cmFitExponent_(coeffs_.lookupOrDefault("cmFitExponent", 2)),
-    CM_(0.0)
+    CM_(0.0),
+    Re_(0.0)
 {
     dict_.lookup("chordLength") >> c_;
 
@@ -533,7 +602,7 @@ void Foam::fv::LeishmanBeddoes::correct
         Info<< "    Initial moment coefficient: " << cm << endl;
     }
 
-    bool doCalcAlphaEquiv = coeffs_.lookupOrDefault("calcAlphaEquiv", true);
+    bool doCalcAlphaEquiv = coeffs_.lookupOrDefault("calcAlphaEquiv", false);
     if (doCalcAlphaEquiv)
     {
         calcAlphaEquiv();
@@ -544,7 +613,7 @@ void Foam::fv::LeishmanBeddoes::correct
     }
     // Evaluate static coefficient data if it has changed, e.g., from a
     // Reynolds number correction
-    if (CD0_ != profileData_.zeroLiftDragCoeff())
+    if (profileData_.staticStallAngleRad() != alphaSS_)
     {
         evalStaticData();
     }

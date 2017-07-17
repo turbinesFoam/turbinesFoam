@@ -56,7 +56,5 @@ def plot_sweep():
 
 
 if __name__ == "__main__":
-    sns.set(style="white", context="paper", font_scale=1.5,
-            rc={"axes.grid": True, "legend.frameon": True})
     plot_spanwise()
     plt.show()
