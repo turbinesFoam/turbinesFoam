@@ -140,7 +140,7 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             // Move along radial direction
             point += radius*radialDirection_;
             // Set initial velocity of quarter chord
-            scalar radiusCorr = sqrt(magSqr(chordMount - 0.25)*chordLength
+            scalar radiusCorr = sqrt(magSqr((chordMount - 0.25)*chordLength)
                                      + magSqr(radius));
             vector initialVelocity = -freeStreamDirection_*omega_*radiusCorr;
             scalar velAngle = atan2(((chordMount - 0.25)*chordLength), radius);
