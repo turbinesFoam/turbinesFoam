@@ -7,6 +7,7 @@ language: cpp
 env:
     - OF_VERS=30
     - OF_VERS=4
+    - OF_VERS=5
 
 before_install:
     - sudo add-apt-repository http://dl.openfoam.org/ubuntu
