@@ -49,7 +49,7 @@ Foam::addedMassModel::addedMassModel
 (
     const Time& time,
     scalar chordLength,
-    label& debug
+    const label& debug
 )
 :
     time_(time),
@@ -72,7 +72,7 @@ Foam::addedMassModel::New
 (
     const Time& time,
     scalar chordLength,
-    label& debug
+    const label& debug
 )
 {
     return autoPtr<addedMassModel>
