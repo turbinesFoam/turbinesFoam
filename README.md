@@ -2,8 +2,10 @@ turbinesFoam
 ============
 
 [![Build Status](https://travis-ci.org/turbinesFoam/turbinesFoam.svg?branch=master)](https://travis-ci.org/turbinesFoam/turbinesFoam)
+![OpenFOAM 5.x](https://img.shields.io/badge/OpenFOAM-5.x-brightgreen.svg)
 ![OpenFOAM 4.x](https://img.shields.io/badge/OpenFOAM-4.x-brightgreen.svg)
 ![OpenFOAM 3.0.x](https://img.shields.io/badge/OpenFOAM-3.0.x-brightgreen.svg)
+![OpenFOAM dev](https://img.shields.io/badge/OpenFOAM-dev-brightgreen.svg)
 [![Issues in progress](https://img.shields.io/waffle/label/turbinesFoam/turbinesFoam/in%20progress.svg?maxAge=2592000)](https://waffle.io/turbinesfoam/turbinesfoam)
 [![DOI](https://zenodo.org/badge/4234/turbinesFoam/turbinesFoam.svg)](https://zenodo.org/badge/latestdoi/4234/turbinesFoam/turbinesFoam)
 
