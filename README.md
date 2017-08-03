@@ -9,7 +9,7 @@ turbinesFoam
 [![DOI](https://zenodo.org/badge/4234/turbinesFoam/turbinesFoam.svg)](https://zenodo.org/badge/latestdoi/4234/turbinesFoam/turbinesFoam)
 
 turbinesFoam is a library for simulating wind and marine hydrokinetic turbines
-in OpenFOAM (3.0.x and 4.x) using the actuator line method.
+in OpenFOAM using the actuator line method.
 
 [![](https://cloud.githubusercontent.com/assets/4604869/10141523/f2e3ad9a-65da-11e5-971c-b736abd30c3b.png)](https://www.youtube.com/watch?v=THZvV4R1vow)
 
