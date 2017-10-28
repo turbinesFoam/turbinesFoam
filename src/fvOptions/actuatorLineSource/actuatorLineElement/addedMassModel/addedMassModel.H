@@ -58,7 +58,7 @@ class addedMassModel
         scalar chordLength_;
 
         //- Debug level
-        label& debug;
+        const label& debug;
 
         //- Previous time value
         scalar timePrev_;
@@ -100,7 +100,7 @@ public:
         (
             const Time& time,
             scalar chordLength,
-            label& debug
+            const label& debug
         );
 
 
@@ -111,7 +111,7 @@ public:
         (
             const Time& time,
             scalar chordLength,
-            label& debug
+            const label& debug
         );
 
 
