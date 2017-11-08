@@ -5,3 +5,4 @@
 *lnInclude
 callgrind*
 *.pyc
+*.swp
