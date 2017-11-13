@@ -190,6 +190,12 @@ protected:
         //- Added mass model
         addedMassModel addedMass_;
 
+        //- Radius of circle used to sample velocities
+        scalar velocitySampleRadius_;
+
+        //- Number of elements used to sample velocities
+        label nVelocitySamples_;
+
 
     // Protected Member Functions
 
@@ -219,6 +225,9 @@ protected:
 
         //- Apply force field based on force vector
         void applyForceField(volVectorField& forceField);
+
+        //- Get inflow velocity
+        void calculateInflowVelocity(const volVectorField& Uin);
 
         //- Create the performance output file
         virtual void createOutputFile();
@@ -356,6 +365,12 @@ public:
 
             //- Set end effect correction factor
             void setEndEffectFactor(scalar factor);
+
+            //- Set velocity sample radius
+            void setVelocitySampleRadius(scalar radius);
+
+            //- Set number of velocity samples
+            void setNVelocitySamples(label nSamples);
 
 
         // Evaluation
