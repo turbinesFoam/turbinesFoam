@@ -392,6 +392,9 @@ void Foam::fv::actuatorLineElement::calculateInflowVelocity
     {
         // Circle radius should be normalized with epsilon
         scalar sampleRadius = calcProjectionEpsilon()*velocitySampleRadius_;
+
+        // Unit vector in chordwise direction
+        vector chordNormal = chordDirection_ / mag(chordDirection_);
         
         // Calculate mean value over all circle points
         vector velocitySum = vector(0.0, 0.0, 0.0);
@@ -405,7 +408,7 @@ void Foam::fv::actuatorLineElement::calculateInflowVelocity
             scalar chordDist = sampleRadius * Foam::cos(pointAngle);
             scalar normalDist = sampleRadius * Foam::sin(pointAngle);
             vector samplePoint = inflowVelocityPoint + 
-                                 chordDist * chordDirection_ +
+                                 chordDist * chordNormal +
                                  normalDist * planformNormal_;
 
             // Sample the velocity
