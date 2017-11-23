@@ -222,12 +222,12 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
         bladeSubDict.add("elementGeometry", elementGeometry);
         bladeSubDict.add("initialVelocities", initialVelocities);
         bladeSubDict.add("dynamicStall", dynamicStallDict_);
-        dict.add
+        bladeSubDict.add
         (
           "velocitySampleRadius",
           coeffs_.lookupOrDefault("velocitySampleRadius", 0.0)
         );
-        dict.add
+        bladeSubDict.add
         (
           "nVelocitySamples",
           coeffs_.lookupOrDefault("nVelocitySamples", 8)

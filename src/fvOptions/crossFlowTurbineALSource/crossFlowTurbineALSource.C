@@ -202,12 +202,12 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             "addedMass",
             coeffs_.lookupOrDefault("addedMass", false)
         );
-        dict.add
+        bladeSubDict.add
         (
             "velocitySampleRadius",
             coeffs_.lookupOrDefault("velocitySampleRadius", 0.0)
         );
-        dict.add
+        bladeSubDict.add
         (
             "nVelocitySamples",
             coeffs_.lookupOrDefault("nVelocitySamples", 8)
