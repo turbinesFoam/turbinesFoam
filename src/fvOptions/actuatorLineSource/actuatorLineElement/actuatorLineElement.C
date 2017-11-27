@@ -407,7 +407,7 @@ void Foam::fv::actuatorLineElement::calculateInflowVelocity
                                 nVelocitySamples_;
             scalar chordDist = sampleRadius * Foam::cos(pointAngle);
             scalar normalDist = sampleRadius * Foam::sin(pointAngle);
-            vector samplePoint = inflowVelocityPoint + 
+            vector samplePoint = inflowVelocityPoint +
                                  chordDist * chordNormal +
                                  normalDist * planformNormal_;
 
