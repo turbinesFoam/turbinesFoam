@@ -1113,4 +1113,6 @@ void Foam::fv::actuatorLineElement::setNVelocitySamples(label nSamples)
 {
     nVelocitySamples_ = nSamples;
 }
+
+
 // ************************************************************************* //
