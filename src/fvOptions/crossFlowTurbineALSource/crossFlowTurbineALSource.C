@@ -202,6 +202,16 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             "addedMass",
             coeffs_.lookupOrDefault("addedMass", false)
         );
+        bladeSubDict.add
+        (
+            "velocitySampleRadius",
+            coeffs_.lookupOrDefault("velocitySampleRadius", 0.0)
+        );
+        bladeSubDict.add
+        (
+            "nVelocitySamples",
+            coeffs_.lookupOrDefault("nVelocitySamples", 20)
+        );
         bladeSubDict.add("selectionMode", coeffs_.lookup("selectionMode"));
         bladeSubDict.add("cellSet", coeffs_.lookup("cellSet"));
 
