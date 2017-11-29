@@ -100,13 +100,13 @@ void Foam::fv::actuatorLineElement::read()
 
     if (debug)
     {
-       Info<< "actuatorLineElement properties:" << endl;
-       Info<< "Position: " << position_ << endl;
-       Info<< "chordLength: " << chordLength_ << endl;
-       Info<< "chordDirection: " << chordDirection_ << endl;
-       Info<< "spanLength: " << spanLength_ << endl;
-       Info<< "spanDirection: " << spanDirection_ << endl;
-       Info<< "writePerf: " << writePerf_ << endl;
+        Info<< "actuatorLineElement properties:" << endl;
+        Info<< "Position: " << position_ << endl;
+        Info<< "chordLength: " << chordLength_ << endl;
+        Info<< "chordDirection: " << chordDirection_ << endl;
+        Info<< "spanLength: " << spanLength_ << endl;
+        Info<< "spanDirection: " << spanDirection_ << endl;
+        Info<< "writePerf: " << writePerf_ << endl;
     }
 }
 
@@ -363,7 +363,7 @@ void Foam::fv::actuatorLineElement::applyForceField
 
 void Foam::fv::actuatorLineElement::calculateInflowVelocity
 (
-  const volVectorField& Uin
+    const volVectorField& Uin
 )
 {
     // Find local flow velocity by interpolating to element location
