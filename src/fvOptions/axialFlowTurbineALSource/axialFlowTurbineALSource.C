@@ -118,6 +118,9 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
             Info<< elementData << endl << endl;
         }
 
+        // Determine which direction is positive pitch for this blade
+        scalar pitchSign = Foam::sign(axis_ & freeStreamDirection_);
+
         // Convert element data into actuator line element geometry
         label nGeomPoints = elementData.size();
         List<List<List<scalar> > > elementGeometry(nGeomPoints);
@@ -183,8 +186,7 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
             elementGeometry[j][0][2] = point.z(); // z location of geom point
 
             // Set span directions for AL source
-            scalar spanSign = axis_ & freeStreamDirection_;
-            vector spanDirection = spanSign*verticalDirection_;
+            vector spanDirection = pitchSign * verticalDirection_;
             rotateVector(spanDirection, vector::zero, axis_, azimuthRadians);
             elementGeometry[j][1][0] = spanDirection.x();
             elementGeometry[j][1][1] = spanDirection.y();
@@ -194,7 +196,7 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
             elementGeometry[j][2][0] = chordLength;
 
             // Set chord reference direction
-            vector chordDirection = azimuthalDirection_;
+            vector chordDirection = -azimuthalDirection_;
             rotateVector(chordDirection, vector::zero, axis_, azimuthRadians);
             elementGeometry[j][3][0] = chordDirection.x();
             elementGeometry[j][3][1] = chordDirection.y();
@@ -204,7 +206,7 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
             elementGeometry[j][4][0] = chordMount;
 
             // Set pitch
-            elementGeometry[j][5][0] = -pitch;
+            elementGeometry[j][5][0] = pitch * pitchSign;
         }
 
         // Add frontal area to list
@@ -216,6 +218,8 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
             Info<< "Converted element geometry:" << endl << elementGeometry
                 << endl;
             Info<< "Frontal area from " << bladeName << ": " << frontalArea
+                << endl;
+            Info<< "Pitch direction: " << pitchSign * verticalDirection_
                 << endl;
         }
 
@@ -237,6 +241,15 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
 
         // Do not write force from individual actuator line unless specified
         bladeSubDict.lookupOrAddDefault("writeForceField", false);
+
+        // Determine if we need to flip collective pitch direction
+        if (bladeSubDict.found("collectivePitch"))
+        {
+            scalar collectivePitch = 0.0;
+            bladeSubDict.lookup("collectivePitch") >> collectivePitch;
+            collectivePitch *= pitchSign;
+            bladeSubDict.set("collectivePitch", collectivePitch);
+        }
 
         dictionary dict;
         dict.add("actuatorLineSourceCoeffs", bladeSubDict);
