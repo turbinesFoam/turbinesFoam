@@ -584,7 +584,8 @@ void Foam::fv::crossFlowTurbineALSource::addSup
         blades_[i].addSup(eqn, fieldI);
         forceField_ += blades_[i].forceField();
         force_ += blades_[i].force();
-        moment += blades_[i].moment(origin_);
+        bladeMoments_[i] = blades_[i].moment(origin_);
+        moment += bladeMoments_[i];
     }
 
     if (hasStruts_)
@@ -661,7 +662,8 @@ void Foam::fv::crossFlowTurbineALSource::addSup
         blades_[i].addSup(rho, eqn, fieldI);
         forceField_ += blades_[i].forceField();
         force_ += blades_[i].force();
-        moment += blades_[i].moment(origin_);
+        bladeMoments_[i] = blades_[i].moment(origin_);
+        moment += bladeMoments_[i];
     }
 
     if (hasStruts_)

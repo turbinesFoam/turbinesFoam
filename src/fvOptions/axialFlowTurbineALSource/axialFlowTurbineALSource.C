@@ -640,7 +640,8 @@ void Foam::fv::axialFlowTurbineALSource::addSup
         blades_[i].addSup(eqn, fieldI);
         forceField_ += blades_[i].forceField();
         force_ += blades_[i].force();
-        moment += blades_[i].moment(origin_);
+        bladeMoments_[i] = blades_[i].moment(origin_);
+        moment += bladeMoments_[i];
     }
 
     if (hasHub_)
@@ -727,7 +728,8 @@ void Foam::fv::axialFlowTurbineALSource::addSup
         blades_[i].addSup(rho, eqn, fieldI);
         forceField_ += blades_[i].forceField();
         force_ += blades_[i].force();
-        moment += blades_[i].moment(origin_);
+        bladeMoments_[i] = blades_[i].moment(origin_);
+        moment += bladeMoments_[i];
     }
 
     if (hasHub_)

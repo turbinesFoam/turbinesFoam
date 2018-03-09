@@ -149,6 +149,9 @@ protected:
         //- Mean tip speed ratio
         scalar meanTSR_;
 
+        //- Individual blade moments about turbine origin
+        List<vector> bladeMoments_;
+
 
     // Protected Member Functions
 
