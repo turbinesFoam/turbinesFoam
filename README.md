@@ -54,7 +54,7 @@ There are tutorials located in `turbinesFoam/tutorials`.
 Publications
 ------------
 
-Bachant, P., Goude, A., and Wosnik, M. (2016) [Actuator line modeling of vertical-axis turbines](https://arxiv.org/abs/1605.01449). arXiv preprint 1605.01449, submitted to _Wind Energy_
+Bachant, P., Goude, A., and Wosnik, M. (2016) [_Actuator line modeling of vertical-axis turbines_](https://arxiv.org/abs/1605.01449). arXiv preprint 1605.01449.
 
 
 How to cite
