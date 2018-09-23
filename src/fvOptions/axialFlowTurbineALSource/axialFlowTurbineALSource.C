@@ -161,7 +161,7 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
             scalar chordDisplacement = (chordMount - 0.25)*chordLength;
             point -= chordDisplacement*azimuthalDirection_;
             // Set initial velocity of quarter chord
-            scalar radiusCorr = sqrt(magSqr(chordMount - 0.25)*chordLength
+            scalar radiusCorr = sqrt(magSqr((chordMount - 0.25)*chordLength)
                                      + magSqr(radius));
             vector initialVelocity = azimuthalDirection_*omega_*radiusCorr;
             scalar velAngle = atan2(((chordMount - 0.25)*chordLength), radius);
