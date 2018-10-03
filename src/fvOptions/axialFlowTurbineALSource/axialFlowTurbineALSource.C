@@ -484,18 +484,20 @@ void Foam::fv::axialFlowTurbineALSource::calcEndEffects()
             {
                 if (endEffectsCoeffs.lookupOrDefault("tipEffects", true))
                 {
-                    f = 2.0/pi*acos(Foam::exp
+                    scalar acosArg = Foam::exp
                     (
-                        -nBlades_/2.0*(1.0/rootDist - 1)/sin(phi))
+                        -nBlades_/2.0*(1.0/rootDist - 1)/sin(phi)
                     );
+                    f = 2.0/pi*acos(min(1.0, acosArg));
                 }
                 if (endEffectsCoeffs.lookupOrDefault("rootEffects", false))
                 {
                     scalar tipDist = 1.0 - rootDist;
-                    f *= 2.0/pi*acos(Foam::exp
+                    scalar acosArg = Foam::exp
                     (
-                        -nBlades_/2.0*(1.0/tipDist - 1)/sin(phi))
+                        -nBlades_/2.0*(1.0/tipDist - 1)/sin(phi)
                     );
+                    f *= 2.0/pi*acos(min(1.0, acosArg));
                 }
             }
             else if (endEffectsModel_ == "Shen")
@@ -507,18 +509,20 @@ void Foam::fv::axialFlowTurbineALSource::calcEndEffects()
                 scalar g = Foam::exp(-c1*(nBlades_*tipSpeedRatio_ - c2)) + 0.1;
                 if (endEffectsCoeffs.lookupOrDefault("tipEffects", true))
                 {
-                    f = 2.0/pi*acos(Foam::exp
+                    scalar acosArg = Foam::exp
                     (
-                        -g*nBlades_/2.0*(1.0/rootDist - 1)/sin(phi))
+                        -g*nBlades_/2.0*(1.0/rootDist - 1)/sin(phi)
                     );
+                    f = 2.0/pi*acos(min(1.0, acosArg));
                 }
                 if (endEffectsCoeffs.lookupOrDefault("rootEffects", false))
                 {
                     scalar tipDist = 1.0 - rootDist;
-                    f *= 2.0/pi*acos(Foam::exp
+                    scalar acosArg = Foam::exp
                     (
-                        -g*nBlades_/2.0*(1.0/tipDist - 1)/sin(phi))
+                        -g*nBlades_/2.0*(1.0/tipDist - 1)/sin(phi)
                     );
+                    f *= 2.0/pi*acos(min(1.0, acosArg));
                 }
             }
             if (debug)
