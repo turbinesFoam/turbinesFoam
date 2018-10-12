@@ -140,6 +140,10 @@ def test_opposite_rotation():
         old_txt=old_txt, new_txt=new_txt
     )
     subprocess.call(cmd, shell=True)
+    cmd = "sed -i 's/{old_txt}/{new_txt}/g' system/fvOptions".format(
+        old_txt="elementDataCCW", new_txt="elementDataCW"
+    )
+    subprocess.call(cmd, shell=True)
     test_serial()
 
 
