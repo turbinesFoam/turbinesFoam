@@ -744,6 +744,8 @@ void Foam::fv::actuatorLineElement::calculateForce
 
     if (debug)
     {
+        Info<< "    liftDirection: " << liftDirection << endl;
+        Info<< "    dragDirection: " << dragDirection << endl;
         Info<< "    force (per unit density): " << forceVector_ << endl;
     }
 }
