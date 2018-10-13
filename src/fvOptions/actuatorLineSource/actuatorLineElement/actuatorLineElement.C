@@ -57,6 +57,7 @@ void Foam::fv::actuatorLineElement::read()
     dict_.lookup("rootDistance") >> rootDistance_;
     dict_.lookup("velocitySampleRadius") >> velocitySampleRadius_;
     dict_.lookup("nVelocitySamples") >> nVelocitySamples_;
+    dict_.lookup("twist")>>twist_; 
 
     // Create dynamic stall model if found
     if (dict_.found("dynamicStall"))
@@ -192,6 +193,8 @@ void Foam::fv::actuatorLineElement::lookupCoefficients()
     liftCoefficient_ = profileData_.liftCoefficient(angleOfAttack_);
     dragCoefficient_ = profileData_.dragCoefficient(angleOfAttack_);
     momentCoefficient_ = profileData_.momentCoefficient(angleOfAttack_);
+    tangentialCoefficient_ = profileData_.tangentialCoefficient(angleOfAttack_,inflowVelAngle_);
+    thrustCoefficient_ = profileData_.thrustCoefficient(angleOfAttack_,inflowVelAngle_);
 }
 
 
@@ -477,7 +480,7 @@ void Foam::fv::actuatorLineElement::createOutputFile()
     outputFile_ = new OFstream(dir/name_ + ".csv");
 
     *outputFile_<< "time,root_dist,x,y,z,rel_vel_mag,Re,alpha_deg,"
-                << "alpha_geom_deg,cl,cd,fx,fy,fz,end_effect_factor" << endl;
+                << "alpha_geom_deg,cl,cd,fx,fy,fz,end_effect_factor,Ctan,Cth" << endl;
 }
 
 
@@ -486,14 +489,15 @@ void Foam::fv::actuatorLineElement::writePerf()
     scalar time = mesh_.time().value();
 
     // write time,root_dist,x,y,z,rel_vel_mag,Re,alpha_deg,alpha_geom_deg,cl,cd,
-    // fx,fy,fz,end_effect_factor
+    // fx,fy,fz,end_effect_factor,Ctan,Cth
     *outputFile_<< time << "," << rootDistance_ << "," << position_.x() << ","
                 << position_.y() << "," << position_.z() << ","
                 << mag(relativeVelocity_) << "," << Re_ << "," << angleOfAttack_
                 << "," << angleOfAttackGeom_ << "," << liftCoefficient_ << ","
                 << dragCoefficient_ << "," << forceVector_.x() << ","
                 << forceVector_.y() << "," << forceVector_.z() << ","
-                << endEffectFactor_ << endl;
+                << endEffectFactor_ << "," << tangentialCoefficient_ << ","
+                << thrustCoefficient_ << endl;
 }
 
 
@@ -622,6 +626,25 @@ const Foam::scalar& Foam::fv::actuatorLineElement::momentCoefficient()
     return momentCoefficient_;
 }
 
+const Foam::scalar& Foam::fv::actuatorLineElement::tangentialCoefficient()
+{
+    return tangentialCoefficient_;
+}
+
+const Foam::scalar& Foam::fv::actuatorLineElement::thrustCoefficient()
+{
+    return thrustCoefficient_;
+}
+
+const Foam::scalar& Foam::fv::actuatorLineElement::twist()
+{
+    return twist_;
+}
+
+const Foam::scalar& Foam::fv::actuatorLineElement::inflowVelAngle()
+{
+    return inflowVelAngle_;
+}
 
 const Foam::scalar& Foam::fv::actuatorLineElement::rootDistance()
 {
@@ -682,6 +705,9 @@ void Foam::fv::actuatorLineElement::calculateForce
     // Calculate angle of attack in degrees
     angleOfAttack_ = radToDeg(angleOfAttackRad);
 
+    //Calculate inflow velocity angle in degrees
+    inflowVelAngle_ = angleOfAttack_ + twist_ ;
+
     // Update Reynolds number of profile data
     profileData_.updateRe(Re_);
 
@@ -730,6 +756,10 @@ void Foam::fv::actuatorLineElement::calculateForce
 
     // Apply end effect correction factor to lift coefficient
     liftCoefficient_ *= endEffectFactor_;
+
+    // Apply end effect correction factor to tangential and thrust coefficient
+    thrustCoefficient_ *= endEffectFactor_;
+    tangentialCoefficient_ *= endEffectFactor_;
 
     // Calculate force per unit density
     scalar area = chordLength_*spanLength_;

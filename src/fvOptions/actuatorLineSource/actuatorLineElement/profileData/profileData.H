@@ -240,6 +240,21 @@ protected:
             scalar angleOfAttackDeg
         );
 
+        //- Convert from lift and drag to tangential coefficient
+        scalar convertToCtan
+        (
+            scalar cl,
+            scalar cd,
+            scalar inflowVelAngleDeg
+        );
+
+        //- Convert from lift and drag to thrust coefficient
+        scalar convertToCth
+        (
+            scalar cl,
+            scalar cd,
+            scalar inflowVelAngleDeg
+        );
 
 public:
 
@@ -344,6 +359,12 @@ public:
 
             //- Return chordwise force coefficient
             scalar chordwiseCoefficient(scalar angleOfAttackDeg);
+
+            //- Return tangential coefficient Ctan
+            scalar tangentialCoefficient(scalar angleOfAttackDeg, scalar inflowVelAngleDeg);
+
+            //- Return thrust coefficient Cth
+            scalar thrustCoefficient(scalar angleOfAttackDeg, scalar inflowVelAngleDeg);
 
             //- Return static stall angle in radians
             scalar staticStallAngleRad();

@@ -96,6 +96,18 @@ protected:
         //- Location of element's half chord
         vector position_;
 
+        //- Twist angle in degrees
+        scalar twist_;
+
+        //- Inflow velocity angle in degrees
+        scalar inflowVelAngle_;
+
+        //- Tangential coefficient (Cn)
+        scalar tangentialCoefficient_;
+
+        //- Thrust coefficient (Ct)
+        scalar thrustCoefficient_;
+
         //- Velocity of the element
         vector velocity_;
 
@@ -317,6 +329,18 @@ public:
 
             //- Return moment coefficient
             const scalar& momentCoefficient();
+
+            //- Return tangential coefficient
+            const scalar& tangentialCoefficient();
+            
+            //- Return thrust coefficient
+            const scalar& thrustCoefficient();
+
+            //- Return the element twist angle in degrees
+            const scalar& twist();
+
+            //- Return the inflow velocity angle in degrees (AOA+twist)
+            const scalar& inflowVelAngle();
 
             //- Return nondimensional distance from actuator line root
             const scalar& rootDistance();

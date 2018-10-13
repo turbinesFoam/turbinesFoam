@@ -329,6 +329,8 @@ void Foam::fv::actuatorLineSource::createElements()
         );
         dict.add("writePerf", writeElementPerf);
 
+        dict.add("twist",-pitch);
+
         if (debug)
         {
             Info<< "Creating actuatorLineElement: " << name << endl;
