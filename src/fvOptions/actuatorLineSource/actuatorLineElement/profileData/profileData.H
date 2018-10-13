@@ -361,10 +361,18 @@ public:
             scalar chordwiseCoefficient(scalar angleOfAttackDeg);
 
             //- Return tangential coefficient Ctan
-            scalar tangentialCoefficient(scalar angleOfAttackDeg, scalar inflowVelAngleDeg);
+            scalar tangentialCoefficient
+            (
+                scalar angleOfAttackDeg,
+                scalar inflowVelAngleDeg
+            );
 
             //- Return thrust coefficient Cth
-            scalar thrustCoefficient(scalar angleOfAttackDeg, scalar inflowVelAngleDeg);
+            scalar thrustCoefficient
+            (
+                scalar angleOfAttackDeg,
+                scalar inflowVelAngleDeg
+            );
 
             //- Return static stall angle in radians
             scalar staticStallAngleRad();

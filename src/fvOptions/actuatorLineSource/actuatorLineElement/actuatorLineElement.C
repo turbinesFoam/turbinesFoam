@@ -57,7 +57,7 @@ void Foam::fv::actuatorLineElement::read()
     dict_.lookup("rootDistance") >> rootDistance_;
     dict_.lookup("velocitySampleRadius") >> velocitySampleRadius_;
     dict_.lookup("nVelocitySamples") >> nVelocitySamples_;
-    dict_.lookup("twist")>>twist_; 
+    dict_.lookup("twist")>>twist_;
 
     // Create dynamic stall model if found
     if (dict_.found("dynamicStall"))
@@ -193,8 +193,10 @@ void Foam::fv::actuatorLineElement::lookupCoefficients()
     liftCoefficient_ = profileData_.liftCoefficient(angleOfAttack_);
     dragCoefficient_ = profileData_.dragCoefficient(angleOfAttack_);
     momentCoefficient_ = profileData_.momentCoefficient(angleOfAttack_);
-    tangentialCoefficient_ = profileData_.tangentialCoefficient(angleOfAttack_,inflowVelAngle_);
-    thrustCoefficient_ = profileData_.thrustCoefficient(angleOfAttack_,inflowVelAngle_);
+    tangentialCoefficient_ =
+            profileData_.tangentialCoefficient(angleOfAttack_, inflowVelAngle_);
+    thrustCoefficient_ =
+            profileData_.thrustCoefficient(angleOfAttack_, inflowVelAngle_);
 }
 
 
@@ -480,7 +482,8 @@ void Foam::fv::actuatorLineElement::createOutputFile()
     outputFile_ = new OFstream(dir/name_ + ".csv");
 
     *outputFile_<< "time,root_dist,x,y,z,rel_vel_mag,Re,alpha_deg,"
-                << "alpha_geom_deg,cl,cd,fx,fy,fz,end_effect_factor,Ctan,Cth" << endl;
+                << "alpha_geom_deg,cl,cd,fx,fy,fz,end_effect_factor,"
+                << "Ctan,Cth" << endl;
 }
 
 
@@ -706,7 +709,7 @@ void Foam::fv::actuatorLineElement::calculateForce
     angleOfAttack_ = radToDeg(angleOfAttackRad);
 
     //Calculate inflow velocity angle in degrees
-    inflowVelAngle_ = angleOfAttack_ + twist_ ;
+    inflowVelAngle_ = angleOfAttack_ + twist_;
 
     // Update Reynolds number of profile data
     profileData_.updateRe(Re_);

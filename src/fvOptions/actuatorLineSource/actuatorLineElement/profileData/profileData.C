@@ -495,7 +495,7 @@ Foam::scalar Foam::profileData::convertToCtan
 )
 {
     scalar inflowVelAngleRad = degToRad(inflowVelAngleDeg);
-    return cl*sin(inflowVelAngleRad) - cd*cos(inflowVelAngleRad);  
+    return cl*sin(inflowVelAngleRad) - cd*cos(inflowVelAngleRad);
 }
 
 
@@ -644,7 +644,11 @@ Foam::scalar Foam::profileData::chordwiseCoefficient(scalar angleOfAttackDeg)
     );
 }
 
-Foam::scalar Foam::profileData::tangentialCoefficient(scalar angleOfAttackDeg, scalar inflowVelAngleDeg)
+Foam::scalar Foam::profileData::tangentialCoefficient
+(
+    scalar angleOfAttackDeg,
+    scalar inflowVelAngleDeg
+)
 {
     return convertToCtan
     (
@@ -652,9 +656,13 @@ Foam::scalar Foam::profileData::tangentialCoefficient(scalar angleOfAttackDeg, s
         dragCoefficient(angleOfAttackDeg),
         inflowVelAngleDeg
     );
-}    
+}
 
-Foam::scalar Foam::profileData::thrustCoefficient(scalar angleOfAttackDeg, scalar inflowVelAngleDeg)
+Foam::scalar Foam::profileData::thrustCoefficient
+(
+    scalar angleOfAttackDeg,
+    scalar inflowVelAngleDeg
+)
 {
     return convertToCth
     (
@@ -662,7 +670,7 @@ Foam::scalar Foam::profileData::thrustCoefficient(scalar angleOfAttackDeg, scala
         dragCoefficient(angleOfAttackDeg),
         inflowVelAngleDeg
     );
-} 
+}
 
 void Foam::profileData::updateRe(scalar Re)
 {

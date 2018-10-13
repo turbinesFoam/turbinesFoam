@@ -329,7 +329,7 @@ void Foam::fv::actuatorLineSource::createElements()
         );
         dict.add("writePerf", writeElementPerf);
 
-        dict.add("twist",-pitch);
+        dict.add("twist", -pitch);
 
         if (debug)
         {
