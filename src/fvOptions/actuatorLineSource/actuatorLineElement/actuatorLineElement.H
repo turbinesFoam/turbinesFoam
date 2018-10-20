@@ -78,19 +78,21 @@ protected:
         //- Mesh bounding box
         boundBox meshBoundBox_;
 
-        //- Chord direction
+        //- Chord direction -- pointing from trailing to leading edge
         vector chordDirection_;
 
         //- Chord length
         scalar chordLength_;
 
-        //- Span direction
+        //- Span direction -- direction about which element will pitch
+        // Can be obtained by sweeping chord direction into planform normal
         vector spanDirection_;
 
         //- Element span length, for calculating force
         scalar spanLength_;
 
-        //- Element planform normal vector
+        //- Element planform normal vector -- direction when the opposite of
+        // the chord direction is swept into the span direction
         vector planformNormal_;
 
         //- Location of element's half chord
@@ -105,7 +107,7 @@ protected:
         //- Free stream direction
         vector freeStreamDirection_;
 
-        //- Fluid force on element; a vector that is perpendicular to
+        //- Fluid force on element -- vector that is perpendicular to
         // spanDirection,
         vector forceVector_;
 
