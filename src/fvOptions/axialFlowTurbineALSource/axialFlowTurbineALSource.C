@@ -463,6 +463,7 @@ void Foam::fv::axialFlowTurbineALSource::calcEndEffects()
         {
             scalar rootDist = blades_[i].elements()[j].rootDistance();
             vector relVel = blades_[i].elements()[j].relativeVelocity();
+            vector elementVel = blades_[i].elements()[j].velocity();
             if (debug)
             {
                 Info<< "    rootDist: " << rootDist << endl;
@@ -472,7 +473,12 @@ void Foam::fv::axialFlowTurbineALSource::calcEndEffects()
             scalar phi = pi/2.0;
             if (mag(relVel) > VSMALL)
             {
-                phi = asin((-axis_ & relVel)/(mag(axis_)*mag(relVel)));
+                vector elementVelDir = elementVel / mag(elementVel);
+                scalar relVelOpElementVel = -elementVelDir & relVel;
+                vector rotorPlaneDir = freeStreamDirection_;
+                scalar relVelRotorPlane = rotorPlaneDir & relVel;
+                // Note: Does not take yaw into account
+                phi = atan2(relVelRotorPlane, relVelOpElementVel);
             }
             if (debug)
             {
