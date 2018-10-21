@@ -132,6 +132,17 @@ def test_parallel():
     assert "Finalising parallel run" in log_end
 
 
+def test_opposite_rotation():
+    """Test AFTAL rotating opposite direction."""
+    old_txt = "axis                (-1 0 0);"
+    new_txt = "axis                (1 0 0);"
+    cmd = "sed -i 's/{old_txt}/{new_txt}/g' system/fvOptions".format(
+        old_txt=old_txt, new_txt=new_txt
+    )
+    subprocess.call(cmd, shell=True)
+    test_serial()
+
+
 def teardown():
     """Move back into tests directory."""
     os.chdir("../")
