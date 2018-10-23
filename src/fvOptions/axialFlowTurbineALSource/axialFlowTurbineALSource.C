@@ -56,7 +56,7 @@ void Foam::fv::axialFlowTurbineALSource::createCoordinateSystem()
     axis_ /= mag(axis_);
 
     // Free stream direction is a unit vector
-    freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
+    freeStreamDirection_ = freeStreamVelocity_ / mag(freeStreamVelocity_);
 
     // Radial direction is vertical direction
     verticalDirection_ /= mag(verticalDirection_);
@@ -182,29 +182,34 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
             elementGeometry[j][0][1] = point.y(); // y location of geom point
             elementGeometry[j][0][2] = point.z(); // z location of geom point
 
+            // Set chord reference direction
+            vector chordDirection = azimuthalDirection_;
+
             // Set span directions for AL source
-            scalar spanSign = axis_ & freeStreamDirection_;
-            vector spanDirection = spanSign*verticalDirection_;
+            // Blades start oriented vertically
+            // Use planform normal to figure out span direction
+            vector planformNormal = freeStreamDirection_;
+            vector spanDirection = chordDirection ^ planformNormal;
+            spanDirection /= mag(spanDirection);
+
+            // Rotate span and chord directions according to azimuth
             rotateVector(spanDirection, vector::zero, axis_, azimuthRadians);
             elementGeometry[j][1][0] = spanDirection.x();
             elementGeometry[j][1][1] = spanDirection.y();
             elementGeometry[j][1][2] = spanDirection.z();
-
-            // Set chord length
-            elementGeometry[j][2][0] = chordLength;
-
-            // Set chord reference direction
-            vector chordDirection = azimuthalDirection_;
             rotateVector(chordDirection, vector::zero, axis_, azimuthRadians);
             elementGeometry[j][3][0] = chordDirection.x();
             elementGeometry[j][3][1] = chordDirection.y();
             elementGeometry[j][3][2] = chordDirection.z();
 
+            // Set chord length
+            elementGeometry[j][2][0] = chordLength;
+
             // Set chord mount
             elementGeometry[j][4][0] = chordMount;
 
-            // Set pitch
-            elementGeometry[j][5][0] = -pitch;
+            // Set element pitch or twist
+            elementGeometry[j][5][0] = pitch;
         }
 
         // Add frontal area to list
@@ -458,6 +463,7 @@ void Foam::fv::axialFlowTurbineALSource::calcEndEffects()
         {
             scalar rootDist = blades_[i].elements()[j].rootDistance();
             vector relVel = blades_[i].elements()[j].relativeVelocity();
+            vector elementVel = blades_[i].elements()[j].velocity();
             if (debug)
             {
                 Info<< "    rootDist: " << rootDist << endl;
@@ -467,7 +473,12 @@ void Foam::fv::axialFlowTurbineALSource::calcEndEffects()
             scalar phi = pi/2.0;
             if (mag(relVel) > VSMALL)
             {
-                phi = asin((-axis_ & relVel)/(mag(axis_)*mag(relVel)));
+                vector elementVelDir = elementVel / mag(elementVel);
+                scalar relVelOpElementVel = -elementVelDir & relVel;
+                vector rotorPlaneDir = freeStreamDirection_;
+                scalar relVelRotorPlane = rotorPlaneDir & relVel;
+                // Note: Does not take yaw into account
+                phi = atan2(relVelRotorPlane, relVelOpElementVel);
             }
             if (debug)
             {
@@ -484,18 +495,20 @@ void Foam::fv::axialFlowTurbineALSource::calcEndEffects()
             {
                 if (endEffectsCoeffs.lookupOrDefault("tipEffects", true))
                 {
-                    f = 2.0/pi*acos(Foam::exp
+                    scalar acosArg = Foam::exp
                     (
-                        -nBlades_/2.0*(1.0/rootDist - 1)/sin(phi))
+                        -nBlades_/2.0*(1.0/rootDist - 1)/sin(phi)
                     );
+                    f = 2.0/pi*acos(min(1.0, acosArg));
                 }
                 if (endEffectsCoeffs.lookupOrDefault("rootEffects", false))
                 {
                     scalar tipDist = 1.0 - rootDist;
-                    f *= 2.0/pi*acos(Foam::exp
+                    scalar acosArg = Foam::exp
                     (
-                        -nBlades_/2.0*(1.0/tipDist - 1)/sin(phi))
+                        -nBlades_/2.0*(1.0/tipDist - 1)/sin(phi)
                     );
+                    f *= 2.0/pi*acos(min(1.0, acosArg));
                 }
             }
             else if (endEffectsModel_ == "Shen")
@@ -507,18 +520,20 @@ void Foam::fv::axialFlowTurbineALSource::calcEndEffects()
                 scalar g = Foam::exp(-c1*(nBlades_*tipSpeedRatio_ - c2)) + 0.1;
                 if (endEffectsCoeffs.lookupOrDefault("tipEffects", true))
                 {
-                    f = 2.0/pi*acos(Foam::exp
+                    scalar acosArg = Foam::exp
                     (
-                        -g*nBlades_/2.0*(1.0/rootDist - 1)/sin(phi))
+                        -g*nBlades_/2.0*(1.0/rootDist - 1)/sin(phi)
                     );
+                    f = 2.0/pi*acos(min(1.0, acosArg));
                 }
                 if (endEffectsCoeffs.lookupOrDefault("rootEffects", false))
                 {
                     scalar tipDist = 1.0 - rootDist;
-                    f *= 2.0/pi*acos(Foam::exp
+                    scalar acosArg = Foam::exp
                     (
-                        -g*nBlades_/2.0*(1.0/tipDist - 1)/sin(phi))
+                        -g*nBlades_/2.0*(1.0/tipDist - 1)/sin(phi)
                     );
+                    f *= 2.0/pi*acos(min(1.0, acosArg));
                 }
             }
             if (debug)

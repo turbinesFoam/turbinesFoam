@@ -353,7 +353,7 @@ void Foam::fv::actuatorLineSource::createElements()
             name, dict, mesh_
         );
         elements_.set(i, element);
-        pitch = pitch/180.0*Foam::constant::mathematical::pi;
+        pitch = Foam::degToRad(pitch);
         elements_[i].pitch(pitch);
         elements_[i].setVelocity(initialVelocity);
     }

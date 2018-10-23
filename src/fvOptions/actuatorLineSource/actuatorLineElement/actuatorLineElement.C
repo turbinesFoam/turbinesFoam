@@ -662,6 +662,10 @@ void Foam::fv::actuatorLineElement::calculateForce
 {
     scalar pi = Foam::constant::mathematical::pi;
 
+    // Calculate vector normal to chord--span plane
+    planformNormal_ = -chordDirection_ ^ spanDirection_;
+    planformNormal_ /= mag(planformNormal_);
+
     if (debug)
     {
         Info<< "Calculating force contribution from actuatorLineElement "
@@ -670,11 +674,8 @@ void Foam::fv::actuatorLineElement::calculateForce
         Info<< "    chordDirection: " << chordDirection_ << endl;
         Info<< "    spanDirection: " << spanDirection_ << endl;
         Info<< "    elementVelocity: " << velocity_ << endl;
+        Info<< "    planformNormal: " << planformNormal_ << endl;
     }
-
-    // Calculate vector normal to chord--span plane
-    planformNormal_ = -chordDirection_ ^ spanDirection_;
-    planformNormal_ /= mag(planformNormal_);
 
     // Find local flow velocity by interpolating to element location
     calculateInflowVelocity(Uin);
@@ -776,6 +777,8 @@ void Foam::fv::actuatorLineElement::calculateForce
 
     if (debug)
     {
+        Info<< "    liftDirection: " << liftDirection << endl;
+        Info<< "    dragDirection: " << dragDirection << endl;
         Info<< "    force (per unit density): " << forceVector_ << endl;
     }
 }
