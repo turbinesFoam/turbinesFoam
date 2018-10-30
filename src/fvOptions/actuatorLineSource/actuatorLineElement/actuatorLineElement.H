@@ -95,19 +95,19 @@ protected:
         // the chord direction is swept into the span direction
         vector planformNormal_;
 
+        //- Element chord reference direction
+        vector chordRefDirection_;
+
         //- Location of element's half chord
         vector position_;
-
-        //- Twist angle in degrees
-        scalar twist_;
 
         //- Inflow velocity angle in degrees
         scalar inflowVelAngle_;
 
-        //- Tangential coefficient (Cn)
+        //- Tangential coefficient (c_ref_t)
         scalar tangentialCoefficient_;
 
-        //- Thrust coefficient (Ct)
+        //- Thrust coefficient (c_ref_n)
         scalar thrustCoefficient_;
 
         //- Velocity of the element

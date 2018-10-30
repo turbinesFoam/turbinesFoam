@@ -487,7 +487,7 @@ Foam::scalar Foam::profileData::convertToCD
     return cn*sin(angleOfAttackRad) - cc*cos(angleOfAttackRad);
 }
 
-Foam::scalar Foam::profileData::convertToCtan
+Foam::scalar Foam::profileData::convertToCRT
 (
     scalar cl,
     scalar cd,
@@ -499,7 +499,7 @@ Foam::scalar Foam::profileData::convertToCtan
 }
 
 
-Foam::scalar Foam::profileData::convertToCth
+Foam::scalar Foam::profileData::convertToCRN
 (
     scalar cl,
     scalar cd,
@@ -650,7 +650,7 @@ Foam::scalar Foam::profileData::tangentialCoefficient
     scalar inflowVelAngleDeg
 )
 {
-    return convertToCtan
+    return convertToCRT
     (
         liftCoefficient(angleOfAttackDeg),
         dragCoefficient(angleOfAttackDeg),
@@ -664,7 +664,7 @@ Foam::scalar Foam::profileData::thrustCoefficient
     scalar inflowVelAngleDeg
 )
 {
-    return convertToCth
+    return convertToCRN
     (
         liftCoefficient(angleOfAttackDeg),
         dragCoefficient(angleOfAttackDeg),

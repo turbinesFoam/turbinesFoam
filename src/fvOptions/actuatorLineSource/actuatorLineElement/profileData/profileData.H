@@ -240,16 +240,16 @@ protected:
             scalar angleOfAttackDeg
         );
 
-        //- Convert from lift and drag to tangential coefficient
-        scalar convertToCtan
+        //- Convert from lift and drag to tangential coefficient AFTAL
+        scalar convertToCRT
         (
             scalar cl,
             scalar cd,
             scalar inflowVelAngleDeg
         );
 
-        //- Convert from lift and drag to thrust coefficient
-        scalar convertToCth
+        //- Convert from lift and drag to thrust coefficient AFTAL
+        scalar convertToCRN
         (
             scalar cl,
             scalar cd,
