@@ -759,7 +759,7 @@ void Foam::fv::actuatorLineElement::calculateForce
     // Apply end effect correction factor to lift coefficient
     liftCoefficient_ *= endEffectFactor_;
 
-    // Apply end effect correction factor to tangential and thrust coefficient AFTAL
+    // Apply end effect correction factor to tangential and thrust coeff AFTAL
     thrustCoefficient_ *= endEffectFactor_;
     tangentialCoefficient_ *= endEffectFactor_;
 
