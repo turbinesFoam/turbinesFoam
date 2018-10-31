@@ -629,20 +629,24 @@ const Foam::scalar& Foam::fv::actuatorLineElement::momentCoefficient()
     return momentCoefficient_;
 }
 
+
 const Foam::scalar& Foam::fv::actuatorLineElement::tangentialCoefficient()
 {
     return tangentialCoefficient_;
 }
+
 
 const Foam::scalar& Foam::fv::actuatorLineElement::thrustCoefficient()
 {
     return thrustCoefficient_;
 }
 
+
 const Foam::scalar& Foam::fv::actuatorLineElement::inflowVelAngle()
 {
     return inflowVelAngle_;
 }
+
 
 const Foam::scalar& Foam::fv::actuatorLineElement::rootDistance()
 {
