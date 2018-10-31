@@ -779,9 +779,9 @@ void Foam::fv::actuatorLineElement::calculateForce
     forceVector_ = lift*liftDirection + drag*dragDirection;
 
     // Calculate tangential and normal force component AFTAL
-    tangentialForce_ = ( lift*sin(inflowVelAngleRad) - 
+    tangentialForce_ = ( lift*sin(inflowVelAngleRad) -
                          drag*cos(inflowVelAngleRad)) / spanLength_;
-    normalForce_ = ( lift*cos(inflowVelAngleRad) + 
+    normalForce_ = ( lift*cos(inflowVelAngleRad) +
                      drag*sin(inflowVelAngleRad)) / spanLength_;
 
     if (debug)
