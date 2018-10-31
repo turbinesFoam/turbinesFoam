@@ -110,6 +110,12 @@ protected:
         //- Thrust coefficient (c_ref_n)
         scalar thrustCoefficient_;
 
+        //- Tangential force component Ft (AFTAL, per unit density)
+        scalar tangentialForce_;
+
+        //- Normal force component Fn (AFTAL, per unit density)
+        scalar normalForce_;
+
         //- Velocity of the element
         vector velocity_;
 

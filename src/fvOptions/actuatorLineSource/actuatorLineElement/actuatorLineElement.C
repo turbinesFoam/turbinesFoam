@@ -483,7 +483,7 @@ void Foam::fv::actuatorLineElement::createOutputFile()
 
     *outputFile_<< "time,root_dist,x,y,z,rel_vel_mag,Re,alpha_deg,"
                 << "alpha_geom_deg,cl,cd,fx,fy,fz,end_effect_factor,"
-                << "c_ref_t,c_ref_n" << endl;
+                << "c_ref_t,c_ref_n,ft,fn" << endl;
 }
 
 
@@ -492,7 +492,7 @@ void Foam::fv::actuatorLineElement::writePerf()
     scalar time = mesh_.time().value();
 
     // write time,root_dist,x,y,z,rel_vel_mag,Re,alpha_deg,alpha_geom_deg,cl,cd,
-    // fx,fy,fz,end_effect_factor,c_ref_t,c_ref_n
+    // fx,fy,fz,end_effect_factor,c_ref_t,c_ref_n,ft,fn
     *outputFile_<< time << "," << rootDistance_ << "," << position_.x() << ","
                 << position_.y() << "," << position_.z() << ","
                 << mag(relativeVelocity_) << "," << Re_ << "," << angleOfAttack_
@@ -500,7 +500,8 @@ void Foam::fv::actuatorLineElement::writePerf()
                 << dragCoefficient_ << "," << forceVector_.x() << ","
                 << forceVector_.y() << "," << forceVector_.z() << ","
                 << endEffectFactor_ << "," << tangentialCoefficient_ << ","
-                << thrustCoefficient_ << endl;
+                << thrustCoefficient_ << "," << tangentialForce_ << ","
+                << normalForce_ << endl;
 }
 
 
@@ -776,6 +777,12 @@ void Foam::fv::actuatorLineElement::calculateForce
     liftDirection /= mag(liftDirection);
     vector dragDirection = relativeVelocity_/mag(relativeVelocity_);
     forceVector_ = lift*liftDirection + drag*dragDirection;
+
+    // Calculate tangential and normal force component AFTAL
+    tangentialForce_ = ( lift*sin(inflowVelAngleRad) - 
+                         drag*cos(inflowVelAngleRad)) / spanLength_;
+    normalForce_ = ( lift*cos(inflowVelAngleRad) + 
+                     drag*sin(inflowVelAngleRad)) / spanLength_;
 
     if (debug)
     {
