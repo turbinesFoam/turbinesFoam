@@ -106,10 +106,10 @@ def check_spanwise(plot=False):
         ax.plot(root_dist, frn, label=r"$F_N$")
         ax.plot(root_dist, frt, label=r"$F_T$")
         ax.legend()
-    assert_almost_equal(max(crn), 1.06303935169)
-    assert_almost_equal(max(crt), 0.42897912444499997)
-    assert_almost_equal(max(frn), 37.179493475)
-    assert_almost_equal(max(frt), 7.1500738557500005)
+    assert_almost_equal(max(crn), 1.063, decimal=2)
+    assert_almost_equal(max(crt), 0.429, decimal=2)
+    assert_almost_equal(max(frn), 37.179, decimal=2)
+    assert_almost_equal(max(frt), 7.150, decimal=2)
 
 
 def all_checks():
