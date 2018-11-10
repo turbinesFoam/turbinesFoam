@@ -357,7 +357,7 @@ void Foam::fv::actuatorLineSource::createElements()
         );
         elements_.set(i, element);
         pitch = Foam::degToRad(pitch);
-        elements_[i].pitch(-pitch);
+        elements_[i].pitch(pitch);
         elements_[i].setVelocity(initialVelocity);
     }
 }
