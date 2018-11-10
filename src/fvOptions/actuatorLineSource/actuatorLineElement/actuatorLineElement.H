@@ -85,14 +85,14 @@ protected:
         scalar chordLength_;
 
         //- Span direction -- direction about which element will pitch
-        // Can be obtained by sweeping chord direction into planform normal
+        //  Can be obtained by sweeping chord direction into planform normal
         vector spanDirection_;
 
         //- Element span length, for calculating force
         scalar spanLength_;
 
         //- Element planform normal vector -- direction when the opposite of
-        // the chord direction is swept into the span direction
+        //  the chord direction is swept into the span direction
         vector planformNormal_;
 
         //- Element chord reference direction
@@ -100,21 +100,6 @@ protected:
 
         //- Location of element's half chord
         vector position_;
-
-        //- Inflow velocity angle in degrees
-        scalar inflowVelAngle_;
-
-        //- Tangential coefficient (c_ref_t)
-        scalar tangentialCoefficient_;
-
-        //- Thrust coefficient (c_ref_n)
-        scalar thrustCoefficient_;
-
-        //- Tangential force component Ft (AFTAL, per unit density)
-        scalar tangentialForce_;
-
-        //- Normal force component Fn (AFTAL, per unit density)
-        scalar normalForce_;
 
         //- Velocity of the element
         vector velocity_;
@@ -126,7 +111,7 @@ protected:
         vector freeStreamDirection_;
 
         //- Fluid force on element -- vector that is perpendicular to
-        // spanDirection,
+        //  spanDirection,
         vector forceVector_;
 
         //- Reference density for incompressible case
@@ -338,20 +323,26 @@ public:
             //- Return moment coefficient
             const scalar& momentCoefficient();
 
-            //- Return tangential coefficient
-            const scalar& tangentialCoefficient();
-            
-            //- Return thrust coefficient
-            const scalar& thrustCoefficient();
-
-            //- Return the element twist angle in degrees
-            const scalar& twist();
-
-            //- Return the inflow velocity angle in degrees (AOA+twist)
-            const scalar& inflowVelAngle();
-
             //- Return nondimensional distance from actuator line root
             const scalar& rootDistance();
+
+            //- Return tangential reference coefficient
+            scalar tangentialRefCoefficient();
+            
+            //- Return normal reference coefficient
+            scalar normalRefCoefficient();
+
+            //- Return tangential reference force (per unit span)
+            scalar tangentialRefForce();
+            
+            //- Return normal reference force (per unit span)
+            scalar normalRefForce();
+
+            //- Return the inflow velocity angle w.r.t. the chord reference
+            //  direction (degrees)
+            //  E.g., for an axial-flow turbine this would be the angle of
+            //  attack plus twist
+            scalar inflowRefAngle();
 
 
         // Manipulation

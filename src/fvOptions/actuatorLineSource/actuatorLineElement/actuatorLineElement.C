@@ -193,10 +193,6 @@ void Foam::fv::actuatorLineElement::lookupCoefficients()
     liftCoefficient_ = profileData_.liftCoefficient(angleOfAttack_);
     dragCoefficient_ = profileData_.dragCoefficient(angleOfAttack_);
     momentCoefficient_ = profileData_.momentCoefficient(angleOfAttack_);
-    tangentialCoefficient_ =
-            profileData_.tangentialCoefficient(angleOfAttack_, inflowVelAngle_);
-    thrustCoefficient_ =
-            profileData_.thrustCoefficient(angleOfAttack_, inflowVelAngle_);
 }
 
 
@@ -499,9 +495,9 @@ void Foam::fv::actuatorLineElement::writePerf()
                 << "," << angleOfAttackGeom_ << "," << liftCoefficient_ << ","
                 << dragCoefficient_ << "," << forceVector_.x() << ","
                 << forceVector_.y() << "," << forceVector_.z() << ","
-                << endEffectFactor_ << "," << tangentialCoefficient_ << ","
-                << thrustCoefficient_ << "," << tangentialForce_ << ","
-                << normalForce_ << endl;
+                << endEffectFactor_ << "," << tangentialRefCoefficient() << ","
+                << normalRefCoefficient() << "," << tangentialRefForce() << ","
+                << normalRefForce() << endl;
 }
 
 
@@ -631,21 +627,49 @@ const Foam::scalar& Foam::fv::actuatorLineElement::momentCoefficient()
 }
 
 
-const Foam::scalar& Foam::fv::actuatorLineElement::tangentialCoefficient()
+Foam::scalar Foam::fv::actuatorLineElement::tangentialRefCoefficient()
 {
-    return tangentialCoefficient_;
+    return profileData_.convertToCRT
+    (
+        liftCoefficient_,
+        dragCoefficient_,
+        inflowRefAngle()
+    );
 }
 
 
-const Foam::scalar& Foam::fv::actuatorLineElement::thrustCoefficient()
+Foam::scalar Foam::fv::actuatorLineElement::tangentialRefForce()
 {
-    return thrustCoefficient_;
+    return 0.5*chordLength_*tangentialRefCoefficient()*magSqr(inflowVelocity_);
 }
 
 
-const Foam::scalar& Foam::fv::actuatorLineElement::inflowVelAngle()
+Foam::scalar Foam::fv::actuatorLineElement::normalRefCoefficient()
 {
-    return inflowVelAngle_;
+    return profileData_.convertToCRN
+    (
+        liftCoefficient_,
+        dragCoefficient_,
+        inflowRefAngle()
+    );
+}
+
+
+Foam::scalar Foam::fv::actuatorLineElement::normalRefForce()
+{
+    return 0.5*chordLength_*normalRefCoefficient()*magSqr(inflowVelocity_);
+}
+
+
+Foam::scalar Foam::fv::actuatorLineElement::inflowRefAngle()
+{
+    // Calculate inflow velocity angle in degrees (AFTAL Phi)
+    scalar inflowVelAngleRad = acos
+    (
+        (-relativeVelocity_ & chordRefDirection_)
+        / (mag(relativeVelocity_) * mag(chordRefDirection_))
+    );
+    return radToDeg(inflowVelAngleRad);
 }
 
 
@@ -709,12 +733,6 @@ void Foam::fv::actuatorLineElement::calculateForce
     // Calculate angle of attack in degrees
     angleOfAttack_ = radToDeg(angleOfAttackRad);
 
-    //Calculate inflow velocity angle in degrees (AFTAL Phi)
-    scalar inflowVelAngleRad = acos((-relativeVelocity_ & chordRefDirection_)
-                    / (mag(relativeVelocity_)
-                    * mag(chordRefDirection_)));
-    inflowVelAngle_ = radToDeg(inflowVelAngleRad);
-
     // Update Reynolds number of profile data
     profileData_.updateRe(Re_);
 
@@ -764,12 +782,8 @@ void Foam::fv::actuatorLineElement::calculateForce
     // Apply end effect correction factor to lift coefficient
     liftCoefficient_ *= endEffectFactor_;
 
-    // Apply end effect correction factor to tangential and thrust coeff AFTAL
-    thrustCoefficient_ *= endEffectFactor_;
-    tangentialCoefficient_ *= endEffectFactor_;
-
     // Calculate force per unit density
-    scalar area = chordLength_*spanLength_;
+    scalar area = chordLength_ * spanLength_;
     scalar magSqrU = magSqr(relativeVelocity_);
     scalar lift = 0.5*area*liftCoefficient_*magSqrU;
     scalar drag = 0.5*area*dragCoefficient_*magSqrU;
@@ -777,12 +791,6 @@ void Foam::fv::actuatorLineElement::calculateForce
     liftDirection /= mag(liftDirection);
     vector dragDirection = relativeVelocity_/mag(relativeVelocity_);
     forceVector_ = lift*liftDirection + drag*dragDirection;
-
-    // Calculate tangential and normal force component AFTAL
-    tangentialForce_ = ( lift*sin(inflowVelAngleRad) -
-                         drag*cos(inflowVelAngleRad)) / spanLength_;
-    normalForce_ = ( lift*cos(inflowVelAngleRad) +
-                     drag*sin(inflowVelAngleRad)) / spanLength_;
 
     if (debug)
     {
