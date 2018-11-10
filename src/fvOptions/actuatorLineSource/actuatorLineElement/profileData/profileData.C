@@ -646,6 +646,7 @@ Foam::scalar Foam::profileData::chordwiseCoefficient(scalar angleOfAttackDeg)
     );
 }
 
+
 void Foam::profileData::updateRe(scalar Re)
 {
     if (tableType_ == "singleRe" and correctRe_ and Re != Re_)
