@@ -6,7 +6,7 @@ import subprocess
 import pandas as pd
 import os
 import numpy as np
-from numpy.testing import assert_array_almost_equal
+from numpy.testing import assert_array_almost_equal, assert_almost_equal
 
 
 element_dir = "postProcessing/actuatorLineElements/0/"
@@ -67,8 +67,8 @@ def check_periodic_tsr():
     assert_array_almost_equal(df.tsr, tsr_ref)
 
 
-def check_end_effects():
-    """Check that end effects taper off properly."""
+def check_spanwise(plot=False):
+    """Check spanwise distributions."""
     elements_dir = "postProcessing/actuatorLineElements/0"
     elements = os.listdir(elements_dir)
     dfs = {}
@@ -77,6 +77,10 @@ def check_end_effects():
     cl = np.zeros(len(elements))
     f = np.zeros(len(elements))
     root_dist = np.zeros(len(elements))
+    crn = np.zeros(len(elements))
+    crt = np.zeros(len(elements))
+    frn = np.zeros(len(elements))
+    frt = np.zeros(len(elements))
     for e in elements:
         i = int(e.replace("turbine.blade1.element", "").replace(".csv", ""))
         df = pd.read_csv(os.path.join(elements_dir, e))
@@ -85,11 +89,27 @@ def check_end_effects():
         alpha_deg[i] = df.alpha_deg.iloc[-1]
         f[i] = df.end_effect_factor.iloc[-1]
         cl[i] = df.cl.iloc[-1]
+        crn[i] = df.c_ref_n.iloc[-1]
+        crt[i] = df.c_ref_t.iloc[-1]
+        frn[i] = df.f_ref_n.iloc[-1]
+        frt[i] = df.f_ref_t.iloc[-1]
+    # Check that end effects taper off properly
     print("End effect factor at tip:", f[-1])
     assert 0 < f[-1] < 0.5
     assert cl[-1] < 0.6
     assert np.all(root_dist >= 0.0)
     assert np.all(root_dist <= 1.0)
+    # Check that spanwise reference coefficients are correct
+    if plot:
+        import matplotlib.pyplot as plt
+        fig, ax = plt.subplots()
+        ax.plot(root_dist, frn, label=r"$F_N$")
+        ax.plot(root_dist, frt, label=r"$F_T$")
+        ax.legend()
+    assert_almost_equal(max(crn), 1.063, decimal=2)
+    assert_almost_equal(max(crt), 0.429, decimal=2)
+    assert_almost_equal(max(frn), 37.179, decimal=2)
+    assert_almost_equal(max(frt), 7.150, decimal=2)
 
 
 def all_checks():
@@ -99,7 +119,7 @@ def all_checks():
     check_element_file_exists()
     check_perf()
     check_periodic_tsr()
-    check_end_effects()
+    check_spanwise()
 
 
 def test_serial():

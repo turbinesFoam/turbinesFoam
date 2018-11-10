@@ -49,6 +49,7 @@ void Foam::fv::actuatorLineElement::read()
     dict_.lookup("position") >> position_;
     dict_.lookup("chordLength") >> chordLength_;
     dict_.lookup("chordDirection") >> chordDirection_;
+    dict_.lookup("chordRefDirection") >> chordRefDirection_;
     dict_.lookup("chordMount") >> chordMount_;
     dict_.lookup("spanLength") >> spanLength_;
     dict_.lookup("spanDirection") >> spanDirection_;
@@ -477,7 +478,8 @@ void Foam::fv::actuatorLineElement::createOutputFile()
     outputFile_ = new OFstream(dir/name_ + ".csv");
 
     *outputFile_<< "time,root_dist,x,y,z,rel_vel_mag,Re,alpha_deg,"
-                << "alpha_geom_deg,cl,cd,fx,fy,fz,end_effect_factor" << endl;
+                << "alpha_geom_deg,cl,cd,fx,fy,fz,end_effect_factor,"
+                << "c_ref_t,c_ref_n,f_ref_t,f_ref_n" << endl;
 }
 
 
@@ -486,14 +488,16 @@ void Foam::fv::actuatorLineElement::writePerf()
     scalar time = mesh_.time().value();
 
     // write time,root_dist,x,y,z,rel_vel_mag,Re,alpha_deg,alpha_geom_deg,cl,cd,
-    // fx,fy,fz,end_effect_factor
+    // fx,fy,fz,end_effect_factor,c_ref_t,c_ref_n,f_ref_t,f_ref_n
     *outputFile_<< time << "," << rootDistance_ << "," << position_.x() << ","
                 << position_.y() << "," << position_.z() << ","
                 << mag(relativeVelocity_) << "," << Re_ << "," << angleOfAttack_
                 << "," << angleOfAttackGeom_ << "," << liftCoefficient_ << ","
                 << dragCoefficient_ << "," << forceVector_.x() << ","
                 << forceVector_.y() << "," << forceVector_.z() << ","
-                << endEffectFactor_ << endl;
+                << endEffectFactor_ << "," << tangentialRefCoefficient() << ","
+                << normalRefCoefficient() << "," << tangentialRefForce() << ","
+                << normalRefForce() << endl;
 }
 
 
@@ -623,6 +627,54 @@ const Foam::scalar& Foam::fv::actuatorLineElement::momentCoefficient()
 }
 
 
+Foam::scalar Foam::fv::actuatorLineElement::tangentialRefCoefficient()
+{
+    return profileData_.convertToCRT
+    (
+        liftCoefficient_,
+        dragCoefficient_,
+        inflowRefAngle()
+    );
+}
+
+
+Foam::scalar Foam::fv::actuatorLineElement::tangentialRefForce()
+{
+    return 0.5 * chordLength_ * tangentialRefCoefficient()
+        * magSqr(relativeVelocity_);
+}
+
+
+Foam::scalar Foam::fv::actuatorLineElement::normalRefCoefficient()
+{
+    return profileData_.convertToCRN
+    (
+        liftCoefficient_,
+        dragCoefficient_,
+        inflowRefAngle()
+    );
+}
+
+
+Foam::scalar Foam::fv::actuatorLineElement::normalRefForce()
+{
+    return 0.5 * chordLength_ * normalRefCoefficient()
+        * magSqr(relativeVelocity_);
+}
+
+
+Foam::scalar Foam::fv::actuatorLineElement::inflowRefAngle()
+{
+    // Calculate inflow velocity angle in degrees (AFTAL Phi)
+    scalar inflowVelAngleRad = acos
+    (
+        (-relativeVelocity_ & chordRefDirection_)
+        / (mag(relativeVelocity_) * mag(chordRefDirection_))
+    );
+    return radToDeg(inflowVelAngleRad);
+}
+
+
 const Foam::scalar& Foam::fv::actuatorLineElement::rootDistance()
 {
     return rootDistance_;
@@ -733,7 +785,7 @@ void Foam::fv::actuatorLineElement::calculateForce
     liftCoefficient_ *= endEffectFactor_;
 
     // Calculate force per unit density
-    scalar area = chordLength_*spanLength_;
+    scalar area = chordLength_ * spanLength_;
     scalar magSqrU = magSqr(relativeVelocity_);
     scalar lift = 0.5*area*liftCoefficient_*magSqrU;
     scalar drag = 0.5*area*dragCoefficient_*magSqrU;
@@ -817,12 +869,14 @@ void Foam::fv::actuatorLineElement::rotate
     if (rotateVelocity)
     {
         velocity_ = RM & velocity_;
+        chordRefDirection_ = RM & chordRefDirection_;
     }
 
     if (debug)
     {
         Info<< "Final position: " << position_ << endl;
         Info<< "Final chordDirection: " << chordDirection_ << endl;
+        Info<< "Final chordRefDirection: " << chordRefDirection_ << endl;
         Info<< "Final spanDirection: " << spanDirection_ << endl;
         Info<< "Final velocity: " << velocity_ << endl << endl;
     }

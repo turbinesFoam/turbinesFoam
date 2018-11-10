@@ -226,6 +226,7 @@ void Foam::fv::actuatorLineSource::createElements()
         vector position;
         scalar chordLength;
         vector chordDirection;
+        vector chordRefDirection;
         scalar spanLength = spanLengths[geometrySegmentIndex];
         spanLength /= nElementsPerSegment;
         vector spanDirection;
@@ -288,6 +289,9 @@ void Foam::fv::actuatorLineSource::createElements()
                        + deltaChordDirTotal/nElementsPerSegment*pointIndex
                        + deltaChordDirTotal/nElementsPerSegment/2;
 
+        // Chord reference direction (before pitching)
+        chordRefDirection = chordDirection;
+        
         // Calculate nondimensional root distance
         scalar rootDistance = mag(position - rootLocation)/totalLength_;
 
@@ -299,6 +303,7 @@ void Foam::fv::actuatorLineSource::createElements()
         dict.add("profileName", profileName);
         dict.add("chordLength", chordLength);
         dict.add("chordDirection", chordDirection);
+        dict.add("chordRefDirection", chordRefDirection);
         dict.add("spanLength", spanLength);
         dict.add("spanDirection", spanDirection);
         dict.add("freeStreamVelocity", freeStreamVelocity_);

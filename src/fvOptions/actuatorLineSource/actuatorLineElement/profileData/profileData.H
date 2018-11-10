@@ -345,6 +345,20 @@ public:
             //- Return chordwise force coefficient
             scalar chordwiseCoefficient(scalar angleOfAttackDeg);
 
+            //- Return reference tangential coefficient
+            scalar tangentialRefCoefficient
+            (
+                scalar angleOfAttackDeg,
+                scalar inflowVelAngleDeg
+            );
+
+            //- Return normal reference coefficient
+            scalar normalRefCoefficient
+            (
+                scalar angleOfAttackDeg,
+                scalar inflowVelAngleDeg
+            );
+
             //- Return static stall angle in radians
             scalar staticStallAngleRad();
 
@@ -365,6 +379,22 @@ public:
 
             //- Indicate if Reynolds number correction is active
             bool correctRe();
+
+            //- Convert from lift and drag to tangential reference coefficient
+            scalar convertToCRT
+            (
+                scalar cl,
+                scalar cd,
+                scalar inflowVelAngleDeg
+            );
+
+            //- Convert from lift and drag to normal reference coefficient
+            scalar convertToCRN
+            (
+                scalar cl,
+                scalar cd,
+                scalar inflowVelAngleDeg
+            );
 
 
         // Check

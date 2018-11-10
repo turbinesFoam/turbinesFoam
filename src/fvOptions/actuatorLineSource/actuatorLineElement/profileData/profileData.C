@@ -488,6 +488,30 @@ Foam::scalar Foam::profileData::convertToCD
 }
 
 
+Foam::scalar Foam::profileData::convertToCRT
+(
+    scalar cl,
+    scalar cd,
+    scalar inflowVelAngleDeg
+)
+{
+    scalar inflowVelAngleRad = degToRad(inflowVelAngleDeg);
+    return cl*sin(inflowVelAngleRad) - cd*cos(inflowVelAngleRad);
+}
+
+
+Foam::scalar Foam::profileData::convertToCRN
+(
+    scalar cl,
+    scalar cd,
+    scalar inflowVelAngleDeg
+)
+{
+    scalar inflowVelAngleRad = degToRad(inflowVelAngleDeg);
+    return cl*cos(inflowVelAngleRad) + cd*sin(inflowVelAngleRad);
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::profileData::profileData
