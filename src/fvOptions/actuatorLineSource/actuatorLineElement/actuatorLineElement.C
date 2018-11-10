@@ -640,7 +640,8 @@ Foam::scalar Foam::fv::actuatorLineElement::tangentialRefCoefficient()
 
 Foam::scalar Foam::fv::actuatorLineElement::tangentialRefForce()
 {
-    return 0.5*chordLength_*tangentialRefCoefficient()*magSqr(inflowVelocity_);
+    return 0.5 * chordLength_ * tangentialRefCoefficient()
+        * magSqr(relativeVelocity_);
 }
 
 
@@ -657,7 +658,8 @@ Foam::scalar Foam::fv::actuatorLineElement::normalRefCoefficient()
 
 Foam::scalar Foam::fv::actuatorLineElement::normalRefForce()
 {
-    return 0.5*chordLength_*normalRefCoefficient()*magSqr(inflowVelocity_);
+    return 0.5 * chordLength_ * normalRefCoefficient()
+        * magSqr(relativeVelocity_);
 }
 
 
