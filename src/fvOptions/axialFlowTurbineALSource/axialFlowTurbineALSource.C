@@ -586,6 +586,10 @@ Foam::fv::axialFlowTurbineALSource::axialFlowTurbineALSource
     scalar azimuthalOffset = coeffs_.lookupOrDefault("azimuthalOffset", 0.0);
     rotate(degToRad(azimuthalOffset));
 
+    // Yaw turbine to a static value if specified
+    scalar yawAngle = coeffs_.lookupOrDefault("yawAngle", 0.0);
+    yaw(degToRad(yawAngle));
+
     if (debug)
     {
         Info<< "axialFlowTurbineALSource created at time = " << time_.value()
