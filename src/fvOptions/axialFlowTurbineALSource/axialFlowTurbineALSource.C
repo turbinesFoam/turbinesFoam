@@ -624,6 +624,26 @@ void Foam::fv::axialFlowTurbineALSource::rotate(scalar radians)
 }
 
 
+void Foam::fv::axialFlowTurbineALSource::yaw(scalar radians)
+{
+    if (debug)
+    {
+        Info<< "Yawing " << name_ << " " << radians << " radians"
+            << endl << endl;
+    }
+
+    forAll(blades_, i)
+    {
+        blades_[i].rotate(origin_, verticalDirection_, radians);
+    }
+
+    if (hasHub_)
+    {
+        hub_->rotate(origin_, verticalDirection_, radians);
+    }
+}
+
+
 void Foam::fv::axialFlowTurbineALSource::addSup
 (
     fvMatrix<vector>& eqn,

@@ -132,6 +132,9 @@ protected:
         //- Rotate the turbine a specified angle about its axis
         virtual void rotate(scalar radians);
 
+        //- Yaw the turbine, i.e., rotate about vertical axis
+        void yaw(scalar radians);
+
 
 public:
 
