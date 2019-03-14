@@ -586,6 +586,10 @@ Foam::fv::axialFlowTurbineALSource::axialFlowTurbineALSource
     scalar azimuthalOffset = coeffs_.lookupOrDefault("azimuthalOffset", 0.0);
     rotate(degToRad(azimuthalOffset));
 
+    // Yaw turbine to a static value if specified
+    scalar yawAngle = coeffs_.lookupOrDefault("yawAngle", 0.0);
+    yaw(degToRad(yawAngle));
+
     if (debug)
     {
         Info<< "axialFlowTurbineALSource created at time = " << time_.value()
@@ -620,6 +624,29 @@ void Foam::fv::axialFlowTurbineALSource::rotate(scalar radians)
     {
         hub_->rotate(origin_, axis_, radians);
         hub_->setSpeed(origin_, axis_, omega_);
+    }
+}
+
+
+void Foam::fv::axialFlowTurbineALSource::yaw(scalar radians)
+{
+    if (debug)
+    {
+        Info<< "Yawing " << name_ << " " << radians << " radians"
+            << endl << endl;
+    }
+
+    // First, rotate axis
+    rotateVector(axis_, origin_, verticalDirection_, radians);
+
+    forAll(blades_, i)
+    {
+        blades_[i].rotate(origin_, verticalDirection_, radians);
+    }
+
+    if (hasHub_)
+    {
+        hub_->rotate(origin_, verticalDirection_, radians);
     }
 }
 
