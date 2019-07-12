@@ -482,7 +482,7 @@ void Foam::fv::axialFlowTurbineALSource::calcEndEffects()
                 if (phi <= 0.0)
                 {
 					phi=VSMALL; // to prevent division by zero and/or floating point error in exponential calculation
-				}
+                }
             }
             if (debug)
             {
