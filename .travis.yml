@@ -1,7 +1,7 @@
 # Travis CI setup for turbinesFoam
 
 sudo: required
-dist: trusty
+dist: xenial
 language: cpp
 
 env:
