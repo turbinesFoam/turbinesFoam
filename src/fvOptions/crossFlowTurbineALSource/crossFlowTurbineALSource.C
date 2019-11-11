@@ -573,7 +573,7 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     }
 
     // Zero out force vector and field
-    forceField_ *= 0;
+    forceField_ *= dimensionedScalar("zero", forceField_.dimensions(), 0.0);
     force_ *= 0;
 
     // Create local moment vector
@@ -651,7 +651,7 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     }
 
     // Zero out force vector and field
-    forceField_ *= 0;
+    forceField_ *= dimensionedScalar("zero", forceField_.dimensions(), 0.0);
     force_ *= 0;
 
     // Create local moment vector

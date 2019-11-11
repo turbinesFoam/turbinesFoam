@@ -685,7 +685,7 @@ void Foam::fv::actuatorLineSource::addSup
     }
 
     // Zero out force field
-    forceField_ *= 0;
+    forceField_ *= dimensionedScalar("zero", forceField_.dimensions(), 0.0);
 
     // Zero the total force vector
     force_ = vector::zero;
@@ -755,7 +755,7 @@ void Foam::fv::actuatorLineSource::addSup
     }
 
     // Zero out force field
-    forceField_ *= 0;
+    forceField_ *= dimensionedScalar("zero", forceField_.dimensions(), 0.0);
 
     // Zero the total force vector
     force_ = vector::zero;

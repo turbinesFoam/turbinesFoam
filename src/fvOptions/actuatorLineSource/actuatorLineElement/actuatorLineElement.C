@@ -64,7 +64,8 @@ void Foam::fv::actuatorLineElement::read()
     if (dict_.found("dynamicStall"))
     {
         dictionary dsDict = dict_.subDict("dynamicStall");
-        word dsName = dsDict.lookup("dynamicStallModel");
+        word dsName;
+        dsDict.lookup("dynamicStallModel") >> dsName;
         dynamicStall_ = dynamicStallModel::New
         (
             dsDict,
