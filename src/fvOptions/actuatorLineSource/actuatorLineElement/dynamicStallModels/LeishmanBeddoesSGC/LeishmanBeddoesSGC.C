@@ -25,6 +25,7 @@ License
 
 #include "LeishmanBeddoesSGC.H"
 #include "addToRunTimeSelectionTable.H"
+#include "unitConversion.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
