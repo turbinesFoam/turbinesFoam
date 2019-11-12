@@ -5,7 +5,6 @@ turbinesFoam
 ![OpenFOAM 7](https://img.shields.io/badge/OpenFOAM-6-brightgreen.svg)
 ![OpenFOAM 6](https://img.shields.io/badge/OpenFOAM-6-brightgreen.svg)
 ![OpenFOAM 5.x](https://img.shields.io/badge/OpenFOAM-5.x-brightgreen.svg)
-[![Issues in progress](https://img.shields.io/waffle/label/turbinesFoam/turbinesFoam/in%20progress.svg?maxAge=2592000)](https://waffle.io/turbinesfoam/turbinesfoam)
 [![DOI](https://zenodo.org/badge/4234/turbinesFoam/turbinesFoam.svg)](https://zenodo.org/badge/latestdoi/4234/turbinesFoam/turbinesFoam)
 
 turbinesFoam is a library for simulating wind and marine hydrokinetic turbines
