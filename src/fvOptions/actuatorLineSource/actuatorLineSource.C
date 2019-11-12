@@ -518,7 +518,7 @@ Foam::fv::actuatorLineSource::actuatorLineSource
         dimensionedVector
         (
             "force",
-            dimForce/dimVolume/dimDensity,
+            dimForce/dimVolume,
             vector::zero
         )
     ),
@@ -699,6 +699,12 @@ void Foam::fv::actuatorLineSource::addSup
     Info<< "Force (per unit density) on " << name_ << ": "
         << endl << force_ << endl << endl;
 
+    // Check dimensions on force field and correct if necessary
+    if (forceField_.dimensions() != eqn.dimensions()/dimVolume)
+    {
+        forceField_.dimensions().reset(eqn.dimensions()/dimVolume);
+    }
+
     // Add source to eqn
     eqn += forceField_;
 
@@ -748,12 +754,6 @@ void Foam::fv::actuatorLineSource::addSup
         harmonicPitching();
     }
 
-    // Check dimensions on force field and correct if necessary
-    if (forceField_.dimensions() != eqn.dimensions()/dimVolume)
-    {
-        forceField_.dimensions().reset(eqn.dimensions()/dimVolume);
-    }
-
     // Zero out force field
     forceField_ *= dimensionedScalar("zero", forceField_.dimensions(), 0.0);
 
@@ -767,6 +767,12 @@ void Foam::fv::actuatorLineSource::addSup
     }
 
     Info<< "Force on " << name_ << ": " << endl << force_ << endl << endl;
+
+    // Check dimensions on force field and correct if necessary
+    if (forceField_.dimensions() != eqn.dimensions()/dimVolume)
+    {
+        forceField_.dimensions().reset(eqn.dimensions()/dimVolume);
+    }
 
     // Add source to eqn
     eqn += forceField_;
