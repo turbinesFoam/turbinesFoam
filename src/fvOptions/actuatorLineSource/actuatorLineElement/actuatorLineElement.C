@@ -1021,7 +1021,7 @@ void Foam::fv::actuatorLineElement::addSup
         dimensionedVector
         (
             "zero",
-            eqn.dimensions()/dimVolume,
+            forceField.dimensions(),
             vector::zero
         )
     );
