@@ -768,7 +768,7 @@ void Foam::fv::actuatorLineSource::addSup
 
     Info<< "Force on " << name_ << ": " << endl << force_ << endl << endl;
 
-    // Check dimensions on force field and correct if necessary
+    // Check dimensions of force field and correct if necessary
     if (forceField_.dimensions() != eqn.dimensions()/dimVolume)
     {
         forceField_.dimensions().reset(eqn.dimensions()/dimVolume);

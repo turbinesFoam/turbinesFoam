@@ -668,6 +668,12 @@ void Foam::fv::axialFlowTurbineALSource::addSup
     forceField_ *= dimensionedScalar("zero", forceField_.dimensions(), 0.0);
     force_ *= 0;
 
+    // Check dimensions of force field and correct if necessary
+    if (forceField_.dimensions() != eqn.dimensions()/dimVolume)
+    {
+        forceField_.dimensions().reset(eqn.dimensions()/dimVolume);
+    }
+
     // Create local moment vector
     vector moment(vector::zero);
 
@@ -755,6 +761,12 @@ void Foam::fv::axialFlowTurbineALSource::addSup
     // Zero out force vector and field
     forceField_ *= dimensionedScalar("zero", forceField_.dimensions(), 0.0);
     force_ *= 0;
+
+    // Check dimensions of force field and correct if necessary
+    if (forceField_.dimensions() != eqn.dimensions()/dimVolume)
+    {
+        forceField_.dimensions().reset(eqn.dimensions()/dimVolume);
+    }
 
     // Create local moment vector
     vector moment(vector::zero);
