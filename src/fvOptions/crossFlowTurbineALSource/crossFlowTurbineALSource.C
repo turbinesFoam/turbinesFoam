@@ -651,18 +651,18 @@ void Foam::fv::crossFlowTurbineALSource::addSup
         rotate();
     }
 
-    // Check dimensions of force field and correct if necessary
-    if (forceField_.dimensions() != eqn.dimensions()/dimVolume)
-    {
-        forceField_.dimensions().reset(eqn.dimensions()/dimVolume);
-    }
-
     // Zero out force vector and field
     forceField_ *= dimensionedScalar("zero", forceField_.dimensions(), 0.0);
     force_ *= 0;
 
     // Create local moment vector
     vector moment(vector::zero);
+
+    // Check dimensions of force field and correct if necessary
+    if (forceField_.dimensions() != eqn.dimensions()/dimVolume)
+    {
+        forceField_.dimensions().reset(eqn.dimensions()/dimVolume);
+    }
 
     // Add source for blade actuator lines
     forAll(blades_, i)
