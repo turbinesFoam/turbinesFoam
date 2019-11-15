@@ -25,6 +25,7 @@ License
 
 #include "LeishmanBeddoesSD.H"
 #include "addToRunTimeSelectionTable.H"
+#include "unitConversion.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

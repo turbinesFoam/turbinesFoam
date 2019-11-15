@@ -28,6 +28,7 @@ License
 #include "geometricOneField.H"
 #include "fvMatrices.H"
 #include "syncTools.H"
+#include "unitConversion.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -63,7 +64,8 @@ void Foam::fv::actuatorLineElement::read()
     if (dict_.found("dynamicStall"))
     {
         dictionary dsDict = dict_.subDict("dynamicStall");
-        word dsName = dsDict.lookup("dynamicStallModel");
+        word dsName;
+        dsDict.lookup("dynamicStallModel") >> dsName;
         dynamicStall_ = dynamicStallModel::New
         (
             dsDict,
@@ -1019,7 +1021,7 @@ void Foam::fv::actuatorLineElement::addSup
         dimensionedVector
         (
             "zero",
-            eqn.dimensions()/dimVolume,
+            forceField.dimensions(),
             vector::zero
         )
     );
