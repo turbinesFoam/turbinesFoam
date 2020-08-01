@@ -5,7 +5,6 @@ dist: xenial
 language: cpp
 
 env:
-    - OF_VERS=5
     - OF_VERS=6
     - OF_VERS=7
     - OF_VERS=8
