@@ -8,6 +8,7 @@ env:
     - OF_VERS=5
     - OF_VERS=6
     - OF_VERS=7
+    - OF_VERS=8
 
 before_install:
     - sudo add-apt-repository http://dl.openfoam.org/ubuntu
