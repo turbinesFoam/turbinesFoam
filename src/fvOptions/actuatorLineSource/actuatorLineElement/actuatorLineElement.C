@@ -162,31 +162,12 @@ Foam::label Foam::fv::actuatorLineElement::findCell
     const point& location
 )
 {
-    if (Pstream::parRun())
-    {
-        if (meshBoundBox_.containsInside(location))
-        {
-            if (debug)
-            {
-                Pout<< "Looking for cell containing " << location
-                    << " inside bounding box:" << endl
-                    << meshBoundBox_ << endl;
-            }
-            return mesh_.findCell(location);
-        }
-        else
-        {
-            if (debug)
-            {
-                Pout<< "Cell not inside " << meshBoundBox_ << endl;
-            }
-            return -1;
-        }
-    }
-    else
-    {
-        return mesh_.findCell(location);;
-    }
+    label cellIndex;
+    cellIndex = mesh_.findCell(location);
+    Pout << "findCellPar: " << cellIndex << endl;
+    reduce(cellIndex, maxOp<label>());
+    Info << "findCell: " << cellIndex << endl;
+    return cellIndex;
 }
 
 
