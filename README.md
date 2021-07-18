@@ -1,7 +1,7 @@
 turbinesFoam
 ============
 
-[![Build Status](https://travis-ci.org/turbinesFoam/turbinesFoam.svg?branch=master)](https://travis-ci.org/turbinesFoam/turbinesFoam)
+[![Build Status](https://app.travis-ci.com/turbinesFoam/turbinesFoam.svg?branch=master)](https://app.travis-ci.com/turbinesFoam/turbinesFoam)
 ![OpenFOAM v2106](https://img.shields.io/badge/OpenFOAM-v2106-brightgreen.svg)
 ![OpenFOAM 8](https://img.shields.io/badge/OpenFOAM-8-brightgreen.svg)
 ![OpenFOAM 7](https://img.shields.io/badge/OpenFOAM-7-brightgreen.svg)
