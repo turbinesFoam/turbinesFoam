@@ -40,16 +40,12 @@ runApplication topoSet
 if [ "$3" = "-parallel" ]
     then
     python scripts/set_alpha.py $2 $d
-    if [[ $WM_PROJECT_VERSION == "3."* ]]
-        then
-        nProc=$(getNumberOfProcessors)
-    else
-        nProc=""
-    fi
+    nProc=$(getNumberOfProcessors)
     runApplication decomposePar
     ls -d processor* | xargs -I {} rm -rf ./{}/0
     ls -d processor* | xargs -I {} cp -r 0.org ./{}/0
-    runParallel simpleFoam  $nProc
+    app=${getApplication}
+    mpirun -np $nProc --oversubscribe $app -parallel > log.$app
     runApplication reconstructPar
 else
     python scripts/set_alpha.py $2 $d
