@@ -8,10 +8,17 @@ env:
     - OF_VERS=6
     - OF_VERS=7
     - OF_VERS=8
+    - OF_VERS=2106
 
 before_install:
-    - sudo add-apt-repository http://dl.openfoam.org/ubuntu
-    - sudo sh -c "wget -O - http://dl.openfoam.org/gpg.key | apt-key add -"
+    - |
+      if [[ $OF_VERS -gt 2000 ]]
+      then
+          curl -s https://dl.openfoam.com/add-debian-repo.sh | sudo bash
+      else
+          sudo add-apt-repository http://dl.openfoam.org/ubuntu
+          sudo sh -c "wget -O - http://dl.openfoam.org/gpg.key | apt-key add -"
+      fi
     - sudo apt-get update -qq
     - sudo apt-get install -qq openfoam${OF_VERS}
     - sudo apt-get install -qq vera++
@@ -25,11 +32,23 @@ before_install:
     - conda install -q pandas numpy nose
 
 install:
-    - source /opt/openfoam${OF_VERS}/etc/bashrc
+    - |
+      if [[ $OF_VERS -gt 2000 ]]
+      then
+          openfoam${OF_VERS}
+      else
+          source /opt/openfoam${OF_VERS}/etc/bashrc
+      fi
     - ./Allwmake
 
 before_script:
-    - source /opt/openfoam${OF_VERS}/etc/bashrc
+    - |
+      if [[ $OF_VERS -gt 2000 ]]
+      then
+          openfoam${OF_VERS}
+      else
+          source /opt/openfoam${OF_VERS}/etc/bashrc
+      fi
 
 script:
     - ./Alltest
