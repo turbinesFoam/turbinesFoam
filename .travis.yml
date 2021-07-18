@@ -34,7 +34,7 @@ install:
     - |
       if [[ $OF_VERS -gt 2000 ]]
       then
-          openfoam${OF_VERS}
+          source /usr/lib/openfoam/openfoam${OF_VERS}/etc/bashrc
       else
           source /opt/openfoam${OF_VERS}/etc/bashrc
       fi
@@ -44,7 +44,7 @@ before_script:
     - |
       if [[ $OF_VERS -gt 2000 ]]
       then
-          openfoam${OF_VERS}
+          source /usr/lib/openfoam/openfoam${OF_VERS}/etc/bashrc
       else
           source /opt/openfoam${OF_VERS}/etc/bashrc
       fi
