@@ -1,7 +1,7 @@
 # Travis CI setup for turbinesFoam
 
 sudo: required
-dist: xenial
+dist: focal
 language: cpp
 
 env:
