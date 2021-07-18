@@ -5,9 +5,9 @@ dist: focal
 language: cpp
 
 env:
-    - OF_VERS=7
-    - OF_VERS=8
-    - OF_VERS=2106
+    - OF_VERS=7 INSTALL_OPTS=""
+    - OF_VERS=8 INSTALL_OPTS=""
+    - OF_VERS=2106 INSTALL_OPTS="-default"
 
 before_install:
     - |
@@ -19,7 +19,7 @@ before_install:
           sudo sh -c "wget -O - http://dl.openfoam.org/gpg.key | apt-key add -"
       fi
     - sudo apt-get update -qq
-    - sudo apt-get install -qq openfoam${OF_VERS}
+    - sudo apt-get install -qq openfoam${OF_VERS}${INSTALL_OPTS}
     - sudo apt-get install -qq vera++
     # http://conda.pydata.org/docs/travis.html#the-travis-yml-file
     - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
