@@ -38,9 +38,9 @@ install:
       else
           source /opt/openfoam${OF_VERS}/etc/bashrc
       fi
-    - ./Allwmake
+      ./Allwmake
 
-before_script:
+script:
     - |
       if [[ $OF_VERS -gt 2000 ]]
       then
@@ -48,7 +48,5 @@ before_script:
       else
           source /opt/openfoam${OF_VERS}/etc/bashrc
       fi
-
-script:
-    - ./Alltest
+      ./Alltest
     - ./foamStyleCheck/checkStyle
