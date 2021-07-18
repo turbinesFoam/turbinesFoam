@@ -20,7 +20,7 @@ def setup():
 
 def check_created():
     """Test that axialFlowTurbineALSource was created."""
-    txt = "Selecting finite volume options model type axialFlowTurbineALSource"
+    txt = "Selecting finite volume options.*axialFlowTurbineALSource"
     subprocess.check_output(["grep", txt, "log.pimpleFoam"])
 
 
