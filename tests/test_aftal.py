@@ -20,7 +20,7 @@ def setup():
 
 def check_created():
     """Test that axialFlowTurbineALSource was created."""
-    txt = "Selecting finite volume options model type axialFlowTurbineALSource"
+    txt = "Selecting finite volume options.*axialFlowTurbineALSource"
     subprocess.check_output(["grep", txt, "log.pimpleFoam"])
 
 
@@ -31,8 +31,9 @@ def check_al_file_exists():
 
 def check_element_file_exists():
     """Test that the element perf file was created."""
-    assert os.path.isfile(os.path.join(element_dir,
-                                       "turbine.blade1.element0.csv"))
+    assert os.path.isfile(
+        os.path.join(element_dir, "turbine.blade1.element0.csv")
+    )
 
 
 def check_perf(angle0=540.0):
@@ -44,8 +45,11 @@ def check_perf(angle0=540.0):
     mean_tsr = df.tsr[df.angle_deg >= angle0].mean()
     mean_cp = df.cp[df.angle_deg >= angle0].mean()
     mean_cd = df.cd[df.angle_deg >= angle0].mean()
-    print("Performance from {:.1f}--{:.1f} degrees:".format(angle0,
-          df.angle_deg.max()))
+    print(
+        "Performance from {:.1f}--{:.1f} degrees:".format(
+            angle0, df.angle_deg.max()
+        )
+    )
     print("Mean TSR = {:.2f}".format(mean_tsr))
     print("Mean C_P = {:.2f}".format(mean_cp))
     print("Mean C_D = {:.2f}".format(mean_cd))
@@ -63,7 +67,7 @@ def check_periodic_tsr():
     tsr_phase = 0.0
     tsr_mean = df.tsr.mean()
     nblades = 3
-    tsr_ref = tsr_amp*np.cos(nblades*(theta_rad - tsr_phase)) + tsr_mean
+    tsr_ref = tsr_amp * np.cos(nblades * (theta_rad - tsr_phase)) + tsr_mean
     assert_array_almost_equal(df.tsr, tsr_ref)
 
 
@@ -102,6 +106,7 @@ def check_spanwise(plot=False):
     # Check that spanwise reference coefficients are correct
     if plot:
         import matplotlib.pyplot as plt
+
         fig, ax = plt.subplots()
         ax.plot(root_dist, frn, label=r"$F_N$")
         ax.plot(root_dist, frt, label=r"$F_T$")
@@ -128,8 +133,11 @@ def test_serial():
     try:
         output_run = subprocess.check_output("./Allrun")
     except subprocess.CalledProcessError:
-        print(subprocess.check_output(["tail", "-n", "200",
-                                       "log.pimpleFoam"]).decode())
+        print(
+            subprocess.check_output(
+                ["tail", "-n", "200", "log.pimpleFoam"]
+            ).decode()
+        )
         assert False
     all_checks()
     log_end = subprocess.check_output(["tail", "log.pimpleFoam"]).decode()
@@ -143,8 +151,11 @@ def test_parallel():
     try:
         output_run = subprocess.check_output(["./Allrun", "-parallel"])
     except subprocess.CalledProcessError:
-        print(subprocess.check_output(["tail", "-n", "200",
-                                       "log.pimpleFoam"]).decode())
+        print(
+            subprocess.check_output(
+                ["tail", "-n", "200", "log.pimpleFoam"]
+            ).decode()
+        )
         assert False
     all_checks()
     log_end = subprocess.check_output(["tail", "log.pimpleFoam"]).decode()
