@@ -26,6 +26,7 @@ License
 #include "profileData.H"
 #include "interpolateUtils.H"
 #include "simpleMatrix.H"
+#include "unitConversion.H"
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
@@ -485,6 +486,30 @@ Foam::scalar Foam::profileData::convertToCD
 {
     scalar angleOfAttackRad = degToRad(angleOfAttackDeg);
     return cn*sin(angleOfAttackRad) - cc*cos(angleOfAttackRad);
+}
+
+
+Foam::scalar Foam::profileData::convertToCRT
+(
+    scalar cl,
+    scalar cd,
+    scalar inflowVelAngleDeg
+)
+{
+    scalar inflowVelAngleRad = degToRad(inflowVelAngleDeg);
+    return cl*sin(inflowVelAngleRad) - cd*cos(inflowVelAngleRad);
+}
+
+
+Foam::scalar Foam::profileData::convertToCRN
+(
+    scalar cl,
+    scalar cd,
+    scalar inflowVelAngleDeg
+)
+{
+    scalar inflowVelAngleRad = degToRad(inflowVelAngleDeg);
+    return cl*cos(inflowVelAngleRad) + cd*sin(inflowVelAngleRad);
 }
 
 

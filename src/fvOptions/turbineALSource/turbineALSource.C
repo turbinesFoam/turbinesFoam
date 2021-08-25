@@ -28,6 +28,7 @@ License
 #include "fvMatrices.H"
 #include "geometricOneField.H"
 #include "syncTools.H"
+#include "unitConversion.H"
 
 using namespace Foam::constant;
 
@@ -127,7 +128,15 @@ void Foam::fv::turbineALSource::createOutputFile()
 
     outputFile_ = new OFstream(dir/name_ + ".csv");
 
-    *outputFile_<< "time,angle_deg,tsr,cp,cd,ct" << endl;
+    *outputFile_<< "time,angle_deg,tsr,cp,cd,ct";
+
+    forAll(blades_, i)
+    {
+        *outputFile_<< ",cd_" << bladeNames_[i];
+        *outputFile_<< ",ct_" << bladeNames_[i];
+    }
+
+    *outputFile_<< endl;
 }
 
 
@@ -263,7 +272,23 @@ void Foam::fv::turbineALSource::writePerf()
 {
     *outputFile_<< time_.value() << "," << angleDeg_ << ","
                 << tipSpeedRatio_ << "," << powerCoefficient_ << ","
-                << dragCoefficient_ << "," << torqueCoefficient_ << endl;
+                << dragCoefficient_ << "," << torqueCoefficient_;
+
+    // Write power, drag, and torque coefficients for each blade
+    forAll(blades_, i)
+    {
+        // Write drag (thrust) coefficient contribution from blade
+        scalar bladeCd = blades_[i].force() & freeStreamDirection_
+            / (0.5*frontalArea_*magSqr(freeStreamVelocity_));
+        *outputFile_<< "," << bladeCd;
+        // Write torque coefficient contribution from blade
+        scalar bladeTorque = bladeMoments_[i] & axis_;
+        scalar bladeCt = bladeTorque
+            / (0.5*frontalArea_*rotorRadius_* magSqr(freeStreamVelocity_));
+        *outputFile_<< "," << bladeCt;
+    }
+
+    *outputFile_<< endl;
 }
 
 
@@ -295,6 +320,7 @@ bool Foam::fv::turbineALSource::read(const dictionary& dict)
         bladesDict_ = coeffs_.subDict("blades");
         nBlades_ = bladesDict_.keys().size();
         bladeNames_ = bladesDict_.toc();
+        bladeMoments_.setSize(nBlades_);
 
         // Set tip speed ratio and omega
         updateTSROmega();

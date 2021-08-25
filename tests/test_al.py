@@ -30,7 +30,7 @@ def load_output():
 
 def check_created():
     """Test that actuatorLineSource was created."""
-    txt = "Selecting finite volume options model type actuatorLineSource"
+    txt = "Selecting finite volume options.*actuatorLineSource"
     subprocess.check_output(["grep", txt, "log.simpleFoam"])
 
 

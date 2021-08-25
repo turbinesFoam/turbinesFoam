@@ -25,6 +25,7 @@ License
 
 #include "LeishmanBeddoesSD.H"
 #include "addToRunTimeSelectionTable.H"
+#include "unitConversion.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -156,6 +157,11 @@ void Foam::fv::LeishmanBeddoesSD::calcSeparated()
         Vx_ = 0.0;
     }
 
+    if (fDoublePrime_ < 0.0)
+    {
+        fDoublePrime_ = 0;
+    }
+
     // Calculate normal force coefficient including dynamic separation point
     CNF_ = CNAlpha_*alphaEquiv_*pow(((1.0 + sqrt(fDoublePrime_))/2.0), 2)
          + CNI_;
@@ -174,6 +180,11 @@ void Foam::fv::LeishmanBeddoesSD::calcSeparated()
     else
     {
         f = 0.02 + 0.58*exp((alpha1_ - mag(alpha_))/S2_);
+    }
+
+    if (f < 0.0)
+    {
+        f = 0.0;
     }
 
     CTStatic_ = eta_*CNAlpha_*alphaEquiv_*alphaEquiv_*(sqrt(f)

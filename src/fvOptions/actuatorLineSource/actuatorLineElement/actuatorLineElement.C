@@ -28,6 +28,7 @@ License
 #include "geometricOneField.H"
 #include "fvMatrices.H"
 #include "syncTools.H"
+#include "unitConversion.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -49,18 +50,22 @@ void Foam::fv::actuatorLineElement::read()
     dict_.lookup("position") >> position_;
     dict_.lookup("chordLength") >> chordLength_;
     dict_.lookup("chordDirection") >> chordDirection_;
+    dict_.lookup("chordRefDirection") >> chordRefDirection_;
     dict_.lookup("chordMount") >> chordMount_;
     dict_.lookup("spanLength") >> spanLength_;
     dict_.lookup("spanDirection") >> spanDirection_;
     dict_.lookup("freeStreamVelocity") >> freeStreamVelocity_;
     freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
     dict_.lookup("rootDistance") >> rootDistance_;
+    dict_.lookup("velocitySampleRadius") >> velocitySampleRadius_;
+    dict_.lookup("nVelocitySamples") >> nVelocitySamples_;
 
     // Create dynamic stall model if found
     if (dict_.found("dynamicStall"))
     {
         dictionary dsDict = dict_.subDict("dynamicStall");
-        word dsName = dsDict.lookup("dynamicStallModel");
+        word dsName;
+        dsDict.lookup("dynamicStallModel") >> dsName;
         dynamicStall_ = dynamicStallModel::New
         (
             dsDict,
@@ -98,13 +103,13 @@ void Foam::fv::actuatorLineElement::read()
 
     if (debug)
     {
-       Info<< "actuatorLineElement properties:" << endl;
-       Info<< "Position: " << position_ << endl;
-       Info<< "chordLength: " << chordLength_ << endl;
-       Info<< "chordDirection: " << chordDirection_ << endl;
-       Info<< "spanLength: " << spanLength_ << endl;
-       Info<< "spanDirection: " << spanDirection_ << endl;
-       Info<< "writePerf: " << writePerf_ << endl;
+        Info<< "actuatorLineElement properties:" << endl;
+        Info<< "Position: " << position_ << endl;
+        Info<< "chordLength: " << chordLength_ << endl;
+        Info<< "chordDirection: " << chordDirection_ << endl;
+        Info<< "spanLength: " << spanLength_ << endl;
+        Info<< "spanDirection: " << spanDirection_ << endl;
+        Info<< "writePerf: " << writePerf_ << endl;
     }
 }
 
@@ -359,6 +364,99 @@ void Foam::fv::actuatorLineElement::applyForceField
 }
 
 
+void Foam::fv::actuatorLineElement::calculateInflowVelocity
+(
+    const volVectorField& Uin
+)
+{
+    // Find local flow velocity by interpolating to element location
+    inflowVelocity_ = vector(VGREAT, VGREAT, VGREAT);
+    vector inflowVelocityPoint = position_;
+    interpolationCellPoint<vector> UInterp(Uin);
+    
+    // If the flow only is sampled in the center
+    if (velocitySampleRadius_ <= 0.0)
+    {
+        label inflowCellI = findCell(inflowVelocityPoint);
+        if (inflowCellI >= 0)
+        {
+            inflowVelocity_ = UInterp.interpolate
+            (
+                inflowVelocityPoint,
+                inflowCellI
+            );
+        }
+
+        // Reduce inflow velocity over all processors
+        reduce(inflowVelocity_, minOp<vector>());
+    }
+    // If the flow is sampled by using a circle around position_
+    else
+    {
+        // Circle radius should be normalized with epsilon
+        scalar sampleRadius = calcProjectionEpsilon()*velocitySampleRadius_;
+
+        // Unit vector in chordwise direction
+        vector chordNormal = chordDirection_ / mag(chordDirection_);
+        
+        // Calculate mean value over all circle points
+        vector velocitySum = vector(0.0, 0.0, 0.0);
+        for (label point = 0; point < nVelocitySamples_; point++)
+        {
+            vector sampleVelocity = vector(VGREAT, VGREAT, VGREAT);
+
+            // distribute the points evenly in terms of angular distance
+            scalar pointAngle = Foam::constant::mathematical::pi * 2.0 * point/
+                                nVelocitySamples_;
+            scalar chordDist = sampleRadius * Foam::cos(pointAngle);
+            scalar normalDist = sampleRadius * Foam::sin(pointAngle);
+            vector samplePoint = inflowVelocityPoint +
+                                 chordDist * chordNormal +
+                                 normalDist * planformNormal_;
+
+            // Sample the velocity
+            label sampleCellI = findCell(samplePoint);
+            if (sampleCellI >= 0)
+            {
+                sampleVelocity = UInterp.interpolate
+                (
+                    samplePoint,
+                    sampleCellI
+                );
+            }
+
+            // Reduce inflow velocity over all processors
+            reduce(sampleVelocity, minOp<vector>());
+
+            // If inflow velocity is not detected, position is not in the mesh
+            if (not (sampleVelocity[0] < VGREAT))
+            {
+                // Raise fatal error since inflow velocity cannot be detected
+                FatalErrorIn("void actuatorLineElement::calculateForce()")
+                    << "Inflow velocity point for " << name_
+                    << " not found in mesh"
+                    << abort(FatalError);
+            }
+
+            velocitySum = velocitySum + sampleVelocity;
+        }
+
+        // Set inflow Velocity as the mean value
+        inflowVelocity_ = 1.0 / nVelocitySamples_ * velocitySum;
+    }
+
+    // If inflow velocity is not detected, position is not in the mesh
+    if (not (inflowVelocity_[0] < VGREAT))
+    {
+        // Raise fatal error since inflow velocity cannot be detected
+        FatalErrorIn("void actuatorLineElement::calculateForce()")
+            << "Inflow velocity point for " << name_
+            << " not found in mesh"
+            << abort(FatalError);
+    }
+}
+
+
 void Foam::fv::actuatorLineElement::createOutputFile()
 {
     fileName dir;
@@ -382,7 +480,8 @@ void Foam::fv::actuatorLineElement::createOutputFile()
     outputFile_ = new OFstream(dir/name_ + ".csv");
 
     *outputFile_<< "time,root_dist,x,y,z,rel_vel_mag,Re,alpha_deg,"
-                << "alpha_geom_deg,cl,cd,fx,fy,fz,end_effect_factor" << endl;
+                << "alpha_geom_deg,cl,cd,fx,fy,fz,end_effect_factor,"
+                << "c_ref_t,c_ref_n,f_ref_t,f_ref_n" << endl;
 }
 
 
@@ -391,14 +490,16 @@ void Foam::fv::actuatorLineElement::writePerf()
     scalar time = mesh_.time().value();
 
     // write time,root_dist,x,y,z,rel_vel_mag,Re,alpha_deg,alpha_geom_deg,cl,cd,
-    // fx,fy,fz,end_effect_factor
+    // fx,fy,fz,end_effect_factor,c_ref_t,c_ref_n,f_ref_t,f_ref_n
     *outputFile_<< time << "," << rootDistance_ << "," << position_.x() << ","
                 << position_.y() << "," << position_.z() << ","
                 << mag(relativeVelocity_) << "," << Re_ << "," << angleOfAttack_
                 << "," << angleOfAttackGeom_ << "," << liftCoefficient_ << ","
                 << dragCoefficient_ << "," << forceVector_.x() << ","
                 << forceVector_.y() << "," << forceVector_.z() << ","
-                << endEffectFactor_ << endl;
+                << endEffectFactor_ << "," << tangentialRefCoefficient() << ","
+                << normalRefCoefficient() << "," << tangentialRefForce() << ","
+                << normalRefForce() << endl;
 }
 
 
@@ -528,6 +629,54 @@ const Foam::scalar& Foam::fv::actuatorLineElement::momentCoefficient()
 }
 
 
+Foam::scalar Foam::fv::actuatorLineElement::tangentialRefCoefficient()
+{
+    return profileData_.convertToCRT
+    (
+        liftCoefficient_,
+        dragCoefficient_,
+        inflowRefAngle()
+    );
+}
+
+
+Foam::scalar Foam::fv::actuatorLineElement::tangentialRefForce()
+{
+    return 0.5 * chordLength_ * tangentialRefCoefficient()
+        * magSqr(relativeVelocity_);
+}
+
+
+Foam::scalar Foam::fv::actuatorLineElement::normalRefCoefficient()
+{
+    return profileData_.convertToCRN
+    (
+        liftCoefficient_,
+        dragCoefficient_,
+        inflowRefAngle()
+    );
+}
+
+
+Foam::scalar Foam::fv::actuatorLineElement::normalRefForce()
+{
+    return 0.5 * chordLength_ * normalRefCoefficient()
+        * magSqr(relativeVelocity_);
+}
+
+
+Foam::scalar Foam::fv::actuatorLineElement::inflowRefAngle()
+{
+    // Calculate inflow velocity angle in degrees (AFTAL Phi)
+    scalar inflowVelAngleRad = acos
+    (
+        (-relativeVelocity_ & chordRefDirection_)
+        / (mag(relativeVelocity_) * mag(chordRefDirection_))
+    );
+    return radToDeg(inflowVelAngleRad);
+}
+
+
 const Foam::scalar& Foam::fv::actuatorLineElement::rootDistance()
 {
     return rootDistance_;
@@ -541,6 +690,10 @@ void Foam::fv::actuatorLineElement::calculateForce
 {
     scalar pi = Foam::constant::mathematical::pi;
 
+    // Calculate vector normal to chord--span plane
+    planformNormal_ = -chordDirection_ ^ spanDirection_;
+    planformNormal_ /= mag(planformNormal_);
+
     if (debug)
     {
         Info<< "Calculating force contribution from actuatorLineElement "
@@ -549,38 +702,11 @@ void Foam::fv::actuatorLineElement::calculateForce
         Info<< "    chordDirection: " << chordDirection_ << endl;
         Info<< "    spanDirection: " << spanDirection_ << endl;
         Info<< "    elementVelocity: " << velocity_ << endl;
+        Info<< "    planformNormal: " << planformNormal_ << endl;
     }
-
-    // Calculate vector normal to chord--span plane
-    planformNormal_ = -chordDirection_ ^ spanDirection_;
-    planformNormal_ /= mag(planformNormal_);
 
     // Find local flow velocity by interpolating to element location
-    inflowVelocity_ = vector(VGREAT, VGREAT, VGREAT);
-    vector inflowVelocityPoint = position_;
-    interpolationCellPoint<vector> UInterp(Uin);
-    label inflowCellI = findCell(inflowVelocityPoint);
-    if (inflowCellI >= 0)
-    {
-        inflowVelocity_ = UInterp.interpolate
-        (
-            inflowVelocityPoint,
-            inflowCellI
-        );
-    }
-
-    // Reduce inflow velocity over all processors
-    reduce(inflowVelocity_, minOp<vector>());
-
-    // If inflow velocity is not detected, position is not in the mesh
-    if (not (inflowVelocity_[0] < VGREAT))
-    {
-        // Raise fatal error since inflow velocity cannot be detected
-        FatalErrorIn("void actuatorLineElement::calculateForce()")
-            << "Inflow velocity point for " << name_
-            << " not found in mesh"
-            << abort(FatalError);
-    }
+    calculateInflowVelocity(Uin);
 
     // Subtract spanwise component of inflow velocity
     vector spanwiseVelocity = spanDirection_
@@ -661,7 +787,7 @@ void Foam::fv::actuatorLineElement::calculateForce
     liftCoefficient_ *= endEffectFactor_;
 
     // Calculate force per unit density
-    scalar area = chordLength_*spanLength_;
+    scalar area = chordLength_ * spanLength_;
     scalar magSqrU = magSqr(relativeVelocity_);
     scalar lift = 0.5*area*liftCoefficient_*magSqrU;
     scalar drag = 0.5*area*dragCoefficient_*magSqrU;
@@ -672,6 +798,8 @@ void Foam::fv::actuatorLineElement::calculateForce
 
     if (debug)
     {
+        Info<< "    liftDirection: " << liftDirection << endl;
+        Info<< "    dragDirection: " << dragDirection << endl;
         Info<< "    force (per unit density): " << forceVector_ << endl;
     }
 }
@@ -743,12 +871,14 @@ void Foam::fv::actuatorLineElement::rotate
     if (rotateVelocity)
     {
         velocity_ = RM & velocity_;
+        chordRefDirection_ = RM & chordRefDirection_;
     }
 
     if (debug)
     {
         Info<< "Final position: " << position_ << endl;
         Info<< "Final chordDirection: " << chordDirection_ << endl;
+        Info<< "Final chordRefDirection: " << chordRefDirection_ << endl;
         Info<< "Final spanDirection: " << spanDirection_ << endl;
         Info<< "Final velocity: " << velocity_ << endl << endl;
     }
@@ -891,7 +1021,7 @@ void Foam::fv::actuatorLineElement::addSup
         dimensionedVector
         (
             "zero",
-            eqn.dimensions()/dimVolume,
+            forceField.dimensions(),
             vector::zero
         )
     );
@@ -1030,5 +1160,18 @@ void Foam::fv::actuatorLineElement::setEndEffectFactor(scalar factor)
 {
     endEffectFactor_ = factor;
 }
+
+
+void Foam::fv::actuatorLineElement::setVelocitySampleRadius(scalar radius)
+{
+    velocitySampleRadius_ = radius;
+}
+
+
+void Foam::fv::actuatorLineElement::setNVelocitySamples(label nSamples)
+{
+    nVelocitySamples_ = nSamples;
+}
+
 
 // ************************************************************************* //

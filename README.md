@@ -1,11 +1,10 @@
 turbinesFoam
 ============
 
-[![Build Status](https://travis-ci.org/turbinesFoam/turbinesFoam.svg?branch=master)](https://travis-ci.org/turbinesFoam/turbinesFoam)
-![OpenFOAM 5.x](https://img.shields.io/badge/OpenFOAM-5.x-brightgreen.svg)
-![OpenFOAM 4.x](https://img.shields.io/badge/OpenFOAM-4.x-brightgreen.svg)
-![OpenFOAM 3.0.x](https://img.shields.io/badge/OpenFOAM-3.0.x-brightgreen.svg)
-[![Issues in progress](https://img.shields.io/waffle/label/turbinesFoam/turbinesFoam/in%20progress.svg?maxAge=2592000)](https://waffle.io/turbinesfoam/turbinesfoam)
+[![Build Status](https://app.travis-ci.com/turbinesFoam/turbinesFoam.svg?branch=master)](https://app.travis-ci.com/turbinesFoam/turbinesFoam)
+![OpenFOAM v2106](https://img.shields.io/badge/OpenFOAM-v2106-brightgreen.svg)
+![OpenFOAM 8](https://img.shields.io/badge/OpenFOAM-8-brightgreen.svg)
+![OpenFOAM 7](https://img.shields.io/badge/OpenFOAM-7-brightgreen.svg)
 [![DOI](https://zenodo.org/badge/4234/turbinesFoam/turbinesFoam.svg)](https://zenodo.org/badge/latestdoi/4234/turbinesFoam/turbinesFoam)
 
 turbinesFoam is a library for simulating wind and marine hydrokinetic turbines
@@ -13,17 +12,16 @@ in OpenFOAM using the actuator line method.
 
 [![](https://cloud.githubusercontent.com/assets/4604869/10141523/f2e3ad9a-65da-11e5-971c-b736abd30c3b.png)](https://www.youtube.com/watch?v=THZvV4R1vow)
 
+Be sure to check out the
+[development snapshot videos on YouTube](https://www.youtube.com/playlist?list=PLOlLyh5gytG8n8D3V1lDeZ3e9fJf9ux-e).
 
-Status
-------
 
-This library is in development and is not yet fully functional.
+Contributing
+------------
+
+Pull requests are very welcome!
 See the [issue tracker](https://github.com/petebachant/turbinesFoam/issues)
 for more details.
-Pull requests are encouraged!
-
-Also be sure to check out the
-[development snapshot videos on YouTube](https://www.youtube.com/playlist?list=PLOlLyh5gytG8n8D3V1lDeZ3e9fJf9ux-e).
 
 
 Features
@@ -54,7 +52,7 @@ There are tutorials located in `turbinesFoam/tutorials`.
 Publications
 ------------
 
-Bachant, P., Goude, A., and Wosnik, M. (2016) [Actuator line modeling of vertical-axis turbines](https://arxiv.org/abs/1605.01449). arXiv preprint 1605.01449, submitted to _Wind Energy_
+Bachant, P., Goude, A., and Wosnik, M. (2016) [_Actuator line modeling of vertical-axis turbines_](https://arxiv.org/abs/1605.01449). arXiv preprint 1605.01449.
 
 
 How to cite

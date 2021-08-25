@@ -78,20 +78,25 @@ protected:
         //- Mesh bounding box
         boundBox meshBoundBox_;
 
-        //- Chord direction
+        //- Chord direction -- pointing from trailing to leading edge
         vector chordDirection_;
 
         //- Chord length
         scalar chordLength_;
 
-        //- Span direction
+        //- Span direction -- direction about which element will pitch
+        //  Can be obtained by sweeping chord direction into planform normal
         vector spanDirection_;
 
         //- Element span length, for calculating force
         scalar spanLength_;
 
-        //- Element planform normal vector
+        //- Element planform normal vector -- direction when the opposite of
+        //  the chord direction is swept into the span direction
         vector planformNormal_;
+
+        //- Element chord reference direction
+        vector chordRefDirection_;
 
         //- Location of element's half chord
         vector position_;
@@ -105,8 +110,8 @@ protected:
         //- Free stream direction
         vector freeStreamDirection_;
 
-        //- Fluid force on element; a vector that is perpendicular to
-        // spanDirection,
+        //- Fluid force on element -- vector that is perpendicular to
+        //  spanDirection,
         vector forceVector_;
 
         //- Reference density for incompressible case
@@ -190,6 +195,12 @@ protected:
         //- Added mass model
         addedMassModel addedMass_;
 
+        //- Radius of circle used to sample velocities
+        scalar velocitySampleRadius_;
+
+        //- Number of elements used to sample velocities
+        label nVelocitySamples_;
+
 
     // Protected Member Functions
 
@@ -219,6 +230,9 @@ protected:
 
         //- Apply force field based on force vector
         void applyForceField(volVectorField& forceField);
+
+        //- Get inflow velocity
+        void calculateInflowVelocity(const volVectorField& Uin);
 
         //- Create the performance output file
         virtual void createOutputFile();
@@ -312,6 +326,24 @@ public:
             //- Return nondimensional distance from actuator line root
             const scalar& rootDistance();
 
+            //- Return tangential reference coefficient
+            scalar tangentialRefCoefficient();
+            
+            //- Return normal reference coefficient
+            scalar normalRefCoefficient();
+
+            //- Return tangential reference force (per unit span)
+            scalar tangentialRefForce();
+            
+            //- Return normal reference force (per unit span)
+            scalar normalRefForce();
+
+            //- Return the inflow velocity angle w.r.t. the chord reference
+            //  direction (degrees)
+            //  E.g., for an axial-flow turbine this would be the angle of
+            //  attack plus twist
+            scalar inflowRefAngle();
+
 
         // Manipulation
 
@@ -356,6 +388,12 @@ public:
 
             //- Set end effect correction factor
             void setEndEffectFactor(scalar factor);
+
+            //- Set velocity sample radius
+            void setVelocitySampleRadius(scalar radius);
+
+            //- Set number of velocity samples
+            void setNVelocitySamples(label nSamples);
 
 
         // Evaluation
