@@ -98,7 +98,7 @@ protected:
         //- Element chord reference direction
         vector chordRefDirection_;
 
-        //- Location of element's half chord
+        //- Location of element's quarter-chord
         vector position_;
 
         //- Velocity of the element
