@@ -201,6 +201,11 @@ protected:
         //- Number of elements used to sample velocities
         label nVelocitySamples_;
 
+        //- Switch for multiphase simulations
+        bool multiPhase_;
+
+        //- Name of the main phase which properties are to be read
+        word phaseName_;
 
     // Protected Member Functions
 
