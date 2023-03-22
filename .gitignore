@@ -7,3 +7,4 @@ callgrind*
 *.pyc
 *.swp
 tests/.noseids
+**darwin64Clang**
