@@ -1,19 +1,25 @@
 # Travis CI setup for turbinesFoam
 
 sudo: required
-dist: xenial
+dist: focal
 language: cpp
 
 env:
-    - OF_VERS=5
-    - OF_VERS=6
-    - OF_VERS=7
+    - OF_VERS=7 INSTALL_OPTS=""
+    - OF_VERS=8 INSTALL_OPTS=""
+    - OF_VERS=2106 INSTALL_OPTS="-default"
 
 before_install:
-    - sudo add-apt-repository http://dl.openfoam.org/ubuntu
-    - sudo sh -c "wget -O - http://dl.openfoam.org/gpg.key | apt-key add -"
+    - |
+      if [[ $OF_VERS -gt 2000 ]]
+      then
+          curl -s https://dl.openfoam.com/add-debian-repo.sh | sudo bash
+      else
+          sudo add-apt-repository http://dl.openfoam.org/ubuntu
+          sudo sh -c "wget -O - http://dl.openfoam.org/gpg.key | apt-key add -"
+      fi
     - sudo apt-get update -qq
-    - sudo apt-get install -qq openfoam${OF_VERS}
+    - sudo apt-get install -qq openfoam${OF_VERS}${INSTALL_OPTS}
     - sudo apt-get install -qq vera++
     # http://conda.pydata.org/docs/travis.html#the-travis-yml-file
     - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
@@ -25,12 +31,22 @@ before_install:
     - conda install -q pandas numpy nose
 
 install:
-    - source /opt/openfoam${OF_VERS}/etc/bashrc
-    - ./Allwmake
-
-before_script:
-    - source /opt/openfoam${OF_VERS}/etc/bashrc
+    - |
+      if [[ $OF_VERS -gt 2000 ]]
+      then
+          source /usr/lib/openfoam/openfoam${OF_VERS}/etc/bashrc
+      else
+          source /opt/openfoam${OF_VERS}/etc/bashrc
+      fi
+      ./Allwmake
 
 script:
-    - ./Alltest
+    - |
+      if [[ $OF_VERS -gt 2000 ]]
+      then
+          source /usr/lib/openfoam/openfoam${OF_VERS}/etc/bashrc
+      else
+          source /opt/openfoam${OF_VERS}/etc/bashrc
+      fi
+      ./Alltest
     - ./foamStyleCheck/checkStyle

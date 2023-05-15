@@ -13,17 +13,12 @@ runApplication topoSet
 
 if [ "$1" = "-parallel" ]
     then
-    if [[ $WM_PROJECT_VERSION == "3."* ]]
-        then
-        nProc=$(getNumberOfProcessors)
-    else
-        nProc=""
-    fi
+    nProc=$(getNumberOfProcessors)
     runApplication decomposePar
     ls -d processor* | xargs -I {} rm -rf ./{}/0
     ls -d processor* | xargs -I {} cp -r 0.org ./{}/0
-    runParallel pimpleFoam $nProc
-    runApplication reconstructPar
+    app=$(getApplication)
+    mpirun -np $nProc --oversubscribe $app -parallel > log.$app
 else
     runApplication pimpleFoam
 fi

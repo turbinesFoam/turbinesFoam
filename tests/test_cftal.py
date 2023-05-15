@@ -20,7 +20,7 @@ def setup():
 
 def check_created():
     """Test that crossFlowTurbineALSource was created."""
-    txt = "Selecting finite volume options model type crossFlowTurbineALSource"
+    txt = "Selecting finite volume options.*crossFlowTurbineALSource"
     subprocess.check_output(["grep", txt, "log.pimpleFoam"])
 
 
