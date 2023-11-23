@@ -1,0 +1,15 @@
+name: Check style
+
+on: pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install dependencies
+        run: sudo apt update && sudo apt install -qq vera++
+      - name: Run style check
+        run: ./foamStyleCheck/checkStyle
