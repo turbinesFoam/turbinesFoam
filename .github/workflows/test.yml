@@ -24,7 +24,7 @@ jobs:
       - name: Compile
         run: source /opt/openfoam${{ matrix.openfoam_version }}/etc/bashrc && ./Allwmake
       - name: Run tests
-        run: ./Alltest
+        run: source /opt/openfoam${{ matrix.openfoam_version }}/etc/bashrc && ./Alltest
   test-esi:
     runs-on: ubuntu-22.04
     strategy:
@@ -44,4 +44,4 @@ jobs:
       - name: Compile
         run: source /usr/lib/openfoam/openfoam${{ matrix.openfoam_version }}/etc/bashrc && ./Allwmake
       - name: Run tests
-        run: ./Alltest
+        run: source /usr/lib/openfoam/openfoam${{ matrix.openfoam_version }}/etc/bashrc && ./Alltest
