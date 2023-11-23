@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        openfoam_version: [8, 9, 10, 11]
+        openfoam_version: [9, 10, 11]
     steps:
       - uses: actions/checkout@v4
       - name: Add OpenFOAM GPG key
@@ -42,6 +42,6 @@ jobs:
       - name: Install Python dependencies
         run: pip install pandas nose numpy
       - name: Compile
-        run: openfoam${{ matrix.openfoam_version }} && ./Allwmake
+        run: /usr/lib/openfoam/openfoam${{ matrix.openfoam_version }}/etc/bashrc && ./Allwmake
       - name: Run tests
         run: ./Alltest
