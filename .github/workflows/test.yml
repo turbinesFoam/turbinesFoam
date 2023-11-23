@@ -1,0 +1,46 @@
+name: Run tests
+
+on: pull_request
+
+jobs:
+  test-foundation:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        openfoam_version: [8, 9, 10, 11]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add OpenFOAM GPG key
+        run: sudo sh -c "wget -O - https://dl.openfoam.org/gpg.key > /etc/apt/trusted.gpg.d/openfoam.asc"
+      - name: Add OpenFOAM apt repository
+        run: sudo add-apt-repository http://dl.openfoam.org/ubuntu
+      - name: Install OpenFOAM
+        run: sudo apt update && sudo apt -yq install openfoam${{ matrix.openfoam_version }}
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install Python dependencies
+        run: pip install pandas nose numpy
+      - name: Compile
+        run: source /opt/openfoam${{ matrix.openfoam_version }}/etc/bashrc && ./Allwmake
+      - name: Run tests
+        run: ./Alltest
+  test-esi:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        openfoam_version: [2106, 2212]
+    steps:
+      - name: Add OpenFOAM apt repository
+        run: curl https://dl.openfoam.com/add-debian-repo.sh | sudo bash
+      - name: Install OpenFOAM
+        run: sudo apt update && sudo apt install openfoam${{ matrix.openfoam_version }}-default
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install Python dependencies
+        run: pip install pandas nose numpy
+      - name: Compile
+        run: openfoam${{ matrix.openfoam_version }} && ./Allwmake
+      - name: Run tests
+        run: ./Alltest
