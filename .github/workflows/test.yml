@@ -42,6 +42,6 @@ jobs:
       - name: Install Python dependencies
         run: pip install pandas nose numpy
       - name: Compile
-        run: /usr/lib/openfoam/openfoam${{ matrix.openfoam_version }}/etc/bashrc && ./Allwmake
+        run: source /usr/lib/openfoam/openfoam${{ matrix.openfoam_version }}/etc/bashrc && ./Allwmake
       - name: Run tests
         run: ./Alltest
