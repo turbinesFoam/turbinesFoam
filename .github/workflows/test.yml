@@ -31,6 +31,7 @@ jobs:
       matrix:
         openfoam_version: [2106, 2212]
     steps:
+      - uses: actions/checkout@v4
       - name: Add OpenFOAM apt repository
         run: curl https://dl.openfoam.com/add-debian-repo.sh | sudo bash
       - name: Install OpenFOAM
