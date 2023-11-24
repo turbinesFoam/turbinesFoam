@@ -3,7 +3,7 @@ name: Check style
 on: pull_request
 
 jobs:
-  main:
+  check-style:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
