@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 """Run multiple 2-D simulations varying the angle of attack."""
 
-import numpy as np
-from subprocess import call
-import os
-import pandas as pd
 import argparse
+import os
+from subprocess import call
+
+import numpy as np
+import pandas as pd
 
 
 def read_force_coeffs():
