@@ -23,7 +23,7 @@ def read_force_coeffs():
             "cd",
             "cm",
         ]
-    ]
+    ].to_dict()
 
 
 def read_turbulence_fields():
@@ -63,9 +63,10 @@ def alpha_sweep(start, stop, step, append=False):
     for alpha in alpha_list:
         call("./Allclean")
         call(["./Allrun", "2D", str(alpha)])
-        d = dict(read_force_coeffs())
+        d = read_force_coeffs()
         d.update(read_turbulence_fields())
-        df = pd.concat([df, pd.Series(d)], ignore_index=True)
+        df2 = pd.DataFrame(d, index=[0])
+        df = pd.concat([df, df2], ignore_index=True)
         df.to_csv(df_fname, index=False)
 
 
