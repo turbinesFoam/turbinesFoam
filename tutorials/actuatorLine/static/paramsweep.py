@@ -74,8 +74,7 @@ if __name__ == "__main__":
         os.mkdir("processed")
 
     parser = argparse.ArgumentParser(
-        description="Vary the foil angle of \
-                                     attack and log results."
+        description="Vary the foil angle of attack and log results."
     )
     parser.add_argument(
         "start",
@@ -87,8 +86,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "stop",
         type=float,
-        help="End angle of sweep. The sweep\
-                        does not include this value.",
+        help="End angle of sweep. The sweep does not include this value.",
         nargs="?",
         default=15.0,
     )
@@ -104,7 +102,7 @@ if __name__ == "__main__":
         "-a",
         action="store_true",
         default=False,
-        help="Append to previous results",
+        help="Append to previous results.",
     )
     args = parser.parse_args()
 
