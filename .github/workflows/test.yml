@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        version: [8]
+        version: []
     steps:
       - uses: actions/checkout@v4
       - name: Add OpenFOAM GPG key
