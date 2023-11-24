@@ -25,6 +25,7 @@ License
 
 #include "LeishmanBeddoes3G.H"
 #include "addToRunTimeSelectionTable.H"
+#include "unitConversion.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

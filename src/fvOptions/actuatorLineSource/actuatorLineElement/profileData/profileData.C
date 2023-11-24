@@ -26,6 +26,7 @@ License
 #include "profileData.H"
 #include "interpolateUtils.H"
 #include "simpleMatrix.H"
+#include "unitConversion.H"
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 

@@ -28,6 +28,7 @@ License
 #include "fvMatrices.H"
 #include "geometricOneField.H"
 #include "syncTools.H"
+#include "unitConversion.H"
 
 using namespace Foam::constant;
 
@@ -572,8 +573,14 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     }
 
     // Zero out force vector and field
-    forceField_ *= 0;
+    forceField_ *= dimensionedScalar("zero", forceField_.dimensions(), 0.0);
     force_ *= 0;
+
+    // Check dimensions of force field and correct if necessary
+    if (forceField_.dimensions() != eqn.dimensions()/dimVolume)
+    {
+        forceField_.dimensions().reset(eqn.dimensions()/dimVolume);
+    }
 
     // Create local moment vector
     vector moment(vector::zero);
@@ -583,6 +590,7 @@ void Foam::fv::crossFlowTurbineALSource::addSup
     {
         blades_[i].addSup(eqn, fieldI);
         forceField_ += blades_[i].forceField();
+        Info<< "Added blade" << endl;
         force_ += blades_[i].force();
         bladeMoments_[i] = blades_[i].moment(origin_);
         moment += bladeMoments_[i];
@@ -643,18 +651,18 @@ void Foam::fv::crossFlowTurbineALSource::addSup
         rotate();
     }
 
-    // Check dimensions on force field and correct if necessary
-    if (forceField_.dimensions() != eqn.dimensions()/dimVolume)
-    {
-        forceField_.dimensions().reset(eqn.dimensions()/dimVolume);
-    }
-
     // Zero out force vector and field
-    forceField_ *= 0;
+    forceField_ *= dimensionedScalar("zero", forceField_.dimensions(), 0.0);
     force_ *= 0;
 
     // Create local moment vector
     vector moment(vector::zero);
+
+    // Check dimensions of force field and correct if necessary
+    if (forceField_.dimensions() != eqn.dimensions()/dimVolume)
+    {
+        forceField_.dimensions().reset(eqn.dimensions()/dimVolume);
+    }
 
     // Add source for blade actuator lines
     forAll(blades_, i)

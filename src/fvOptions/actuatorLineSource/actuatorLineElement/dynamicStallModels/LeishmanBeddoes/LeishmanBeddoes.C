@@ -27,6 +27,7 @@ License
 #include "addToRunTimeSelectionTable.H"
 #include "simpleMatrix.H"
 #include "interpolateUtils.H"
+#include "unitConversion.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
