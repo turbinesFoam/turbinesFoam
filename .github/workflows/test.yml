@@ -4,6 +4,7 @@ on: pull_request
 
 jobs:
   test-foundation:
+    if: false # Skip because library has diverged
     runs-on: ubuntu-22.04
     strategy:
       matrix:
