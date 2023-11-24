@@ -3,6 +3,26 @@ name: Run tests
 on: pull_request
 
 jobs:
+  test-esi:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        version: [2106, 2212, 2306]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add OpenFOAM apt repository
+        run: curl https://dl.openfoam.com/add-debian-repo.sh | sudo bash
+      - name: Install OpenFOAM
+        run: sudo apt update && sudo apt install openfoam${{ matrix.version }}-default
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+      - name: Install Python dependencies
+        run: pip install pandas nose numpy
+      - name: Compile
+        run: source /usr/lib/openfoam/openfoam${{ matrix.version }}/etc/bashrc && ./Allwmake
+      - name: Run tests
+        run: source /usr/lib/openfoam/openfoam${{ matrix.version }}/etc/bashrc && ./Alltest
   test-foundation:
     if: false # Skip because library has diverged
     runs-on: ubuntu-22.04
@@ -26,23 +46,3 @@ jobs:
         run: source /opt/openfoam${{ matrix.version }}/etc/bashrc && ./Allwmake
       - name: Run tests
         run: source /opt/openfoam${{ matrix.version }}/etc/bashrc && ./Alltest
-  test-esi:
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        version: [2106, 2212]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Add OpenFOAM apt repository
-        run: curl https://dl.openfoam.com/add-debian-repo.sh | sudo bash
-      - name: Install OpenFOAM
-        run: sudo apt update && sudo apt install openfoam${{ matrix.version }}-default
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.9"
-      - name: Install Python dependencies
-        run: pip install pandas nose numpy
-      - name: Compile
-        run: source /usr/lib/openfoam/openfoam${{ matrix.version }}/etc/bashrc && ./Allwmake
-      - name: Run tests
-        run: source /usr/lib/openfoam/openfoam${{ matrix.version }}/etc/bashrc && ./Alltest
