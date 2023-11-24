@@ -64,10 +64,7 @@ def alpha_sweep(start, stop, step, append=False):
         call("./Allclean")
         call(["./Allrun", "2D", str(alpha)])
         d = dict(read_force_coeffs())
-        print(d)
         d.update(read_turbulence_fields())
-        print(d)
-        print(pd.Series(d))
         df = pd.concat([df, pd.Series(d)], ignore_index=True)
         df.to_csv(df_fname, index=False)
 
