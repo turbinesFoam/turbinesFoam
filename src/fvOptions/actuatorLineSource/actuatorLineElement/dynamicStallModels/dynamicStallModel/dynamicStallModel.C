@@ -50,8 +50,7 @@ Foam::fv::dynamicStallModel::New
 )
 {
 
-    dictionaryConstructorTable::iterator cstrIter =
-        dictionaryConstructorTablePtr_->find(modelName);
+    auto cstrIter = dictionaryConstructorTablePtr_->find(modelName);
 
     if (cstrIter == dictionaryConstructorTablePtr_->end())
     {
