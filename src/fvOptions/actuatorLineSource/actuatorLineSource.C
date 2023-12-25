@@ -132,7 +132,8 @@ void Foam::fv::actuatorLineSource::createElements()
     elements_.setSize(nElements_);
 
     label nGeometryPoints = elementGeometry_.size();
-    label nGeometrySegments = nGeometryPoints - 1;
+    //label nGeometrySegments = nGeometryPoints - 1;
+    label nGeometrySegments = nGeometryPoints;
     label nElementsPerSegment = nElements_/nGeometrySegments;
     if (nElements_ % nGeometrySegments)
     {
@@ -159,15 +160,43 @@ void Foam::fv::actuatorLineSource::createElements()
         scalar y = elementGeometry_[i][0][1];
         scalar z = elementGeometry_[i][0][2];
         points[i] = vector(x, y, z);
-        if (i > 0)
+    }
+
+    // Modification in the way the individual BEM elements are calculated, to ensure that the whole blade
+    // radius is accounted for
+    // Store blade root and tip locations for distance calculations
+    vector rootLocation;
+    rootLocation[0] = elementGeometry_[0][6][0]; // Initialization of rootLocation at rotor center
+    rootLocation[1] = elementGeometry_[0][6][1];
+    rootLocation[2] = elementGeometry_[0][6][2];
+    vector tipLocation;
+    tipLocation[0] = elementGeometry_[nGeometryPoints-1][7][0]; // Initialization of tipLocation at rotor tip
+    tipLocation[1] = elementGeometry_[nGeometryPoints-1][7][1];
+    tipLocation[2] = elementGeometry_[nGeometryPoints-1][7][2];
+    
+    List<vector> BEMpoint1(nGeometryPoints); // First point of BEM element
+    List<vector> BEMpoint2(nGeometryPoints); // Second point of BEM element
+    BEMpoint1[0] = rootLocation; // Initialization of BEMpoint1 for first BEM element at rotor center
+ 
+    forAll(points, i)
+    {
+        if (i != nGeometryPoints - 1)
         {
-            spanLengths[i - 1] = mag(points[i] - points[i-1]);
-            totalLength_ += spanLengths[i - 1];
+            // Linearly interpolate position of current BEM endpoint
+            BEMpoint2[i] = (points[i] + points[i + 1])/2;
+            spanLengths[i] = mag(BEMpoint2[i] - BEMpoint1[i]);
+            totalLength_ += spanLengths[i];
+            BEMpoint1[i+1] = BEMpoint2[i]; // Update BEMpoint1 for next iteration
+        } else {
+            // Last BEm endpoint equal to blade tip point     
+            BEMpoint2[i] = tipLocation; // Initialization of BEMpoint2 at rotor tip
+            spanLengths[i] = mag(BEMpoint2[i] - BEMpoint1[i]);
+            totalLength_ += spanLengths[i];
         }
         // Read span direction
-        x = elementGeometry_[i][1][0];
-        y = elementGeometry_[i][1][1];
-        z = elementGeometry_[i][1][2];
+        scalar x = elementGeometry_[i][1][0];
+        scalar y = elementGeometry_[i][1][1];
+        scalar z = elementGeometry_[i][1][2];
         spanDirs[i] = vector(x, y, z);
         // Read chord length
         chordLengths[i] = elementGeometry_[i][2][0];
@@ -182,10 +211,6 @@ void Foam::fv::actuatorLineSource::createElements()
         // Read pitch
         pitches[i] = elementGeometry_[i][5][0];
     }
-
-    // Store blade root and tip locations for distance calculations
-    vector rootLocation = points[0];
-    vector tipLocation = points[nGeometryPoints - 1];
 
     // Compute average chord length
     chordLength_ /= nGeometryPoints;
@@ -235,60 +260,31 @@ void Foam::fv::actuatorLineSource::createElements()
         vector initialVelocity;
 
         // Linearly interpolate position
-        vector point1 = points[geometrySegmentIndex];
-        vector point2 = points[geometrySegmentIndex + 1];
+        vector point1 = BEMpoint1[geometrySegmentIndex];
+        vector point2 = BEMpoint2[geometrySegmentIndex];
         vector segment = point2 - point1;
         position = point1
                  + segment/nElementsPerSegment*pointIndex
                  + segment/nElementsPerSegment/2;
+				 
+        // The geometry characteristics are currently constant on each blade element
+        // Read geometric chordLength
+        chordLength = chordLengths[geometrySegmentIndex];
 
-        // Linearly interpolate chordLength
-        scalar chordLength1 = chordLengths[geometrySegmentIndex];
-        scalar chordLength2 = chordLengths[geometrySegmentIndex + 1];
-        scalar deltaChordTotal = chordLength2 - chordLength1;
-        chordLength = chordLength1
-                    + deltaChordTotal/nElementsPerSegment*pointIndex
-                    + deltaChordTotal/nElementsPerSegment/2;
+        // Read geometric spanDirection
+        spanDirection = spanDirs[geometrySegmentIndex];
 
-        // Linearly interpolate spanDirection
-        vector spanDir1 = spanDirs[geometrySegmentIndex];
-        vector spanDir2 = spanDirs[geometrySegmentIndex + 1];
-        vector deltaSpanTotal = spanDir2 - spanDir1;
-        spanDirection = spanDir1
-                      + deltaSpanTotal/nElementsPerSegment*pointIndex
-                      + deltaSpanTotal/nElementsPerSegment/2;
+        // Read geometric section pitch
+        pitch = pitches[geometrySegmentIndex];
 
-        // Linearly interpolate section pitch
-        scalar pitch1 = pitches[geometrySegmentIndex];
-        scalar pitch2 = pitches[geometrySegmentIndex + 1];
-        scalar deltaPitchTotal = pitch2 - pitch1;
-        pitch = pitch1
-              + deltaPitchTotal/nElementsPerSegment*pointIndex
-              + deltaPitchTotal/nElementsPerSegment/2;
+        // Read geometric chord mount
+        chordMount = chordMounts[geometrySegmentIndex];
 
-        // Linearly interpolate chord mount
-        scalar cm1 = chordMounts[geometrySegmentIndex];
-        scalar cm2 = chordMounts[geometrySegmentIndex + 1];
-        scalar deltaCmTotal = cm2 - cm1;
-        chordMount = cm1 + deltaCmTotal/nElementsPerSegment*pointIndex
-                   + deltaCmTotal/nElementsPerSegment/2;
+        // Read geometric element velocity
+        initialVelocity = initialVelocities[geometrySegmentIndex];
 
-        // Linearly interpolate element velocity
-        vector vel1 = initialVelocities[geometrySegmentIndex];
-        vector vel2 = initialVelocities[geometrySegmentIndex + 1];
-        vector deltaVelTotal = vel2 - vel1;
-        initialVelocity = vel1
-                        + deltaVelTotal/nElementsPerSegment*pointIndex
-                        + deltaVelTotal/nElementsPerSegment/2;
-
-        // Linearly interpolate chordDirection
-        vector chordDir1 = chordRefDirs[geometrySegmentIndex];
-        vector chordDir2 = chordRefDirs[geometrySegmentIndex + 1];
-        vector deltaChordDirTotal = chordDir2 - chordDir1;
-        chordDirection = chordDir1
-                       + deltaChordDirTotal/nElementsPerSegment*pointIndex
-                       + deltaChordDirTotal/nElementsPerSegment/2;
-
+        // Read geometric chordDirection
+        chordDirection = chordRefDirs[geometrySegmentIndex];
         // Chord reference direction (before pitching)
         chordRefDirection = chordDirection;
         
@@ -301,6 +297,7 @@ void Foam::fv::actuatorLineSource::createElements()
         dictionary profileDataDict = profileData_.subDict(profileName);
         dict.add("profileData", profileDataDict);
         dict.add("profileName", profileName);
+        dict.add("pitch", pitch);
         dict.add("chordLength", chordLength);
         dict.add("chordDirection", chordDirection);
         dict.add("chordRefDirection", chordRefDirection);

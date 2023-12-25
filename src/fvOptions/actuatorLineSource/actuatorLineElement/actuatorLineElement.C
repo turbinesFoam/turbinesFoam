@@ -105,6 +105,7 @@ void Foam::fv::actuatorLineElement::read()
     {
         Info<< "actuatorLineElement properties:" << endl;
         Info<< "Position: " << position_ << endl;
+        Info<< "rootDistance: " << rootDistance_ << endl;
         Info<< "chordLength: " << chordLength_ << endl;
         Info<< "chordDirection: " << chordDirection_ << endl;
         Info<< "spanLength: " << spanLength_ << endl;
@@ -489,6 +490,10 @@ void Foam::fv::actuatorLineElement::writePerf()
 {
     scalar time = mesh_.time().value();
 
+    scalar pitch;
+
+    dict_.lookup("pitch") >> pitch;    
+
     // write time,root_dist,x,y,z,rel_vel_mag,Re,alpha_deg,alpha_geom_deg,cl,cd,
     // fx,fy,fz,end_effect_factor,c_ref_t,c_ref_n,f_ref_t,f_ref_n
     *outputFile_<< time << "," << rootDistance_ << "," << position_.x() << ","
@@ -499,7 +504,7 @@ void Foam::fv::actuatorLineElement::writePerf()
                 << forceVector_.y() << "," << forceVector_.z() << ","
                 << endEffectFactor_ << "," << tangentialRefCoefficient() << ","
                 << normalRefCoefficient() << "," << tangentialRefForce() << ","
-                << normalRefForce() << endl;
+                << normalRefForce() << "," << dict_.lookup("pitch") << endl;
 }
 
 
