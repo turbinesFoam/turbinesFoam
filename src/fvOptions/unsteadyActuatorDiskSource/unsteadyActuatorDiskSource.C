@@ -208,14 +208,7 @@ Foam::fv::unsteadyActuatorDiskSource::unsteadyActuatorDiskSource
             scalarMinMax::ge(VSMALL)
         )
     ),
-    diskDir_
-    (
-        coeffs_.getCheck<vector>
-        (
-            "diskDir",
-            [&](const vector& vec){ return mag(vec) > VSMALL; }
-        ).normalise()
-    ),
+    diskDir_(Function1<vector>::New("diskDir", coeffs_, &mesh)),
     UvsCpPtr_(Function1<scalar>::New("Cp", coeffs_, &mesh)),
     UvsCtPtr_(Function1<scalar>::New("Ct", coeffs_, &mesh)),
     monitorCells_()
@@ -236,6 +229,27 @@ Foam::fv::unsteadyActuatorDiskSource::unsteadyActuatorDiskSource
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+Foam::vector Foam::fv::unsteadyActuatorDiskSource::diskDir() const
+{
+    const scalar t = mesh_.time().timeOutputValue();
+    const vector dir(diskDir_->value(t));
+    const scalar magDir = mag(dir);
+
+    if (magDir < SMALL)
+    {
+        FatalErrorInFunction
+            << "magnitude of "
+            << diskDir_->name()
+            << " = "
+            << magDir
+            << " vector must be greater than zero"
+            << abort(FatalError);
+    }
+
+    return dir/magDir;
+}
+
 
 void Foam::fv::unsteadyActuatorDiskSource::addSup
 (
@@ -294,20 +308,8 @@ bool Foam::fv::unsteadyActuatorDiskSource::read(const dictionary& dict)
                 << "diskArea = " << diskArea_
                 << exit(FatalIOError);
         }
-
-        dict.readIfPresent("diskDir", diskDir_);
-        diskDir_.normalise();
-        if (mag(diskDir_) < VSMALL)
-        {
-            FatalIOErrorInFunction(dict)
-                << "Actuator disk surface-normal vector is zero: "
-                << "diskDir = " << diskDir_
-                << exit(FatalIOError);
-        }
-
         return true;
     }
-
     return false;
 }
 

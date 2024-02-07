@@ -110,12 +110,13 @@ void Foam::fv::unsteadyActuatorDiskSource::calcFroudeMethod
     }
 
     // (BJSB:Eq. 3.9)
+    const vector diskDir = this->diskDir();
     const scalar a = 1.0 - Cp/Ct;
-    const scalar T = 2.0*rhoRef*diskArea_*magSqr(Uref & diskDir_)*a*(1 - a);
+    const scalar T = 2.0*rhoRef*diskArea_*magSqr(Uref & diskDir)*a*(1 - a);
 
     for (const label celli : cells_)
     {
-        Usource[celli] += ((cellsV[celli]/V())*T)*diskDir_;
+        Usource[celli] += ((cellsV[celli]/V())*T)*diskDir;
     }
 
     if
@@ -221,12 +222,13 @@ void Foam::fv::unsteadyActuatorDiskSource::calcVariableScalingMethod
     const scalar CpStar = Cp*pow3(magUref/magUdisk);
 
     // Compute calibrated thrust/power (LSRMTK:Eq. 5)
-    const scalar T = 0.5*rhoRef*diskArea_*magSqr(Udisk & diskDir_)*CtStar;
-    const scalar P = 0.5*rhoRef*diskArea_*pow3(mag(Udisk & diskDir_))*CpStar;
+    const vector diskDir = this->diskDir();
+    const scalar T = 0.5*rhoRef*diskArea_*magSqr(Udisk & diskDir)*CtStar;
+    const scalar P = 0.5*rhoRef*diskArea_*pow3(mag(Udisk & diskDir))*CpStar;
 
     for (const label celli : cells_)
     {
-        Usource[celli] += (cellsV[celli]/totalV*T)*diskDir_;
+        Usource[celli] += (cellsV[celli]/totalV*T)*diskDir;
     }
 
     if

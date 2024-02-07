@@ -276,7 +276,7 @@ protected:
         scalar diskArea_;
 
         //- Surface-normal vector of the actuator disk pointing downstream
-        vector diskDir_;
+        autoPtr<Function1<vector>> diskDir_;
 
         //- Velocity vs power coefficients
         autoPtr<Function1<scalar>> UvsCpPtr_;
@@ -365,10 +365,7 @@ public:
         // Access
 
             //- Normal disk direction
-            const vector& diskDir() const
-            {
-                return diskDir_;
-            }
+            vector diskDir() const;
 
             //- Disk area
             scalar diskArea() const
