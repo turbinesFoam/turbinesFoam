@@ -129,7 +129,7 @@ void Foam::fv::unsteadyActuatorDiskSource::calcFroudeMethod
         writeCurrentTime(os);
 
         os  << Uref << tab << Cp << tab << Ct << tab << a << tab << T
-            << endl;
+            << tab << diskDir << endl;
     }
 }
 
@@ -242,7 +242,7 @@ void Foam::fv::unsteadyActuatorDiskSource::calcVariableScalingMethod
 
         os  << Uref << tab << Cp << tab << Ct << tab
             << Udisk << tab << CpStar << tab << CtStar << tab << T << tab << P
-            << endl;
+            << tab << diskDir << endl;
     }
 }
 

@@ -90,6 +90,8 @@ void Foam::fv::unsteadyActuatorDiskSource::writeFileHeader(Ostream& os)
         writeFile::writeCommented(os, "P");
     }
 
+    writeFile::writeCommented(os, "diskDir");
+
     os  << endl;
 }
 
