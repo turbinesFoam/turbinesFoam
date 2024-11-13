@@ -113,7 +113,9 @@ void Foam::fv::crossFlowTurbineALSource::createBlades()
             scalar chordLength = elementData[j][3];
             scalar chordMount = elementData[j][4];
             scalar pitch = elementData[j][5];
-            scalar cone = elementData[j][6];  // Reads in the cone angle (from rotation axis) in degrees
+            scalar cone = (elementData.size() > j && elementData[j].size() > 6)
+                                              ? elementData[j][6] : 0;
+            // Reads in the cone angle (from rotation axis) in degrees
 
             // Compute frontal area contribution from this geometry segment
             if (j > 0)
