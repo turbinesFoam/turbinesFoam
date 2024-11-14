@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Add OpenFOAM apt repository
-        run: curl https://dl.openfoam.com/add-debian-repo.sh | sudo bash
+        run: sudo bash scripts/add-debian-repo.sh
       - name: Install OpenFOAM
         run: sudo apt update && sudo apt install openfoam${{ matrix.version }}-default
       - uses: actions/setup-python@v4
