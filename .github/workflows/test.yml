@@ -20,9 +20,9 @@ jobs:
       - name: Install Python dependencies
         run: pip install pandas nose numpy
       - name: Compile
-        run: source /usr/lib/openfoam/openfoam${{ matrix.version }}/etc/bashrc && ./Allwmake
+        run: ./Allwmake
       - name: Run tests
-        run: source /usr/lib/openfoam/openfoam${{ matrix.version }}/etc/bashrc && ./Alltest
+        run: ./Alltest
   test-foundation:
     if: false # Skip because library has diverged
     runs-on: ubuntu-22.04
