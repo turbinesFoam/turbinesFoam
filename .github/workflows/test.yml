@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        version: [2106, 2212, 2306]
+        version: [2206, 2212, 2306, 2312, 2406]
     steps:
       - uses: actions/checkout@v4
       - name: Install OpenFOAM
