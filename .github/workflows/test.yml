@@ -10,10 +10,10 @@ jobs:
         version: [2106, 2212, 2306]
     steps:
       - uses: actions/checkout@v4
-      - name: Add OpenFOAM apt repository
-        run: sudo bash scripts/add-debian-repo.sh
       - name: Install OpenFOAM
-        run: sudo apt update && sudo apt install openfoam${{ matrix.version }}-default
+        uses: gerlero/setup-openfoam@v1
+        with:
+          openfoam-version: ${{ matrix.version }}
       - uses: actions/setup-python@v4
         with:
           python-version: "3.9"
