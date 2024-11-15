@@ -144,13 +144,16 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
             }
 
             // Set sizes for actuatorLineSource elementGeometry lists
-            elementGeometry[j].setSize(6);
+            elementGeometry[j].setSize(8);
             elementGeometry[j][0].setSize(3);
             elementGeometry[j][1].setSize(3);
             elementGeometry[j][2].setSize(1);
             elementGeometry[j][3].setSize(3);
             elementGeometry[j][4].setSize(1);
             elementGeometry[j][5].setSize(1);
+            // Add space for the root and tip locations of the rotor
+            elementGeometry[j][6].setSize(3);
+            elementGeometry[j][7].setSize(3);
 
             // Create geometry point for AL source at origin
             vector point = origin_;
@@ -211,6 +214,22 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
 
             // Set element pitch or twist
             elementGeometry[j][5][0] = pitch;
+
+            // Store the root location of the rotor
+            vector rootLocation = origin_;
+            elementGeometry[j][6][0] = rootLocation.x(); // x location of geom point
+            elementGeometry[j][6][1] = rootLocation.y(); // y location of geom point
+            elementGeometry[j][6][2] = rootLocation.z(); // z location of geom point
+            // Store the point of the rotor tip, only valid on the last element
+            vector tipLocation = origin_
+			                   + axialDistance*axis_ 
+			                   + rotorRadius_*radialDirection_
+							   - chordDisplacement*azimuthalDirection_;
+			// Rotate tip location according to azimuth value
+            rotateVector(tipLocation, origin_, axis_, azimuthRadians);
+            elementGeometry[j][7][0] = tipLocation.x(); // x location of geom point
+            elementGeometry[j][7][1] = tipLocation.y(); // y location of geom point
+            elementGeometry[j][7][2] = tipLocation.z(); // z pTocation of geom point
         }
 
         // Add frontal area to list
@@ -289,13 +308,16 @@ void Foam::fv::axialFlowTurbineALSource::createHub()
         scalar diameter = elementData[j][2];
 
         // Set sizes for actuatorLineSource elementGeometry lists
-        elementGeometry[j].setSize(6);
+        elementGeometry[j].setSize(8);
         elementGeometry[j][0].setSize(3);
         elementGeometry[j][1].setSize(3);
         elementGeometry[j][2].setSize(1);
         elementGeometry[j][3].setSize(3);
         elementGeometry[j][4].setSize(1);
         elementGeometry[j][5].setSize(1);
+        // Add space for the root and tip locations
+        elementGeometry[j][6].setSize(3);
+        elementGeometry[j][7].setSize(3);
 
         // Create geometry point for AL source at origin
         vector point = origin_;
@@ -326,6 +348,16 @@ void Foam::fv::axialFlowTurbineALSource::createHub()
 
         // Set pitch
         elementGeometry[j][5][0] = 0.0;
+
+        // Store the root location
+        vector rootLocation = origin_;
+        elementGeometry[j][6][0] = rootLocation.x(); // x location of geom point
+        elementGeometry[j][6][1] = rootLocation.y(); // y location of geom point
+        elementGeometry[j][6][2] = rootLocation.z(); // z location of geom point
+        // Store the tip location (last point)
+        elementGeometry[j][7][0] = point.x(); // x location of geom point
+        elementGeometry[j][7][1] = point.y(); // y location of geom point
+        elementGeometry[j][7][2] = point.z(); // z pTocation of geom point
     }
 
     hubSubDict.add("elementGeometry", elementGeometry);
@@ -377,13 +409,16 @@ void Foam::fv::axialFlowTurbineALSource::createTower()
         scalar diameter = elementData[j][2];
 
         // Set sizes for actuatorLineSource elementGeometry lists
-        elementGeometry[j].setSize(6);
+        elementGeometry[j].setSize(8);
         elementGeometry[j][0].setSize(3);
         elementGeometry[j][1].setSize(3);
         elementGeometry[j][2].setSize(1);
         elementGeometry[j][3].setSize(3);
         elementGeometry[j][4].setSize(1);
         elementGeometry[j][5].setSize(1);
+        // Add space for the root and tip locations
+        elementGeometry[j][6].setSize(3);
+        elementGeometry[j][7].setSize(3);
 
         // Create geometry point for AL source at origin
         vector point = origin_;
@@ -414,6 +449,16 @@ void Foam::fv::axialFlowTurbineALSource::createTower()
 
         // Set pitch
         elementGeometry[j][5][0] = 0.0;
+
+        // Store the root location
+        vector rootLocation = origin_;
+        elementGeometry[j][6][0] = rootLocation.x(); // x location of geom point
+        elementGeometry[j][6][1] = rootLocation.y(); // y location of geom point
+        elementGeometry[j][6][2] = rootLocation.z(); // z location of geom point
+        // Store the tip location (last point)
+        elementGeometry[j][7][0] = point.x(); // x location of geom point
+        elementGeometry[j][7][1] = point.y(); // y location of geom point
+        elementGeometry[j][7][2] = point.z(); // z pTocation of geom point
     }
 
     towerSubDict.add("elementGeometry", elementGeometry);
