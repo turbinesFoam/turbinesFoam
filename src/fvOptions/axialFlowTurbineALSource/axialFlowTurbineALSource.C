@@ -244,6 +244,13 @@ void Foam::fv::axialFlowTurbineALSource::createBlades()
         // Do not write force from individual actuator line unless specified
         bladeSubDict.lookupOrAddDefault("writeForceField", false);
 
+        // Add multiphase data
+        bladeSubDict.add("multiPhase", multiPhase_);
+        if(multiPhase_)
+        {
+            bladeSubDict.add("phaseName", coeffs_.lookup("phaseName"));
+        }
+
         dictionary dict;
         dict.add("actuatorLineSourceCoeffs", bladeSubDict);
         dict.add("type", "actuatorLineSource");
@@ -339,6 +346,13 @@ void Foam::fv::axialFlowTurbineALSource::createHub()
     // Do not write force from individual actuator line unless specified
     hubSubDict.lookupOrAddDefault("writeForceField", false);
 
+    // Add multiphase data
+    hubSubDict.add("multiPhase", multiPhase_);
+    if(multiPhase_)
+    {
+        hubSubDict.add("phaseName", coeffs_.lookup("phaseName"));
+    }
+
     dictionary dict;
     dict.add("actuatorLineSourceCoeffs", hubSubDict);
     dict.add("type", "actuatorLineSource");
@@ -427,6 +441,13 @@ void Foam::fv::axialFlowTurbineALSource::createTower()
     // Do not write force from individual actuator line unless specified
     towerSubDict.lookupOrAddDefault("writeForceField", false);
 
+    // Add multiphase data
+    towerSubDict.add("multiPhase", multiPhase_);
+    if(multiPhase_)
+    {
+        towerSubDict.add("phaseName", coeffs_.lookup("phaseName"));
+    }
+    
     dictionary dict;
     dict.add("actuatorLineSourceCoeffs", towerSubDict);
     dict.add("type", "actuatorLineSource");

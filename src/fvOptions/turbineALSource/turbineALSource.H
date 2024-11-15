@@ -152,6 +152,8 @@ protected:
         //- Individual blade moments about turbine origin
         List<vector> bladeMoments_;
 
+        //- Switch for multiphase simulations
+        bool multiPhase_;
 
     // Protected Member Functions
 
