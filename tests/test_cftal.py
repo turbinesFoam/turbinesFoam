@@ -15,7 +15,7 @@ element_dir = "postProcessing/actuatorLineElements/0/"
 al_dir = "postProcessing/actuatorLines/0/"
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def setup():
     os.chdir("tests/crossFlowTurbineALSource")
     out = subprocess.check_output("./getTutorialFiles.sh", shell=True)

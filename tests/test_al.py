@@ -15,7 +15,7 @@ output_fpath = "postProcessing/actuatorLines/0/foil.csv"
 element_dir = "postProcessing/actuatorLineElements/0/"
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def chdir():
     os.chdir("tests/actuatorLineSource")
     yield
