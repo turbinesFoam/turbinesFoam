@@ -17,10 +17,11 @@ al_dir = "postProcessing/actuatorLines/0/"
 
 @pytest.fixture(scope="module")
 def setup():
+    orig = os.getcwd()
     os.chdir("tests/crossFlowTurbineALSource")
-    out = subprocess.check_output("./getTutorialFiles.sh", shell=True)
+    subprocess.run("./getTutorialFiles.sh", shell=True)
     yield
-    os.chdir(os.getcwd())
+    os.chdir(orig)
 
 
 def check_created():

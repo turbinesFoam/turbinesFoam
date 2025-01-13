@@ -17,9 +17,10 @@ element_dir = "postProcessing/actuatorLineElements/0/"
 
 @pytest.fixture(scope="module")
 def chdir():
+    orig = os.getcwd()
     os.chdir("tests/actuatorLineSource")
     yield
-    os.chdir(os.getcwd())
+    os.chdir(orig)
 
 
 def get_tutorial_files(case="static"):
