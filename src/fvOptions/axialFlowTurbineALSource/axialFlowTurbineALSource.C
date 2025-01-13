@@ -476,10 +476,14 @@ void Foam::fv::axialFlowTurbineALSource::calcEndEffects()
             {
                 vector elementVelDir = elementVel / mag(elementVel);
                 scalar relVelOpElementVel = -elementVelDir & relVel;
-                vector rotorPlaneDir = freeStreamDirection_;
+                vector rotorPlaneDir = axis_; // use axis_ instead of rotorPlaneDir_
                 scalar relVelRotorPlane = rotorPlaneDir & relVel;
-                // Note: Does not take yaw into account
+                // Note: Does not take yaw into account, no more.
                 phi = atan2(relVelRotorPlane, relVelOpElementVel);
+                if (phi <= 0.0)
+                {
+					phi=VSMALL; // to prevent division by zero and/or floating point error in exponential calculation
+                }
             }
             if (debug)
             {
