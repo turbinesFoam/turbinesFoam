@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install Python dependencies
-        run: pip install pandas pytest numpy
+        run: pip install -r requirements.txt
       - name: Compile
         run: ./Allwmake
       - name: Run tests
@@ -41,7 +41,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install Python dependencies
-        run: pip install pandas pytest numpy
+        run: pip install -r requirements.txt
       - name: Compile
         run: source /opt/openfoam${{ matrix.version }}/etc/bashrc && ./Allwmake
       - name: Run tests
