@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        version: [2206, 2212, 2306, 2312, 2406]
+        version: [2212, 2306, 2312, 2406, 2412]
     steps:
       - uses: actions/checkout@v4
       - name: Install OpenFOAM
@@ -16,7 +16,7 @@ jobs:
           openfoam-version: ${{ matrix.version }}
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.12"
       - name: Install Python dependencies
         run: pip install pandas nose numpy
       - name: Compile
@@ -39,7 +39,7 @@ jobs:
         run: sudo apt update && sudo apt -yq install openfoam${{ matrix.version }}
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.12"
       - name: Install Python dependencies
         run: pip install pandas nose numpy
       - name: Compile

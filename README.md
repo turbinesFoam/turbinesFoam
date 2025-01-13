@@ -2,11 +2,11 @@ turbinesFoam
 ============
 
 [![DOI](https://zenodo.org/badge/4234/turbinesFoam/turbinesFoam.svg)](https://zenodo.org/badge/latestdoi/4234/turbinesFoam/turbinesFoam)
+![OpenFOAM v2412](https://img.shields.io/badge/OpenFOAM-v2412-brightgreen.svg)
 ![OpenFOAM v2406](https://img.shields.io/badge/OpenFOAM-v2406-brightgreen.svg)
 ![OpenFOAM v2312](https://img.shields.io/badge/OpenFOAM-v2312-brightgreen.svg)
 ![OpenFOAM v2306](https://img.shields.io/badge/OpenFOAM-v2306-brightgreen.svg)
 ![OpenFOAM v2212](https://img.shields.io/badge/OpenFOAM-v2212-brightgreen.svg)
-![OpenFOAM v2206](https://img.shields.io/badge/OpenFOAM-v2206-brightgreen.svg)
 
 turbinesFoam is a library for simulating wind and marine hydrokinetic turbines
 in OpenFOAM using the actuator line method.
