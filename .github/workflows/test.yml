@@ -16,9 +16,9 @@ jobs:
           openfoam-version: ${{ matrix.version }}
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: "3.12"
       - name: Install Python dependencies
-        run: pip install pandas nose numpy
+        run: pip install pandas pytest numpy
       - name: Compile
         run: ./Allwmake
       - name: Run tests
@@ -39,9 +39,9 @@ jobs:
         run: sudo apt update && sudo apt -yq install openfoam${{ matrix.version }}
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: "3.12"
       - name: Install Python dependencies
-        run: pip install pandas nose numpy
+        run: pip install pandas pytest numpy
       - name: Compile
         run: source /opt/openfoam${{ matrix.version }}/etc/bashrc && ./Allwmake
       - name: Run tests

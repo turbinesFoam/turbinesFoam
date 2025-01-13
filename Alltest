@@ -4,4 +4,4 @@ cd ${0%/*} || exit 1    # run from this directory
 
 ./Allwmake
 
-nosetests -v -w tests "$@"
+pytest "$@"
