@@ -16,7 +16,7 @@ jobs:
           openfoam-version: ${{ matrix.version }}
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.12"
+          python-version: "3.10"
       - name: Install Python dependencies
         run: pip install pandas nose numpy
       - name: Compile
@@ -39,7 +39,7 @@ jobs:
         run: sudo apt update && sudo apt -yq install openfoam${{ matrix.version }}
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.12"
+          python-version: "3.10"
       - name: Install Python dependencies
         run: pip install pandas nose numpy
       - name: Compile
