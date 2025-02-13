@@ -2,20 +2,26 @@
 """Tests for `axialFlowTurbineALSource`."""
 
 from __future__ import division, print_function
-import subprocess
-import pandas as pd
-import os
-import numpy as np
-from numpy.testing import assert_array_almost_equal, assert_almost_equal
 
+import os
+import subprocess
+
+import numpy as np
+import pandas as pd
+import pytest
+from numpy.testing import assert_almost_equal, assert_array_almost_equal
 
 element_dir = "postProcessing/actuatorLineElements/0/"
 al_dir = "postProcessing/actuatorLines/0/"
 
 
+@pytest.fixture(scope="module")
 def setup():
-    os.chdir("axialFlowTurbineALSource")
-    out = subprocess.check_output("./getTutorialFiles.sh", shell=True)
+    orig = os.getcwd()
+    os.chdir("tests/axialFlowTurbineALSource")
+    subprocess.run("./getTutorialFiles.sh", shell=True)
+    yield
+    os.chdir(orig)
 
 
 def check_created():
@@ -127,7 +133,7 @@ def all_checks():
     check_spanwise()
 
 
-def test_serial():
+def test_serial(setup):
     """Test axialFlowTurbineALSource in serial."""
     output_clean = subprocess.check_output("./Allclean")
     try:
@@ -145,7 +151,7 @@ def test_serial():
     assert log_end.split()[-1] == "End"
 
 
-def test_parallel():
+def test_parallel(setup):
     """Test axialFlowTurbineALSource in parallel."""
     output_clean = subprocess.check_output("./Allclean")
     try:
@@ -163,7 +169,7 @@ def test_parallel():
     assert "Finalising parallel run" in log_end
 
 
-def test_opposite_rotation():
+def test_opposite_rotation(setup):
     """Test AFTAL rotating opposite direction."""
     old_txt = "axis                (-1 0 0);"
     new_txt = "axis                (1 0 0);"
@@ -171,9 +177,4 @@ def test_opposite_rotation():
         old_txt=old_txt, new_txt=new_txt
     )
     subprocess.call(cmd, shell=True)
-    test_serial()
-
-
-def teardown():
-    """Move back into tests directory."""
-    os.chdir("../")
+    test_serial(setup=None)

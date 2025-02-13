@@ -2,20 +2,26 @@
 """Tests for `crossFlowTurbineALSource`."""
 
 from __future__ import division, print_function
-import subprocess
-import pandas as pd
-import os
-import numpy as np
-from numpy.testing import assert_array_almost_equal
 
+import os
+import subprocess
+
+import numpy as np
+import pandas as pd
+import pytest
+from numpy.testing import assert_array_almost_equal
 
 element_dir = "postProcessing/actuatorLineElements/0/"
 al_dir = "postProcessing/actuatorLines/0/"
 
 
+@pytest.fixture(scope="module")
 def setup():
-    os.chdir("crossFlowTurbineALSource")
-    out = subprocess.check_output("./getTutorialFiles.sh", shell=True)
+    orig = os.getcwd()
+    os.chdir("tests/crossFlowTurbineALSource")
+    subprocess.run("./getTutorialFiles.sh", shell=True)
+    yield
+    os.chdir(orig)
 
 
 def check_created():
@@ -31,8 +37,9 @@ def check_al_file_exists():
 
 def check_element_file_exists():
     """Test that the element perf file was created."""
-    assert os.path.isfile(os.path.join(element_dir,
-                                       "turbine.blade1.element0.csv"))
+    assert os.path.isfile(
+        os.path.join(element_dir, "turbine.blade1.element0.csv")
+    )
 
 
 def check_perf(angle0=540.0):
@@ -44,8 +51,11 @@ def check_perf(angle0=540.0):
     mean_tsr = df.tsr[df.angle_deg >= angle0].mean()
     mean_cp = df.cp[df.angle_deg >= angle0].mean()
     mean_cd = df.cd[df.angle_deg >= angle0].mean()
-    print("Performance from {:.1f}--{:.1f} degrees:".format(angle0,
-          df.angle_deg.max()))
+    print(
+        "Performance from {:.1f}--{:.1f} degrees:".format(
+            angle0, df.angle_deg.max()
+        )
+    )
     print("Mean TSR = {:.2f}".format(mean_tsr))
     print("Mean C_P = {:.2f}".format(mean_cp))
     print("Mean C_D = {:.2f}".format(mean_cd))
@@ -63,18 +73,21 @@ def check_periodic_tsr():
     tsr_phase = 1.9
     tsr_mean = 1.9
     nblades = 3
-    tsr_ref = tsr_amp*np.cos(nblades*(theta_rad - tsr_phase)) + tsr_mean
+    tsr_ref = tsr_amp * np.cos(nblades * (theta_rad - tsr_phase)) + tsr_mean
     assert_array_almost_equal(df.tsr, tsr_ref)
 
 
-def test_serial():
+def test_serial(setup):
     """Test crossFlowTurbineALSource in serial."""
     output_clean = subprocess.check_output("./Allclean")
     try:
         output_run = subprocess.check_output("./Allrun")
     except subprocess.CalledProcessError:
-        print(subprocess.check_output(["tail", "-n", "200",
-                                       "log.pimpleFoam"]).decode())
+        print(
+            subprocess.check_output(
+                ["tail", "-n", "200", "log.pimpleFoam"]
+            ).decode()
+        )
         assert False
     check_created()
     check_al_file_exists()
@@ -86,14 +99,17 @@ def test_serial():
     assert log_end.split()[-1] == "End"
 
 
-def test_parallel():
+def test_parallel(setup):
     """Test crossFlowTurbineALSource in parallel."""
     output_clean = subprocess.check_output("./Allclean")
     try:
         output_run = subprocess.check_output(["./Allrun", "-parallel"])
     except subprocess.CalledProcessError:
-        print(subprocess.check_output(["tail", "-n", "200",
-                                       "log.pimpleFoam"]).decode())
+        print(
+            subprocess.check_output(
+                ["tail", "-n", "200", "log.pimpleFoam"]
+            ).decode()
+        )
         assert False
     check_created()
     check_al_file_exists()
@@ -105,7 +121,7 @@ def test_parallel():
     assert "Finalising parallel run" in log_end
 
 
-def test_multi_re():
+def test_multi_re(setup):
     """Test crossFlowTurbineALSource with multiRe profileData."""
     # Switch on change profileData tableType to multiRe
     with open("system/fvOptions") as f:
@@ -113,9 +129,4 @@ def test_multi_re():
     txt = txt.replace("tableType   singleRe;", "tableType   multiRe;")
     with open("system/fvOptions", "w") as f:
         f.write(txt)
-    test_serial()
-
-
-def teardown():
-    """Move back into tests directory."""
-    os.chdir("../")
+    test_serial(setup=None)

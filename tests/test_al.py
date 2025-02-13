@@ -8,15 +8,19 @@ import subprocess
 
 import numpy as np
 import pandas as pd
-from nose.tools import timed
+import pytest
 
 alpha_deg = 10.0
 output_fpath = "postProcessing/actuatorLines/0/foil.csv"
 element_dir = "postProcessing/actuatorLineElements/0/"
 
 
-def setup():
-    os.chdir("actuatorLineSource")
+@pytest.fixture(scope="module")
+def chdir():
+    orig = os.getcwd()
+    os.chdir("tests/actuatorLineSource")
+    yield
+    os.chdir(orig)
 
 
 def get_tutorial_files(case="static"):
@@ -89,7 +93,7 @@ def check_re_corrections():
         assert cdc == cdi
 
 
-def test_2d():
+def test_2d(chdir):
     """Test 2-D actuatorLineSource."""
     get_tutorial_files(case="static")
     output_clean = subprocess.check_output("./Allclean")
@@ -101,7 +105,7 @@ def test_2d():
     check_re_corrections()
 
 
-def test_alpha_sweep():
+def test_alpha_sweep(chdir):
     """Test 2-D actuatorLineSource angle of attack sweep."""
     get_tutorial_files(case="static")
     out = subprocess.check_output(
@@ -114,7 +118,7 @@ def test_alpha_sweep():
     assert mse < 0.1
 
 
-def test_3d():
+def test_3d(chdir):
     """Test 3-D actuatorLineSource."""
     get_tutorial_files(case="static")
     out = subprocess.check_output("./Allclean")
@@ -124,8 +128,8 @@ def test_3d():
     assert log_end.split()[-1] == "End"
 
 
-@timed(30)  # Test must run faster than 30 seconds
-def test_parallel():
+@pytest.mark.timeout(30)  # Test must run faster than 30 seconds
+def test_parallel(chdir):
     """Test 3-D actuatorLineSource in parallel."""
     get_tutorial_files(case="static")
     out = subprocess.check_output("./Allclean")
@@ -171,14 +175,9 @@ def check_pitching_geom():
     np.testing.assert_allclose(df.alpha_geom_deg, alpha_deg_prescribed)
 
 
-def test_pitching():
+def test_pitching(chdir):
     """Test actuatorLineSource harmonic pitching."""
     get_tutorial_files(case="pitching")
     out = subprocess.check_output("./Allclean")
     out = subprocess.check_output("./Allrun")
     check_pitching_geom()
-
-
-def teardown():
-    """Move back into tests directory."""
-    os.chdir("../")

@@ -1,0 +1,4 @@
+pandas
+numpy
+pytest
+pytest-timeout
