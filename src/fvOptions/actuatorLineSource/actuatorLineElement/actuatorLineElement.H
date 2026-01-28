@@ -104,6 +104,9 @@ protected:
         //- Velocity of the element
         vector velocity_;
 
+        //- Velocity of the element associated to prescribed/rigidBody motion
+        vector motionVelocity_;
+
         //- Free stream velocity
         vector freeStreamVelocity_;
 
@@ -201,6 +204,21 @@ protected:
         //- Number of elements used to sample velocities
         label nVelocitySamples_;
 
+        //- Switch for multiphase simulations
+        bool multiPhase_;
+
+        //- Name of the main phase which properties are to be read
+        word phaseName_;
+
+        //- Add code: Velocity sampling interpolation type:
+        //            "cellPoint", "linear", "cellCenter".
+        word velocityInterpolationType_;
+
+        //- Add code: Root radius for the blade this element belongs to
+        scalar rootRadius_;
+
+        //- Add code: Tip radius for the blade this element belongs to
+        scalar tipRadius_;
 
     // Protected Member Functions
 
@@ -308,6 +326,9 @@ public:
             //- Return geometric relative velocity
             const vector& relativeVelocityGeom();
 
+            //- Return prescribed/rigidBody motion velocity
+            const vector& motionVelocity();
+
             //- Return element angle of attack in degrees
             const scalar& angleOfAttack();
 
@@ -328,13 +349,13 @@ public:
 
             //- Return tangential reference coefficient
             scalar tangentialRefCoefficient();
-            
+
             //- Return normal reference coefficient
             scalar normalRefCoefficient();
 
             //- Return tangential reference force (per unit span)
             scalar tangentialRefForce();
-            
+
             //- Return normal reference force (per unit span)
             scalar normalRefForce();
 
@@ -343,6 +364,12 @@ public:
             //  E.g., for an axial-flow turbine this would be the angle of
             //  attack plus twist
             scalar inflowRefAngle();
+
+            //- Add code: Return root radius for the blade
+            const scalar& rootRadius() const;
+
+            //- Add code: Return tip radius for the blade
+            const scalar& tipRadius() const;
 
 
         // Manipulation
@@ -365,6 +392,14 @@ public:
                 scalar radians
             );
 
+            //- Rotate the element using a rotation matrix (RM)
+            void rotate
+            (
+                vector rotationPoint,
+                tensor RM,
+                bool rotateVelocity
+            );
+
             //- Pitch the element about some fraction of the chord
             void pitch(scalar radians, scalar chordFraction=0.25);
 
@@ -380,6 +415,15 @@ public:
             //- Scale the velocity
             void scaleVelocity(scalar scale);
 
+            //- Set element velocity due to prescribed/rigidBody motion
+            void setMotionVelocity(vector velocity);
+
+            //- Add element velocity due to prescribed/rigidBody motion
+            void addMotionVelocity(const vector &velocity);
+
+            //- Add element velocity due to prescribed/rigidBody rotation motion
+            void addMotionOmega(const vector &point, const vector &axis, const scalar &omega);
+
             //- Set dynamic stall active
             void setDynamicStallActive(bool active);
 
@@ -394,6 +438,12 @@ public:
 
             //- Set number of velocity samples
             void setNVelocitySamples(label nSamples);
+
+            //- Add code: Set root radius for the blade
+            void setRootRadius(scalar radius);
+
+            //- Add code: Set tip radius for the blade
+            void setTipRadius(scalar radius);
 
 
         // Evaluation
