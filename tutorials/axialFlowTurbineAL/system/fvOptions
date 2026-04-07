@@ -62,6 +62,7 @@ turbine
             blade1
             {
                 writePerf   true;
+                writeVTK   true;
                 writeElementPerf true;
                 nElements   28;
                 elementProfiles
@@ -90,6 +91,7 @@ turbine
             {
                 $blade1;
                 writePerf   false;
+                writeVTK   true;
                 writeElementPerf false;
                 azimuthalOffset 120.0;
             }
