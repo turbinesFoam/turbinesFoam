@@ -78,11 +78,17 @@ protected:
         //- Number of blade elements
         label nElements_;
 
+        //- question //Velocity of the element associated to prescribed/rigidBody motion
+        // vector motionVelocity_;
+
         //- Free stream velocity
         vector freeStreamVelocity_;
 
         //- Free stream direction
         vector freeStreamDirection_;
+
+        //- Pitch relative flow velocity
+        vector pitchRelativeVelocity_;
 
         //- Total force vector from all elements
         vector force_;
@@ -102,11 +108,20 @@ protected:
         //- Switch for harmonic pitching
         bool harmonicPitchingActive_;
 
+        // New- Switch for wind pitching
+        bool windPitchingActive_;
+
+        // New
+        scalar lastPitchAngle_;
+
         //- Reduced frequency of harmonic pitching = omega*c/(2*UInfty)
         scalar reducedFreq_;
 
         //- Amplitude of harmonic pitching in degrees
         scalar pitchAmplitude_;
+
+        // - Height of turbine's hub
+        scalar hubHeight_;
 
         //- Time value to track whether to move
         scalar lastMotionTime_;
@@ -114,12 +129,75 @@ protected:
         //- Mean chord length of all elements
         scalar chordLength_;
 
+        //- Relative velocity at the hub
+        scalar Urel_;
+
         //- Aspect ratio
         scalar aspectRatio_;
 
         //- Switch for correcting end effects
         bool endEffectsActive_;
 
+        //- Switch for multiphase simulations
+        bool multiPhase_;
+
+        //- Name of the phase which properties are to be used
+        word phaseName_;
+
+        //- Prescribed motion dictionary
+        dictionary prescribedMotionDict_;
+
+        //- Switch for prescribed motion
+        bool prescribedMotionActive_;
+
+        //- Type of prescribed motion
+        word prescribedMotionType_;
+
+        //- Prescribed motion coefficients dictionary
+        dictionary prescribedMotionCoeffs_;
+
+        //- Rigid body motion dictionary
+        dictionary rigidBodyMotionDict_;
+
+        //- Switch for rigid body motion
+        bool rigidBodyMotionActive_;
+
+        //- Dictionary from "sixDoFRigidBodyMotionState"
+        dictionary rigidBodyDict_;
+
+        //- Orientation at t=0 of the prescribed/rigidBody motion
+        vector rot0_;
+
+        //- Center of rotation of the prescribed/rigidBody motion
+        vector rotCenter_;
+
+        //- rigidBody linaer velocity
+        vector linearVelocity_;
+
+        //- rigidBody angular velocity
+        vector angularVelocity_;
+
+        //- Center of rotation at previous time of the prescribed/rigidBody motion
+        vector prevRotCenter_;
+
+        //- Floater's orientation as a zy'x'' rotation matrix
+        // from floater (F) to inertial (I) frame
+        tensor orientation_;
+
+        //- Floater's orientation at previous time as a zy'x'' rotation Matrix
+        tensor prevOrientation_;
+
+        //- Orientation from rigid body library
+        tensor rBOrientation_;
+
+        //- For rigid body motion, orientation aligned with inertia principal axes
+        tensor refOrientation_;
+
+        //- False if the AL is defined wrt to orientation_ = I, and thus must be 
+        // rotated to match rigid body orientation before the first timestep.
+        // True would mean that the user has defined the AL aligned with
+        // the rigid body initial orientation.  
+        bool rigidBodyAligned_;
 
     // Protected Member Functions
 
@@ -141,6 +219,20 @@ protected:
         //- Execute harmonic pitching for a single time step
         void harmonicPitching();
 
+        //-New Execute wind pitching for a single time step
+        void windPitching(const volVectorField& Uin);
+
+        //- Initialise motion orientation according to prescribed motion
+        void prescribedMotionInitialise();
+
+        //- Compute specific motion parameters according to motionType
+        void prescribedMotionParameters(vector &translation, vector &rotation, vector &velocity, vector &omega, const scalar t, const scalar dt);
+
+        //- Read rigid body dictionary
+        void readRigidBodyDict(const fvMesh& mesh);
+
+        //- Initialise rigid body
+        void rigidBodyInitialise(const fvMesh& mesh);
 
 public:
 
@@ -185,6 +277,23 @@ public:
             //- Return reference to element pointer list
             PtrList<actuatorLineElement>& elements();
 
+            //- Return const reference to the current orientation
+            const tensor& orientation();
+
+            //- Return pitch relative velocity
+            const vector& pitchRelativeVelocity();
+
+            //- Return const reference to the previous orientation
+            const tensor& prevOrientation();
+
+            //- Return translation from the prescribed/rigidBody motion at current timestep
+            const vector motionTranslation();
+
+            //- Return const reference to the current rotation center
+            const vector& rotCenter();
+
+            //- Return const reference to the previous rotation center
+            const vector& prevRotCenter();
 
         // Edit
 
@@ -194,11 +303,26 @@ public:
             //- Rotate the actuator line about a specified axis
             void rotate(vector rotationPoint, vector axis, scalar radians);
 
+            //- Rotate the actuator line using a rotation matrix
+            void rotate(const vector &rotationPoint, const tensor &rotMatrix);
+
             //- Pitch the blade about its chord mount
             void pitch(scalar radians);
 
             //- Pitch the blade about some fraction of the chord
             void pitch(scalar radians, scalar chordFraction);
+
+            //- Move the actuator line according to the prescribed/rigidBody motion. Account for translation velocity.
+            void applyMotion(const vector &translation, const vector &velocity, const vector &omega);
+
+            //- Return the intrinsic rotation matrix (zy'x'') given the roll-pitch-yaw angles
+            tensor rotAngles2Matrix(const vector &rotAngles);
+
+            //- Tranform a given axis-angle rotation into rotation matrix
+            tensor rotAxis2Matrix(const vector &axis, const scalar &angle);
+
+            //- Tranform a given rotation matrix into an axis-angle rotation
+            void rotMatrix2Axis(const tensor &rotMatrix, vector &axis, scalar &angle);
 
             //- Scale the velocity of all elements
             void scaleVelocity(scalar scale);
@@ -206,11 +330,31 @@ public:
             //- Set speed of all elements based on rotation
             void setSpeed(vector point, vector axis, scalar omega);
 
+            //- Set prescribedMotion/rigidBody velocity to all elements
+            void setMotionVelocity(const vector &velocity);
+
+            //- Add velocity to all elements based on prescribedMotion/rigidBody translation
+            void addMotionVelocity(const vector &velocity);
+
+            //- Add velocity to all elements based on prescribedMotion/rigidBody rotation
+            void addMotionOmega(const vector &point, const vector &axis, const scalar &omega);
+
             //- Set rotational velocity of all elements for flow curvature
             //  correction
             void setOmega(scalar omega);
 
+             //- Execute prescribed motion for a single time step
+            void prescribeMotion();
 
+            //- Execute rigid body motion
+            void rigidBodyMotion(const fvMesh& mesh);
+
+            //- Rotate wrt the rotation center from prescribedMotion/rigidBody (with the orientation matrix)
+            void motionRotate();
+
+            //- Rotate according to prescribedMotion/rigidBody initial orientation
+            void motionAlign();
+            
         // Evaluation
 
             //- Compute the moment about a given point
