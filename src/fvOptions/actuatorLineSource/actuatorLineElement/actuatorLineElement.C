@@ -59,6 +59,8 @@ void Foam::fv::actuatorLineElement::read()
     dict_.lookup("rootDistance") >> rootDistance_;
     dict_.lookup("velocitySampleRadius") >> velocitySampleRadius_;
     dict_.lookup("nVelocitySamples") >> nVelocitySamples_;
+    dict_.lookup("multiPhase") >> multiPhase_;
+    dict_.lookup("phaseName") >> phaseName_;
 
     // Create dynamic stall model if found
     if (dict_.found("dynamicStall"))
@@ -94,8 +96,20 @@ void Foam::fv::actuatorLineElement::read()
     (
         "transportProperties"
     );
+
     dimensionedScalar nu;
-    transportProperties.lookup("nu") >> nu;
+
+    // If problem is multi-phase, then we look for phase (air, water, ...) subdictionary in transportProperties
+    if (multiPhase_)
+    {
+        dictionary transportPropertiesPhase = transportProperties.subDict(phaseName_);
+        transportPropertiesPhase.lookup("nu") >> nu;
+    }
+    else
+    {
+        transportProperties.lookup("nu") >> nu;
+    }
+
     nu_ = nu.value();
 
     // Read writePerf switch

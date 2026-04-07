@@ -120,6 +120,11 @@ protected:
         //- Switch for correcting end effects
         bool endEffectsActive_;
 
+        //- Switch for multiphase simulations
+        bool multiPhase_;
+
+        //- Name of the phase which properties are to be used
+        word phaseName_;
 
     // Protected Member Functions
 

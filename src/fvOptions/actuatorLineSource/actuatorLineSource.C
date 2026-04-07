@@ -68,6 +68,13 @@ bool Foam::fv::actuatorLineSource::read(const dictionary& dict)
         freeStreamDirection_ = freeStreamVelocity_/mag(freeStreamVelocity_);
         endEffectsActive_ = coeffs_.lookupOrDefault("endEffects", false);
 
+        // Multi-phase parameters, if present
+        multiPhase_ = coeffs_.lookupOrDefault("multiPhase", false);
+        if(multiPhase_)
+        {
+            coeffs_.lookup("phaseName") >> phaseName_;
+        }
+
         // Read harmonic pitching parameters if present
         dictionary pitchDict = coeffs_.subOrEmptyDict("harmonicPitching");
         harmonicPitchingActive_ = pitchDict.lookupOrDefault("active", false);
@@ -333,6 +340,8 @@ void Foam::fv::actuatorLineSource::createElements()
             coeffs_.lookupOrDefault("writeElementPerf", false)
         );
         dict.add("writePerf", writeElementPerf);
+        dict.add("multiPhase", multiPhase_);
+        dict.add("phaseName", phaseName_);
 
         if (debug)
         {
